@@ -10,6 +10,25 @@ namespace Destruct
 class DString;
 class DObject;
 
+
+const std::string DType::__typeName[] = 
+{
+ "DInt8",
+ "DInt16",
+ "DInt32",
+ "DInt64",
+
+ "DUInt8",
+ "DUInt16",
+ "DUInt32",
+ "DUInt64",
+
+ "DUnicodeString",
+
+ "DObject",
+ "DUnknown"
+};
+
 DType::DType(Type_t typeId) : __typeId(typeId)
 {
 }
@@ -22,6 +41,11 @@ FinalValue*     DType::newValue(void) const
 DType::Type_t    DType::getType(void) const
 {
   return (this->__typeId);
+}
+
+const std::string DType::name(void) const
+{
+  return (__typeName[this->__typeId]);
 }
 
 void            DType::init(void)

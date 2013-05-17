@@ -54,10 +54,14 @@ public:
 
   FinalValue*   newValue(void) const;
   Type_t        getType(void) const;
+  const std::string  name(void) const; //type name
   static void   init(void);
   static void   clean(void);
+  //XXX add this for serialization 
+  
 private:
-  Type_t        __typeId;
+  Type_t               __typeId;
+  static const std::string  __typeName[];
   static        std::vector<FinalValue* >      __prototypes;
 };
 

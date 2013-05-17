@@ -54,13 +54,6 @@ void DestructTest::createModifiableClass(void)
 
 void DestructTest::createBaseClass(void)
 {
-output("\nBaseNode\n\
-{\n\
-   int64 size;\n\
-   int64 childrenCount;\n\
-   int64 offset;\n\
-}")
-
   DStruct* base = new DStruct(0, "BaseNode", DSimpleObject::newObject);
   this->structRegistry()->registerDStruct(base);
   this->structRegistry()->find("BaseNode");
@@ -75,11 +68,6 @@ output("\nBaseNode\n\
 
 void DestructTest::createNtfsClass(void)
 {
-output("\nNtfsNode : BaseNode\n\
-{\n\
-  int64 MBRStartOffset;\n\
-};")
-
   DStruct* base = this->structRegistry()->find("BaseNode");
   if (base == NULL)
   {
@@ -105,13 +93,6 @@ output("\nNtfsNode : BaseNode\n\
 
 void DestructTest::createNestedClass(void)
 {
-output("\nNested\n\
-{\n\
-  int64 NestedStart;\n\
-  DObject ObjectNested;\n\
-  DUnicodeString NestedEnd;\n\
-};")
-
   DStruct* nestedStructDef = new DStruct(NULL, "Nested", DSimpleObject::newObject);
 
   nestedStructDef->addAttribute(DAttribute("NestedStart", DType::DInt64Type));
@@ -197,12 +178,8 @@ void DestructTest::createPrefetchBaseClass(void)
 
 void    DestructTest::showAttribute(DStruct* def)
 {
-  output( def->name() << " struct attributes:")
-
-  for (DStruct::DAttributeIterator i = def->attributeBegin(); i != def->attributeEnd(); ++i)
-  {
-     output("\t" <<  i->name())
-  }
+   DSerializers::to("XML")->serialize(std::cout, *def);
+   DSerializers::to("Text")->serialize(std::cout, *def);
 }
 
 

@@ -59,9 +59,9 @@ public:
   virtual const std::string  name(void) = 0;
   virtual bool serialize(std::ostream& output, DObject&  dobject)  = 0;
   virtual bool unserialize(std::ostream& output, DObject& dobject) = 0;
-  //
-  //virtual boool serialize(std::ostream& output, DStruct& dstruct) = 0; 
-  //virtual boool serialize(std::ostream& output, DStruct& dstruct) = 0; 
+  
+  virtual bool serialize(std::ostream& output, DStruct& dstruct) = 0; 
+  virtual bool unserialize(std::ostream& output, DStruct& dstruct) = 0; 
 
   virtual DSerialize* create(void) = 0;
 };
@@ -78,7 +78,8 @@ public :
   bool serialize(std::ostream &output, DObject& dobject); 
   bool serialize(std::ostream& output, DObject& dobject, int depth);
   bool unserialize(std::ostream &input, DObject& dobject);
-//serialize DStruct / Destruct ? 
+  bool serialize(std::ostream& output, DStruct& dstruct); 
+  bool unserialize(std::ostream& output, DStruct& dstruct); 
 private:
 
   class XMLTag
@@ -117,6 +118,8 @@ public :
   bool serialize(std::ostream &output, DObject& dobject); 
   bool serialize(std::ostream& output, DObject& dobject, int depth);
   bool unserialize(std::ostream &input, DObject& dobject);
+  bool serialize(std::ostream& output, DStruct& dstruct); 
+  bool unserialize(std::ostream& output, DStruct& dstruct); 
 };
 
 //initialization ds session api.init ?

@@ -57,6 +57,27 @@ bool DSerializeXML::unserialize(std::ostream& input, DObject& dobject)
   return (false);
 }
 
+bool DSerializeXML::serialize(std::ostream& output, DStruct& dstruct)
+{
+  XMLTag ref = XMLTag(output, dstruct.name(), "\n", 1, true);
+  //output << dstruct.name() << std::endl;
+  //output << "{" << std::endl;
+
+  for (DStruct::DAttributeIterator i = dstruct.attributeBegin(); i != dstruct.attributeEnd(); ++i)
+  {
+    XMLTag(output, (*i).type().name(), (*i).name(), 2); 
+    //std::cout << "  " << (*i).type().name() << " " << (*i).name() << ";" << std::endl;
+  } 
+  //output << "}" << std::endl;
+
+  return (true);
+}
+
+bool DSerializeXML::unserialize(std::ostream& output, DStruct& dstruct)
+{
+  return (false);
+}
+
 /* 
  *  Text serialization
  */
@@ -105,6 +126,25 @@ bool DSerializeText::serialize(std::ostream& output, DObject& dobject, int depth
 }
 
 bool DSerializeText::unserialize(std::ostream& input, DObject& dobject)
+{
+  return (false);
+}
+
+bool DSerializeText::serialize(std::ostream& output, DStruct& dstruct)
+{
+  output << dstruct.name() << std::endl;
+  output << "{" << std::endl;
+
+  for (DStruct::DAttributeIterator i = dstruct.attributeBegin(); i != dstruct.attributeEnd(); ++i)
+  {
+    std::cout << "  " << (*i).type().name() << " " << (*i).name() << ";" << std::endl;
+  } 
+  output << "}" << std::endl;
+
+  return (true);
+}
+
+bool DSerializeText::unserialize(std::ostream& output, DStruct& dstruct)
 {
   return (false);
 }
