@@ -77,7 +77,7 @@ public:
 
   DUnicodeString asUnicodeString() const
   {
-    DUnicodeString const& ref = *this;
+    DUnicodeString const& ref = '"' +  *this + '"';
     return (ref);
   }
 
@@ -91,8 +91,6 @@ public:
   {
     *this = v.get<std::string>();
   }
-
-
 };
 
 template <>
@@ -136,11 +134,11 @@ inline RealValue<DObject* >::operator DObject*() const
 template <>
 inline void RealValue<DObject* >::set(DValue const& v)
 {
-    if (this->__val)
-    {
-      this->__val->destroy();
-    }
-    this->__val = v.get<DObject *>();
+  if (this->__val)
+  {
+    this->__val->destroy();
+  }
+  this->__val = v.get<DObject *>();
 }
 
 }

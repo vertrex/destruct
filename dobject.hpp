@@ -9,12 +9,10 @@ namespace Destruct
 class DValue;
 class BaseValue;
 
-
 class DObject
 {
 public:
  DObject(DStruct const* dstructDef);
-
 
  virtual DObject* clone() const = 0;
  DStruct const* instanceOf() const;
@@ -28,16 +26,16 @@ public:
    return this->__refCount; 
  }
 
- void   addRef() 
+ void    addRef() 
  {  
-    this->__refCount++;  
+   this->__refCount++;  
  }
 
- void   destroy()
+ void    destroy()
  { 
-    this->__refCount--;
-    if (!this->__refCount)  
-      delete this;
+   this->__refCount--;
+   if (!this->__refCount)  
+     delete this;
  }
 
 protected:
@@ -51,11 +49,10 @@ protected:
  virtual ~DObject()
  {
  }
+
 private:
  DStruct const * const __dstructDef;
  volatile int32_t      __refCount;
-
-
 };
 
 }

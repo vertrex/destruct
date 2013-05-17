@@ -1,6 +1,8 @@
 #ifndef DESTRUCT_TEST_HPP_
 #define DESTRUCT_TEST_HPP_
 
+#include <iostream>
+
 #include "destruct.hpp"
 #include "dmemberpointer.hpp"
 #include "drealvalue.hpp"
@@ -201,8 +203,6 @@ private:
   RealValue<DInt64> __lastExecutionTime;
   RealValue<DInt32> __numberOfExecution;
 };
-
-
 
 }
 #endif

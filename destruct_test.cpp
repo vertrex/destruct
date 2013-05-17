@@ -8,6 +8,7 @@
 #include "drealvalue.hpp"
 #include "dunicodestring.hpp"
 #include "dfuncvalue.hpp"
+#include "dserialize.hpp"
 
 #include "destruct_test.hpp"
 
@@ -204,31 +205,14 @@ void    DestructTest::showAttribute(DStruct* def)
   }
 }
 
+
 void    DestructTest::showObjectAttribute(DObject* object, int depth)
 {
-
-  output(std::string(depth -1, '\t') << object->instanceOf()->name() << " * attributes value:" )
-  int x = 0;
-
-  for (DStruct::DAttributeIterator i = object->instanceOf()->attributeBegin(); i != object->instanceOf()->attributeEnd(); ++i, ++x)
-  {
-    if (i->type().getType() == DType::DObjectType)
-    {
-      DObject* dobject = object->getValue(x).get<DObject*>();
-
-      output(std::string(depth, '\t')  << i->name() << " : " <<  std::endl);
-      if (dobject != NULL)
-      {
-        this->showObjectAttribute(dobject, depth += 1);
-        dobject->destroy();
-      }
-    }
-    else
-     output(std::string(depth, '\t')  << i->name() << " : " << object->getValue(x).asUnicodeString())
-  }
+   DSerializers::to("XML")->serialize(std::cout, *object);
+   DSerializers::to("Text")->serialize(std::cout, *object);
 }
 
-void DestructTest::setObjectValue(DObject* object)
+void DestructTest::setObjectValue(DObject* object) // ha met c unzerialize :) 
 {
   object->setValue("num", RealValue<DInt64>(424242));
   object->setValue("text", RealValue<DUnicodeString>("My text."));

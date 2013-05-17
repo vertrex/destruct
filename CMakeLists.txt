@@ -98,6 +98,7 @@ dstruct.cpp
 dtype.cpp 
 dvalue.cpp
 destruct.cpp
+dserialize.cpp
 destruct_test.cpp 
 )
 
