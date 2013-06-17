@@ -20,9 +20,15 @@ public:
  void      createNtfsClass(void);
  void      createNestedClass(void);
  void      createPrefetchBaseClass(void);
+
+ void      createNtfsBootSector(void);
+ void      deserializeNtfsBootSector(void);
  
  void      createModifiableClass(void);
  void      createFuncClass(void);
+
+ void      createArchive(void);
+ void      readArchive(void);
 
  void      run(void);
  void      showAttribute(DStruct* def);
@@ -112,7 +118,6 @@ protected:
 /*
  *  Class Volume Information Block
  */
-
 
 class PrefetchXPClass : public PrefetchBaseClass
 {

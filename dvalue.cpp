@@ -1,6 +1,8 @@
 #include "dvalue.hpp"
 #include "dobject.hpp"
 
+#include "dserialize.hpp" //for dstream !
+
 namespace Destruct
 {
 
@@ -79,15 +81,24 @@ DValue& DValue::operator=(const DValue& rhs)
 DUnicodeString DValue::asUnicodeString() const
 {
   if (this->__value)
-  {
     return (this->__value->asUnicodeString());
-  }
-  else
-  {
-    return (DUnicodeString());
-  }
-
+  return (DUnicodeString());
 }
 
+DStream& operator<<(DStream& os, DValue& value) //asRaw() ? //from raw 
+{
+  if (value.__value)
+    return (value.__value->serialize(os));
+  os.write(0, sizeof(uint8_t));
+//  return os << 0; //XXX ? 
+  return os;
+}
+
+DStream& operator>>(DStream& is, DValue& value)
+{
+  if (value.__value)
+    return (value.__value->unserialize(is));
+  return (is);
+}
 
 }

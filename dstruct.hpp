@@ -34,7 +34,7 @@ public:
 
   DObject*              newObject() const;
  
-  DObject const*        defaultDObject() const;
+  DObject const*        defaultDObject() const;//not serialized, could be usefull for destruct to set default value (dff argument)
   void                  setDefault(DObject const *);
 
   DAttribute const&     attribute(size_t index) const;

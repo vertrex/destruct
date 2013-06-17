@@ -34,7 +34,7 @@ PyObject* PyDType::getType(PyDType::DPyObject* self, PyObject*args, PyObject* kw
 PyMethodDef PyDType::pyMethods[] = 
 {
   {"getType", (PyCFunction)PyDType::getType, METH_NOARGS, "Return the type."},
-//XXX name() addec for serialization
+//XXX name() add for serialization
   {NULL}
 };
 

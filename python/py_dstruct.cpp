@@ -128,7 +128,7 @@ void PyDStruct::_dealloc(PyDStructT::DPyObject* self)
 /*
  *  Change input to DStruct(std::string base, std::string name) ?
  */
-int PyDStruct::_init(PyDStructT::DPyObject *self, PyObject *args, PyObject *kwds)
+int PyDStruct::_init(PyDStructT::DPyObject* self, PyObject* args, PyObject* kwds)
 {
    const char*                  name = NULL;
    Destruct::DStruct*           base = NULL;

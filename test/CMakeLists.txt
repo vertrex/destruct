@@ -12,22 +12,11 @@
 # Author(s):
 #  Solal Jacob <sja@digital-forensic.org>
 
-set (pydestruct_files
-py_destruct.cpp
-py_dstruct.cpp
-py_dattribute.cpp
-py_dtype.cpp
-py_dvalue.cpp
-py_dobject.cpp
-py_dstream.cpp
-py_dserialize.cpp
-py_destruct_test.cpp
-destructmodule.cpp
+set (test_files
+test.cpp
 )
 
-add_library(_destruct SHARED ${pydestruct_files})
-
-set_target_properties(_destruct PROPERTIES PREFIX "")
-target_link_libraries(_destruct destruct python2.7)
+add_executable(test ${test_files})
 
 include_directories("../")
+target_link_libraries(test destruct)

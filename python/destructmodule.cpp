@@ -4,6 +4,8 @@
 #include "py_dattribute.hpp"
 #include "py_dtype.hpp"
 #include "py_dobject.hpp"
+#include "py_dstream.hpp"
+#include "py_dserialize.hpp"
 #include "py_destruct_test.hpp"
 
 #define DESTRUCT_ADD_MODULE(moduleType, moduleName)\
@@ -25,6 +27,8 @@ PyMODINIT_FUNC init_destruct(void)
   PyDAttribute::moduleInit();
   PyDObject::moduleInit();
   PyDType::moduleInit();
+  PyDStream::moduleInit();
+  PyDSerialize::moduleInit();
   PyTest::moduleInit();
 
   if ((module = Py_InitModule3("_destruct", destruct_methods, "The destruct library")) == NULL)
@@ -44,11 +48,13 @@ PyMODINIT_FUNC init_destruct(void)
   DESTRUCT_ADD_MODULE(PyDUInt16::pyType, "DUInt16")
   DESTRUCT_ADD_MODULE(PyDUInt32::pyType, "DUInt32")
   DESTRUCT_ADD_MODULE(PyDUInt64::pyType, "DUInt64")
-  DESTRUCT_ADD_MODULE(PyDUnicodeString::pyType, "DUnicodeString")  
-  DESTRUCT_ADD_MODULE(PyDObject::pyType, "DObject") 
+  DESTRUCT_ADD_MODULE(PyDUnicodeString::pyType, "DUnicodeString")
+  DESTRUCT_ADD_MODULE(PyDObject::pyType, "DObject")
 //end type specialization 
 
   DESTRUCT_ADD_MODULE(PyDType::pyType, "DType")
+  DESTRUCT_ADD_MODULE(PyDStream::pyType, "DStream");
+  DESTRUCT_ADD_MODULE(PyDSerialize::pyType, "DSerialize");
   DESTRUCT_ADD_MODULE(PyTest::pyType, "Test")
 
 }
@@ -91,7 +97,7 @@ PyTypeObject PythonBaseModule::basePyType =
         0,                       /* tp_iter */
         0,                       /* tp_iternext */
         0,                       /* tp_method */
-        0,                       /* tp_mmembers */
+        0,                       /* tp_members */
         0,                       /* tp_getset */
         0,                       /* tp_base */
         0,                       /* tp_dict */

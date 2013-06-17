@@ -99,14 +99,10 @@ dtype.cpp
 dvalue.cpp
 destruct.cpp
 dserialize.cpp
+dstream.cpp
 destruct_test.cpp 
 )
 
-set (main 
-test.cpp)
-
+add_subdirectory(test)
 add_subdirectory(python)
 add_library(destruct SHARED ${source_files})
-add_executable(test ${main})
-
-target_link_libraries(test destruct)

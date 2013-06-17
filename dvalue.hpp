@@ -4,6 +4,7 @@
 #include <string>
 #include "dunicodestring.hpp"
 #include "dobject.hpp"
+#include "dstream.hpp"
 
 namespace Destruct
 {
@@ -45,6 +46,8 @@ public:
   virtual FinalValue * clone() const = 0;
  
   virtual DUnicodeString asUnicodeString() const = 0;
+  virtual DStream&  serialize(DStream& os) const = 0;
+  virtual DStream&  unserialize(DStream& is) = 0;
   virtual DValue getFinal() const;
 
 protected:
@@ -91,6 +94,10 @@ public:
     else
       return PlainType();
   }
+
+  friend DStream& operator<<(DStream& os, DValue& value);
+  friend DStream& operator>>(DStream& is, DValue& value);
+  //std::ostream& serialize (std::ostream& os) const;
   DUnicodeString asUnicodeString() const;
 private:
   FinalValue*   __value;

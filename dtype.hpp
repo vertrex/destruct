@@ -30,7 +30,7 @@ class DString;
 class DType
 {
 public:
-//XXX this is used as dispath table in python so it better to not change order :)
+//XXX this is used as dispatch table in python so it better to not change order :)
   enum Type_t
   {
     DInt8Type,
@@ -52,17 +52,16 @@ public:
 
   explicit DType(Type_t typeId); //explicit to be sure to have a defined type when constructing DType 
 
-  FinalValue*   newValue(void) const;
-  Type_t        getType(void) const;
-  const std::string  name(void) const; //type name
-  static void   init(void);
-  static void   clean(void);
+  FinalValue*                           newValue(void) const;
+  Type_t                                getType(void) const;
+  const std::string                     name(void) const; //type name
+  static void                           init(void);
+  static void                           clean(void);
   //XXX add this for serialization 
-  
 private:
-  Type_t               __typeId;
-  static const std::string  __typeName[];
-  static        std::vector<FinalValue* >      __prototypes;
+  Type_t                                __typeId;
+  static const std::string              __typeName[];
+  static std::vector<FinalValue* >      __prototypes;
 };
 
 }
