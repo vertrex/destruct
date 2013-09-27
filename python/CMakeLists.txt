@@ -25,6 +25,7 @@ py_dstream.cpp
 py_dserialize.cpp
 py_destruct_test.cpp
 destructmodule.cpp
+pyter.py
 )
 
 add_library(_destruct SHARED ${pydestruct_files})
