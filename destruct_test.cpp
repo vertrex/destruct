@@ -33,18 +33,18 @@ void DestructTest::run()
    * Create a class that inherit baseNode (NtfsNode)
    * Create a class that have an NtfsNode object as member  (Nested)
    */
-  /*this->createDynamicClass(); */
-  //this->createBaseClass();
-  //this->createNtfsClass(); 
+        //this->createDynamicClass(); 
+  this->createBaseClass();
+  this->createNtfsClass(); 
   //this->createNestedClass();
-  //this->createModifiableClass();
+  this->createModifiableClass();
   this->createFuncClass();
 
-  //this->createNtfsBootSector();
-  //this->deserializeNtfsBootSector();
+  this->createNtfsBootSector();
+  this->deserializeNtfsBootSector();
 
-  //this->createArchive();
-  //this->readArchive();
+  this->createArchive();
+  this->readArchive();
 }
 
 void DestructTest::createModifiableClass(void)
