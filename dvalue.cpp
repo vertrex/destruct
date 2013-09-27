@@ -6,14 +6,6 @@
 namespace Destruct
 {
 
-ComputingValue::ComputingValue(DObject *dobject) : __dobject(dobject)
-{
-}
-
-ComputingValue::ComputingValue(ComputingValue const& rhs) : BaseValue(rhs), __dobject(rhs.__dobject)
-{
-}
-
 BaseValue* FinalValue::clone(DObject *) const
 {
   return (clone());
@@ -65,16 +57,14 @@ DValue& DValue::operator=(const DValue& rhs)
     }
     else
     {
-      FinalValue* old = this->__value;
-      this->__value = 0;
-      delete old;
+      delete this->__value;
+      this->__value = NULL;
     }
   }
   else
   {
-    this->__value = (rhs.__value ? rhs.__value->clone() : 0);
+    this->__value = (rhs.__value ? rhs.__value->clone() : NULL);
   }
-
   return (*this);
 }
 
@@ -85,7 +75,7 @@ DUnicodeString DValue::asUnicodeString() const
   return (DUnicodeString());
 }
 
-DStream& operator<<(DStream& os, DValue& value) //asRaw() ? //from raw 
+DStream& operator<<(DStream& os, DValue& value) //asRaw() ? //from raw //python binding ? Value.serialize() Value.dserialize(stream)
 {
   if (value.__value)
     return (value.__value->serialize(os));

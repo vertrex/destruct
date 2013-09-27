@@ -19,7 +19,6 @@ PyDStream::PyDStream()
   pyType->tp_init = (initproc)PyDStream::_init;
   pyType->tp_new = PyDStream::_new;
   pyType->tp_dealloc = (destructor)_dealloc;
-  //pyType->tp_repr = (reprfunc)PyDStream::repr;
 
   if (PyType_Ready(pyType) < 0)
     throw std::string("PyType ready error");

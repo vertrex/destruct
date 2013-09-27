@@ -12,6 +12,15 @@ namespace Destruct
 class DObject;
 class DValue;
 
+//spliter les base value ds un autre fichier 
+
+/*
+ *  This an interface, bae class for value,
+ *  all value implementation must inherit this class 
+ *  this let manipulate value , value implemetation are in a separe class called DValue
+ *  objet can store this basevalue class to get access to derived class by inheritance
+ */
+
 class BaseValue
 {
 public:
@@ -20,7 +29,6 @@ public:
   
   virtual DValue getFinal() const = 0;
   virtual void set(DValue const & v) = 0;
-
 protected:
   BaseValue() {}
   BaseValue(BaseValue const &) {}
@@ -30,14 +38,9 @@ protected:
   }  
 };
 
-class ComputingValue : public BaseValue
-{
-public:
-  ComputingValue(DObject* dobject);
-protected:
-  ComputingValue(ComputingValue const&);
-  DObject* const __dobject;
-};
+/*
+ * inherit base value to create a new kind of value that call an internal function
+ */
 
 class FinalValue : public BaseValue
 {
@@ -46,32 +49,40 @@ public:
   virtual FinalValue * clone() const = 0;
  
   virtual DUnicodeString asUnicodeString() const = 0;
-  virtual DStream&  serialize(DStream& os) const = 0;
-  virtual DStream&  unserialize(DStream& is) = 0;
-  virtual DValue getFinal() const;
-
+  virtual DStream&  serialize(DStream& os) const = 0;//XXX Better use an object protocol ?
+  virtual DStream&  unserialize(DStream& is) = 0;   //XXX Better use an object protocol ?
+  virtual DValue    getFinal() const;
 protected:
   FinalValue();
   FinalValue(FinalValue const &);
   FinalValue& operator=(FinalValue const &);
 };
 
+/*
+* inherit final value who inherit base value
+* provide copy and plain type conversion operator
+*/
+
 template <typename PlainType> 
 class TypedValue : public FinalValue
 {
 public:
   virtual operator PlainType() const = 0;
-
 protected:
   TypedValue() {}
   TypedValue(TypedValue const & rhs) : FinalValue(rhs) {}
   TypedValue& operator=(TypedValue const& rhs)
   {
     FinalValue::operator =(rhs);
-   
     return (*this);
   }
 };
+
+/*
+* this is the value implementation to manipulate basevalue object allocate/delete embeded acess
+* through final value converter
+* it use a template class to specialize the get method 
+*/
 
 class DValue
 {
@@ -104,7 +115,7 @@ private:
 };
 
 /*
- *  We specialize DValue because of refCount this shouldn't happen in normal case ...
+ * We specialize DValue because of refCount this shouldn't happen in normal case ...
  */
 
 template <>
@@ -115,11 +126,13 @@ inline DObject* DValue::get<DObject* >() const
     TypedValue<DObject* > const &tv = dynamic_cast<TypedValue<DObject* > const &>(*this->__value);
     DObject* dobject = tv;
     if (dobject)
+    {
       dobject->addRef();
+    }
     return (dobject);
   }
   else
-   return NULL;
+   return (NULL); // ret DNone !
 }
 
 }

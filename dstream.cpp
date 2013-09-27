@@ -11,10 +11,10 @@ DStream::DStream()
 
 DStream::DStream(std::string filePath, mode _mode)
 {
-  if (_mode == mode::Input)
-    this->__fstream.open(filePath, std::iostream::in | std::iostream::binary);
+  if (_mode == Input)
+    this->__fstream.open(filePath.c_str(), std::iostream::in | std::iostream::binary);
   else
-    this->__fstream.open(filePath, std::iostream::out | std::iostream::binary | std::iostream::trunc);
+    this->__fstream.open(filePath.c_str(), std::iostream::out | std::iostream::binary | std::iostream::trunc);
 }
 
 DStream::~DStream()

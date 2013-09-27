@@ -348,6 +348,14 @@ DSerializers::DSerializers()
   this->registerSerializer(new DSerializeRaw());
 }
 
+DSerializers::~DSerializers()
+{
+  for (std::vector<DSerialize* >::iterator i = __serializers.begin(); i != __serializers.end(); ++i)
+  {
+     delete (*i);
+  }
+}
+
 size_t DSerializers::count()
 {
   return (__serializers.size());

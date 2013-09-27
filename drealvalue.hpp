@@ -6,11 +6,18 @@
 #include <iostream>
 #include "dvalue.hpp"
 #include "dobject.hpp"
+#include "dnullobject.hpp"
+#include "dfunction.hpp"
 #include "dunicodestring.hpp"
 #include "dstream.hpp"
 
 namespace Destruct
 {
+
+/*
+* implemented typedvalue who inherit final value who inherite basevalue
+* all specialize method by type must be implem here ! that's why we use template
+*/
 
 template <typename PlainType>
 class RealValue : public TypedValue<PlainType>
@@ -36,7 +43,8 @@ public:
   DUnicodeString asUnicodeString() const
   {
     std::ostringstream os;
-    os << std::hex << this->__val; //set as hex as options ?
+   // os << std::hex << this->__val; //set as hex in option ? 
+    os << this->__val;
     return (os.str());
   }
 
@@ -61,7 +69,6 @@ public:
   {
     this->__val = v.get<PlainType>();
   }
-
 protected:
   PlainType __val;
 };
@@ -70,7 +77,6 @@ protected:
  * DUnicodeString class specialization
  */
   
-
 template <> 
 class RealValue<DUnicodeString> : public TypedValue<DUnicodeString>, public DUnicodeString
 {
@@ -138,20 +144,30 @@ public:
 template <>
 inline DUnicodeString RealValue<DObject* >::asUnicodeString() const
 {
-  return (this->__val->instanceOf()->name() + " *");
+  if (this->__val->instanceOf())
+    return (this->__val->instanceOf()->name() + " *");
+  else 
+    return std::string("Can't get object instance couille sur mon nez !\n");
+}
+
+template <>
+inline RealValue<DObject* >::RealValue() : __val(0) 
+{
 }
 
 template <>
 inline RealValue<DObject* >::RealValue(DObject* val) : __val(val)
 {
-  if (val)
+  if (this->__val)
     this->__val->addRef();
 }
 
-
 template <>
-inline RealValue<DObject* >::RealValue() : __val(0) 
+inline FinalValue* RealValue<DObject* >::clone() const
 {
+    if (this->__val)
+      this->__val->addRef();
+    return (new RealValue(*this));
 }
 
 template <>
@@ -160,6 +176,7 @@ inline RealValue<DObject* >::~RealValue<DObject* >()
   if (this->__val)
     this->__val->destroy();
 }
+
 
 template <>
 inline RealValue<DObject* >::operator DObject*() const
@@ -173,11 +190,66 @@ template <>
 inline void RealValue<DObject* >::set(DValue const& v)
 {
   if (this->__val)
-  {
     this->__val->destroy();
-  }
   this->__val = v.get<DObject *>();
 }
+///XXX serialization pourquoi elle est pas coder directement dedans ? au lieu de faier une class qui prend un dobject en entree
+//on pourait faire value.serialize()   et d ailleurs utiliser un autre enpacker pour deseiralize autrement ? ArchiveValue(value).serialize?
+
+/*
+ * DMethodObject specialization
+ */
+
+template <>
+inline DUnicodeString RealValue<DFunctionObject* >::asUnicodeString() const
+{
+  return ("DFunctionObject *"); //throw ?
+}
+
+template <>
+inline RealValue<DFunctionObject* >::RealValue(DFunctionObject* val) : __val(val)
+{
+  if (val)
+    this->__val->addRef();
+}
+
+template <>
+inline RealValue<DFunctionObject* >::RealValue() : __val(0) //XXX init a 0 ? call(0) ? renvoie sur uen fonction ki throw plutot ? 
+{
+}
+
+template <>
+inline FinalValue* RealValue<DFunctionObject* >::clone() const
+{
+  if (this->__val)
+    this->__val->addRef();
+  return (new RealValue(*this));
+}
+
+template <>
+inline RealValue<DFunctionObject* >::~RealValue<DFunctionObject* >()
+{
+  if (this->__val)
+    this->__val->destroy();
+}
+
+
+template <>
+inline RealValue<DFunctionObject* >::operator DFunctionObject*() const
+{
+  if (this->__val)
+    this->__val->addRef();
+  return (this->__val);
+}
+
+template <>
+inline void RealValue<DFunctionObject* >::set(DValue const& v)
+{
+  if (this->__val)
+    this->__val->destroy();
+  this->__val = v.get<DFunctionObject *>();
+}
+
 
 /*
  *  DUInt8 specialization (or asUnicodeString see him as char, 'c')

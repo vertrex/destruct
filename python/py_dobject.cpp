@@ -4,7 +4,6 @@
 #include "drealvalue.hpp"
 #include "py_dstruct.hpp"
 #include "py_dtype.hpp"
-#include "dfuncvalue.hpp"
 
 using Destruct::DUnicodeString;
 
@@ -21,7 +20,6 @@ PyDObject::PyDObject()
   pyType->tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE;
   pyType->tp_doc = "destruct.DObject objects";
   pyType->tp_methods = PyDObject::pyMethods;
-  pyType->tp_methods = pyMethods;
   pyType->tp_init = (initproc)PyDObject::_init;
   pyType->tp_new = PyDObject::_new;
   pyType->tp_dealloc = (destructor)PyDObject::_dealloc;
@@ -29,7 +27,7 @@ PyDObject::PyDObject()
   pyType->tp_getattro = (getattrofunc)PyDObject::_getattr;
   pyType->tp_setattro = (setattrofunc)PyDObject::_setattr;
   pyType->tp_compare = (cmpfunc)PyDObject::_compare; 
- 
+
   if (PyType_Ready(pyType) < 0)
     throw std::string("PyType ready error");
 }
@@ -44,6 +42,7 @@ PyObject* PyDObject::instanceOf(PyDObject::DPyObject* self)
    
   return ((PyObject*)dstructObject);
 }
+
 PyObject* PyDObject::getValue(PyDObject::DPyObject* self, PyObject* attributeObject)
 {
   int32_t     attributeIndex = 0;
@@ -68,7 +67,7 @@ PyObject* PyDObject::getValue(PyDObject::DPyObject* self, PyObject* attributeObj
 
   if (attributeIndex == -1 || attributeIndex >= (int32_t)self->pimpl->instanceOf()->attributeCount())
   {
-    std::string errorString = "GET destruct.DObject." + self->pimpl->instanceOf()->name() +  " instance as no attribute '" + attributeName + "'";
+    std::string errorString = "destruct.DObject." + self->pimpl->instanceOf()->name() +  " instance as no attribute '" + attributeName + "'";
     PyErr_SetString(PyExc_AttributeError, errorString.c_str()); 
     return (0);
   }
@@ -96,6 +95,7 @@ PyObject* PyDObject::setValueObject(PyDObject::DPyObject* self, PyObject* args, 
     return (0);
   }
   CHECK_PIMPL
+
   if (PyInt_Check(attributeObject))
   {
     attributeIndex = PyLong_AsLong(attributeObject);
@@ -141,7 +141,20 @@ PyObject*  PyDObject::setValue(PyDObject::DPyObject* self, int32_t attributeInde
       PyErr_SetString(PyExc_RuntimeError, "Bad type id value");
       return (0);
     }
-    self->pimpl->setValue(attributeIndex, DValueDispatchTable[typeId]->toDValue(valueObject));
+    
+//XXX ca casse tous ce booooo code 
+    if (typeId == Destruct::DType::DMethodType)
+    {
+      if (PyCallable_Check(valueObject))  ///XXX set a callable function 
+      {
+        Destruct::DFunctionObject* dpythonMethodObject = new DPythonMethodObject((PyObject*)self, valueObject, self->pimpl->instanceOf()->attribute(attributeIndex).type()); //new donc doit XXX del ! objet tous ca ! refcount ?
+        self->pimpl->setValue(attributeIndex, Destruct::RealValue<Destruct::DFunctionObject* >(dpythonMethodObject));  //?XXX DFUNCTION SET VALUE  to DVALUE ?
+        Py_RETURN_NONE; 
+      }
+      throw std::string("Can't cast to DMethod"); //XXX
+    }
+    else
+      self->pimpl->setValue(attributeIndex, DValueDispatchTable[typeId]->toDValue(valueObject));
     Py_RETURN_NONE;
   }
   catch (std::string e)
@@ -151,87 +164,12 @@ PyObject*  PyDObject::setValue(PyDObject::DPyObject* self, int32_t attributeInde
   }
 }
 
-PyObject* PyDObject::replaceValueObject(PyDObject::DPyObject* self, PyObject* args, PyObject* kwds)
-{
-  PyObject*    valueObject;
-  PyObject*    attributeObject;
-  int32_t      attributeIndex = 0; 
-  const char*  attributeName = NULL;
-
-  if (!PyArg_ParseTuple(args, "OO", &attributeObject, &valueObject))
-  {
-    PyErr_SetString(PyExc_TypeError, "must be string or integer, and a compatible DType or Python Object");
-    return (0);
-  }
-
-  CHECK_PIMPL 
-  if (PyInt_Check(attributeObject))
-  {
-    attributeIndex = PyLong_AsLong(attributeObject);
-    return (PyDObject::replaceValue(self, attributeIndex, valueObject));
-  }
-  else if (PyString_Check(attributeObject))
-  {
-    attributeName = PyString_AsString(attributeObject);
-    return (PyDObject::replaceValue(self, attributeName, valueObject)); 
-  }
-  else
-  {
-    PyErr_SetString(PyExc_TypeError, "must be string or integer, and a compatible DType or Python Object");
-    return (0);
-  }
-}
-
-PyObject* PyDObject::replaceValue(PyDObject::DPyObject* self, const char* attributeName, PyObject* valueObject)
-{
-  int32_t attributeIndex = self->pimpl->instanceOf()->findAttribute(std::string(attributeName));
-  if (attributeIndex == -1 || attributeIndex >= (int32_t)self->pimpl->instanceOf()->attributeCount())
-  {
-    std::string errorString = "destruct.DObject." + self->pimpl->instanceOf()->name() +  " instance as no attribute '" + attributeName + "'";
-    PyErr_SetString(PyExc_AttributeError, errorString.c_str()); 
-    return (0);
-  }
-  return (PyDObject::replaceValue(self, attributeIndex, valueObject));
-}
-
-PyObject* PyDObject::replaceValue(PyDObject::DPyObject* self, int32_t attributeIndex, PyObject* valueObject)
-{
-  if (!PyCallable_Check(valueObject)) 
-  {
-    PyErr_SetString(PyExc_TypeError, "parameter must be callable");
-    return (0);
-  }
-  Py_XINCREF(valueObject);
-
-  if (attributeIndex == -1 || attributeIndex >= (int32_t)self->pimpl->instanceOf()->attributeCount())
-  {
-    std::string errorString = "destruct.DObject." + self->pimpl->instanceOf()->name() +  " instance as no attribute at index '"; 
-    errorString += attributeIndex+ "'";
-    PyErr_SetString(PyExc_AttributeError, errorString.c_str()); 
-    return (0);
-  }
-
-  Destruct::DObject* obj = self->pimpl;
-  Destruct::DSimpleObject* simple = dynamic_cast<Destruct::DSimpleObject*>(obj);
-
-  if (simple == NULL)
-  {
-    PyErr_SetString(PyExc_RuntimeError, "Can't cast private implementation to DSimpleObject");
-    return (0); 
-  }
-
-  simple->replaceValue(attributeIndex, DPythonFunctionValue<DUnicodeString>(self, valueObject)); 
-  Py_RETURN_NONE;
-}
-
-
 PyMethodDef PyDObject::pyMethods[] = 
 {
   {"instanceOf", (PyCFunction)instanceOf, METH_NOARGS, "Return the DStruct definition who generate this object."},
   {"getType",  (PyCFunction)getType, METH_CLASS, "Return self DType::type."},
   {"getValue", (PyCFunction)getValue, METH_O, "Get value for attribute (passed as index or string)."},
   {"setValue", (PyCFunction)setValueObject, METH_VARARGS, "Set attribute value."},
-  {"replaceValue", (PyCFunction)replaceValueObject, METH_VARARGS, "Replace attribute value."},
   { NULL }
 };
 
@@ -245,10 +183,37 @@ int PyDObject::_init(PyDObjectT::DPyObject* self, PyObject *args, PyObject *kwds
     PyErr_SetString(PyExc_TypeError, "must be string or integer, and a compatible DType or Python Object");
     return (-1);
   }
+
   Destruct::DStruct* dstruct = Destruct::Destruct::instance().find(std::string(dstructName));
   if (dstruct != NULL)
   {
+    Py_ssize_t pos = 0;
+    PyObject *key, *value = NULL;
+
     self->pimpl = dstruct->newObject();
+
+//XXX check tp_dict for each func/value ? (only func ?)
+// if func is found set func to the c++ object with setvalue -> overiding the c++ function
+// (i think for variable is not a problem as it done in init )
+// then when a function will be called it will be set in c++ and python in our dict (getValue / setvalue of destruct)
+// so it will return it before searching the dict so it will be the first one called 
+// it s a kind of trick but it will work 
+// other way is to do that then maybe replace the dict by a call to get attr etc... 
+// or maybe delete them from de dict but we must get it first ... ?
+
+//XXX IT WILL BE DONE AT EACH INIT or object() instantiation :*(
+//    Better modify the dict ? But how to push the object on destruct def ? (the func) ?
+//    Better call saul ? 
+
+    while (PyDict_Next(((PyObject*)self)->ob_type->tp_dict, &pos, &key, &value))
+    {
+      int32_t attributeIndex = -1;
+      const char* ckey = PyString_AsString(key);
+
+      if ((attributeIndex = self->pimpl->instanceOf()->findAttribute(ckey)) != -1)
+        setValue(self, attributeIndex, value);
+    } 
+
     return (0);
   }
 
@@ -267,32 +232,54 @@ void PyDObject::_dealloc(PyDObjectT::DPyObject* self)
    self->ob_type->tp_free((PyObject*)self);
 }
 
-PyObject*    PyDObject::_getattr(PyDObject::DPyObject* self, PyObject* name)
+/* 
+ *  This control how inheritance between python and dobject work !
+ *  If we want python dico to be the last called we must use it's function rather than ours !
+ *  It's not sufficient as we must control initialization and binding for c++ at objet initialization !
+
+ en d autre term si on renvoie en premier l objet du dict : 
+
+        A --------> c++
+        |
+        |
+        B --------> python
+
+en python on aura bien access au func surcharger mais pas en c++ car elles auront pas replace celle du model 
+
+2 cas :
+        Structure Fixed -> all structure for now :
+                           2 choix :
+                                - on accepte que python rajoute des variable / function qui seront utilisable uniquement de py a py
+                                - on accepte que python overide only les donnes du model Destruct (tres limitant pour les class)
+
+                                - ds le cas ou le dico contient a l init un value definit par destruct il faut la remplacer !
+                                  donc check le dico etc ... pour set les fonc pour etre accessible en c++
+
+        Future : structure non-fixed -> pour l instant existe pas
+
+ */
+
+
+PyObject*    PyDObject::_getattr(PyDObject::DPyObject* self, PyObject* args)
 {
-  PyObject* obj = PyDObject::getValue(self, name);
+  PyObject* obj = PyDObject::getValue(self, args);
   if (obj != NULL)
-    return obj; 
+    return (obj);
 
   PyErr_Clear();
-  return (PyObject_GenericGetAttr((PyObject*)self, name));
+  return (PyObject_GenericGetAttr((PyObject*)self, args));
 }
 
-int  PyDObject::_setattr(PyDObject::DPyObject* self, PyObject* name, PyObject *valueObject)
+int  PyDObject::_setattr(PyDObject::DPyObject* self, PyObject* name, PyObject* valueObject)
 {
   const char* cname = PyString_AsString(name);
 
-  if (PyCallable_Check(valueObject)) 
-  {
-    PyObject* res = replaceValue(self, cname, valueObject);     
-    if (res == Py_None)
-      return (0);
-    return (-1);
-  }
-  
   PyObject* res = setValue(self, cname, valueObject);
   if (res == Py_None)
     return (0);
-  return (-1);
+
+  PyErr_Clear();
+  return (PyObject_GenericSetAttr((PyObject*)self, name, valueObject));
 }
 
 PyObject* PyDObject::_repr(PyDObject::DPyObject* self)
@@ -302,9 +289,9 @@ PyObject* PyDObject::_repr(PyDObject::DPyObject* self)
   return (PyString_FromString(repr.c_str()));
 }
 
+/* This only make sense when pointer is equal */
 int PyDObject::_compare(PyDObject::DPyObject* self, PyDObject::DPyObject* other)
 {
-  /* This only have sense when pointer is equal */
   return ((int)(self->pimpl - other->pimpl));
 }
 

@@ -14,7 +14,6 @@ class FinalValue;
 class DObject;
 class DString;
 
-
 //define is not affected by namespace
 
 #define DInt8   int8_t   
@@ -27,10 +26,13 @@ class DString;
 #define DUInt32 uint32_t
 #define DUInt64 uint64_t 
 
+/*
+ *  Enum is used as a dispatch table in python bindings so order must not be changed
+ */
+
 class DType
 {
 public:
-//XXX this is used as dispatch table in python so it better to not change order :)
   enum Type_t
   {
     DInt8Type,
@@ -46,20 +48,29 @@ public:
     DUnicodeStringType,
 
     DObjectType,
+    DMethodType,
+    DNoneType,
 
     DUnknownType,
   };
 
   explicit DType(Type_t typeId); //explicit to be sure to have a defined type when constructing DType 
+  explicit DType(Type_t typeId, Type_t ReturnTypeId, Type_t ArgumentTypeId);
 
   FinalValue*                           newValue(void) const;
   Type_t                                getType(void) const;
-  const std::string                     name(void) const; //type name
+  Type_t                                getReturnType(void) const;
+  Type_t                                getArgumentType(void) const;
+  const std::string                     name(void) const;
+  const std::string                     returnName(void) const;
+  const std::string                     argumentName(void) const;
+  
   static void                           init(void);
   static void                           clean(void);
-  //XXX add this for serialization 
 private:
   Type_t                                __typeId;
+  Type_t                                __returnTypeId; //xor ? flag pour prendre moins de place ?
+  Type_t                                __argumentTypeId;
   static const std::string              __typeName[];
   static std::vector<FinalValue* >      __prototypes;
 };

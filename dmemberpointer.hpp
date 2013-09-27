@@ -1,73 +1,88 @@
 #ifndef DESTRUCT_MEMPTR_H
 #define DESTRUCT_MEMPTR_H
 
+#include "dvalue.hpp"
+#include "drealvalue.hpp"
+
 namespace Destruct
 {
 
-template <typename BaseType, typename BaseTargetType>
-class MemPtrBase
+/*  
+ *  naming:
+ *  BaseType: the class to which a pointer-to-member is applied
+ *  TargetType : the result type to which a pointer-to-member points
+ *  a base class of TargetType
+ */
+
+template <typename CPPClass>
+class DMemoryPointerBase
 {
 public:
-  virtual BaseTargetType & value(BaseType & obj) const = 0;
-  virtual BaseTargetType const & value(BaseType const & obj) const = 0;
-  virtual ~MemPtrBase() {};
+  virtual FinalValue& value(CPPClass* obj) const = 0;
+  virtual FinalValue const& value(CPPClass const * obj) const = 0;
+  virtual ~DMemoryPointerBase() 
+  {
+  };
 
 protected:
-  MemPtrBase() {}
-
+  DMemoryPointerBase() 
+  {
+  };
 private:
-  MemPtrBase(MemPtrBase const &);
-  MemPtrBase & operator=(MemPtrBase const &);
+  DMemoryPointerBase(DMemoryPointerBase const&);
+  DMemoryPointerBase & operator=(DMemoryPointerBase const &);
 };
 
-template <typename BaseType, typename BaseTargetType, typename TargetType>
-class TypedMemPtr : public MemPtrBase<BaseType, BaseTargetType>
+template<typename CPPClass, typename RealReturnType > 
+class DMemberPointer : public DMemoryPointerBase<CPPClass>
 {
 public:
-  TypedMemPtr(TargetType BaseType::* ptr) : p(ptr)
+  DMemberPointer( RealReturnType CPPClass::* member )  : __member(member)
   {
   }
 
-  BaseTargetType & value(BaseType & obj) const
+  FinalValue& value(CPPClass* obj) const
   {
-    return (obj.*p);
+    return (obj->*__member);
   }
 
-  BaseTargetType const & value(BaseType const & obj) const
+  FinalValue const& value(CPPClass const *obj) const
   {
-    return (obj.*p);
+    return (obj->*__member);
   }
 
 private:
-  TargetType BaseType::* p;
+  RealReturnType CPPClass::* __member;
 };
 
-template <typename BaseType, typename BaseTargetType>
-class MemberPointer
+template<typename CPPClass>
+class DMemoryPointer
 {
 public:
-  template <typename BaseType2, typename TargetType> 
-  explicit MemberPointer(TargetType BaseType2::* ptr) : p(new TypedMemPtr<BaseType, BaseTargetType, TargetType>(static_cast<TargetType BaseType::*>(ptr)))
+  template<typename RealCPPClass, typename ReturnType> 
+  explicit DMemoryPointer(ReturnType RealCPPClass::* ptr) : __pointerBase(new DMemberPointer<CPPClass, ReturnType>(static_cast<ReturnType CPPClass::*>(ptr)))
   {
   }
-    
-  ~MemberPointer()
+
+   ~DMemoryPointer()
   {
-    delete p;
+    delete __pointerBase;
   }
-    
-  BaseTargetType & value(BaseType & obj) const
+
+  FinalValue&  value(CPPClass* obj) const
   {
-    return (p->value(obj));
+    return (this->__pointerBase->value(obj));
   }
-    
-  BaseTargetType const & value(BaseType const & obj) const
+
+//FINAL VALUE A TEMPLTER POUR ACCEDER DIRECTE SANS DECLARATION EN REALVALUE ? possible ? 
+
+  FinalValue const& value(CPPClass const* obj) const
   {
-    return (p->value(obj));
+    return (this->__pointerBase->value(obj));
   }
-    
+
 private:
-  MemPtrBase<BaseType, BaseTargetType> * p;
+  DMemoryPointerBase<CPPClass >*   __pointerBase;  
 };
 
 }

@@ -40,14 +40,14 @@ PyObject* PyDestruct::findObject(PyDestruct::DPyObject* self, PyObject* args, Py
   {
     return (PyDestruct::find(self, PyInt_AsLong(args)));
   }
- 
+
   PyErr_SetString(PyExc_TypeError, "must be string or integer"); 
   return (0);
 }
 
 PyObject* PyDestruct::find(PyDestruct::DPyObject* self, const char* index)
 {
-  Destruct::DStruct* dstruct = self->pimpl->find(index);
+  Destruct::DStruct* dstruct = self->pimpl->find(std::string(index));
   if (dstruct == NULL)
     Py_RETURN_NONE;
 

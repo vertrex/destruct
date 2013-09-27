@@ -8,9 +8,9 @@
 #include "dcppobject.hpp"
 #include "drealvalue.hpp"
 #include "dunicodestring.hpp"
-#include "dfuncvalue.hpp"
 #include "dserialize.hpp"
 #include "dstream.hpp"
+
 
 #include "destruct_test.hpp"
 
@@ -34,18 +34,17 @@ void DestructTest::run()
    * Create a class that have an NtfsNode object as member  (Nested)
    */
   /*this->createDynamicClass(); */
-  this->createBaseClass();
-  this->createNtfsClass(); 
-  this->createNestedClass();
-  this->createPrefetchBaseClass();
-  this->createModifiableClass();
+  //this->createBaseClass();
+  //this->createNtfsClass(); 
+  //this->createNestedClass();
+  //this->createModifiableClass();
   this->createFuncClass();
 
-  this->createNtfsBootSector();
-  this->deserializeNtfsBootSector();
+  //this->createNtfsBootSector();
+  //this->deserializeNtfsBootSector();
 
-  this->createArchive();
-  this->readArchive();
+  //this->createArchive();
+  //this->readArchive();
 }
 
 void DestructTest::createModifiableClass(void)
@@ -125,62 +124,8 @@ void DestructTest::createNestedClass(void)
 
   this->showObjectAttribute(nestedStruct);
 
-  //destroy should always be called when object is out of scope 
   nestedStruct->destroy();
   nb->destroy();
-}
-
-void DestructTest::createPrefetchBaseClass(void)
-{
-  //MIX dyanmic base class & cpp class
-  //// CPP only 
-  //PrefetchXPClass  prefetchXPClass(21232132131, 10);
-  this->structRegistry()->registerDStruct(new DStruct(0, "PrefetchBase", 0, PrefetchBaseClass::ownAttributeBegin(), PrefetchBaseClass::ownAttributeEnd()));
-
-  DStruct* base = this->structRegistry()->find("PrefetchBase");
-
-   output("Make cpp Prefetch XP")
-
-//Create a classical DObject (could be accessible trough python) constructed with a pure cpp interface
-
-  this->structRegistry()->registerDStruct(new DStruct(makeClass<PrefetchXPClass>(base, "PrefetchXP")));
-  DStruct* prefetchXPDef = this->structRegistry()->find("PrefetchXP");
-  DObject*  prefetchXPObject(prefetchXPDef->newObject());
-  prefetchXPObject->setValue("Header", RealValue<DInt64>(12));
-  output(prefetchXPObject->getValue("Header").asUnicodeString())
-
-//Create a pure CPP object 
-
-  output("create a pur cpp object and set execution time to 24")
-  PrefetchXPClass prefetchXP(24, 2);
-  output(prefetchXP.lastExecutionTime())
-
-
-  output("create a derived dcppobject from the pure cpp object and show exec time with get value ")
-
-  //cppobj copy the object so if modified the original object will not be modified
-  DCppObject<PrefetchXPClass> prefetchXPcppobj(prefetchXPDef, prefetchXP);
-
-  output(prefetchXPcppobj.getValue("Last execution time").asUnicodeString())
-
-  output("set cppobject execution time to 42")
-
-  prefetchXPcppobj.setValue("Last execution time", RealValue<DInt64>(42));
-
-  output("read value from pure oject")
-
-  output(prefetchXP.lastExecutionTime())
-  prefetchXP.setLastExecutionTime(64);
-  output(prefetchXP.lastExecutionTime())
-
-  output(prefetchXPcppobj.getValue("Last execution time").asUnicodeString())
- 
- //we add a getOriginal to modify the original, it's also possible to implement a constructor who use a pointer rather than a copy so original object will be modified
-  PrefetchXPClass internalCopy = prefetchXPcppobj.getOriginal();
-
-  output(internalCopy.lastExecutionTime())
-
-  prefetchXPObject->destroy();
 }
 
 void    DestructTest::showAttribute(DStruct* def)
@@ -192,22 +137,55 @@ void    DestructTest::showAttribute(DStruct* def)
 
 void    DestructTest::showObjectAttribute(DObject* object, int depth)
 {
-   std::string fname("test-" + object->instanceOf()->name() + ".xml");
-   
-   DStream binoutxml(fname, DStream::Output);
-   DSerializers::to("XML")->serialize(binoutxml, *object);
+  std::string fname("test-" + object->instanceOf()->name() + ".xml");
+  
+  DStream binoutxml(fname, DStream::Output);
+  DSerializers::to("XML")->serialize(binoutxml, *object);
 
-   fname = "test-" + object->instanceOf()->name() + ".txt";
-   DStream binouttxt(fname, DStream::Output);
-   DSerializers::to("Text")->serialize(binouttxt, *object);
+  fname = "test-" + object->instanceOf()->name() + ".txt";
+  DStream binouttxt(fname, DStream::Output);
+  DSerializers::to("Text")->serialize(binouttxt, *object);
 
-   fname = "test-" + object->instanceOf()->name() + ".raw";
-   DStream binoutraw(fname, DStream::Output);
-   DSerializers::to("Raw")->serialize(binoutraw, *object);
+  fname = "test-" + object->instanceOf()->name() + ".raw";
+  DStream binoutraw(fname, DStream::Output);
+  DSerializers::to("Raw")->serialize(binoutraw, *object);
 }
 
 void DestructTest::setObjectValue(DObject* object)
 {
+//XXX test call python
+  std::cout << "CPP: object->returnVoid(0) " << object->call("returnVoid", RealValue<DInt32>(0)).asUnicodeString() << std::endl;
+  std::cout << "CPP: x = object->callVoid() " <<   object->call("callVoid", RealValue<DObject*>(DNone)).asUnicodeString() << std::endl; 
+  std::cout << "CPP: object->allVoid() " << object->call("allVoid", RealValue<DObject*>(DNone)).asUnicodeString() << std::endl;
+
+  //for (int32_t i = 0; i < 1000000; i++)
+  //{
+     //object->call("returnVoid", RealValue<DInt32>(0));
+     //object->call("callVoid", RealValue<DObject*>(DNone));
+     //object->call("allVoid", RealValue<DObject*>(DNone));
+  //}
+
+
+
+//,ais si func doit renvoyer un dobject* 
+//DObject* res = .vget<DObject*>(); ca va geuler aussi ?
+//faut soit un dvalue special DValue == NoneValue !
+//soit un realvalue  special ...
+//soit un nullobject/voidobject qui peut etre set pour n importe qu elle value car y a un compareteur de cast ou je c pas koi ????
+// un auto-cast to NULL 
+
+  try 
+  {
+    std::cout << "call python result : " << object->call("get", RealValue<DInt32>(0)).asUnicodeString() << std::endl;
+  } 
+  catch (const std::string e) 
+  {
+    std::cout << "Error calling python code : " << e << std::endl;
+  }
+//for (uint32_t x = 0; x < 1000000; x++)
+//DValue r = object->call("get", RealValue<DInt32>(0));
+  //
+  return;
   object->setValue("num", RealValue<DInt64>(424242));
   object->setValue("text", RealValue<DUnicodeString>("My text."));
 
@@ -225,143 +203,77 @@ std::string   member(DObject* self)
 
 DObject* DestructTest::getObjectValue()
 {
- /* Destruct* destruct = this->structRegistry();
-  DStruct* pfDef = destruct->find("PrefetchXP");
-  DObject* pf = pfDef->newObject();
-  pf->setValue("Header", RealValue<DInt64>(44444));*/
-  DStruct* dstruct  = new DStruct(0, "CallMe", DSimpleObject::newObject);
-
-  dstruct->addAttribute(DAttribute(std::string("func"), DType::DUnicodeStringType));
-  this->structRegistry()->registerDStruct(dstruct);
-
-  DSimpleObject* sobj = (DSimpleObject*)dstruct->newObject();
-//  DObject* obj = dstruct->newObject();
-  //DSimpleObject* sobj = dynamic_cast<DSimpleObject*>(obj);
-  sobj->replaceValue("func", DFunctionValue<std::string>(sobj, member));
-//  obj->setDefault(sobj);
-
-  output("Function result " <<  sobj->getValue("func").asUnicodeString())
-  this->showObjectAttribute(sobj);  
-
+  DObject* sobj = this->createStringVector();
+  //sobj->addRef();
+  //this->showObjectAttribute(sobj);  
+  //return (this->createStringVector());
+  sobj->addRef();
   return (sobj);
 }
 
 
 void DestructTest::createFuncClass(void)
 {
-  DStruct* dstruct  = new DStruct(0, "CallMe", DSimpleObject::newObject);
-
-  dstruct->addAttribute(DAttribute(std::string("func"), DType::DUnicodeStringType));
-  this->structRegistry()->registerDStruct(dstruct);
-
-  DSimpleObject* sobj = (DSimpleObject*)dstruct->newObject();
-//  DObject* obj = dstruct->newObject();
-  //DSimpleObject* sobj = dynamic_cast<DSimpleObject*>(obj);
-
-  sobj->replaceValue("func", DFunctionValue<std::string>(sobj, member));
-
-  output("Function result " <<  sobj->getValue("func").asUnicodeString())
-  
-  this->showObjectAttribute(sobj);
-  delete sobj; 
+  std::cout << "Test list " << std::endl;
+  DObject* iv = this->createIntVector();
+  iv->destroy();
+  std::cout << "Creafunc class  create string vector" << std::endl; 
+  DObject* is = this->createStringVector();
+  is->destroy();
+  std::cout << "return create string vector" << std::endl;
 }
 
+DObject*        DestructTest::createIntVector(void)
+{
+  typedef DVector<DInt32, DType::DInt32Type> DVectorInt;
+//XXX pas sur la stack pour python donc faut le delete !
 
-//void DestructTest::createNtfsPointedBootSector(void)
-//{
-  //DStruct* dstruct = new DStruct(0, "BPB", DSimpleObject::newObject);
+  DVectorInt* dvectori = new DVectorInt;
+  dvectori->push(RealValue<DInt32 >(0xbad));
+  dvectori->push(RealValue<DInt32 >(0xc00fee));
 
-  //dstruct->addAttribute(DAttribute("bytesPerSector", DType::DUInt16Type));
-  //dstruct->addAttribute(DAttribute("sectorsPerCluster", DType::DUInt8Type));
-  //dstruct->addAttribute(DAttribute("reserved1", DType::DUInt8Type));
-  //dstruct->addAttribute(DAttribute("reserved2", DType::DUInt8Type));
-  //dstruct->addAttribute(DAttribute("reserved3", DType::DUInt8Type));
-  //dstruct->addAttribute(DAttribute("reserved4", DType::DUInt8Type));
-  //dstruct->addAttribute(DAttribute("reserved5", DType::DUInt8Type));
-  //dstruct->addAttribute(DAttribute("reserved6", DType::DUInt8Type));
-  //dstruct->addAttribute(DAttribute("reserved7", DType::DUInt8Type));
-  //dstruct->addAttribute(DAttribute("mediaDescriptor", DType::DUInt8Type));
 
-  //dstruct->addAttribute(DAttribute("reserved2-0", DType::DUInt32Type));
-  //dstruct->addAttribute(DAttribute("reserved2-1", DType::DUInt32Type));
-  //dstruct->addAttribute(DAttribute("reserved2-2", DType::DUInt32Type));
-  //dstruct->addAttribute(DAttribute("reserved2-3", DType::DUInt32Type));
-  //dstruct->addAttribute(DAttribute("reserved2-4", DType::DUInt8Type));
-  //dstruct->addAttribute(DAttribute("reserved2-5", DType::DUInt8Type));
+  DStruct* dstructvector = makeNewDClass< DVectorInt  >(NULL, "DVector<DInt32>");
+  this->structRegistry()->registerDStruct(dstructvector);
 
-  //dstruct->addAttribute(DAttribute("totalSectors", DType::DUInt64Type));
-  //dstruct->addAttribute(DAttribute("MFTLogicalClusterNumber", DType::DUInt64Type));
-  //dstruct->addAttribute(DAttribute("MFTMirrorLogicalClusterNumber", DType::DUInt64Type));
-  //dstruct->addAttribute(DAttribute("clustersPerMFTRecord", DType::DUInt8Type));
-  //dstruct->addAttribute(DAttribute("reserved3-0", DType::DUInt8Type));
-  //dstruct->addAttribute(DAttribute("reserved3-1", DType::DUInt8Type));
-  //dstruct->addAttribute(DAttribute("reserved3-2", DType::DUInt8Type));
-  //dstruct->addAttribute(DAttribute("clustersPerIndexBuffer", DType::DInt8Type));
-  //dstruct->addAttribute(DAttribute("reserved4-0", DType::DUInt8Type));
-  //dstruct->addAttribute(DAttribute("reserved4-1", DType::DUInt8Type));
-  //dstruct->addAttribute(DAttribute("reserved4-2", DType::DUInt8Type));
-  //dstruct->addAttribute(DAttribute("volumeSerialNumber", DType::DUInt64Type));
-  //dstruct->addAttribute(DAttribute("reserved5", DType::DUInt32Type));
+  DClassObject<DVectorInt>* dcppvectori = makeNewDObject<DVectorInt>(dstructvector, *dvectori);
 
-  //this->structRegistry()->registerDStruct(dstruct); 
+  std::cout << dcppvectori->call("get", RealValue<DInt32>(0)).asUnicodeString() << std::endl;
+  std::cout << dcppvectori->call("get", RealValue<DInt32>(0)).asUnicodeString() << std::endl;
+   
+  dcppvectori->call("push", RealValue<DInt32>(0xdffdff));
+  
+  std::cout << dcppvectori->call("get", RealValue<DInt32>(2)).asUnicodeString() << std::endl;
 
-  //DStruct* dstructBootStrap = new DStruct(0, "bootStrap", DSimpleObject::newObject);
-  //for (int i = 0; i < 53; i++)
-  //{ 
-    //std::ostringstream name;
-    //name << "bootStrap-";
-    //name << i;
-    //dstructBootStrap->addAttribute(DAttribute(name.str(), DType::DUInt64Type));
-  //}
-  //dstructBootStrap->addAttribute(DAttribute("bootstrap-53", DType::DUInt16Type));
-  //this->structRegistry()->registerDStruct(dstructBootStrap);
+  return (dcppvectori);
+}
 
-  //DStruct* dstructBootSector = new DStruct(0, "NtfsBootSector", DSimpleObject::newObject);
-  //dstructBootSector->addAttribute(DAttribute("jump0", DType::DUInt8Type)); 
-  //dstructBootSector->addAttribute(DAttribute("jump1", DType::DUInt8Type)); 
-  //dstructBootSector->addAttribute(DAttribute("jump2", DType::DUInt8Type)); 
-  //dstructBootSector->addAttribute(DAttribute("OEMID", DType::DUInt64Type)); 
-                                                      ////  "BPB" "struct BPB" 
-                                                     ////   DStruct::BPB& ?
-////                                                     *BPB -> pointer to ?
-////  dstructBootSector->addAttribute(DAttribute("BPB", "BPB")); //, "BPB !"  DAttribute("BPB", "BPB") (pour les dobject)
-  //dstructBootSector->addAttribute(DAttribute("BPB", DType::DObjectType)); //, "BPB !"  DAttribute("BPB", "BPB") (pour les dobject)
-  //dstructBootSector->addAttribute(DAttribute("bootStrap", DType::DObjectType));// DType::DStruct, "name" 
+DObject*        DestructTest::createStringVector(void)
+{
+  typedef DVector<DUnicodeString, DType::DUnicodeStringType> DVectorString;
+  DVectorString* dvectors = new DVectorString(); 
+  
+  dvectors->push(RealValue<DUnicodeString>(std::string("my_first_string")));
+  dvectors->push(RealValue<DUnicodeString>("my_second_string"));
 
-  //dstructBootSector->addAttribute(DAttribute("endOfSector", DType::DUInt16Type));
+  DStruct* dstructvectors = makeNewDClass < DVectorString >(NULL, "DVector<String>");
+                                                                                                ////si non ca plante en python
+  this->structRegistry()->registerDStruct(dstructvectors);
+                ////DVector<DunicodeString *>                                                 //*
+  DClassObject<DVectorString >* dcppvectors = makeNewDObject<DVectorString >(dstructvectors, *dvectors);
 
-  //this->structRegistry()->registerDStruct(dstructBootSector);
+  DValue gfunctionValue = dcppvectors->getValue("get");
+  DFunctionObject* g = dcppvectors->getValue("get").get< DFunctionObject*  >();
 
-  ///* create a bootsector */
+  std::cout << g->call(RealValue<DInt32>(0)).get<DUnicodeString>()<< std::endl;
+  std::cout << g->call(RealValue<DInt32>(1)).get<DUnicodeString>()<< std::endl;
 
-  //DObject* bootSector = dstructBootSector->newObject(); 
-  //bootSector->setValue("jump0", RealValue<DUInt8>(0xeb));
-  //bootSector->setValue("jump1", RealValue<DUInt8>(0x52));
-  //bootSector->setValue("jump2", RealValue<DUInt8>(0x90));
-  //bootSector->setValue("OEMID", RealValue<DUInt64>(0x202020205346544e));
+  DFunctionObject* conv = dcppvectors->getObject;
+  conv->call(RealValue<DInt32>(1)); 
 
-  //DObject* bpb = dstruct->newObject();
-  //bpb->setValue("bytesPerSector", RealValue<DUInt16>(4096));//512));
-  //bpb->setValue("sectorsPerCluster", RealValue<DUInt8>(0x1));
-  //bpb->setValue("mediaDescriptor", RealValue<DUInt8>(0xf8)); //disk 0xf0 -> floppy
-  //bpb->setValue("totalSectors", RealValue<DUInt64>(0x911e10ffffffff));
-  //bpb->setValue("MFTLogicalClusterNumber", RealValue<DUInt64>(0x200000));
-  //bpb->setValue("MFTMirrorLogicalClusterNumber", RealValue<DUInt64>(0x488f08));
-  //bpb->setValue("clustersPerMFTRecord", RealValue<DUInt8>(0x2));
-  //bpb->setValue("clustersPerIndexBuffer", RealValue<DInt8>(-1));//0x08));//0x08));
-  //bpb->setValue("volumeSerialNumber", RealValue<DUInt64>(0xdeadbeefdeadbeef));
-  //bootSector->setValue("BPB", RealValue<DObject*>(bpb));
-
-  //DObject* bootStrap = dstructBootStrap->newObject();
-  //bootSector->setValue("bootStrap", RealValue<DObject*>(bootStrap));
-  //bootSector->setValue("endOfSector", RealValue<DUInt16>(0xAA55));
-
-  //this->showObjectAttribute(bootSector);
-
- ////XXX read ntfs boot sector :)
-//}
-
-//use inheritance !
+  //dcppvectors->setValue("push", dcppvectors->getObject);
+  return (dcppvectors);
+}
 
 void DestructTest::createNtfsBootSector(void)
 {

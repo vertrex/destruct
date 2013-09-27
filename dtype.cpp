@@ -9,7 +9,9 @@ namespace Destruct
 
 class DString;
 class DObject;
-
+class DFunctionObject;
+class DNullObject;
+class DNone;
 
 const std::string DType::__typeName[] = 
 {
@@ -26,10 +28,16 @@ const std::string DType::__typeName[] =
  "DUnicodeString",
 
  "DObject",
+ "DMethod", //XXX method ou function faudrait savoir ?
+ "DNone",
  "DUnknown"
 };
 
-DType::DType(Type_t typeId) : __typeId(typeId)
+DType::DType(Type_t typeId) : __typeId(typeId), __returnTypeId(DUnknownType), __argumentTypeId(DUnknownType)
+{
+}
+
+DType::DType(Type_t typeId, Type_t returnTypeId, Type_t argumentTypeId) : __typeId(typeId), __returnTypeId(returnTypeId), __argumentTypeId(argumentTypeId)
 {
 }
 
@@ -43,9 +51,29 @@ DType::Type_t    DType::getType(void) const
   return (this->__typeId);
 }
 
+DType::Type_t    DType::getReturnType(void) const
+{
+  return (this->__returnTypeId);
+}
+
+DType::Type_t   DType::getArgumentType(void) const
+{
+  return (this->__argumentTypeId);
+}
+
 const std::string DType::name(void) const
 {
-  return (__typeName[this->__typeId]);
+  return (this->__typeName[this->__typeId]);
+}
+
+const std::string DType::returnName(void) const
+{
+  return (this->__typeName[this->__returnTypeId]);
+}
+
+const std::string DType::argumentName(void) const
+{
+  return (this->__typeName[this->__argumentTypeId]);
 }
 
 void            DType::init(void)
@@ -62,6 +90,9 @@ void            DType::init(void)
  
   __prototypes[DUnicodeStringType] = new RealValue<DUnicodeString>("");
   __prototypes[DObjectType] = new RealValue<DObject* >(0);
+  __prototypes[DMethodType] = new RealValue<DFunctionObject* >(0);
+  __prototypes[DNoneType] = new RealValue<DObject* >(DNone);
+
 }
 
 void            DType::clean(void)

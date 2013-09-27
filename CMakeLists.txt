@@ -29,10 +29,12 @@ option(ENABLE_DEBUG "Compile using -g flag ? Useful for debugging" OFF)
 add_definitions(-D__STDC_LIMIT_MACROS)
 if(UNIX)
   if(ENABLE_DEBUG)
-    add_definitions(-D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -g -Wall -std=c++0x)
+    #add_definitions(-D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -g -Wall -std=c++0x)
+    add_definitions(-D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -g -Wall)
     message(STATUS "Will use -g for debugging -- yes")
   else(ENABLE_DEBUG)
-    add_definitions(-D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -O2 -std=c++0x)
+    #add_definitions(-D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -O2 -std=c++0x)
+    add_definitions(-D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -O2) 
     message(STATUS "Will use -g for debugging -- no")
   endif(ENABLE_DEBUG)
 endif(UNIX)
@@ -100,6 +102,7 @@ dvalue.cpp
 destruct.cpp
 dserialize.cpp
 dstream.cpp
+dnullobject.cpp
 destruct_test.cpp 
 )
 

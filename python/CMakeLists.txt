@@ -16,9 +16,11 @@ set (pydestruct_files
 py_destruct.cpp
 py_dstruct.cpp
 py_dattribute.cpp
+py_dnullobject.cpp
 py_dtype.cpp
 py_dvalue.cpp
 py_dobject.cpp
+py_dmethodobject.cpp
 py_dstream.cpp
 py_dserialize.cpp
 py_destruct_test.cpp

@@ -1,6 +1,7 @@
 #include "ddynamicobject.hpp"
 #include "dstruct.hpp"
 #include "dvalue.hpp"
+#include "drealvalue.hpp"
 
 namespace Destruct
 {
@@ -31,20 +32,13 @@ DValue DDynamicObject::getValue(size_t idx) const
 
 void DDynamicObject::setValue(size_t idx, DValue const & v)
 {
+//XXX la diff avec replace a part le type ???
   this->__values[idx]->set(v);
 }
 
-void DDynamicObject::replaceValue(size_t idx, BaseValue const & v)
+DValue DDynamicObject::call(size_t idx, DValue const& v)
 {
-  BaseValue * oldV = this->__values[idx];
-  this->__values[idx] = v.clone(this);
-  delete oldV;
-}
-
-void DDynamicObject::replaceValue(DUnicodeString const & name, BaseValue const & v)
-{
-  size_t idx = instanceOf()->findAttribute(name); // check for not found
-  this->replaceValue(idx, v);
+  return (this->__values[idx]->getFinal().get<DFunctionObject *>()->call(v));
 }
 
 DObject* DDynamicObject::privateObject() const

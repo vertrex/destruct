@@ -4,83 +4,108 @@
 #include "dunicodestring.hpp"
 #include "dmemberpointer.hpp"
 #include "dobject.hpp"
+#include "drealvalue.hpp" 
 
 namespace Destruct
 {
+ /*
+  *  This object protocol is used to bind CPP object to MOP
+  *  This is a multi-inheritance adaptor pattern wich get object trough const reference (copy the passe object)
+  *  (Take care of memory leak :) 
+  *  This let you acces object method through the MOP 
+  *
+  */
 
-template <typename OriginalClass>
-class DCppObject : public DObject
+template< typename CppClass>
+class DClassObject : public DObject, public CppClass
 {
 public:
-  typedef MemberPointer<OriginalClass, FinalValue> MemPtr;
-  DCppObject(DStruct const * myClass) : DObject(myClass), __myObject(), __members(OriginalClass::memberBegin())
+  DClassObject(DStruct const* dstruct) : DObject(dstruct), CppClass() //XXX must give iterator or new style lambda iterator array
   {
-  }
-  //this is a copy constructor so original dobject whould not be modified, must use getOriginal to modify it !
-
-  DCppObject(DStruct const * myClass, OriginalClass const & object) : DObject(myClass), __myObject(object), __members(OriginalClass::memberBegin())
+    this->__members = this->memberBegin(); //init function in constructor (should be done elswhere ? XXX
+  } 
+//get original cpp object to wrap by ref  as const so original object is not modified !!! XXX not modified !
+  DClassObject(DStruct const * dstruct, CppClass const&  classobject) : DObject(dstruct) , CppClass(classobject)
   {
-  }
-
-  static DObject * newObject(DStruct const * myClass)
-  {
-    return (new DCppObject(myClass));
+    this->__members = this->memberBegin();
   }
 
-  virtual DObject * clone() const
+  static DObject* newObject(DStruct const* dstruct)
   {
-    return (new DCppObject(*this));
+    return (new DClassObject(dstruct));
+  }
+
+  virtual DObject* clone() const
+  {
+    return (new DClassObject(*this));
   }
 
   using DObject::getValue;
   using DObject::setValue;
+  using DObject::call;
+
+  virtual void   setValue(size_t idx, DValue const& v)
+  {
+     BaseValue* p = &(this->__members[idx].value(this));
+     p->set(v);
+  }
 
   virtual DValue getValue(size_t idx) const
   {
-    return (this->__members[idx].value(this->__myObject));
+    return (this->__members[idx].value(this));
   }
 
-  virtual void setValue(size_t idx, DValue const & v)
+  virtual DValue call(size_t idx, DValue const & args)
   {
-    BaseValue* p = &(this->__members[idx].value(this->__myObject));
-    p->set(v);
-  }
-
-  OriginalClass const&  getOriginal()
-  {
-    return this->__myObject;
+    DValue v = this->__members[idx].value(this);
+    return (v.get<DFunctionObject* >()->call(args));
   }
 
 protected:
-  virtual BaseValue * getBaseValue(size_t idx)
+  virtual BaseValue* getBaseValue(size_t idx)
   {
-    return (&this->__members[idx].value(this->__myObject));
+     return (&this->__members[idx].value(this));
   }
 
-  virtual BaseValue const * getBaseValue(size_t idx) const
+  virtual BaseValue const* getBaseValue(size_t idx) const
   {
-    return (&this->__members[idx].value(this->__myObject));
+     return (&this->__members[idx].value(this));
   }
+  virtual ~DClassObject()
+  {
+  };
 
 private:
-  OriginalClass __myObject;
-  MemPtr*       __members;
+  DMemoryPointer<CppClass >*       __members;
+
 };
-
-
 
 template <typename CppClass>
 inline 
-DStruct  makeClass(DStruct const* base, DUnicodeString const& name)
+DStruct  makeDClass(DStruct const* base, DUnicodeString const& name)
 {
-  return DStruct(base, name, DCppObject<CppClass>::newObject, CppClass::ownAttributeBegin(), CppClass::ownAttributeEnd());
+  return DStruct(base, name, DClassObject<CppClass>::newObject, CppClass::ownAttributeBegin(), CppClass::ownAttributeEnd());
 }
 
 template <typename CppClass>
 inline 
-DCppObject<CppClass> makeObject(DStruct const* cl, CppClass const& obj)
+DStruct*  makeNewDClass(DStruct const* base, DUnicodeString const& name)
 {
-  return (DCppObject<CppClass>(cl, obj));
+  return (new DStruct(base, name, DClassObject<CppClass>::newObject, CppClass::ownAttributeBegin(), CppClass::ownAttributeEnd()));
+}
+
+template <typename CppClass>
+inline 
+DClassObject<CppClass> makeDObject(DStruct const* cl, CppClass const& obj)
+{
+  return (DClassObject<CppClass>(cl, obj));
+}
+
+template <typename CppClass>
+inline 
+DClassObject<CppClass>* makeNewDObject(DStruct const* cl, CppClass const& obj)
+{
+  return (new DClassObject<CppClass>(cl, obj));
 }
 
 }

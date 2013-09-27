@@ -14,8 +14,6 @@ class DObject;
 
 class DStruct
 {
-
-
 public:
   typedef std::vector<DAttribute> DAttributeContainer;
   typedef DAttributeContainer::const_iterator DAttributeIterator;
@@ -30,6 +28,8 @@ public:
 
 
   DStruct(DStruct const* base, const DUnicodeString& name, CreateObjectFunction objectFunction);
+  //~DStruct();
+
   DUnicodeString        name() const;
 
   DObject*              newObject() const;

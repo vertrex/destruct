@@ -40,21 +40,21 @@ PyMethodDef PyDType::pyMethods[] =
 
 int PyDType::_init(PyDTypeT::DPyObject *self, PyObject *args, PyObject *kwds)
 {
-   int  typeId = Destruct::DType::DUnknownType;
+  int  typeId = Destruct::DType::DUnknownType;
 
-   if (!PyArg_ParseTuple(args, "i", &typeId))
-   {
-     return (-1);
-   }
+  if (!PyArg_ParseTuple(args, "i", &typeId))
+  {
+    return (-1);
+  }
 
-   if ((typeId > Destruct::DType::DUnknownType) || (DValueDispatchTable[typeId] == NULL))
-   { 
-     PyErr_SetString(PyExc_RuntimeError, "Bad type id value");
-     return (0);
-   }
+  if ((typeId > Destruct::DType::DUnknownType) || (DValueDispatchTable[typeId] == NULL))
+  { 
+    PyErr_SetString(PyExc_RuntimeError, "Bad type id value");
+    return (0);
+  }
 
-   self->pimpl = new Destruct::DType((Destruct::DType::Type_t)typeId);
-   INIT_CHECK_ALLOC(self->pimpl)
+  self->pimpl = new Destruct::DType((Destruct::DType::Type_t)typeId);
+  INIT_CHECK_ALLOC(self->pimpl)
  
-   return (0);
+  return (0);
 }

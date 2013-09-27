@@ -9,8 +9,9 @@ Destruct::Destruct()
 
 Destruct::~Destruct()
 {
-  for (size_t idx = 0; idx != this->__structures.size(); ++idx)
-     delete __structures[idx];
+//XXX FIX BECAUSE SOME struct are registred twice like the CPP one so it segfault (test avec siter.py) 
+        //for (size_t idx = 0; idx != this->__structures.size(); ++idx)
+        //delete this->__structures[idx];
 }
 
 Destruct&     Destruct::instance()

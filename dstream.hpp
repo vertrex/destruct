@@ -1,6 +1,7 @@
 #ifndef DSTRUCT_DSTREAM_HPP_
 #define DSTRUCT_DSTREAM_HPP_
 
+#include <stdint.h>
 #include <iostream>
 #include <fstream>
 
@@ -32,7 +33,7 @@ public:
   typedef CoutType& (*StandardEndLine)(CoutType&);
 
   DStream();
-  DStream(std::string filePath, mode _mode = mode::Input);
+  DStream(std::string filePath, mode _mode = Input); 
 //  DStream(int32_t fd, mode _mode = mode::Input);  for python and C fd ? 
 //how to inherit and create new dstream in python ? is it possible ? use it for dff node ? or use other classes ?
   virtual ~DStream();

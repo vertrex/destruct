@@ -132,6 +132,7 @@ class DSerializers
 {
 public:
   DSerializers();
+  ~DSerializers(); //XXX ajouter cement car valgrind geule
   static DSerialize* to(const std::string type);
   static DSerialize* to(size_t id);
   static size_t      count(void);
