@@ -254,3 +254,47 @@ const std::string  PythonBaseModule::pyErrorAsString(void)
  
   return (errorMessage);
 }
+//optimisation si object de type dobject ou dvalue tres rapide pour le get si pas type python !
+  //attention est ralentie par la construction dobjet qui prefere construire un objet python pour etre plus rapide et pas faire un callnewobject en python voir optimisation FASCALL ds dpython
+
+Destruct::DValue PythonBaseModule::pyObjectToDValue(PyObject* object)
+{
+  PyObject* objectTypeId = PyObject_CallMethod(object, (char *)"getType", NULL);
+  int typeId = PyInt_AsLong(objectTypeId);
+
+  if (typeId != -1)
+    return Destruct::DValue(DValueDispatchTable[typeId]->toDValue(object));
+
+  for (typeId = 0; typeId < 12; typeId++)
+  {
+     try
+     {
+       return Destruct::DValue(DValueDispatchTable[typeId]->toDValue(object));
+     }
+     catch(...)
+     { 
+        //clean python error de DValueDispatchTAble ! car si non en fi de boucle ca pete
+     }
+  }
+  return (Destruct::RealValue<Destruct::DObject*>(Destruct::DNone));
+}
+
+PyObject* PythonBaseModule::dvalueAsPyObject(Destruct::DValue value)
+{
+  size_t typeId = 0;
+
+  for (; typeId < 12; typeId++)
+  {
+    try
+    {
+        //lent il faut avoir un truc qui le fait en dur ? if type(long) ou type ...
+      return DValueDispatchTable[typeId]->asDValue(value);
+      break;
+    }
+    catch(...)
+    {
+    }
+  }
+
+ Py_RETURN_NONE;
+}

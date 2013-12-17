@@ -94,6 +94,8 @@ public:
 
   DValue& operator=(const DValue&);
 
+  DValue& replace(const DValue&);
+
   template <typename PlainType>
   PlainType get() const
   {

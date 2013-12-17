@@ -18,11 +18,17 @@
   if (this->__output)\
     std::cout << msg << std::endl;
 
+#include "protocol/diterator.hpp"
+#include "protocol/dcontainer.hpp"
+
 namespace Destruct
 {
 
 DestructTest::DestructTest(bool output) : __output(output)
 {
+  DStruct* dstructvector = makeNewDClass< DIterator >(NULL, "DIterator");
+  this->structRegistry()->registerDStruct(dstructvector);//XXX doit etre fait par la lib pour tous les iterator / container , stream etc.. les protocol !
+
 }
 
 void DestructTest::run()
@@ -36,7 +42,7 @@ void DestructTest::run()
         //this->createDynamicClass(); 
   this->createBaseClass();
   this->createNtfsClass(); 
-  //this->createNestedClass();
+  this->createNestedClass();
   this->createModifiableClass();
   this->createFuncClass();
 
@@ -109,23 +115,34 @@ void DestructTest::createNestedClass(void)
 
   this->showAttribute(nestedStructDef);
 
-  DStruct* ntfsBase = this->structRegistry()->find("NtfsNode");
+  try //ni,p car utilse null plus rpaide 
+  {
+    DStruct* ntfsBase = this->structRegistry()->find("NtfsNode");
+    if (ntfsBase == NULL)
+  //throw DException ici plutot que ds find  ? python le gera ds ca lib et en c++ c en mode fast 
+      return ;
+    DObject* nestedStruct = nestedStructDef->newObject();
 
-  DObject* nestedStruct = nestedStructDef->newObject();
+    nestedStruct->setValue("NestedStart", RealValue<DInt64>(32));
+    // create nested object and add value
+     DObject* nb = ntfsBase->newObject();
+     nb->setValue("Size", RealValue<DInt64>(1));
 
-  nestedStruct->setValue("NestedStart", RealValue<DInt64>(32));
-// create nested object and add value
+     nestedStruct->setValue("ObjectNested", RealValue<DObject*>(nb));
+     nestedStruct->setValue("NestedEnd", RealValue<DUnicodeString>("My unicode string"));
 
-  DObject* nb = ntfsBase->newObject();
-  nb->setValue("Size", RealValue<DInt64>(1));
+     this->showObjectAttribute(nestedStruct);
 
-  nestedStruct->setValue("ObjectNested", RealValue<DObject*>(nb));
-  nestedStruct->setValue("NestedEnd", RealValue<DUnicodeString>("My unicode string"));
+     nestedStruct->destroy();
+     nb->destroy();
 
-  this->showObjectAttribute(nestedStruct);
-
-  nestedStruct->destroy();
-  nb->destroy();
+  } 
+  catch (DException exception)
+  {
+    std::cout << exception.error() << std::endl;
+  }
+  
+  //XXX throw error in find ? morre c++ / object style?)
 }
 
 void    DestructTest::showAttribute(DStruct* def)
@@ -154,7 +171,10 @@ void    DestructTest::showObjectAttribute(DObject* object, int depth)
 void DestructTest::setObjectValue(DObject* object)
 {
 //XXX test call python
+  std::cout << "DestructTest::setObjectValue()->call(returnVoid)" << std::endl;
   std::cout << "CPP: object->returnVoid(0) " << object->call("returnVoid", RealValue<DInt32>(0)).asUnicodeString() << std::endl;
+
+  std::cout << "DestructTest::setObjectValue()->call(callVoid)" << std::endl;
   std::cout << "CPP: x = object->callVoid() " <<   object->call("callVoid", RealValue<DObject*>(DNone)).asUnicodeString() << std::endl; 
   std::cout << "CPP: object->allVoid() " << object->call("allVoid", RealValue<DObject*>(DNone)).asUnicodeString() << std::endl;
 
@@ -178,11 +198,16 @@ void DestructTest::setObjectValue(DObject* object)
   {
     std::cout << "call python result : " << object->call("get", RealValue<DInt32>(0)).asUnicodeString() << std::endl;
   } 
-  catch (const std::string e) 
+  //catch (const std::string e) 
+  //{
+    //std::cout << "Error calling python code : " << e << std::endl;
+  //
+  //XXX test dexcetpon doit etre const
+  catch (DException exception)
   {
-    std::cout << "Error calling python code : " << e << std::endl;
+    std::cout << exception.error() << std::endl;
   }
-//for (uint32_t x = 0; x < 1000000; x++)
+////for (uint32_t x = 0; x < 1000000; x++)
 //DValue r = object->call("get", RealValue<DInt32>(0));
   //
   return;
@@ -368,7 +393,9 @@ void DestructTest::createNtfsBootSector(void)
 void    DestructTest::deserializeNtfsBootSector(void)
 {
    std::string fname("cfreds-bs.raw");
-   DObject* ntfsBootSector = Destruct::instance().find("NtfsBootSector")->newObject();
+   //DObject* ntfsBootSector = Destruct::instance().find("NtfsBootSector")
+   DStruct* ntfsBootSectorStruct = Destruct::instance().find("NtfsBootSector");
+   DObject* ntfsBootSector = ntfsBootSectorStruct->newObject();
    DStream inbootsector(fname, DStream::Input);
    DSerializers::to("Raw")->deserialize(inbootsector, *ntfsBootSector);
    

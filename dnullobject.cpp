@@ -2,6 +2,8 @@
 #include "dvalue.hpp"
 #include "drealvalue.hpp"
 
+#include "dsimpleobject.hpp"
+
 namespace Destruct
 {
 
@@ -12,8 +14,15 @@ DNullObject*  DNullObject::instance()
   return &instance;
 }
 
-DNullObject::DNullObject() : DObject(NULL)
+DStruct* DNullObject::__dstructInstance()
 {
+  static DStruct dstruct(NULL, "None", DSimpleObject::newObject);
+  return &dstruct;
+}
+
+DNullObject::DNullObject() : DObject(this->__dstructInstance())
+{
+//XXX fix me remplacer newobject par renvoie du singleton ?
 }
 
 DNullObject::~DNullObject()

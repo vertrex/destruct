@@ -57,7 +57,12 @@ public :
 
   Destruct::DValue toDValue(PyObject* value) 
   {
-    throw "Destruct::DValue PyDMethodObject::toDValue(PyObject* value) Not implemented.";
+
+    if (PyObject_TypeCheck(value, PyDMethodObject::pyType))
+    {
+       return Destruct::RealValue<Destruct::DFunctionObject*>(((DPyObject*)value)->pimpl);
+    }
+    throw std::string("Can't cast to DMethodObject*");
   }
 
   /* 
@@ -66,6 +71,7 @@ public :
    */
   PyObject*     asDValue(Destruct::DValue v)
   {
+    std::cout << "PyDMethodObject:asDValue(DValue v) not implemented" << std::endl;
     Py_RETURN_NONE;
   }
 

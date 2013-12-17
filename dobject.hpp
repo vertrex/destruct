@@ -3,45 +3,12 @@
 
 #include <memory>
 #include "dstruct.hpp"
+#include "dpolicy.hpp"
 
 namespace Destruct
 {
 class DValue;
 class BaseValue;
-
-template< class Derived >
-class RefcountPolicy  //XXX move ds .policy.hpp refcount.hpp ?
-{
-public:
-  RefcountPolicy() : __refCount(1)
-  {
-  }
-
-  int32_t refCount() const
-  { 
-    return this->__refCount; 
-  }
-
-  void    addRef() 
-  {
-    this->__refCount++;  
-  }
-
-  void    delRef()
-  {
-    this->__refCount--;
-  }
-
-  virtual void  destroy()
-  { 
-    this->__refCount--;
-    if (this->__refCount <= 0)
-      delete static_cast<Derived*>(this);
-  }
-
-private:
-  volatile int32_t  __refCount;
-};
 
 class DObject : public RefcountPolicy<DObject> //public UUIDPolicy<DObject > possible ? 
 {
@@ -77,8 +44,8 @@ protected:
   static  BaseValue const* getBaseValue(DObject const*, size_t idx);
   virtual ~DObject()
   {
-    if (__dstructDef)
-      delete __dstructDef;
+      //delete __dstructDef; -> sert a rien c pas car l objet est detruit qu o nva pas en recree a partir de la structure, ...
+      // mais si y a un refcount on pourrait le call ici et a chaque newobject ?  utile ?
   }
 private:
   DStruct const * const __dstructDef;

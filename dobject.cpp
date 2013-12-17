@@ -1,6 +1,8 @@
 #include "dobject.hpp"
 #include "dstruct.hpp"
 #include "dvalue.hpp"
+#include "dnullobject.hpp"
+#include "drealvalue.hpp"
 
 namespace Destruct
 {
@@ -28,8 +30,14 @@ void DObject::setValue(DUnicodeString const& name, DValue const& v)
 
 DValue DObject::call(std::string const& name, DValue const& v) //const ? XXX 
 {
-  size_t index = this->instanceOf()->findAttribute(name);
-  return (this->call(index, v));
+  int32_t index = this->instanceOf()->findAttribute(name);
+ //XXX mismatch int32_t en return de fin et pass size_t a call ou value pas logique 
+  if (index != -1)
+  {
+    return (this->call(index, v));
+  }
+  std::cout << "DObject::" << name << "() : Attribute not found" << std::endl; //XXX throw error ? 
+  return RealValue<DObject* >(DNone);
 }
 
 BaseValue* DObject::getBaseValue(DObject* dobject, size_t index)

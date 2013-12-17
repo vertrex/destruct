@@ -2,6 +2,13 @@
 #include "destruct.hpp"
 #include "dobject.hpp"
 #include "drealvalue.hpp"
+#include "dexception.hpp"
+
+#include "dmemberpointer.hpp"
+#include "dcppobject.hpp"
+#include "protocol/diterator.hpp"
+#include "protocol/dcontainer.hpp"
+
 #include "py_dstruct.hpp"
 #include "py_dtype.hpp"
 
@@ -27,6 +34,10 @@ PyDObject::PyDObject()
   pyType->tp_getattro = (getattrofunc)PyDObject::_getattr;
   pyType->tp_setattro = (setattrofunc)PyDObject::_setattr;
   pyType->tp_compare = (cmpfunc)PyDObject::_compare; 
+
+/* XXX test iterator */
+  pyType->tp_iter = (getiterfunc)PyDObject::_iter;
+  pyType->tp_iternext = (iternextfunc)PyDObject::_iternext;
 
   if (PyType_Ready(pyType) < 0)
     throw std::string("PyType ready error");
@@ -157,9 +168,15 @@ PyObject*  PyDObject::setValue(PyDObject::DPyObject* self, int32_t attributeInde
       self->pimpl->setValue(attributeIndex, DValueDispatchTable[typeId]->toDValue(valueObject));
     Py_RETURN_NONE;
   }
-  catch (std::string e)
+  //catch (std::string e)//text with d exce[tion
+  //{
+  //PyErr_SetString(PyExc_AttributeError, e.c_str());
+  //return (0);
+  //}
+ //XXX
+  catch (Destruct::DException exception)
   {
-    PyErr_SetString(PyExc_AttributeError, e.c_str());
+    PyErr_SetString(PyExc_AttributeError, exception.error().c_str());
     return (0);
   }
 }
@@ -304,4 +321,63 @@ PyObject* PyDObject::typeObject()
 PyObject* PyDObject::getType(PyDObject::DPyObject* self, PyObject* args, PyObject* kwds)
 {
   return (PyInt_FromSize_t(Destruct::DType::DObjectType)); 
+}
+
+/* XXX iterator implem **/
+
+// XXX call la factory 
+PyObject* PyDObject::_iter(PyDObject::DPyObject* self) //herite de py DContainer ? directement possible ? sans tous reecrre pour DObject comme ca seul les DCOntainer on une methode iter 
+{
+//USE DYNAMIC CST ET HERITAGE OUR LES PERF ? et si marche pas utilise call poru etre sur ?
+//si je cast l hertiage marchera encore ? ou ca va call les method c ++ ?
+  if (self->pimpl)
+  {
+   
+     //XXX PERD L HERITAGE PYTHON XXX XXX XXX XXX XXX XXX / car c pas un CPP Object ! de toute il pourais psa le savoir !
+
+    Destruct::IContainer* container = dynamic_cast<Destruct::IContainer* >(self->pimpl);
+    Destruct::DObject* iterator = NULL;
+    //container = NULL;
+    if (container)     
+    {
+       std::cout << "PYTHON FIND AND CONVERT TO DCONTAINER // DITERABLE !!! " << std::endl;
+      std::cout << "PyDObject::_iter return CPP Container of " << self->pimpl->instanceOf()->name() << std::endl;
+      iterator = container->iterator();
+    }
+    else
+    {
+      std::cout << "PyDObject::_iter return DObject container of " << self->pimpl->instanceOf()->name() << std::endl;
+      Destruct::DValue value = self->pimpl->call("iterator", Destruct::RealValue<Destruct::DObject*>(Destruct::DNone));  //XXX si pas d iterator ??? renvoyer problem XXX 
+      iterator = value.get<Destruct::DObject*>();
+    }
+
+    if (iterator)
+    {
+      PyDObject::DPyObject*  dobjectObject = (PyDObject::DPyObject*)_PyObject_New(PyDObject::pyType);
+      dobjectObject->pimpl = iterator;
+      return ((PyObject*)dobjectObject);
+    }
+  }
+
+  Py_RETURN_NONE;
+}
+
+PyObject* PyDObject::_iternext(PyDObject::DPyObject* self)
+{
+   Destruct::DObject* iteratorObject = self->pimpl;
+
+   Destruct::RealValue<DInt8> isDone(iteratorObject->call("isDone", Destruct::RealValue<Destruct::DObject* >(Destruct::DNone)).get<DInt8>());
+
+   if (!isDone)
+   {
+     Destruct::DValue result = iteratorObject->call("currentItem", Destruct::RealValue<Destruct::DObject* >(Destruct::DNone));
+    iteratorObject->call("next", Destruct::RealValue<Destruct::DObject* >(Destruct::DNone));
+   return PyString_FromString(result.get<DUnicodeString>().c_str());
+   //return PythonBaseModule::dvalueAsPyObject(result); //slow TEMPLATE ETC ? 
+   }
+  
+   return NULL;
+//if isDone raise iter iteration !!!!!!!!!!!!!!!!!!!!
+//return PyDString::asPyObject(result);
+   //XXX pouvoir TEMPLATE car ca pass de 30 a 5 sec. !!! donc les call a cote c que dalle !!!!
 }

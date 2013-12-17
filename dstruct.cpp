@@ -1,15 +1,25 @@
 #include <iterator>
 #include "dstruct.hpp"
+#include "destruct.hpp"
 #include "dobject.hpp"
 #include "dattribute.hpp"
 #include "dvalue.hpp"
+
 
 namespace Destruct
 {
 
 DStruct::DStruct(DStruct const * base, const DUnicodeString & name, CreateObjectFunction objectFunction) : __baseClass(base), __name(name), __createObject(objectFunction), __definitionFix(false), __defaultObject(0)
 {
+        //std::cout << "dstruct.constructor " << name  << std::endl;
   this->__baseInit();
+}
+
+DStruct::~DStruct()
+{
+        //std::cout << "destruct.destructor " << this->__name  << std::endl;
+//should remove from Destruct if exist !
+  Destruct::Destruct::instance().unregister(this);
 }
 
 DUnicodeString  DStruct::name() const

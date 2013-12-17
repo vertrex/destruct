@@ -26,8 +26,9 @@ public:
   size_t        count(void);
   DStruct*      find(DUnicodeString const & name);
   DStruct*      find(const size_t name);
-
+  
   void          registerDStruct(DStruct* dstruct);
+  bool          unregister(DStruct* dstruct);
   DObject*      generate(DUnicodeString const& name);
 private:
                 Destruct();

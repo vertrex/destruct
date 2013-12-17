@@ -2,6 +2,7 @@
 #include "dsimpleobject.hpp"
 #include "dattribute.hpp"
 #include "dobject.hpp"
+#include "destruct.hpp"
 #include "py_dstruct.hpp"
 #include "py_dattribute.hpp"
 #include "py_dobject.hpp"
@@ -130,18 +131,32 @@ void PyDStruct::_dealloc(PyDStructT::DPyObject* self)
  */
 int PyDStruct::_init(PyDStructT::DPyObject* self, PyObject* args, PyObject* kwds)
 {
-   const char*                  name = NULL;
-   Destruct::DStruct*           base = NULL;
+   const char*                  name       = NULL;
+   const char*                  baseName   = NULL;
+   Destruct::DStruct*           base       = NULL;
    PyObject*                    baseObject = NULL;
 
-   if (!PyArg_ParseTuple(args, "Os", &baseObject, &name))
-     return (-1);
-
-   if (baseObject && PyObject_TypeCheck(baseObject, PyDStruct::pyType))
+    //string first because string are object and "Os" will match too
+   if (PyArg_ParseTuple(args, "ss", &baseName, &name))
    {
-     Py_INCREF(baseObject);
-     base = ((PyDStruct::DPyObject*)baseObject)->pimpl;
+     base = Destruct::Destruct::instance().find(baseName);
+     if (base == NULL) 
+     {
+       PyErr_SetString(PyExc_ValueError, "Can't find base class in Destruct"); //XXX + baseName
+       return (-1);
+     }   
    }
+   else if (PyArg_ParseTuple(args, "Os", &baseObject, &name))
+   {
+     if (baseObject && PyObject_TypeCheck(baseObject, PyDStruct::pyType))
+     {
+       Py_INCREF(baseObject);
+       base = ((PyDStruct::DPyObject*)baseObject)->pimpl;
+     }
+     //if baseObject pytypecheck_string ... si on veut pas le if else
+   }
+   else
+     return (-1);
 
    if (name == NULL || std::string(name) == "")
    {

@@ -27,6 +27,11 @@ class PythonBaseModule
 public:
   static PyTypeObject        basePyType; 
   static const std::string   pyErrorAsString(void);
+
+  static Destruct::DValue    pyObjectToDValue(PyObject* object);
+  static PyObject*           dvalueAsPyObject(Destruct::DValue value);
+  //static const std::string   pyErrorAsString(void);
+
   static int pyTracebackInternalAsString(PyTracebackObject* tb, std::string& errorMessage, long limit);
   static int pyTracebackAsString(PyObject* tb, std::string& errorMessage);
   PythonBaseModule()

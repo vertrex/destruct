@@ -91,7 +91,8 @@ IF (NOT MSVC)
   ADD_DEFINITIONS(-fPIC)
 ENDIF ()
 
-set (source_files
+add_subdirectory(protocol)
+set (destruct_source_files
 dattribute.cpp 
 ddynamicobject.cpp 
 dobject.cpp
@@ -103,9 +104,12 @@ destruct.cpp
 dserialize.cpp
 dstream.cpp
 dnullobject.cpp
+dexception.cpp
 destruct_test.cpp 
+
+protocol/diterator.cpp
 )
 
 add_subdirectory(test)
 add_subdirectory(python)
-add_library(destruct SHARED ${source_files})
+add_library(destruct SHARED ${destruct_source_files})

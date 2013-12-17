@@ -4,6 +4,7 @@
 #include "drealvalue.hpp"
 #include "dnullobject.hpp"
 #include "dvalue.hpp"
+#include "dexception.hpp"
 
 /*
  *  This is an abstract interface class to implement different CPP member oointer function object
@@ -90,7 +91,7 @@ public:
   DValue call(const DValue& args)
   {
     if (args.get<DObject*>() != DNone)
-      throw std::string("Non DNone argument passed to function(void)");
+      throw DException("Non DNone argument passed to function(void)");
      return (__self->*__member)();
   }
 private:
@@ -113,7 +114,7 @@ public:
   DValue call(const DValue& args)
   {
      if (args.get<DObject*>() != DNone)
-       throw std::string("Non DNone argument passed to function(void)");
+       throw DException("Non DNone argument passed to function(void)");
      (__self->*__member)();
      return RealValue<DObject*>(DNone);
   }

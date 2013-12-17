@@ -57,7 +57,8 @@ class PyIterator(DObject):
   def __getitem__(self, args):
      if args < self.count:     
        return self.get(args)   
-     raise StopIteration()   
+     raise StopIteration()  
+ 
   def get(self, args):
      ##print 'python code called'
      return self.l[args] # XXX ralentie a mort meme en fast call car a chaque fois ca fait un getValue / maintennat que les attrib sont SET ET ENLEVE DU DICT :)
@@ -106,7 +107,10 @@ def timeFunc(func, args, count = COUNT):
    b = time.time()
    print str(func) + " : "+  str(b-a)
 
+print '----foring'
 pi = PyIterator()
+for i in pi:
+  print i
 #pi.get = fget
 
 pi.push("pyfirst")

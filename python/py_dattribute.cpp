@@ -51,9 +51,13 @@ PyMethodDef PyDAttribute::pyMethods[] =
 
 int PyDAttribute::_init(PyDAttributeT::DPyObject *self, PyObject *args, PyObject *kwds)
 {
-   int                          typeId = Destruct::DType::DUnknownType;
+   int                          objectId = Destruct::DType::DUnknownType;
+   int                          returnId = Destruct::DType::DUnknownType;
+   int                          argumentId = Destruct::DType::DUnknownType;
    const char*                  name = NULL;
    PyObject*                    dtypeObject;
+   PyObject*                    dtypeReturn;
+   PyObject*                    dtypeArgument;
 
    if (PyArg_ParseTuple(args, "sO", &name, &dtypeObject))
    {
@@ -62,12 +66,30 @@ int PyDAttribute::_init(PyDAttributeT::DPyObject *self, PyObject *args, PyObject
 
      PyObject* objectTypeId = PyObject_CallMethod(dtypeObject, (char *)"getType", NULL);
 
-     typeId = PyInt_AsLong(objectTypeId);
-     self->pimpl = new Destruct::DAttribute(std::string(name), (Destruct::DType::Type_t)typeId);
+     objectId = PyInt_AsLong(objectTypeId);
+     self->pimpl = new Destruct::DAttribute(std::string(name), (Destruct::DType::Type_t)objectId);
      INIT_CHECK_ALLOC(self->pimpl)
 
      return (0);
    }
+   else if (PyArg_ParseTuple(args, "sOOO", &name, &dtypeObject, &dtypeReturn, &dtypeArgument))
+   {
+     if (!PyType_Check(dtypeObject))
+       return (-1);
+
+     PyObject* objectTypeId = PyObject_CallMethod(dtypeObject, (char *)"getType", NULL);
+     PyObject* returnTypeId = PyObject_CallMethod(dtypeReturn, (char *)"getType", NULL);
+     PyObject* argumentTypeId = PyObject_CallMethod(dtypeArgument, (char *)"getType", NULL);
+
+     objectId = PyInt_AsLong(objectTypeId);
+     returnId = PyInt_AsLong(returnTypeId);
+     argumentId = PyInt_AsLong(argumentTypeId);
+
+     self->pimpl = new Destruct::DAttribute(std::string(name), (Destruct::DType::Type_t)objectId, (Destruct::DType::Type_t)returnId,  (Destruct::DType::Type_t)argumentId);
+     INIT_CHECK_ALLOC(self->pimpl)
+     return (0);
+   }
+
 
    return (-1);
 }

@@ -7,12 +7,14 @@
 #include "dunicodestring.hpp"
 #include "dattribute.hpp"
 
+#include "dpolicy.hpp"
+
 namespace Destruct 
 {
 
 class DObject;
 
-class DStruct
+class DStruct : public RefcountPolicy<DStruct> 
 {
 public:
   typedef std::vector<DAttribute> DAttributeContainer;
@@ -28,7 +30,7 @@ public:
 
 
   DStruct(DStruct const* base, const DUnicodeString& name, CreateObjectFunction objectFunction);
-  //~DStruct();
+  ~DStruct();
 
   DUnicodeString        name() const;
 

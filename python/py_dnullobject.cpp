@@ -13,7 +13,7 @@ PyDNullObject::PyDNullObject()
   pyType->tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE; //XXX SINGELTONE like Destruct() car DNone ? et pas DNullbojecT???
   pyType->tp_doc = "destruct.DNone objects";
   //pyType->tp_methods = PyDNullObject::pyMethods;
-  //pyType->tp_methods = pyMethods;
+  pyType->tp_methods = pyMethods;
   pyType->tp_init = (initproc)PyDNullObject::_init;
   pyType->tp_new = PyDNullObject::_new;
   //pyType->tp_dealloc = (destructor)PyDNullObject::_dealloc;
@@ -26,14 +26,14 @@ PyDNullObject::PyDNullObject()
     throw std::string("PyType ready error");
 }
 
-//PyMethodDef PyDNullObject::pyMethods[] = 
-//{
-////{"instanceOf", (PyCFunction)instanceOf, METH_NOARGS, "Return the DStruct definition who generate this object."},
-//{"getType",  (PyCFunction)getType, METH_CLASS, "Return self DType::type."},
+PyMethodDef PyDNullObject::pyMethods[] = 
+{
+        //{"instanceOf", (PyCFunction)instanceOf, METH_NOARGS, "Return the DStruct definition who generate this object."},
+  {"getType",  (PyCFunction)getType, METH_CLASS, "Return self DType::type."},
 ////{"getValue", (PyCFunction)getValue, METH_O, "Get value for attribute (passed as index or string)."},
 ////{"setValue", (PyCFunction)setValueObject, METH_VARARGS, "Set attribute value."},
-//{ NULL }
-//};
+  { NULL }
+};
 
 int PyDNullObject::_init(PyDNullObjectT::DPyObject* self, PyObject *args, PyObject *kwds)
 {
@@ -56,5 +56,5 @@ PyObject* PyDNullObject::typeObject()
 
 PyObject* PyDNullObject::getType(PyDNullObject::DPyObject* self, PyObject* args, PyObject* kwds)
 {
-  return (PyInt_FromSize_t(Destruct::DType::DObjectType));
+  return (PyInt_FromSize_t(Destruct::DType::DNoneType));
 }

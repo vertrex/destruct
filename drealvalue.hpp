@@ -147,7 +147,7 @@ inline DUnicodeString RealValue<DObject* >::asUnicodeString() const
   if (this->__val->instanceOf())
     return (this->__val->instanceOf()->name() + " *");
   else 
-    return std::string("Can't get object instance couille sur mon nez !\n");
+    return std::string("DObject::asUnicodeString() can't get Instance of object !\n");
 }
 
 template <>

@@ -12,27 +12,6 @@
 # Author(s):
 #  Solal Jacob <sja@digital-forensic.org>
 
-add_subdirectory(examples)
-
-set (pydestruct_files
-py_destruct.cpp
-py_dstruct.cpp
-py_dattribute.cpp
-py_dnullobject.cpp
-py_dtype.cpp
-py_dvalue.cpp
-py_dobject.cpp
-py_dmethodobject.cpp
-py_dstream.cpp
-py_dserialize.cpp
-py_destruct_test.cpp
-destructmodule.cpp
-pyter.py
-)
-
-add_library(_destruct SHARED ${pydestruct_files})
-
-set_target_properties(_destruct PROPERTIES PREFIX "")
-target_link_libraries(_destruct destruct python2.7)
-
 include_directories("../")
+
+

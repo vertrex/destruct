@@ -42,7 +42,8 @@ PyObject* PyDMethodObject::call(PyObject* _self, PyObject* args)
     PyErr_SetString(PyExc_RuntimeError, "Private implementation pointer's is NULL.");
     return (0);
   } 
-  
+ 
+//Optim PyObjectCall("getType"); //si le type est deja connue on peut le convertir direct ? c koi le plus rapide ?
   PyObject* argumentObject = NULL;
   Destruct::DType type = self->dobject->instanceOf()->attribute(self->index).type();
   Destruct::DType::Type_t argumentTypeId = type.getArgumentType();  
@@ -57,8 +58,8 @@ PyObject* PyDMethodObject::call(PyObject* _self, PyObject* args)
 
   DPythonMethodObject* pyMethod = dynamic_cast<DPythonMethodObject* >(self->pimpl);
   if (pyMethod)
-    return (pyMethod->fastCall(argumentObject)); //check return ? if compatible ?
-
+    return (pyMethod->fastCall(argumentObject)); //check return ? if compatible ? permet de call avec n importe koi comme une variant ?
+  
   try
   {
     return (DValueDispatchTable[returnTypeId]->asDValue(self->pimpl->call(DValueDispatchTable[argumentTypeId]->toDValue(argumentObject))));
@@ -82,6 +83,7 @@ PyObject* PyDMethodObject::call(PyObject* _self, PyObject* args)
 
 PyMethodDef PyDMethodObject::pyMethods[] = 
 {
+  {"getType",  (PyCFunction)getType, METH_CLASS, "Return self DType::type."},
   {"call", (PyCFunction)call, METH_VARARGS, "Call method."},
   { NULL }
 };
@@ -139,6 +141,10 @@ PyObject* PyDMethodObject::getType(PyDMethodObject::DPyObject* self, PyObject* a
 
 Destruct::DValue DPythonMethodObject::call(Destruct::DValue const& args) const
 {
+
+  PyGILState_STATE gstate;
+  gstate = PyGILState_Ensure();
+
   PyObject* pythonResult = NULL;
   Destruct::DType::Type_t argumentType = this->__type.getArgumentType();
 
@@ -153,6 +159,7 @@ Destruct::DValue DPythonMethodObject::call(Destruct::DValue const& args) const
   if (!pythonResult)
      throw PythonTypeBaseModule::pyErrorAsString();
 
+  PyGILState_Release(gstate);
   return DValueDispatchTable[this->__type.getReturnType()]->toDValue(pythonResult);
 }
 
