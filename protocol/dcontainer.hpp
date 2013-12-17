@@ -65,24 +65,17 @@ public:
   RealValue<DFunctionObject* >  pushObject;
   RealValue<DFunctionObject* >  getObject;
   RealValue<DFunctionObject* >  sizeObject;
-
-  //DFunctionObject pushdm;
-  DMethodObject dm;
  
-  DVector() : dm(this, &DVector<RealType, RealTypeId>::push)
+  DVector()
   {
-          //this->pushObject = RealValue<DFunctionObject* >(&DMethodObject(this, &DVector<RealType, RealTypeId>::push));
-
-          //this->pushObject = new DMethodObject(this, &DVector<RealType, RealTypeId>::push);
-    this->pushObject = &dm;
+    this->pushObject = new DMethodObject(this, &DVector<RealType, RealTypeId>::push);
     this->getObject = new DMethodObject(this, &DVector<RealType, RealTypeId>::get);
     this->sizeObject = new DMethodObject(this, &DVector<RealType, RealTypeId>::size);
   };
 
-  DVector(const DVector<RealType, RealTypeId>& copy) : dm(this, &DVector<RealType, RealTypeId>::push), __vector(copy.__vector) 
+  DVector(const DVector<RealType, RealTypeId>& copy) :  __vector(copy.__vector) 
   {
-          //this->pushObject = new DMethodObject(this, &DVector<RealType, RealTypeId>::push);
-    this->pushObject = &dm;
+    this->pushObject = new DMethodObject(this, &DVector<RealType, RealTypeId>::push);
     this->getObject = new DMethodObject(this, &DVector<RealType, RealTypeId>::get);
     this->sizeObject = new DMethodObject(this, &DVector<RealType, RealTypeId>::size);
     //this->iteratorObject = new DMethodObject(this, &DContainer<DVector<RealType, RealTypeId> >::iterator);
@@ -136,7 +129,6 @@ public:
     static DMemoryPointer<DVector<RealType, RealTypeId> > memberPointer[] = 
     {
       DMemoryPointer<DVector<RealType, RealTypeId> >(&DVector<RealType, RealTypeId>::pushObject),
-      //DMemoryPointer<DVector<RealType, RealTypeId> >(&DVector<RealType, RealTypeId>::pushObject),
       DMemoryPointer<DVector<RealType, RealTypeId> >(&DVector<RealType, RealTypeId>::getObject),
       DMemoryPointer<DVector<RealType, RealTypeId> >(&DVector<RealType, RealTypeId>::sizeObject),
       DMemoryPointer<DVector<RealType, RealTypeId> >(&DVector<RealType, RealTypeId>::iteratorObject),
