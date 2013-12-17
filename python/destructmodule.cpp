@@ -11,7 +11,6 @@
 #include "py_dnullobject.hpp"
 #include "py_dstream.hpp"
 #include "py_dserialize.hpp"
-#include "py_destruct_test.hpp"
 
 #define DESTRUCT_ADD_MODULE(moduleType, moduleName)\
   Py_INCREF(moduleType);\
@@ -36,7 +35,7 @@ PyMODINIT_FUNC init_destruct(void)
   PyDType::moduleInit();
   PyDStream::moduleInit();
   PyDSerialize::moduleInit();
-  PyTest::moduleInit();
+  //PyTest::moduleInit();
 
   if ((module = Py_InitModule3("_destruct", destruct_methods, "The destruct library")) == NULL)
     return;    
@@ -65,7 +64,7 @@ PyMODINIT_FUNC init_destruct(void)
   DESTRUCT_ADD_MODULE(PyDType::pyType, "DType")
   DESTRUCT_ADD_MODULE(PyDStream::pyType, "DStream");
   DESTRUCT_ADD_MODULE(PyDSerialize::pyType, "DSerialize");
-  DESTRUCT_ADD_MODULE(PyTest::pyType, "Test")
+  //DESTRUCT_ADD_MODULE(PyTest::pyType, "Test")
 }
 
 PyMethodDef   PythonTypeBaseModule::baseTypePyMethods[2] = 

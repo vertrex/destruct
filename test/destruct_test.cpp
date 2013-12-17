@@ -18,11 +18,17 @@
   if (this->__output)\
     std::cout << msg << std::endl;
 
+#include "protocol/diterator.hpp"
+#include "protocol/dcontainer.hpp"
+
 namespace Destruct
 {
 
 DestructTest::DestructTest(bool output) : __output(output)
 {
+  DStruct* dstructvector = makeNewDClass< DIterator >(NULL, "DIterator");
+  this->structRegistry()->registerDStruct(dstructvector);//XXX doit etre fait par la lib pour tous les iterator / container , stream etc.. les protocol !
+
 }
 
 void DestructTest::run()
@@ -148,16 +154,16 @@ void    DestructTest::showAttribute(DStruct* def)
 
 void    DestructTest::showObjectAttribute(DObject* object, int depth)
 {
-  std::string fname("test-" + object->instanceOf()->name() + ".xml");
+  std::string fname("output/test-" + object->instanceOf()->name() + ".xml");
   
   DStream binoutxml(fname, DStream::Output);
   DSerializers::to("XML")->serialize(binoutxml, *object);
 
-  fname = "test-" + object->instanceOf()->name() + ".txt";
+  fname = "output/test-" + object->instanceOf()->name() + ".txt";
   DStream binouttxt(fname, DStream::Output);
   DSerializers::to("Text")->serialize(binouttxt, *object);
 
-  fname = "test-" + object->instanceOf()->name() + ".raw";
+  fname = "output/test-" + object->instanceOf()->name() + ".raw";
   DStream binoutraw(fname, DStream::Output);
   DSerializers::to("Raw")->serialize(binoutraw, *object);
 }
@@ -386,7 +392,7 @@ void DestructTest::createNtfsBootSector(void)
 
 void    DestructTest::deserializeNtfsBootSector(void)
 {
-   std::string fname("cfreds-bs.raw");
+   std::string fname("output/cfreds-bs.raw");
    //DObject* ntfsBootSector = Destruct::instance().find("NtfsBootSector")
    DStruct* ntfsBootSectorStruct = Destruct::instance().find("NtfsBootSector");
    DObject* ntfsBootSector = ntfsBootSectorStruct->newObject();
@@ -400,12 +406,12 @@ void    DestructTest::deserializeNtfsBootSector(void)
    //std::cout << std::hex << ntfsBootSector->getValue("endOfSector").asUnicodeString() << std::endl;
    ntfsBootSector->setValue("bytesPerSector", RealValue<DUInt16>(4096));
 
-   fname = "cfreds-bs-mod-size.raw";
+   fname = "output/cfreds-bs-mod-size.raw";
    DStream outraw(fname, DStream::Output);
    DSerializers::to("Raw")->serialize(outraw, *ntfsBootSector);
 
    {
-   fname = "destruct-test.bin";
+   fname = "output/destruct-test.bin";
    DStream outbin(fname, DStream::Output);
    DSerializers::to("Binary")->serialize(outbin, *Destruct::instance().find("NtfsBootSector"));
    //XXX we yse a scioe {} because close() is not implemented but called in destructor, and we must close the output stream to open it in input
@@ -420,7 +426,7 @@ void    DestructTest::deserializeNtfsBootSector(void)
      return ;
    }
 
-   fname = "ntfsbootsector-deserialize.txt";
+   fname = "output/ntfsbootsector-deserialize.txt";
    DStream outboottext(fname, DStream::Output);
    DSerializers::to("Text")->serialize(outboottext, *ntfsBS);
 
@@ -441,7 +447,7 @@ void DestructTest::createArchive(void)
 
   size_t count = db.count();
 
-  DStream binout("destruct.sav", DStream::Output);
+  DStream binout("output/destruct.sav", DStream::Output);
   DSerialize* toBinary = DSerializers::to("Binary");
 
 //toBynar.write("0xDFF0";) header or something ?
@@ -469,7 +475,7 @@ void DestructTest::readArchive(void)
 
   size_t count = db.count();
 
-  DStream binin("destruct.sav");
+  DStream binin("output/destruct.sav");
   DSerialize* toBinary = DSerializers::to("Binary");
 
   binin.read((char*)&count, sizeof(count));

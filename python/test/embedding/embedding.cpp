@@ -4,7 +4,6 @@
 #include <iostream>
 
 #include "embedding.hpp"
-#include "diterator.hpp"
 
 PythonInterpreter::PythonInterpreter(void)
 {
@@ -21,17 +20,16 @@ PythonInterpreter::~PythonInterpreter(void)
 
 void PythonInterpreter::loadModule(std::string path)
 {
-  std::cout << "Loading python module" << std::endl;
-  PyRun_SimpleString("from pyembedding import *\nembed = Embed()\nembed.run()");
-  std::cout << "Loading finish " << std::endl;
+        //std::cout << "Loading python module" << std::endl;
+        //PyRun_SimpleString("from pyembedding import *\nembed = Embed()\nembed.run()");
+        //std::cout << "Loading finish " << std::endl;
 }
 
 void PythonInterpreter::registerStructures(void)
 {
-  typedef Destruct::DVector<Destruct::DUnicodeString, Destruct::DType::DUnicodeStringType> DVectorString;
-  Destruct::DStruct* dstructvectors = Destruct::makeNewDClass < DVectorString >(NULL, "DVector<String>");
-  Destruct::Destruct::instance().registerDStruct(dstructvectors);
-   
+        //typedef Destruct::DVector<Destruct::DUnicodeString, Destruct::DType::DUnicodeStringType> DVectorString;
+        //Destruct::DStruct* dstructvectors = Destruct::makeNewDClass < DVectorString >(NULL, "DVector<String>");
+        //Destruct::Destruct::instance().registerDStruct(dstructvectors);
 }
 
 int main(int argc, char **argv)
@@ -43,10 +41,10 @@ int main(int argc, char **argv)
   pythonInterpreter.loadModule(".");
 
  
-  std::cout << "--- Showing destruct database --- " << std::endl; 
-  Destruct::Destruct&  destruct = Destruct::Destruct::instance(); //::instance();
-  for (size_t i = 0; i < destruct.count() ; i++)
-     std::cout << destruct.find(i)->name() << std::endl;
+  //std::cout << "--- Showing destruct database --- " << std::endl; 
+  //Destruct::Destruct&  destruct = Destruct::Destruct::instance(); //::instance();
+  //for (size_t i = 0; i < destruct.count() ; i++)
+  //std::cout << destruct.find(i)->name() << std::endl;
 
          
   return (0); 

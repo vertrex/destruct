@@ -1,7 +1,6 @@
 #ifndef EMBEDDING
 #define EMBEDDING
 
-#include "diterator.hpp"
 
 class PythonInterpreter
 {

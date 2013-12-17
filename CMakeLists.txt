@@ -105,7 +105,6 @@ dserialize.cpp
 dstream.cpp
 dnullobject.cpp
 dexception.cpp
-destruct_test.cpp 
 
 protocol/diterator.cpp
 )

@@ -52,6 +52,8 @@ DValue& DValue::replace(const DValue& rhs)
   if (this->__value)
      delete this->__value;
   this->__value = rhs.__value->clone();
+
+  return (*this);
 }
 
 DValue& DValue::operator=(const DValue& rhs)

@@ -7,7 +7,6 @@ int main(int argc, char **argv)
   Destruct::DestructTest destructTest = Destruct::DestructTest(true);
   destructTest.run();
   Destruct::DType::clean();
-
   //Destruct::DObject* iter = destructTest.getObjectValue();
   //for (unsigned int x = 0; x < 1000000; ++x)
   //{
