@@ -16,7 +16,7 @@ class IContainer
 
 
 template <typename RealType>
-class DContainer : public IContainer
+class DContainer : public IContainer //public DCCPObject ???? oplus simple
 {
 public:
   DContainer()//DContainer::DContainer()
@@ -30,19 +30,38 @@ public:
     this->iteratorObject = new DMethodObject(this, &DContainer< RealType >::iterator);
   }
 
-
   RealValue<DFunctionObject* >  iteratorObject;
 
-  RealValue<DObject*>    iterator(void)
-  {
-          std::cout << "DVector<STRING> ITERATOR FACTORY " << std::endl;
-        //SEGFAULT SI PURE PYTOHON ??? car n herite pas de DVector<String> donc peut pas le convertir !
 
+//XXX 
+
+//si non static ou carrement ailleurs 
+// DIterator(object) renvoie un ITerator() init et pis basta ! 
+// juste en python for i in  return Iterator(object) et pis go !
+// COmme ca c juste python qui gere en C++ c pas genenant de pas faire i in object car de toute c pas possible 
+// mais bon ca nous aidera pas a savoir si un objet est iterable 
+// donc le mieux c un isIterable 
+// isIterable check si l objet a les method qu il faut et return true igf iterator = DIterator(object);
+//                      iterator.isIterable  // maleNewiterator ?
+
+// et en CPP++ si on veut iterer on fait un  iterator = Iterator(object)
+//      iterator.begin(); iterator.isDone(); iterator.next()
+//              iterator.currenItem()
+//          
+  RealValue<DObject*>    iterator(DObject* self) //get self :) 
+  {
+
+      std::cout << "DVector<STRING> ITERATOR FACTORY " << std::endl;
+        //SEGFAULT SI PURE PYTOHON ??? car n herite pas de DVector<String> donc peut pas le convertir !
      DStruct* iteratorStruct = Destruct::instance().find("DIterator");  //mettre en temp pour pas chercher a chaque fois // optim
+     //ca risque 'detre moins long que makeNew DITErATOR 
+     
      DIterator* iterator = new DIterator();
-     DStruct* selfStruct = Destruct::instance().find("DVector<String>");  //mettre en temp pour pas chercher a chaque fois // optim
      DClassObject<DIterator>* diterator = makeNewDObject<DIterator>(iteratorStruct, *iterator);
-     DClassObject<RealType>* self = makeNewDObject< RealType >(selfStruct, *(RealType *)this);
+                                                //?XXX autant la cree par heritage aussi 
+     //DStruct* selfStruct = Destruct::instance().find("DVector<String>");  //mettre en temp pour pas chercher a chaque fois // optim
+     DStruct* selfStruct = makeNewDClass< RealType >(NULL, "DVector<inherited by what ?>");
+     DClassObject<RealType>* self = makeNewDObject< RealType >(selfStruct, *(RealType *)this); //hooo le bo recursif et s il est def en python je fait comment ? dsimple / dnewobject ? ou doit overide en python ici pour renvoyer ? ?
 
      if (self)  //XXX si pure python on le convertie mais ca marchera pas !!! XXX 
      {
@@ -52,7 +71,7 @@ public:
        return (diterator);
      }
 
-     std::cout << "iterator factory can't cast do DVector<String> " << std::endl;
+     std::cout << "iterator factory can't cast to DVector<String> " << std::endl;
      return RealValue<DObject*>(DNone);
   }
 };
@@ -99,7 +118,6 @@ public:
   {
     return this->__vector.size();
   }
-
 
   static size_t ownAttributeCount()
   {

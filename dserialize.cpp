@@ -46,7 +46,12 @@ bool DSerializeXML::serialize(DStream& output, DObject& dobject, int depth)
         subObject->destroy();
       }
     }
-    else
+    //else if(i->type().getType() == DType::DMethodType)
+    //{
+      //const std::string tag = i->type().returnName() + " " + i->type().name() + "(" + i->type().argumentName() + ") *"; //test pour voir... can't get value so affiche le type ?  ou juste DMethod* ?  plutot utile ds dserialize DStruct ?
+      //XMLTag(output, i->name(), tag, depth);
+    //}
+    else    
       XMLTag(output, i->name(), dobject.getValue(x).asUnicodeString(), depth);
   }   
  

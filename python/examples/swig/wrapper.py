@@ -405,7 +405,7 @@ print citerator
 
 print 'DESTRUCT'
 a = time.time()
-for x in range(0, 10**6):
+for x in range(0, 10):
   ci.push(str(x))
 b = time.time()
 print b-a
@@ -423,7 +423,7 @@ print b-a
 print '||| CLASSICAL PYTHON'
 a = time.time()
 l = []
-for x in range(0, 10**6):
+for x in range(0, 10):
    l.append(str(x))
 b = time.time()
 print b -a
@@ -499,7 +499,8 @@ pyvector = PythonDVector()
 print 'forward'
 for i in pyvector:
   print i
- 
+
+wrapper.serialize(pyvector) 
 # XXX march en python en tous cas (TEST EN CPP !!!) 
 # mais doit retouruner un iterator eherite si non ca marche psa car le convertie en base ? 
 

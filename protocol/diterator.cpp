@@ -81,6 +81,8 @@ RealValue<DInt8> DIterator::isDone(void)
 
 //DValue ? plus lent ... mais plus pratique ? car peut forcer une conversion en c++ ? 
 
+//OK DVALUE OU TEMPLATE CARREMENT ??? et en python ca donne joi ? 
+
 DValue DIterator::currentItem(void)
 {
   //std::cout << "DIterator::currentItem" << std::endl;
