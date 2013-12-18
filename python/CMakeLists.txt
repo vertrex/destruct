@@ -13,7 +13,6 @@
 #  Solal Jacob <sja@digital-forensic.org>
 
 add_subdirectory(examples)
-add_subdirectory(test)
 
 set (pydestruct_files
 py_destruct.cpp

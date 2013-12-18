@@ -1,4 +1,10 @@
 #!/usr/bin/python 
+import sys
+
+sys.path.append('../')
+sys.path.append('../../')
+sys.path.append('../test/')
+
 import time, timeit
 
 def iter():
@@ -15,6 +21,7 @@ def pyget(self, args):
   return l[0]
 
 from _destruct import *
+from _dtest import *
 t = Test()
 i = t.getObjectValue()
 x = i.get(0)

@@ -109,6 +109,6 @@ dexception.cpp
 protocol/diterator.cpp
 )
 
-add_subdirectory(test)
+add_subdirectory(examples)
 add_subdirectory(python)
 add_library(destruct SHARED ${destruct_source_files})

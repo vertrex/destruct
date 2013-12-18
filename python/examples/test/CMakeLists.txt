@@ -19,7 +19,8 @@ set (python_destruct_test_files
 
 include_directories("../")
 include_directories("../../")
-include_directories("../../test")
+include_directories("../../../")
+include_directories("../../../examples")
 
 add_library(_dtest SHARED ${python_destruct_test_files})
 

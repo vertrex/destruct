@@ -16,12 +16,14 @@ set (destruct_test_files
   destruct_test.cpp
 )
 
+
+add_library(destruct_test SHARED ${destruct_test_files})
+
+include_directories("../")
 set (test_files
 test.cpp
 )
 
-add_executable(test ${test_files})
-add_library(destruct_test SHARED ${destruct_test_files})
 
-include_directories("../")
+add_executable(test ${test_files})
 target_link_libraries(test destruct destruct_test)
