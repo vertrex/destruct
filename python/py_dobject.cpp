@@ -337,18 +337,25 @@ PyObject* PyDObject::_iter(PyDObject::DPyObject* self) //herite de py DContainer
 
     Destruct::IContainer* container = dynamic_cast<Destruct::IContainer* >(self->pimpl);
     Destruct::DObject* iterator = NULL;
-    //container = NULL;
+    container = NULL; //XXX container jamais NULL ! a cause heritage qui herite voir avec un vrai pure iterator sans destruct mais c pas possible :)
     if (container)     
     {
-       std::cout << "PYTHON FIND AND CONVERT TO DCONTAINER // DITERABLE !!! " << std::endl;
-      std::cout << "PyDObject::_iter return CPP Container of " << self->pimpl->instanceOf()->name() << std::endl;
+       std::cout << "PYTHON FIND AND CONVERT TO DCONTAINER // DITERABLE !!! " << std::endl; 
+      std::cout << "PyDObject::_iter return CPP Container of " << self->pimpl->instanceOf()->name() << std::endl; //XXX REUTNR TJRS ICI 
       iterator = container->iterator();
     }
     else
     {
-      std::cout << "PyDObject::_iter return DObject container of " << self->pimpl->instanceOf()->name() << std::endl;
-      Destruct::DValue value = self->pimpl->call("iterator", Destruct::RealValue<Destruct::DObject*>(Destruct::DNone));  //XXX si pas d iterator ??? renvoyer problem XXX 
-      iterator = value.get<Destruct::DObject*>();
+            //std::cout << "PyDObject::_iter return DObject container of " << self->pimpl->instanceOf()->name() << std::endl;
+      try 
+      {
+        Destruct::DValue value = self->pimpl->call("iterator", Destruct::RealValue<Destruct::DObject*>(Destruct::DNone));  //XXX si pas d iterator ??? renvoyer problem XXX 
+        iterator = value.get<Destruct::DObject*>();
+      }
+      catch (std::string error)
+      {
+        std::cout <<  error << std::endl;
+      }
     }
 
     if (iterator)
@@ -358,7 +365,7 @@ PyObject* PyDObject::_iter(PyDObject::DPyObject* self) //herite de py DContainer
       return ((PyObject*)dobjectObject);
     }
   }
-
+  //return (NULL); //XXX return proper error
   Py_RETURN_NONE;
 }
 

@@ -144,5 +144,8 @@ private:
   std::vector<RealType>   __vector;
 };
 
+
+typedef DVector<DUnicodeString, DType::DUnicodeStringType> DVectorString;
+
 }
 #endif 

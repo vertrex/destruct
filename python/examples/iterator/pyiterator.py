@@ -6,168 +6,156 @@ sys.path.append('../../')
 sys.path.append('../test/')
 
 import time, timeit
-
-def iter():
-  for x in range(0, iterable.count):
-    print iterable.get(0)
-
-# iterable[x] ca serait pas mal :) 
-# et for i in iterable:
-#   print i ca serait encore mieux :)
-
-def pyget(self, args):
-  l = [ 'pystring', 'pysecondstring', 'pythirdstring']
-  #print l[0]
-  return l[0]
-
 from _destruct import *
 from _dtest import *
-t = Test()
-i = t.getObjectValue()
-x = i.get(0)
-#print x
-#print 'change default function'
-#i.get = pyget
-#print i.get
 
-#f = i.get
-##for x in range(0, 1000000):
-  ##ir = i.get(0)
-  ##ir = f(0)
-  ##ir = i.get((0,1))
-##i.get((0, 0))
-#print 'Call python from python'
-
-#b = time.time()
-#print i.get(0)
-##for x in range(0, 1000000):
-  ##z = i.get(0)
-#a = time.time()
-#print 'python to python : ' + str(a-b)
-#b = time.time()
-#t.setObjectValue(i)
-#a = time.time()
-#print 'c++ to python : ' + str(a-b)
-
-#print i.instanceOf().name()
-class PyIterator(DObject):
-  def __init__(self):
-    print dir(self)
-    DObject.__init__(self, "DVector<String>")
-    self.l = [] #XXX class are frozen !!!   because of set /get qui call pas le truc original je suppose 
-    #self.current = -1 
-
-  #def __len__(self):
-     #print self.count
-     #return self.count 
-
-  def __getitem__(self, args):
-     if args < self.count:     
-       return self.get(args)   
-     raise StopIteration()  
- 
-  def get(self, args):
-     ##print 'python code called'
-     return self.l[args] # XXX ralentie a mort meme en fast call car a chaque fois ca fait un getValue / maintennat que les attrib sont SET ET ENLEVE DU DICT :)
-
-  def push(self, args): #XXX pouvoir heriter directe c ds le dico donc gestion de DICO ou inverse get/set call dico
-     ##print 'py push'
-     self.l.append(args)
-     self.count += 1
-     return self.count
-
-  def callVoid(self):
-     ##print 'python enter callVoid(self)'
-     return 120
-
-  def returnVoid(self, args):
-     ##print 'python enter returnVoid(self, args) ' + str(args)
-     return None
-
-  def allVoid(self):
-     ##print 'python enter allVoid(self)' 
-     return None
-       
-class PyPy(object):
-  def __init__(self):
-    self.l = ['prout', 'prit', 'prot']
-
-  def get(self, args):  
-     return self.l[args]
-
-  def callVoid(self, o):
-     return 120
-
-  def returnVoid(self, args):
-     return None
-
-  def allVoid(self, o):
-     return None
-
-COUNT = 1
+COUNT = 10
 COUNT = 10**6
-#
-def timeFunc(func, args, count = COUNT):
+
+t = Test()
+
+def timeFunc(func, args):
    a = time.time()
-   for x in xrange(count):
-     w = func(args)
+   func(args)
    b = time.time()
    print str(func) + " : "+  str(b-a)
+   return b-a
 
-print '----foring'
-pi = PyIterator()
-for i in pi:
-  print i
-#pi.get = fget
+def total(times):
+   x = 0
+   for i in times:
+     x += i
+   print 'Total time ' + str(x)      
 
-pi.push("pyfirst")
-pi.push("pysecond")
-pi.push("pythird")
+def fill(dobject):
+   for i in range(0, COUNT):
+      dobject.push(str(i))
+
+def iterate(dobject):
+   for i in dobject:
+      s = i
+
+class PySimpleIterator(DObject):
+  def __init__(self):
+     DObject.__init__(self, 'DIterator') 
+
+class PySimpleDVectorString(DObject):
+  def __init__(self):
+     DObject.__init__(self, "DVector<String>")
+
+class PyDIterator(DObject):
+  def __init__(self):
+     DObject.__init__(self, "DIterator")
+     self.i = 0  
+
+  def first(self):
+     self.i = 0
+ 
+  def next(self):
+     self.i += 1
+
+  def isDone(self):
+     #print 'pyIterator isDone'
+     if self.i >= self.pyvector.size():
+       return 1
+     return DInt8(0) 
+
+  def currentItem(self):
+     #print 'currentItem' 
+     if self.i < self.pyvector.size():
+       val = self.pyvector.get(self.i)
+       return val
+
+  def setIterable(self, item):  
+     self.pyvector = item
+     pass
+      
+class PythonDVector(DObject):
+  def __init__(self):
+     DObject.__init__(self, "DVector<String>")
+     self.l = []
+
+  def get(self, index):
+     return DUnicodeString('a')
+     return self.l[index] 
+
+  def push(self, val):
+     self.l.append(val)
+
+  def size(self):
+      #print len(self.l)
+      return len(self.l)
+
+  def iterator(self): #XXX si on la redefinie pas on peut psa utiliser literator c++ avec ce COntainer python car il faut qu il pointe sur ceux DObject c a corriger ds py_dobject.cpp eveidement c a lui de retourner un iterator qui pointe sur le pyobject et c mes thodes car par default il va retourner la methode du dobject c++  la parent pas la virtuel re donc voir ausis ds cpp object 
+     iterator = PyDIterator()
+     iterator.setIterable(self)
+     return iterator
 #
-##print pi.get(pi)
-print pi.get(0)
-print pi.get(1)
-print pi.count
 
-#pi.get(0)
-print "======  CPP Call  ===="
-t.setObjectValue(pi)
 print "======================"
+print "------ Python call c++ via class wrapper -----"
 
-print "------ Python call c++ -----"
-
-timeFunc(i.get, 1)
-timeFunc(i.callVoid, None)
-timeFunc(i.allVoid, None)
-timeFunc(i.returnVoid, 1)
-
+vector = PySimpleDVectorString()
+a = timeFunc(fill, vector)
+b = timeFunc(iterate, vector)
+total((a, b,))
 print "------ Python call python via ds ----"
 
-timeFunc(pi.get, 1)
-timeFunc(pi.callVoid, None)
-timeFunc(pi.allVoid, None)
-timeFunc(pi.returnVoid, 1)
+pi = PythonDVector()
+a = timeFunc(fill, pi)
+b = timeFunc(iterate, pi)
+total((a, b,))
 
-print "----- Real pure python call -----"
+class PyReverseIterator(DObject):
+  def __init__(self):
+     DObject.__init__(self, "DIterator")
+     self.i = 0  
+#XXX comment j appelle les fonctions parent, deja ? :)
+  def first(self):
+     self.i = 0
+ 
+  def next(self):
+     #self.i -- ?
+     self.i += 1
 
-pypy = PyPy()
-timeFunc(pypy.get, 1)
-timeFunc(pypy.callVoid, None)
-timeFunc(pypy.allVoid, None)
-timeFunc(pypy.returnVoid, 1)
+  #def isDone(self):
+     ##print 'pyIterator isDone'
+     #if self.i >= self.pyvector.size():
+       #return 1
+     #return DInt8(0) 
+#
+  #def currentItem(self):
+     ##print 'currentItem' 
+     #if self.i < self.pyvector.size():
+       #val = self.pyvector.get(self.i)
+       #return val
+#
+  #def setIterable(self, item):  
+     #self.pyvector = item
+     #pass
+     # 
+#class PythonDVector(DObject):
+  #def __init__(self):
+     #DObject.__init__(self, "DVector<String>")
+     #self.l = []
+#
+  #def get(self, index):
+     #return DUnicodeString('a')
+     #return self.l[index] 
+#
+  #def push(self, val):
+     #self.l.append(val)
+#
+  #def size(self):
+      ##print len(self.l)
+      #return len(self.l)
 
-print "------ Python / CPP object func ----"
-
-timeFunc(pi.returnObject, None)
-timeFunc(pi.callObject, pi)
-
-
-#for x in pi:
-  #print x
-
-#print "pi.returnVoid(1)"
-#print pi.returnVoid(1)
-#print "pi.callVoid()"
-#print pi.callVoid()
-#print "pi.allVoid()"
-#print pi.allVoid()
+ 
+#print "----- Real pure python call -----"
+#
+#pypy = PyPy()
+#
+#print "------ Python / CPP object func ----"
+#
+#timeFunc(pi.returnObject, None)
+#timeFunc(pi.callObject, pi)
