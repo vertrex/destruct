@@ -1,7 +1,9 @@
 set (pydestruct_embedding_files
 embedding.cpp
-pyembedding.py
+#pyembedding.py
 )
+
+configure_file(pyembdedding.py  pyembedding.py COPYONLY)
 
 add_executable(embedding ${pydestruct_embedding_files})
 

@@ -12,18 +12,4 @@
 # Author(s):
 #  Solal Jacob <sja@digital-forensic.org>
 
-set (python_destruct_test_files
-  py_destruct_test.cpp
-)
-
-add_subdirectory(output)
-
-include_directories("../")
-include_directories("../../")
-include_directories("../../../")
-include_directories("../../../examples")
-
-add_library(_dtest SHARED ${python_destruct_test_files})
-
-set_target_properties(_dtest PROPERTIES PREFIX "")
-target_link_libraries(_dtest _destruct destruct_test python2.7)
+configure_file(cfreds-bs.raw cfreds-bs.raw COPYONLY)
