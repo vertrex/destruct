@@ -20,6 +20,8 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules/")
 set(CMAKE_INCLUDE_PATH "${INCLUDEDIR}")
 set(CMAKE_LIBRARY_PATH "${LIBDIR}")
 
+include("cmake_modules/dff/macros.cmake")
+
 IF (NOT ${CMAKE_BINARY_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})
   SET(DEDICATED_BUILD_DIR 1)
   message(STATUS "Building project in dedicated build directory : ${CMAKE_BINARY_DIR}")
@@ -90,6 +92,26 @@ INCLUDE(PythonMacros)
 IF (NOT MSVC)
   ADD_DEFINITIONS(-fPIC)
 ENDIF ()
+
+find_package(SWIG REQUIRED)
+if (${SWIG_VERSION_MAJOR} LESS 2 OR (${SWIG_VERSION_MAJOR} EQUAL 2 AND ${SWIG_VERSION_PATCH} LESS 7))
+  message(FATAL_ERROR "Need SWIG version >= 2.0.7 (current version is ${SWIG_VERSION})")
+else()
+  message(STATUS "Found compatible SWIG version (${SWIG_VERSION})")
+endif()
+include(${SWIG_USE_FILE})
+
+# Check 64 bit
+if( "${CMAKE_SIZEOF_VOID_P}" EQUAL 4 )
+  set( HAVE_64_BITS 0 )
+else( "${CMAKE_SIZEOF_VOID_P}" EQUAL 4 )
+  if (WIN32)
+    set(CMAKE_SWIG_FLAGS ${CMAKE_SWIG_FLAGS} -DSWIGWORDSIZE32)
+  else()
+    set(CMAKE_SWIG_FLAGS ${CMAKE_SWIG_FLAGS} -DSWIGWORDSIZE64)
+  endif()
+  set( HAVE_64_BITS 1 )
+endif( "${CMAKE_SIZEOF_VOID_P}" EQUAL 4 )
 
 add_subdirectory(protocol)
 set (destruct_source_files
