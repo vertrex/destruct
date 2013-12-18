@@ -15,26 +15,26 @@ namespace Destruct
 
 DIterator::DIterator()
 {
-     this->index = 0;
-     this->object = NULL;
+  this->index = 0;
+  this->object = NULL;
     
-     this->nextObject = new DMethodObject(this, &DIterator::next);
-     this->firstObject = new DMethodObject(this, &DIterator::first); 
-     this->isDoneObject = new DMethodObject(this, &DIterator::isDone); 
-     this->currentItemObject = new DMethodObject(this, &DIterator::currentItem); 
-     this->setIterableObject = new DMethodObject(this, &DIterator::setIterable); 
+  this->nextObject = new DMethodObject(this, &DIterator::next);
+  this->firstObject = new DMethodObject(this, &DIterator::first); 
+  this->isDoneObject = new DMethodObject(this, &DIterator::isDone); 
+  this->currentItemObject = new DMethodObject(this, &DIterator::currentItem); 
+  this->setIterableObject = new DMethodObject(this, &DIterator::setIterable); 
 }
 
 DIterator::DIterator(DObject* dobject) 
 {
-     this->index = 0;
-     this->object = dobject;
+  this->index = 0;
+  this->object = dobject;
     
-     this->nextObject = new DMethodObject(this, &DIterator::next);
-     this->firstObject = new DMethodObject(this, &DIterator::first); 
-     this->isDoneObject = new DMethodObject(this, &DIterator::isDone); 
-     this->currentItemObject = new DMethodObject(this, &DIterator::currentItem); 
-     this->setIterableObject = new DMethodObject(this, &DIterator::setIterable); 
+  this->nextObject = new DMethodObject(this, &DIterator::next);
+  this->firstObject = new DMethodObject(this, &DIterator::first); 
+  this->isDoneObject = new DMethodObject(this, &DIterator::isDone); 
+  this->currentItemObject = new DMethodObject(this, &DIterator::currentItem); 
+  this->setIterableObject = new DMethodObject(this, &DIterator::setIterable); 
 }
 
 DIterator::DIterator(const DIterator& copy, DObject* object) : index(copy.index), object(copy.object)
@@ -103,6 +103,9 @@ DValue DIterator::currentItem(void)
 }
 
 }
+
+
+
 /*  CPP 
     DIterator new iterator(object);
     for (iterator->first(); !iterator->isDone(); iterator->next)

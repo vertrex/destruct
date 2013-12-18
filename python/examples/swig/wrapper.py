@@ -7,7 +7,6 @@ sys.path.append('../test/')
 
 from libdwrapper import DWrapper 
 from _destruct import *
-from _dtest import *
 
 #def timeFunc(func, args, count = COUNT):
    #a = time.time()
@@ -151,9 +150,6 @@ print "==============================="
 #print wrapper.getValue()
 #print wrapper.getObject()
 
-print getValue()
-test = Test()
-#test.getObjectValue()
 
 print "define PyIterator(DObject)"
 class PyIterator(DObject):

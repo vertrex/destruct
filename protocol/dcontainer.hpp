@@ -48,7 +48,7 @@ public:
 //      iterator.begin(); iterator.isDone(); iterator.next()
 //              iterator.currenItem()
 //          
-  RealValue<DObject*>    iterator(DObject* self) //get self :) 
+  RealValue<DObject*>    iterator()//DObject* self) //get self :) 
   {
 
       std::cout << "DVector<STRING> ITERATOR FACTORY " << std::endl;
@@ -161,9 +161,6 @@ public:
 private:
   std::vector<RealType>   __vector;
 };
-
-
-typedef DVector<DUnicodeString, DType::DUnicodeStringType> DVectorString;
 
 }
 #endif 

@@ -21,7 +21,7 @@ add_subdirectory(output)
 include_directories("../")
 include_directories("../../")
 include_directories("../../../")
-include_directories("../../../examples")
+include_directories("../../../examples/dtest")
 
 add_library(_dtest SHARED ${python_destruct_test_files})
 

@@ -26,14 +26,6 @@ namespace Destruct
 
 DestructTest::DestructTest(bool output) : __output(output)
 {
-   std::cout << "HELLO regiatering DIterator " << std::endl;
-  DStruct* dstructiterator = makeNewDClass< DIterator >(NULL, "DIterator");
-
-  //typedef DVector<DInt32, DType::DInt32Type> DVectorString;
-  DStruct* dstructvector = makeNewDClass< DVectorString  >(NULL, "DVector<String>");
-  this->structRegistry()->registerDStruct(dstructiterator);//XXX doit etre fait par la lib pour tous les iterator / container , stream etc.. les protocol !
-  this->structRegistry()->registerDStruct(dstructvector);//XXX doit etre fait par la lib pour tous les iterator / container , stream etc.. les protocol !
-
 }
 
 void DestructTest::run()

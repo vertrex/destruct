@@ -1,5 +1,7 @@
 #include "destruct.hpp"
 #include "dexception.hpp"
+#include "protocol/protocol.hpp"
+
 #include <iostream>
 
 namespace Destruct
@@ -7,7 +9,8 @@ namespace Destruct
 
 Destruct::Destruct()
 {
-        //std::cout << "Destruct init " << std::endl;
+   std::cout << "Destruct init " << std::endl;
+   Protocol(this);
 }
 
 Destruct::~Destruct()

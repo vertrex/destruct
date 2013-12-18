@@ -3,16 +3,12 @@ import sys
 
 #sys.path.append('../')
 sys.path.append('../../')
-sys.path.append('../test/')
 
 import time, timeit
-from _dtest import *
 from _destruct import *
 
 COUNT = 10
-COUNT = 10**6
-
-t = Test()
+#COUNT = 10**6
 
 def timeFunc(func, args):
    a = time.time()
@@ -30,6 +26,11 @@ def total(times):
 def fill(dobject):
    for i in range(0, COUNT):
       dobject.push(str(i))
+
+def fillInt(dobject):
+   for i in range(0, COUNT):
+      dobject.push(i)
+
 
 def iterate(dobject):
    for i in dobject:
@@ -93,18 +94,34 @@ class PythonDVector(DObject):
 #
 
 print "======================"
-print "------ Python call c++ via class wrapper -----"
 
+print "------ Python create c++ object via Destruct --"
+cs = Destruct().find('DVector<String>')
+c = cs.newObject()
+a = timeFunc(fill, c)
+b = timeFunc(iterate, c)
+total((a, b,))
+
+print "------ Python call c++ via empty inherited class-----"
 vector = PySimpleDVectorString()
 a = timeFunc(fill, vector)
 b = timeFunc(iterate, vector)
 total((a, b,))
-print "------ Python call python via ds ----"
 
+print "------ Python call python herited class ----"
 pi = PythonDVector()
 a = timeFunc(fill, pi)
 b = timeFunc(iterate, pi)
 total((a, b,))
+
+print "------ Int Test  Python create c++ object via Destruct --"
+cs = Destruct().find('DVector<Int32>')
+c = cs.newObject()
+a = timeFunc(fillInt, c)
+b = timeFunc(iterate, c)
+total((a, b,))
+
+
 
 class PyReverseIterator(DObject):
   def __init__(self):

@@ -128,6 +128,7 @@ dstream.cpp
 dnullobject.cpp
 dexception.cpp
 
+protocol/protocol.cpp
 protocol/diterator.cpp
 )
 
