@@ -1,13 +1,13 @@
 #!/usr/bin/python 
 import sys
 
-sys.path.append('../')
+#sys.path.append('../')
 sys.path.append('../../')
 sys.path.append('../test/')
 
 import time, timeit
-from _destruct import *
 from _dtest import *
+from _destruct import *
 
 COUNT = 10
 COUNT = 10**6

@@ -12,12 +12,11 @@
 # Author(s):
 #  Solal Jacob <sja@digital-forensic.org>
 
-add_subdirectory(dtest)
-
 include_directories("../")
-set (test_files
-test.cpp
+include_directories("../../")
+
+set (destruct_test_files
+  destruct_test.cpp
 )
 
-add_executable(test ${test_files})
-target_link_libraries(test destruct destruct_test)
+add_library(destruct_test SHARED ${destruct_test_files})

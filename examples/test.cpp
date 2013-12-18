@@ -1,4 +1,4 @@
-#include "destruct_test.hpp"
+#include "dtest/destruct_test.hpp"
 #include "dtype.hpp"
 
 int main(int argc, char **argv)
