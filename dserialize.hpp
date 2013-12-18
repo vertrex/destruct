@@ -23,6 +23,7 @@ public:
   virtual bool serialize(DStream& output, DStruct& dstruct) = 0;
   virtual DStruct* deserialize(DStream& output) = 0;  //Can't pass DStruct by ref& an object must be create void for deserialization that's will be strange
   virtual DSerialize* create(void) = 0;
+  virtual ~DSerialize() {};
 };
 
 class DSerializeXML : public DSerialize
@@ -71,7 +72,7 @@ class DSerializeText : public DSerialize
 public:
   DSerializeText()
   {
-  };
+  }
 
   const std::string name(void);
   DSerializeText*   create(void);
@@ -90,7 +91,7 @@ class DSerializeBinary : public DSerialize
 public:
   DSerializeBinary()
   {
-  };
+  }
 
   const std::string name(void);
   DSerializeBinary*   create(void);

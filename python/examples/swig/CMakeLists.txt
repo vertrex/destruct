@@ -12,6 +12,8 @@
 # Author(s):
 #  Solal Jacob <sja@digital-forensic.org>
 
+configure_file(wrapper.py wrapper.py COPYONLY)
+
 include_directories("../../")
 include_directories("../../../")
 

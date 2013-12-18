@@ -30,7 +30,7 @@ public:
 
 
   DStruct(DStruct const* base, const DUnicodeString& name, CreateObjectFunction objectFunction);
-  ~DStruct();
+  virtual ~DStruct();
 
   DUnicodeString        name() const;
 
