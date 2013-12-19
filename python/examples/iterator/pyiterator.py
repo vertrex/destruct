@@ -29,12 +29,13 @@ def fill(dobject):
 
 def fillInt(dobject):
    for i in range(0, COUNT):
-      dobject.push(i)
+      dobject.push(DInt32(i))
 
 
 def iterate(dobject):
    for i in dobject:
-      s = i
+      print i, type(i)
+      #s = i
 
 class PySimpleIterator(DObject):
   def __init__(self):
@@ -58,7 +59,7 @@ class PyDIterator(DObject):
   def isDone(self):
      #print 'pyIterator isDone'
      if self.i >= self.pyvector.size():
-       return 1
+       return DInt8(1)
      return DInt8(0) 
 
   def currentItem(self):
@@ -67,7 +68,7 @@ class PyDIterator(DObject):
        val = self.pyvector.get(self.i)
        return val
 
-  def setIterable(self, item):  
+  def setContainer(self, item):  
      self.pyvector = item
      pass
       
@@ -77,7 +78,7 @@ class PythonDVector(DObject):
      self.l = []
 
   def get(self, index):
-     return DUnicodeString('a')
+     #return DUnicodeString('a')
      return self.l[index] 
 
   def push(self, val):
@@ -89,9 +90,35 @@ class PythonDVector(DObject):
 
   def iterator(self): #XXX si on la redefinie pas on peut psa utiliser literator c++ avec ce COntainer python car il faut qu il pointe sur ceux DObject c a corriger ds py_dobject.cpp eveidement c a lui de retourner un iterator qui pointe sur le pyobject et c mes thodes car par default il va retourner la methode du dobject c++  la parent pas la virtuel re donc voir ausis ds cpp object 
      iterator = PyDIterator()
-     iterator.setIterable(self)
+     iterator.setContainer(self)
      return iterator
 #
+class PyReverseIterator(DObject):
+  def __init__(self):
+     DObject.__init__(self, "DIterator")
+
+  def first(self):
+     #print 'first'
+     self.index = self.container().size() - 1 #XXX else segfault donc check ds la template 
+     #print 'first end'
+
+  def next(self):
+     #print 'next'
+     self.index = self.index - 1 #XXX bien l attribut et c ok !
+
+  def isDone(self):
+     #print 'isDone', self.index, self.container().size()
+     if self.index == 0:
+       return 1
+     return 0
+
+  #def currentItem(self): XXX ca serait bien de pouvoir le faire faut pas detruire la fonction parent quand une nouvelle est aloeur par un fils alors ? pour gerer l heritage ? 
+     #return DObject.currentItem(self, self.size() - index) #:)
+
+  def iterator(self):
+     #print 'iterator self return self'
+     return self 
+
 
 print "======================"
 
@@ -121,58 +148,13 @@ a = timeFunc(fillInt, c)
 b = timeFunc(iterate, c)
 total((a, b,))
 
+print 'Reverse iterator'
+vector = PySimpleDVectorString()
+for i in range(0, 10):
+  vector.push(str(i)) 
 
-
-class PyReverseIterator(DObject):
-  def __init__(self):
-     DObject.__init__(self, "DIterator")
-     self.i = 0  
-#XXX comment j appelle les fonctions parent, deja ? :)
-  def first(self):
-     self.i = 0
- 
-  def next(self):
-     #self.i -- ?
-     self.i += 1
-
-  #def isDone(self):
-     ##print 'pyIterator isDone'
-     #if self.i >= self.pyvector.size():
-       #return 1
-     #return DInt8(0) 
-#
-  #def currentItem(self):
-     ##print 'currentItem' 
-     #if self.i < self.pyvector.size():
-       #val = self.pyvector.get(self.i)
-       #return val
-#
-  #def setIterable(self, item):  
-     #self.pyvector = item
-     #pass
-     # 
-#class PythonDVector(DObject):
-  #def __init__(self):
-     #DObject.__init__(self, "DVector<String>")
-     #self.l = []
-#
-  #def get(self, index):
-     #return DUnicodeString('a')
-     #return self.l[index] 
-#
-  #def push(self, val):
-     #self.l.append(val)
-#
-  #def size(self):
-      ##print len(self.l)
-      #return len(self.l)
-
- 
-#print "----- Real pure python call -----"
-#
-#pypy = PyPy()
-#
-#print "------ Python / CPP object func ----"
-#
-#timeFunc(pi.returnObject, None)
-#timeFunc(pi.callObject, pi)
+iterator = PyReverseIterator()
+iterator.setContainer(vector)
+print 'iterate reverse'
+for i in iterator:
+  print i

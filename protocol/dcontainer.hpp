@@ -60,13 +60,13 @@ public:
      DClassObject<DIterator>* diterator = makeNewDObject<DIterator>(iteratorStruct, *iterator);
                                                 //?XXX autant la cree par heritage aussi 
      //DStruct* selfStruct = Destruct::instance().find("DVector<String>");  //mettre en temp pour pas chercher a chaque fois // optim
-     DStruct* selfStruct = makeNewDClass< RealType >(NULL, "DVector<inherited by what ?>");
+     DStruct* selfStruct = makeNewDClass< RealType >(NULL, "DVector<DInt32>"); //'XXX
      DClassObject<RealType>* self = makeNewDObject< RealType >(selfStruct, *(RealType *)this); //hooo le bo recursif et s il est def en python je fait comment ? dsimple / dnewobject ? ou doit overide en python ici pour renvoyer ? ?
 
      if (self)  //XXX si pure python on le convertie mais ca marchera pas !!! XXX 
      {
        iterator->first();
-       iterator->setIterable(RealValue<DObject*>(self));
+       iterator->setContainer(RealValue<DObject*>(self));
 
        return (diterator);
      }
@@ -100,7 +100,7 @@ public:
     //this->iteratorObject = new DMethodObject(this, &DContainer<DVector<RealType, RealTypeId> >::iterator);
   }
 
-  RealValue<DInt32>  push(DValue const& args) // replace DValue par  RealValue<RealType  > possible ? quand c interchangeable et pourquoi?uniquement par copy a cause du operator conv() 
+  RealValue<DUInt64>  push(DValue const& args) // replace DValue par  RealValue<RealType  > possible ? quand c interchangeable et pourquoi?uniquement par copy a cause du operator conv() 
   {
     this->__vector.push_back(args.get<RealType>()); 
     return (this->__vector.size()- 1);
@@ -108,13 +108,19 @@ public:
    
   RealValue<RealType> get(DValue const& args)
   {
-     //this->size > index ? 
      //RAISE EXCEPTION XXX -> python ca sera un DITerator !!!!!!!!!! si non ca va segfault logique
-    DInt32 index = args.get<DInt32>();
+    DUInt64 index = args.get<DUInt64>(); //Index en DUint64 DUint32 DSize_t plutot :
+    if (index >= this->__vector.size() )
+    {
+      std::cout << "DContainer error in get : bad index" << std::endl;
+      throw DUnicodeString("DContainer::get bad index\n");
+      //throw DException::DException(toot)  XXX si non segfault et comme c templater on peu pas renvoyer un Done
+    }
+      
     return (this->__vector[index]);
   }
 
-  RealValue<DInt32>   size(void)
+  RealValue<DUInt64>   size(void)
   {
     return this->__vector.size();
   }
@@ -128,9 +134,9 @@ public:
   {
 
     static DAttribute  attributes[] = {
-                       DAttribute("push", DType::DMethodType, DType::DInt32Type, RealTypeId), 
-                       DAttribute("get",  DType::DMethodType, RealTypeId, DType::DInt32Type),
-                       DAttribute("size", DType::DMethodType, DType::DInt32Type, DType::DNoneType),
+                       DAttribute("push", DType::DMethodType, DType::DUInt64Type, RealTypeId), 
+                       DAttribute("get",  DType::DMethodType, RealTypeId, DType::DUInt64Type),
+                       DAttribute("size", DType::DMethodType, DType::DUInt64Type, DType::DNoneType),
                        ///XX HERITAGE HERITER ICI VOIR ANCIEN CODE AVEC HERITAGE DS LES EXEMPLES 
                        DAttribute("iterator", DType::DMethodType, DType::DObjectType, DType::DNoneType)
                                       };

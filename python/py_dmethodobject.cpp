@@ -157,7 +157,12 @@ Destruct::DValue DPythonMethodObject::call(Destruct::DValue const& args) const
     pythonResult = PyObject_CallFunctionObjArgs(this->__pythonCallable, this->__self, NULL, NULL);
 
   if (!pythonResult)
-     throw PythonTypeBaseModule::pyErrorAsString();
+  {
+     
+     const std::string error = PythonTypeBaseModule::pyErrorAsString();
+     std::cout << error << std::endl;
+     throw error;
+  }
 
   PyGILState_Release(gstate);
   return DValueDispatchTable[this->__type.getReturnType()]->toDValue(pythonResult);

@@ -187,3 +187,49 @@ Embedding python :
 On peu call un object python mais on peu pas le register ds destruct avec les methods et cree l objet python en c++ 
 on peu juste passer un objet deja cree avec c method, il faut un MakeDNewClass en python pour pouvoir enregistrer la classe !
  
+// designe des NODES 
+
+time = node()->accessedTime() 
+node()->accessedTime()->ntfs->..->read_attribute(node->id)
+node.deleted() => True
+node.exif().maker()
+
+comme ac c tjrs dynamique que par fonction et apres avoir un parse
+qui parse le tree comme le scanner et maintient a jour une liste ou un cach pour pouvoir y accedder par path en fait c un container tree qui itere en background sur la liste de node et en met en cache et maintienetnt le nombre a jour ca permet de cache d apres la memoire comme un garbage collector 
+
+et du coup on a juste a coder l iterateur du tree pour etre mis a jour et maintenir different type de tree
+
+par un ex un autre type de tree pourrait linker les node par metadata pour les retrouer plus vites
+
+indexer pourrait iterer sur le tree qui est un container pour avoir les info 
+comme ca ca reste dynamique et le cache et gerer ds le tree qui est un container donc c logique qu il est un cache des accesseur / find etc... d apres le type de container 
+
+on peut commce ca facilement cree d autre type de tree lie par metadata ou par temps
+
+timeline(accessedTime)
+for i in tree:
+  timeline.push(accessdTime)
+
+        timeline.push(accesedTime):
+            object = tree.get(objectPath)
+            meta = object.accessedTIme()
+                
+            self.list.add(objectPah, meta).sort()
+ou 
+for i in tree:
+  timelineAccessed.push(object.accessedTime()
+  timelineCreated.push(object.createdTime()
+
+probleme de connaitre tous les object time qui suive ds cette abre infi si pas indexer ...
+
+node =  tree.get(/tata/tutu/toto)
+
+node = node->children('tata')->children('tutu')node->children('toto')
+
+tree.count() -> 2323 nombre de node
+
+#indexer.index(tree)   -> met a jour un index / cache pour un fast lookup 
+index.get()
+
+for i in tree
+  index(i)                        

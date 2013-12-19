@@ -15,6 +15,7 @@ namespace Destruct
 
 DIterator::DIterator()
 {
+//XXX peut pas etre appeller par les autres constructure ?  ou faire une fonction init() pour pas copier 2 fois la meme chose
   this->index = 0;
   this->object = NULL;
     
@@ -22,7 +23,9 @@ DIterator::DIterator()
   this->firstObject = new DMethodObject(this, &DIterator::first); 
   this->isDoneObject = new DMethodObject(this, &DIterator::isDone); 
   this->currentItemObject = new DMethodObject(this, &DIterator::currentItem); 
-  this->setIterableObject = new DMethodObject(this, &DIterator::setIterable); 
+  this->setContainerObject = new DMethodObject(this, &DIterator::setContainer); 
+  this->containerObject = new DMethodObject(this, &DIterator::container); 
+  this->iteratorObject = new DMethodObject(this, &DIterator::iterator); 
 }
 
 DIterator::DIterator(DObject* dobject) 
@@ -34,7 +37,9 @@ DIterator::DIterator(DObject* dobject)
   this->firstObject = new DMethodObject(this, &DIterator::first); 
   this->isDoneObject = new DMethodObject(this, &DIterator::isDone); 
   this->currentItemObject = new DMethodObject(this, &DIterator::currentItem); 
-  this->setIterableObject = new DMethodObject(this, &DIterator::setIterable); 
+  this->setContainerObject = new DMethodObject(this, &DIterator::setContainer); 
+  this->containerObject = new DMethodObject(this, &DIterator::container); 
+  this->iteratorObject = new DMethodObject(this, &DIterator::iterator); 
 }
 
 DIterator::DIterator(const DIterator& copy, DObject* object) : index(copy.index), object(copy.object)
@@ -44,20 +49,33 @@ DIterator::DIterator(const DIterator& copy, DObject* object) : index(copy.index)
   this->firstObject = new DMethodObject(this, &DIterator::first); 
   this->isDoneObject = new DMethodObject(this, &DIterator::isDone); 
   this->currentItemObject = new DMethodObject(this, &DIterator::currentItem);
-  this->setIterableObject = new DMethodObject(this, &DIterator::setIterable); 
+  this->setContainerObject = new DMethodObject(this, &DIterator::setContainer); 
+  this->containerObject = new DMethodObject(this, &DIterator::container); 
+  this->iteratorObject = new DMethodObject(this, &DIterator::iterator); 
 }
 
-//void    DIterator::setIterable(RealValue<DObject*> value)
-void    DIterator::setIterable(DValue const& value)
+//void    DIterator::setContainer(RealValue<DObject*> value)
+void    DIterator::setContainer(DValue const& value)
 {
-  //std::cout << "DIterator::setIterable(" << object->instanceOf()->name() << ")" << std::endl;
+  //std::cout << "DIterator::setContainer(" << object->instanceOf()->name() << ")" << std::endl;
   this->object = value.get<DObject*>();
 }
 
+RealValue<DObject*> DIterator::container(void)
+{
+  return this->object;
+}
+ 
+RealValue<DObject*> DIterator::iterator(void)
+{
+  return this->object;
+}
+ 
 void    DIterator::next(void)
 {
   //std::cout << "DIterator::next " << std::endl;
-  this->index++;
+  this->index = this->index + 1;
+  
 }
 
 void    DIterator::first(void)
@@ -73,7 +91,7 @@ RealValue<DInt8> DIterator::isDone(void)
   {
     DValue count = this->object->call("size",RealValue<DObject*>(DNone));
     //plus lent que par getValue donc a choisir ! 
-    if (this->index < count.get<DInt32>())
+    if (this->index < count.get<DUInt64>())
       return 0;
   }
   return 1;
@@ -95,7 +113,7 @@ DValue DIterator::currentItem(void)
   if (this->object)
   {
    //std::cout << "DIterator::currentItem call this->object get" << std::endl;
-    return RealValue<DUnicodeString>(this->object->call("get", RealValue<DInt32>(this->index)).get<DUnicodeString>()); 
+    return (this->object->call("get", RealValue<DUInt64>(this->index)));
   }//return this->object->call("get", RealValue<DInt32>(this->index)).get<DUnicodeString>(); 
   //std::cout << "DIterator::currenItem Object is not set can't call get method !" << std::endl; 
 

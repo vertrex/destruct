@@ -374,7 +374,7 @@ print diterator
 print 'FORING USING A C++ PROTOCOL ITERATOR !' 
 
 #DIterator(iterable) plus simple ds le constrcteur qu'avec set mais dois pouvoir passer objet a un constructeur de dobject semble compliquer 
-diterator.setIterable(pyIterator)
+diterator.setContainer(pyIterator)
 di = diterator
 di.first()
 def iterate(iterator):
@@ -385,14 +385,14 @@ def iterate(iterator):
     iterator.next()
 
 iterate(di)
-di.setIterable(pureIterator)
+di.setContainer(pureIterator)
 iterate(di)
 
 ci = Destruct().find('DVector<String>').newObject()
 ci.push('c++ object push in pi 1')
 ci.push('c++ object push in pi 2')
 ci.push('c++ object push in pi 3')
-di.setIterable(ci)
+di.setContainer(ci)
 iterate(di)
 
 print 'WWWWWWWWWWWWWWWWWWWW pure returned iterator ' 
@@ -458,8 +458,8 @@ class PyDIterator(DObject):
        val = self.pyvector.get(self.i)
        return val
 
-  def setIterable(self, item):
-     print 'setIterable'
+  def setContainer(self, item):
+     print 'setContainer'
       
 class PySimpleIterator(DObject):
   def __init__(self):
@@ -480,7 +480,7 @@ class PythonDVector(DObject):
      #XXX les 2 marche ici c accesible par heritage mais que si on utilise pas le dynamic_cast<> ds py__dobject::_iter.cpp
      print 'return a python iterator'
      iterator = PySimpleIterator()
-     iterator.setIterable(self)
+     iterator.setContainer(self)
      return iterator
 
      print 'return a python iterator'

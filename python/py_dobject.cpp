@@ -340,7 +340,7 @@ PyObject* PyDObject::_iter(PyDObject::DPyObject* self) //herite de py DContainer
     container = NULL; //XXX container jamais NULL ! a cause heritage qui herite voir avec un vrai pure iterator sans destruct mais c pas possible :)
     if (container)     
     {
-       std::cout << "PYTHON FIND AND CONVERT TO DCONTAINER // DITERABLE !!! " << std::endl; 
+      std::cout << "PYTHON FIND AND CONVERT TO DCONTAINER // DITERABLE !!! " << std::endl; 
       std::cout << "PyDObject::_iter return CPP Container of " << self->pimpl->instanceOf()->name() << std::endl; //XXX REUTNR TJRS ICI 
       iterator = container->iterator();
     }
@@ -351,6 +351,7 @@ PyObject* PyDObject::_iter(PyDObject::DPyObject* self) //herite de py DContainer
       {
         Destruct::DValue value = self->pimpl->call("iterator", Destruct::RealValue<Destruct::DObject*>(Destruct::DNone));  //XXX si pas d iterator ??? renvoyer problem XXX 
         iterator = value.get<Destruct::DObject*>();
+        iterator->call("first", Destruct::RealValue<Destruct::DObject*>(Destruct::DNone));
       }
       catch (std::string error)
       {
@@ -379,8 +380,10 @@ PyObject* PyDObject::_iternext(PyDObject::DPyObject* self)
    {
      Destruct::DValue result = iteratorObject->call("currentItem", Destruct::RealValue<Destruct::DObject* >(Destruct::DNone));
     iteratorObject->call("next", Destruct::RealValue<Destruct::DObject* >(Destruct::DNone));
-   return PyString_FromString(result.get<DUnicodeString>().c_str());
-   //return PythonBaseModule::dvalueAsPyObject(result); //slow TEMPLATE ETC ? 
+        
+    //return PyString_FromString(result.asUnicodeString().c_str());
+    //return PyString_FromString(result.get<DUnicodeString>().c_str());
+   return PythonBaseModule::dvalueAsPyObject(result); //slow TEMPLATE ETC ? 
    }
   
    return NULL;
