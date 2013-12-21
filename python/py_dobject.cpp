@@ -16,11 +16,13 @@ using Destruct::DUnicodeString;
 
 template<>
 PyTypeObject* PyDObjectT::pyType = NULL;
+template<>
+PySequenceMethods* PyDObjectT::pySequenceMethods = NULL;
 
 PyDObject::PyDObject()
 {
   pyType = (PyTypeObject*)malloc(sizeof(basePyType));
-  memcpy(pyType , &basePyType , sizeof(basePyType));
+  memcpy(pyType, &basePyType, sizeof(basePyType));
 
   pyType->tp_name = "destruct.DObject";
   pyType->tp_basicsize = sizeof(DPyObject);
@@ -38,6 +40,12 @@ PyDObject::PyDObject()
 /* XXX test iterator */
   pyType->tp_iter = (getiterfunc)PyDObject::_iter;
   pyType->tp_iternext = (iternextfunc)PyDObject::_iternext;
+
+  pySequenceMethods = (PySequenceMethods*)malloc(sizeof(baseSequenceMethods));
+  memcpy(pySequenceMethods, &baseSequenceMethods, sizeof(baseSequenceMethods)); //is empty can bzero
+  pyType->tp_as_sequence = pySequenceMethods; //XXX
+  pyType->tp_as_sequence->sq_length = (lenfunc)PyDObject::_length;
+  pyType->tp_as_sequence->sq_item = (ssizeargfunc)PyDObject::_item;
 
   if (PyType_Ready(pyType) < 0)
     throw std::string("PyType ready error");
@@ -332,8 +340,9 @@ PyObject* PyDObject::_iter(PyDObject::DPyObject* self) //herite de py DContainer
 //si je cast l hertiage marchera encore ? ou ca va call les method c ++ ?
   if (self->pimpl)
   {
-   
      //XXX PERD L HERITAGE PYTHON XXX XXX XXX XXX XXX XXX / car c pas un CPP Object ! de toute il pourais psa le savoir !
+
+
 
     Destruct::IContainer* container = dynamic_cast<Destruct::IContainer* >(self->pimpl);
     Destruct::DObject* iterator = NULL;
@@ -365,9 +374,12 @@ PyObject* PyDObject::_iter(PyDObject::DPyObject* self) //herite de py DContainer
       dobjectObject->pimpl = iterator;
       return ((PyObject*)dobjectObject);
     }
+    const std::string error = self->pimpl->instanceOf()->name() + " is not iterable";
+    PyErr_SetString(PyExc_TypeError, error.c_str()); 
   }
-  //return (NULL); //XXX return proper error
-  Py_RETURN_NONE;
+
+  PyErr_SetString(PyExc_TypeError, "destruct.DObject is not iterable");
+  return (NULL); //XXX return proper error
 }
 
 PyObject* PyDObject::_iternext(PyDObject::DPyObject* self)
@@ -383,11 +395,29 @@ PyObject* PyDObject::_iternext(PyDObject::DPyObject* self)
         
     //return PyString_FromString(result.asUnicodeString().c_str());
     //return PyString_FromString(result.get<DUnicodeString>().c_str());
-   return PythonBaseModule::dvalueAsPyObject(result); //slow TEMPLATE ETC ? 
+   return PythonBaseModule::dvalueAsPyObject(result); //slow TEMPLATE ETC ?  //XXX ca sert a rien normallement virer ca XXX XXX XXX car on peut recuper le type par instanceOf()-> !
    }
   
    return NULL;
 //if isDone raise iter iteration !!!!!!!!!!!!!!!!!!!!
 //return PyDString::asPyObject(result);
    //XXX pouvoir TEMPLATE car ca pass de 30 a 5 sec. !!! donc les call a cote c que dalle !!!!
+}
+
+Py_ssize_t PyDObject::_length(PyDObject::DPyObject* self)
+{
+//XXX try catch si pas de method size ! 
+  Destruct::DValue result = self->pimpl->call("size", Destruct::RealValue<Destruct::DObject*>(Destruct::DNone));
+
+  return (result.get<DUInt64>());
+//XXX error catch !        
+}
+
+PyObject* PyDObject::_item(PyDObject::DPyObject* self, Py_ssize_t i)
+{
+  Destruct::DValue result = self->pimpl->call("get", Destruct::RealValue<DUInt64>(i));
+//XXX object->instanceOf()->get("call") 
+  //call.Type PythonReturn //XXX optime !!!! pas besoin de dvalueaspyObject  
+  return PythonBaseModule::dvalueAsPyObject(result); 
+//XXX error a gerer 
 }

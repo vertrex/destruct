@@ -23,7 +23,6 @@ DIterator::DIterator()
   this->firstObject = new DMethodObject(this, &DIterator::first); 
   this->isDoneObject = new DMethodObject(this, &DIterator::isDone); 
   this->currentItemObject = new DMethodObject(this, &DIterator::currentItem); 
-  this->setContainerObject = new DMethodObject(this, &DIterator::setContainer); 
   this->containerObject = new DMethodObject(this, &DIterator::container); 
   this->iteratorObject = new DMethodObject(this, &DIterator::iterator); 
 }
@@ -37,7 +36,6 @@ DIterator::DIterator(DObject* dobject)
   this->firstObject = new DMethodObject(this, &DIterator::first); 
   this->isDoneObject = new DMethodObject(this, &DIterator::isDone); 
   this->currentItemObject = new DMethodObject(this, &DIterator::currentItem); 
-  this->setContainerObject = new DMethodObject(this, &DIterator::setContainer); 
   this->containerObject = new DMethodObject(this, &DIterator::container); 
   this->iteratorObject = new DMethodObject(this, &DIterator::iterator); 
 }
@@ -49,20 +47,25 @@ DIterator::DIterator(const DIterator& copy, DObject* object) : index(copy.index)
   this->firstObject = new DMethodObject(this, &DIterator::first); 
   this->isDoneObject = new DMethodObject(this, &DIterator::isDone); 
   this->currentItemObject = new DMethodObject(this, &DIterator::currentItem);
-  this->setContainerObject = new DMethodObject(this, &DIterator::setContainer); 
   this->containerObject = new DMethodObject(this, &DIterator::container); 
   this->iteratorObject = new DMethodObject(this, &DIterator::iterator); 
 }
 
 //void    DIterator::setContainer(RealValue<DObject*> value)
-void    DIterator::setContainer(DValue const& value)
-{
-  //std::cout << "DIterator::setContainer(" << object->instanceOf()->name() << ")" << std::endl;
-  this->object = value.get<DObject*>();
-}
+//void    DIterator::setContainer(DValue const& value)
+//{
+////std::cout << "DIterator::setContainer(" << object->instanceOf()->name() << ")" << std::endl;
+//this->object = value.get<DObject*>();
+//}
 
-RealValue<DObject*> DIterator::container(void)
+RealValue<DObject*> DIterator::container(DValue const& value)
 {
+  DObject*  container = value.get<DObject* >();
+
+  if (container != DNone)
+  {
+    this->object = container;
+  }
   return this->object;
 }
  

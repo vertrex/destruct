@@ -66,7 +66,7 @@ public:
      if (self)  //XXX si pure python on le convertie mais ca marchera pas !!! XXX 
      {
        iterator->first();
-       iterator->setContainer(RealValue<DObject*>(self));
+       iterator->container(RealValue<DObject*>(self));
 
        return (diterator);
      }

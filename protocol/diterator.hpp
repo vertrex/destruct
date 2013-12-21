@@ -21,7 +21,7 @@ class DObject;
   DAttribute(name, DType::dtype##Type)
 
 
-#define attributeList(a1, a2, a3, a4, a5, a6, a7, a8)\
+#define attributeList(a1, a2, a3, a4, a5, a6, a7)\
   static DAttribute*    ownAttributeBegin()\
   {\
      static DAttribute  attributes[] = \
@@ -33,7 +33,6 @@ class DObject;
        a5,\
        a6,\
        a7,\
-       a8,\
      };\
      return (attributes);\
   }\
@@ -50,7 +49,7 @@ class DObject;
   };\
 
 
-#define objectFunctionList(f1, f2, f3, f4, f5, f6, f7, f8)\
+#define objectFunctionList(f1, f2, f3, f4, f5, f6, f7)\
   static DMemoryPointer<DIterator>* memberBegin()\
   {\
     static DMemoryPointer<DIterator> memberPointer[] = \
@@ -61,8 +60,7 @@ class DObject;
                   DMemoryPointer<DIterator>(&DIterator::f4##Object),\
                   DMemoryPointer<DIterator>(&DIterator::f5##Object),\
                   DMemoryPointer<DIterator>(&DIterator::f6##Object),\
-                  DMemoryPointer<DIterator>(&DIterator::f7##Object),\
-                  DMemoryPointer<DIterator>(&DIterator::f8),\
+                  DMemoryPointer<DIterator>(&DIterator::f7),\
           };\
           return memberPointer;\
   }\
@@ -84,8 +82,7 @@ public:
   void      first();
   RealValue<DInt8>      isDone();
   DValue                currentItem();
-  void                  setContainer(DValue const& value);
-  RealValue<DObject*>   container(void);
+  RealValue<DObject*>   container(DValue const& value);
   RealValue<DObject*>   iterator(void);
   //void  last();
   
@@ -98,7 +95,6 @@ public:
   declareObject(first)
   declareObject(isDone)
   declareObject(currentItem)
-  declareObject(setContainer)
   declareObject(container)
   declareObject(iterator)
   //declareValue(index)
@@ -106,16 +102,15 @@ public:
   attributeList(declareAttribute(DNone,"next", DNone),
   declareAttribute(DNone,"first", DNone),
   declareAttribute(DInt8,"isDone", DNone),
-  declareAttribute(DUnicodeString, "currentItem", DNone),
-  declareAttribute(DNone,"setContainer", DObject),
-  declareAttribute(DObject,"container", DNone), //valueDirect () ?
+  declareAttribute(DUnicodeString, "currentItem", DNone), //XXX XXX return String a chaque fois !
+  declareAttribute(DObject,"container", DObject), //valueDirect () ?
   declareAttribute(DObject,"iterator", DNone),
   declareAttributeValue(DUInt64, "index"))
 
 
-  declareAttributeCount(8)
+  declareAttributeCount(7)
 
-  objectFunctionList(next, first, isDone, currentItem, setContainer, container, iterator, index)
+  objectFunctionList(next, first, isDone, currentItem, container, iterator, index)
 private:
 };
  //Destruct* toto = Destruct::instance();//->registerDStruct(dstructvectors);

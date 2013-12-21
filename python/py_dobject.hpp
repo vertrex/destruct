@@ -31,9 +31,11 @@ public:
 /* XXX XXX iterator test implem  heriter de dobject pour pas check a chaque fois et faire un ObjectIterable ? */ 
   static PyObject*    _iter(DPyObject* self);
   static PyObject*    _iternext(DPyObject* self);
+  static Py_ssize_t   _length(DPyObject* self);
+  static PyObject*    _item(DPyObject* self, Py_ssize_t i);
 
   PyObject*           typeObject();
-
+  
   Destruct::DValue toDValue(PyObject* value) 
   {
      if (PyObject_TypeCheck(value, PyDObject::pyType))

@@ -51,17 +51,25 @@ PyObject* PyDMethodObject::call(PyObject* _self, PyObject* args)
 
   if (argumentTypeId != Destruct::DType::DNoneType && !PyArg_ParseTuple(args, "O", &argumentObject))
   {
-    std::string argumentString = "must be a " + type.argumentName();
-    PyErr_SetString(PyExc_TypeError, argumentString.c_str());
-    return (0);
+    if (argumentTypeId != Destruct::DType::DObjectType)
+    {
+      argumentObject = NULL;
+      std::string argumentString = "MethodObject argument must be a " + type.argumentName();
+      PyErr_SetString(PyExc_TypeError, argumentString.c_str());
+      return (0);
+    }
+    PyErr_Clear();
   }
 
+//XXX cast DNone to pyobject ou must give None ? 
   DPythonMethodObject* pyMethod = dynamic_cast<DPythonMethodObject* >(self->pimpl);
   if (pyMethod)
     return (pyMethod->fastCall(argumentObject)); //check return ? if compatible ? permet de call avec n importe koi comme une variant ?
-  
   try
   {
+    if (argumentTypeId == Destruct::DType::DObjectType && argumentObject == NULL)
+      return (DValueDispatchTable[returnTypeId]->asDValue(self->pimpl->call(Destruct::RealValue<Destruct::DObject*>(Destruct::DNone))));
+
     return (DValueDispatchTable[returnTypeId]->asDValue(self->pimpl->call(DValueDispatchTable[argumentTypeId]->toDValue(argumentObject))));
   } 
   catch (std::string error)
@@ -70,7 +78,7 @@ PyObject* PyDMethodObject::call(PyObject* _self, PyObject* args)
   }
   catch (std::bad_cast exception)
   {
-    std::string argumentString = "must be a " + type.argumentName();
+    std::string argumentString = "MethodObject must return a " + type.argumentName();
     PyErr_SetString(PyExc_TypeError, argumentString.c_str()); 
   }
   return (0);
@@ -141,7 +149,6 @@ PyObject* PyDMethodObject::getType(PyDMethodObject::DPyObject* self, PyObject* a
 
 Destruct::DValue DPythonMethodObject::call(Destruct::DValue const& args) const
 {
-
   PyGILState_STATE gstate;
   gstate = PyGILState_Ensure();
 
@@ -154,11 +161,12 @@ Destruct::DValue DPythonMethodObject::call(Destruct::DValue const& args) const
     pythonResult = PyObject_CallFunctionObjArgs(this->__pythonCallable, this->__self, pyargs, NULL);
   }
   else
+  { 
     pythonResult = PyObject_CallFunctionObjArgs(this->__pythonCallable, this->__self, NULL, NULL);
+  }
 
   if (!pythonResult)
   {
-     
      const std::string error = PythonTypeBaseModule::pyErrorAsString();
      std::cout << error << std::endl;
      throw error;

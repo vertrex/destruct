@@ -77,6 +77,8 @@ int PyDAttribute::_init(PyDAttributeT::DPyObject *self, PyObject *args, PyObject
      if (!PyType_Check(dtypeObject))
        return (-1);
 
+     PyErr_Clear(); //car le premier parse tuple a mis une erreur ? a check
+
      PyObject* objectTypeId = PyObject_CallMethod(dtypeObject, (char *)"getType", NULL);
      PyObject* returnTypeId = PyObject_CallMethod(dtypeReturn, (char *)"getType", NULL);
      PyObject* argumentTypeId = PyObject_CallMethod(dtypeArgument, (char *)"getType", NULL);

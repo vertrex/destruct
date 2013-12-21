@@ -117,6 +117,17 @@ PyTypeObject PythonBaseModule::basePyType =
         0,                       /* tp_new */
 };
 
+PySequenceMethods PythonBaseModule::baseSequenceMethods =
+{
+    0,  /* inquiry sq_length;              __len__ */
+    0,  /* binaryfunc sq_concat;           __add__ */
+    0,  /* intargfunc sq_repeat;           __mul__ */
+    0,  /* intargfunc sq_item;             __getitem__ */
+    0,  /* intintargfunc sq_slice;         __getslice__ */
+    0,  /* intobjargproc sq_ass_item;      __setitem__ */
+    0,  /* intintobjargproc sq_ass_slice;  __setslice__ */
+};
+
 int PythonBaseModule::pyTracebackInternalAsString(PyTracebackObject* tb, std::string& errorMessage, long limit)
 {
   int err = 0;

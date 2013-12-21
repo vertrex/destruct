@@ -260,12 +260,12 @@ DObject*        DestructTest::createIntVector(void)
 
   DClassObject<DVectorInt>* dcppvectori = makeNewDObject<DVectorInt>(dstructvector, *dvectori);
 
-  std::cout << dcppvectori->call("get", RealValue<DInt32>(0)).asUnicodeString() << std::endl;
-  std::cout << dcppvectori->call("get", RealValue<DInt32>(0)).asUnicodeString() << std::endl;
+  std::cout << dcppvectori->call("get", RealValue<DUInt64>(0)).asUnicodeString() << std::endl;
+  std::cout << dcppvectori->call("get", RealValue<DUInt64>(0)).asUnicodeString() << std::endl;
    
   dcppvectori->call("push", RealValue<DInt32>(0xdffdff));
   
-  std::cout << dcppvectori->call("get", RealValue<DInt32>(2)).asUnicodeString() << std::endl;
+  std::cout << dcppvectori->call("get", RealValue<DUInt64>(2)).asUnicodeString() << std::endl;
 
   return (dcppvectori);
 }
@@ -287,11 +287,11 @@ DObject*        DestructTest::createStringVector(void)
   DValue gfunctionValue = dcppvectors->getValue("get");
   DFunctionObject* g = dcppvectors->getValue("get").get< DFunctionObject*  >();
 
-  std::cout << g->call(RealValue<DInt32>(0)).get<DUnicodeString>()<< std::endl;
-  std::cout << g->call(RealValue<DInt32>(1)).get<DUnicodeString>()<< std::endl;
+  std::cout << g->call(RealValue<DUInt64>(0)).get<DUnicodeString>()<< std::endl;
+  std::cout << g->call(RealValue<DUInt64>(1)).get<DUnicodeString>()<< std::endl;
 
   DFunctionObject* conv = dcppvectors->getObject;
-  conv->call(RealValue<DInt32>(1)); 
+  conv->call(RealValue<DUInt64>(1)); 
 
   //dcppvectors->setValue("push", dcppvectors->getObject);
   return (dcppvectors);

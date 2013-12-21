@@ -68,9 +68,9 @@ class PyDIterator(DObject):
        val = self.pyvector.get(self.i)
        return val
 
-  def setContainer(self, item):  
+  def container(self, item):  
      self.pyvector = item
-     pass
+     return self.pyvector
       
 class PythonDVector(DObject):
   def __init__(self):
@@ -90,7 +90,7 @@ class PythonDVector(DObject):
 
   def iterator(self): #XXX si on la redefinie pas on peut psa utiliser literator c++ avec ce COntainer python car il faut qu il pointe sur ceux DObject c a corriger ds py_dobject.cpp eveidement c a lui de retourner un iterator qui pointe sur le pyobject et c mes thodes car par default il va retourner la methode du dobject c++  la parent pas la virtuel re donc voir ausis ds cpp object 
      iterator = PyDIterator()
-     iterator.setContainer(self)
+     iterator.container(self)
      return iterator
 #
 class PyReverseIterator(DObject):
@@ -98,7 +98,6 @@ class PyReverseIterator(DObject):
      DObject.__init__(self, "DIterator")
 
   def first(self):
-     #print 'first'
      self.index = self.container().size() - 1 #XXX else segfault donc check ds la template 
      #print 'first end'
 
@@ -154,7 +153,12 @@ for i in range(0, 10):
   vector.push(str(i)) 
 
 iterator = PyReverseIterator()
-iterator.setContainer(vector)
+iterator.container(vector)
 print 'iterate reverse'
 for i in iterator:
   print i
+
+print 'using vector interface'
+print len(vector)
+for x in range(0, len(vector)): #implem len
+  print vector[x]
