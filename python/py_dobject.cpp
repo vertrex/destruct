@@ -161,10 +161,9 @@ PyObject*  PyDObject::setValue(PyDObject::DPyObject* self, int32_t attributeInde
       return (0);
     }
     
-//XXX ca casse tous ce booooo code 
     if (typeId == Destruct::DType::DMethodType)
     {
-      if (PyCallable_Check(valueObject))  ///XXX set a callable function 
+      if (PyCallable_Check(valueObject))
       {
         Destruct::DFunctionObject* dpythonMethodObject = new DPythonMethodObject((PyObject*)self, valueObject, self->pimpl->instanceOf()->attribute(attributeIndex).type()); //new donc doit XXX del ! objet tous ca ! refcount ?
         self->pimpl->setValue(attributeIndex, Destruct::RealValue<Destruct::DFunctionObject* >(dpythonMethodObject));  //?XXX DFUNCTION SET VALUE  to DVALUE ?
@@ -335,69 +334,84 @@ PyObject* PyDObject::_iter(PyDObject::DPyObject* self)
 {
   if (self->pimpl)
   {
-    Destruct::IContainer* container = dynamic_cast<Destruct::IContainer* >(self->pimpl);
     Destruct::DObject* iterator = NULL;
-      try 
-      {
-        Destruct::DValue value = self->pimpl->call("iterator", Destruct::RealValue<Destruct::DObject*>(Destruct::DNone));  //XXX si pas d iterator ??? renvoyer problem XXX 
-        iterator = value.get<Destruct::DObject*>();
-        iterator->call("first", Destruct::RealValue<Destruct::DObject*>(Destruct::DNone));
-      }
-      catch (std::string error)
-      {
-        std::cout <<  error << std::endl;
-      }
-    
-
-    if (iterator)
+    try 
     {
+      Destruct::DValue value = self->pimpl->call("iterator", Destruct::RealValue<Destruct::DObject*>(Destruct::DNone));
+      iterator = value.get<Destruct::DObject*>();
+    }
+    catch (std::string error)
+    {
+      error += "\n" + self->pimpl->instanceOf()->name() + " is not iterable";
+      PyErr_SetString(PyExc_TypeError, error.c_str());
+      return (NULL);
+    }
+
+    if (iterator != Destruct::DNone)
+    {
+      iterator->call("first", Destruct::RealValue<Destruct::DObject*>(Destruct::DNone));
       PyDObject::DPyObject*  dobjectObject = (PyDObject::DPyObject*)_PyObject_New(PyDObject::pyType);
       dobjectObject->pimpl = iterator;
+
       return ((PyObject*)dobjectObject);
     }
+
     const std::string error = self->pimpl->instanceOf()->name() + " is not iterable";
     PyErr_SetString(PyExc_TypeError, error.c_str()); 
+    return (NULL);
   }
 
   PyErr_SetString(PyExc_TypeError, "destruct.DObject is not iterable");
-  return (NULL); //XXX return proper error
+  return (NULL);
 }
 
 PyObject* PyDObject::_iternext(PyDObject::DPyObject* self)
 {
-    //std::cout << "Iter try to dcast self->pimpl in container" << container << std::endl;
-    //container = NULL; //XXX container jamais NULL ! a cause heritage qui herite voir avec un vrai pure iterator sans destruct mais c pas possible :)
-    //if (container)     
-    //{
-    ////std::cout << "PYTHON FIND AND CONVERT TO DCONTAINER // DITERABLE !!! " << std::endl; 
-    ////std::cout << "PyDObject::_iter return CPP Container of " << self->pimpl->instanceOf()->name() << std::endl; //XXX REUTNR TJRS ICI 
-    //iterator = container->iterator();
-    //}
-   Destruct::DObject* iteratorObject = self->pimpl;
+  Destruct::DIteratorBase* iterator = dynamic_cast<Destruct::DIteratorBase* >(self->pimpl);
+  Destruct::RealValue<Destruct::DObject*> realNone = Destruct::DNone;
 
-   Destruct::RealValue<DInt8> isDone(iteratorObject->call("isDone", Destruct::RealValue<Destruct::DObject* >(Destruct::DNone)).get<DInt8>());
+  if (iterator != NULL)     
+  {
+    Destruct::DFunctionObject* isDoneObject = iterator->isDoneObject;  
+    DInt8 isDone = isDoneObject->call(realNone).get<DInt8>();
+     
+    if (!isDone)
+    {
+      Destruct::DFunctionObject* currentItemObject = iterator->currentItemObject;
+      Destruct::DValue result = currentItemObject->call(realNone);
+     
+      Destruct::DFunctionObject* nextItemObject = iterator->nextObject;
+      nextItemObject->call(realNone);
 
-   if (!isDone)
-   {
-     Destruct::DValue result = iteratorObject->call("currentItem", Destruct::RealValue<Destruct::DObject* >(Destruct::DNone));
-    iteratorObject->call("next", Destruct::RealValue<Destruct::DObject* >(Destruct::DNone));
+      const Destruct::DStruct* dstruct = self->pimpl->instanceOf();
+      int32_t index = dstruct->findAttribute("currentItem");
+
+      Destruct::DAttribute attribute = dstruct->attribute(index);
+      Destruct::DType::Type_t type = attribute.type().getReturnType();
+      return (DValueDispatchTable[type]->asDValue(result));
+    }
+ 
+  }
+  else
+  {
+    DInt8 isDone(self->pimpl->call("isDone", realNone).get<DInt8>());
+    if (!isDone)
+    {
+      Destruct::DValue result = self->pimpl->call("currentItem", realNone);
+      self->pimpl->call("next", realNone);
         
-    //return PyString_FromString(result.asUnicodeString().c_str());
-    //return PyString_FromString(result.get<DUnicodeString>().c_str());
-    const Destruct::DStruct* dstruct = iteratorObject->instanceOf();
-    int32_t index= dstruct->findAttribute("currentItem");
-    //std::cout << "current item index " << index << std::endl;
-   Destruct::DAttribute attribute = dstruct->attribute(index);
-   Destruct::DType::Type_t type = attribute.type().getReturnType();
-   return DValueDispatchTable[type]->asDValue(result);
-   //std::cout << "type found " << type << std::endl;
-   //return PythonBaseModule::dvalueAsPyObject(result); //slow TEMPLATE ETC ?  //XXX ca sert a rien normallement virer ca XXX XXX XXX car on peut recuper le type par instanceOf()-> !
-   }
-  
-   return NULL;
+      const Destruct::DStruct* dstruct = self->pimpl->instanceOf();
+      int32_t index = dstruct->findAttribute("currentItem");
+
+      Destruct::DAttribute attribute = dstruct->attribute(index);
+      Destruct::DType::Type_t type = attribute.type().getReturnType();
+      return (DValueDispatchTable[type]->asDValue(result));
+    }
+  }
+     
 //if isDone raise iter iteration !!!!!!!!!!!!!!!!!!!!
 //return PyDString::asPyObject(result);
-   //XXX pouvoir TEMPLATE car ca pass de 30 a 5 sec. !!! donc les call a cote c que dalle !!!!
+   return (NULL);
 }
 
 Py_ssize_t PyDObject::_length(PyDObject::DPyObject* self)

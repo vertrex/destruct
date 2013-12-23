@@ -1,5 +1,5 @@
-#ifndef DESTRUCT_DITERATOR_HPP_
-#define DESTRUCT_DITERATOR_HTPP
+#ifndef DESTRUCT_DITERATOR_HPP
+#define DESTRUCT_DITERATOR_HPP
 
 /*
  *  This is a protocol object iterator
@@ -9,6 +9,7 @@
 #include "../dvalue.hpp"
 #include "../dmemberpointer.hpp"
 #include "../dmethodobject.hpp"
+#include "dcontainerbase.hpp"
 
 class DObject;
 
@@ -80,16 +81,26 @@ class DObject;
 namespace Destruct
 {
 
-template <typename RealType, DType::Type_t  RealTypeId>
-class DIterator  //template ? 
+class DIteratorBase
 {
 public:
-// XXX XXX const DObject* mais faut coder const call a ce moment la !
+  declareObject(next)
+  declareObject(first)
+  declareObject(isDone)
+  declareObject(currentItem)
+  declareObject(container)
+  declareObject(iterator)
+};
+
+template <typename RealType, DType::Type_t  RealTypeId>
+class DIterator : public DIteratorBase 
+{
+public:
   DIterator()
   {
    //XXX peut pas etre appeller par les autres constructure ?  ou faire une fonction init() pour pas copier 2 fois la meme chose
     this->index = 0;
-    this->object = NULL;
+    this->__container = NULL;
     
     this->nextObject = new DMethodObject(this, &DIterator::next);
     this->firstObject = new DMethodObject(this, &DIterator::first); 
@@ -102,7 +113,7 @@ public:
   DIterator(DObject* dobject)
   {
     this->index = 0;
-    this->object = dobject;
+    this->__container = NULL;
     
     this->nextObject = new DMethodObject(this, &DIterator::next);
     this->firstObject = new DMethodObject(this, &DIterator::first); 
@@ -123,34 +134,51 @@ public:
     this->iteratorObject = new DMethodObject(this, &DIterator::iterator); 
   }
 
-  void      next()
+  void  next(void)
   {
     this->index = this->index + 1;
   }
 
-  void      first()
+  void  first(void)
   {
     this->index = 0;
   }
 
-  RealValue<DInt8>      isDone()
+  RealValue<DInt8>      isDone(void)
   {
-    if (this->object)
+    if (this->__container)
     {
-      DValue count = this->object->call("size",RealValue<DObject*>(DNone));
+      DValue count;
+      DContainerBase* dcontainer = dynamic_cast<DContainerBase*>(this->__container);
+      if (dcontainer)
+      {
+        DFunctionObject* size = dcontainer->sizeObject;  
+        count = size->call(RealValue<DObject*>(DNone));
+      }
+      else
+        count = this->__container->call("size", RealValue<DObject*>(DNone));
+
       if (this->index < count.get<DUInt64>())
-        return 0;
+        return (0);
     }
-    return 1;
+
+    return (1);
   }
 
-  DValue                currentItem()
-  {//XXX DVALUE DVALUE ? PROBLEM ICI DE PERFF ? 
-    if (this->object)
+  DValue currentItem(void)
+  {
+    if (this->__container)
     {
-      return (this->object->call("get", RealValue<DUInt64>(this->index)));
+      DContainerBase* dcontainer = dynamic_cast<DContainerBase*>(this->__container);
+      if (dcontainer)
+      {
+        DFunctionObject* get = dcontainer->getObject;
+        return (get->call(RealValue<DUInt64>(this->index)));
+      }
+      else
+        return (this->__container->call("get", RealValue<DUInt64>(this->index)));
     }
-    return RealValue<DObject*>(DNone);
+    throw DException("DIterator::currentItem container is not set.\n");
   } 
 
   RealValue<DObject*>   container(DValue const& value)
@@ -158,29 +186,17 @@ public:
     DObject*  container = value.get<DObject* >();
 
     if (container != DNone)
-    {
-      this->object = container;
-    }
-    return this->object;
-  }
+      this->__container = container;
 
+    return (this->__container);
+  }
 
   RealValue<DObject*>   iterator(void)
   {
-    return this->object;
+    return (this->__container);
   }
 
-  //void  last();
-  
   RealValue<DUInt64>    index; //signed en python
-  DObject*              object;
-
-  declareObject(next)
-  declareObject(first)
-  declareObject(isDone)
-  declareObject(currentItem)
-  declareObject(container)
-  declareObject(iterator)
 
   attributeList(declareAttribute(DNone,"next", DNone),
   declareAttribute(DNone,"first", DNone),
@@ -194,6 +210,7 @@ public:
 
   objectFunctionList(next, first, isDone, currentItem, container, iterator, index)
 private:
+  DObject*              __container;
 };
 
 

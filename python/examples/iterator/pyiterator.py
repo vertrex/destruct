@@ -9,6 +9,7 @@ from _destruct import *
 
 #COUNT = 10
 COUNT = 10**6
+#COUNT = 10**3
 
 def timeFunc(func, args):
    a = time.time()
@@ -128,38 +129,38 @@ a = timeFunc(fill, c)
 b = timeFunc(iterate, c)
 total((a, b,))
 
-print "------ Python call c++ via empty inherited class-----"
-vector = PySimpleDVectorString()
-a = timeFunc(fill, vector)
-b = timeFunc(iterate, vector)
-total((a, b,))
+#print "------ Python call c++ via empty inherited class-----"
+#vector = PySimpleDVectorString()
+#a = timeFunc(fill, vector)
+#b = timeFunc(iterate, vector)
+#total((a, b,))
 
-print "------ Python call python herited class ----"
-pi = PythonDVector()
-a = timeFunc(fill, pi)
-b = timeFunc(iterate, pi)
-total((a, b,))
+#print "------ Python call python herited class ----"
+#pi = PythonDVector()
+#a = timeFunc(fill, pi)
+#b = timeFunc(iterate, pi)
+#total((a, b,))
 
-print "------ Int Test  Python create c++ object via Destruct --"
-cs = Destruct().find('DVector<Int32>')
-c = cs.newObject()
-a = timeFunc(fillInt, c)
-b = timeFunc(iterate, c)
-total((a, b,))
+#print "------ Int Test  Python create c++ object via Destruct --"
+#cs = Destruct().find('DVector<Int32>')
+#c = cs.newObject()
+#a = timeFunc(fillInt, c)
+#b = timeFunc(iterate, c)
+#total((a, b,))
 
-print 'Reverse iterator'
-vector = PySimpleDVectorString()
-for i in range(0, 10):
-  vector.push(str(i)) 
+#print 'Reverse iterator'
+#vector = PySimpleDVectorString()
+#for i in range(0, 10):
+  #vector.push(str(i)) 
 
-iterator = PyReverseIterator()
-iterator.container(vector)
-print 'iterate reverse'
-for i in iterator:
-  print i
+#iterator = PyReverseIterator()
+#iterator.container(vector)
+#print 'iterate reverse'
+#for i in iterator:
+  #print i
 
-print len(vector)
-for x in range(0, len(vector)): #implem len
-  print vector[x]
+#print len(vector)
+#for x in range(0, len(vector)): #implem len
+  #print vector[x]
 
 

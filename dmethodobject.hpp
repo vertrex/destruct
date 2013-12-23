@@ -29,11 +29,9 @@ private:
  DMethodObjectBase & operator =(DMethodObjectBase const &);
 };
 
-
 /*
  *  This implement the interface of DMethodObjectBase 
  */
-
 
 template<typename RealReturnType, typename CPPClass, typename ArgumentType>
 class DMethodObjectTyped : public DMethodObjectBase//<RealReturnType, CPPClass> 
@@ -51,7 +49,6 @@ private:
   CPPClass* __self;
   RealReturnType (CPPClass::* __member) (ArgumentType);
 };
-
 
 /*
  *  ReturnType void specialization of DMethodObjectTyped
@@ -78,7 +75,6 @@ private:
 /*
  *  ArgumentType void specialization
  */
-
 
 template<typename RealReturnType, typename CPPClass>
 class DMethodObjectTyped<RealReturnType, CPPClass, void > : public DMethodObjectBase//<RealReturnType, CPPClass> 

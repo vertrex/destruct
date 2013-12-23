@@ -3,20 +3,13 @@
 
 #include "../dvalue.hpp"
 #include "../dcppobject.hpp"
+#include "dcontainerbase.hpp"
 
 namespace Destruct 
 {
 
-class IContainer
-{
-public:
-  virtual RealValue<DObject*> iterator() = 0;
-  virtual ~IContainer() {};
-};
-
-
 template <typename RealType, DType::Type_t RealTypeId, typename RealTypee >
-class DContainer : public IContainer
+class DContainer : public DContainerBase 
 {
 public:
   DContainer()
@@ -29,26 +22,23 @@ public:
     this->iteratorObject = new DMethodObject(this, &DContainer< RealType, RealTypeId, RealTypee >::iterator);
   }
 
-  RealValue<DFunctionObject* >  iteratorObject;
-
   RealValue<DObject*>    iterator(void)
   {
-    DStruct* iteratorStruct = makeNewDClass< DIterator<RealTypee, RealTypeId> >(NULL, "DIterator"); //'XXX
-    DIterator<RealType, RealTypeId>* iterator = new DIterator<RealType, RealTypeId>();
-    DClassObject<DIterator<RealType, RealTypeId> >* diterator = makeNewDObject<DIterator<RealType,RealTypeId> >(iteratorStruct, *iterator);
+    DStruct* iteratorStruct = makeNewDClass< DIterator<RealTypee, RealTypeId> >(NULL, "DIterator");
+    DIterator<RealTypee, RealTypeId>* iterator = new DIterator<RealTypee, RealTypeId>();
+    DClassObject<DIterator<RealTypee, RealTypeId> >* diterator = makeNewDObject<DIterator<RealTypee, RealTypeId> >(iteratorStruct, *iterator);
                                     
-    DStruct* selfStruct = makeNewDClass< RealType >(NULL, "DContainer"); //'XXX
+    DStruct* selfStruct = makeNewDClass< RealType >(NULL, "DContainer");
     DClassObject<RealType>* self = makeNewDObject< RealType >(selfStruct, *(RealType *)this); 
 
     if (self)
     {
-      iterator->first(); //call pythooon ??? mustcall iterator->firstObject() ?
+      iterator->first();
       iterator->container(RealValue<DObject*>(self));
 
       return (diterator);
     }
 
-    std::cout << "iterator factory can't cast to DVector<String> " << std::endl;
     return RealValue<DObject*>(DNone);
   }
 };
@@ -57,10 +47,6 @@ template <typename RealType, DType::Type_t  RealTypeId>
 class DVector : public DContainer<DVector<RealType, RealTypeId>, RealTypeId, RealType > 
 {
 public:
-  RealValue<DFunctionObject* >  pushObject;
-  RealValue<DFunctionObject* >  getObject;
-  RealValue<DFunctionObject* >  sizeObject;
- 
   DVector()
   {
     this->pushObject = new DMethodObject(this, &DVector<RealType, RealTypeId>::push);
@@ -78,7 +64,7 @@ public:
   RealValue<DUInt64>  push(DValue const& args) 
   {
     this->__vector.push_back(args.get<RealType>()); 
-    return (this->__vector.size()- 1);
+    return (this->__vector.size() - 1);
   }
    
   RealValue<RealType> get(DValue const& args)
