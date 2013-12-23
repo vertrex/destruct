@@ -21,8 +21,11 @@ Protocol::Protocol(Destruct* destruct)
 
 void Protocol::__registerStruct(Destruct* destruct)
 {
-  DStruct* diterator = makeNewDClass< DIterator >(NULL, "DIterator");
-  destruct->registerDStruct(diterator);
+  DStruct* s =  makeNewDClass< DIterator<DUnicodeString, DType::DUnicodeStringType> >(NULL, "DIteratorString"); //DIterator<String>
+  destruct->registerDStruct(s);
+  s = makeNewDClass< DIterator<DInt32, DType::DInt32Type> >(NULL, "DIteratorInt32"); //DIterator<String>
+  destruct->registerDStruct(s);
+
 
   DStruct* dvectorString = makeNewDClass< DVectorString  >(NULL, "DVector<String>");
   destruct->registerDStruct(dvectorString);

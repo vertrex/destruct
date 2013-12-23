@@ -7,8 +7,8 @@ sys.path.append('../../')
 import time, timeit
 from _destruct import *
 
-COUNT = 10
-#COUNT = 10**6
+#COUNT = 10
+COUNT = 10**6
 
 def timeFunc(func, args):
    a = time.time()
@@ -34,12 +34,12 @@ def fillInt(dobject):
 
 def iterate(dobject):
    for i in dobject:
-      print i, type(i)
-      #s = i
+      #print i, type(i)
+      s = i
 
 class PySimpleIterator(DObject):
   def __init__(self):
-     DObject.__init__(self, 'DIterator') 
+     DObject.__init__(self, 'DIteratorString') 
 
 class PySimpleDVectorString(DObject):
   def __init__(self):
@@ -47,7 +47,7 @@ class PySimpleDVectorString(DObject):
 
 class PyDIterator(DObject):
   def __init__(self):
-     DObject.__init__(self, "DIterator")
+     DObject.__init__(self, "DIteratorString")
      self.i = 0  
 
   def first(self):
@@ -95,7 +95,7 @@ class PythonDVector(DObject):
 #
 class PyReverseIterator(DObject):
   def __init__(self):
-     DObject.__init__(self, "DIterator")
+     DObject.__init__(self, "DIteratorString")
 
   def first(self):
      self.index = self.container().size() - 1 #XXX else segfault donc check ds la template 
@@ -158,7 +158,8 @@ print 'iterate reverse'
 for i in iterator:
   print i
 
-print 'using vector interface'
 print len(vector)
 for x in range(0, len(vector)): #implem len
   print vector[x]
+
+

@@ -331,31 +331,12 @@ PyObject* PyDObject::getType(PyDObject::DPyObject* self, PyObject* args, PyObjec
   return (PyInt_FromSize_t(Destruct::DType::DObjectType)); 
 }
 
-/* XXX iterator implem **/
-
-// XXX call la factory 
-PyObject* PyDObject::_iter(PyDObject::DPyObject* self) //herite de py DContainer ? directement possible ? sans tous reecrre pour DObject comme ca seul les DCOntainer on une methode iter 
+PyObject* PyDObject::_iter(PyDObject::DPyObject* self)
 {
-//USE DYNAMIC CST ET HERITAGE OUR LES PERF ? et si marche pas utilise call poru etre sur ?
-//si je cast l hertiage marchera encore ? ou ca va call les method c ++ ?
   if (self->pimpl)
   {
-     //XXX PERD L HERITAGE PYTHON XXX XXX XXX XXX XXX XXX / car c pas un CPP Object ! de toute il pourais psa le savoir !
-
-
-
     Destruct::IContainer* container = dynamic_cast<Destruct::IContainer* >(self->pimpl);
     Destruct::DObject* iterator = NULL;
-    container = NULL; //XXX container jamais NULL ! a cause heritage qui herite voir avec un vrai pure iterator sans destruct mais c pas possible :)
-    if (container)     
-    {
-      std::cout << "PYTHON FIND AND CONVERT TO DCONTAINER // DITERABLE !!! " << std::endl; 
-      std::cout << "PyDObject::_iter return CPP Container of " << self->pimpl->instanceOf()->name() << std::endl; //XXX REUTNR TJRS ICI 
-      iterator = container->iterator();
-    }
-    else
-    {
-            //std::cout << "PyDObject::_iter return DObject container of " << self->pimpl->instanceOf()->name() << std::endl;
       try 
       {
         Destruct::DValue value = self->pimpl->call("iterator", Destruct::RealValue<Destruct::DObject*>(Destruct::DNone));  //XXX si pas d iterator ??? renvoyer problem XXX 
@@ -366,7 +347,7 @@ PyObject* PyDObject::_iter(PyDObject::DPyObject* self) //herite de py DContainer
       {
         std::cout <<  error << std::endl;
       }
-    }
+    
 
     if (iterator)
     {
@@ -384,6 +365,14 @@ PyObject* PyDObject::_iter(PyDObject::DPyObject* self) //herite de py DContainer
 
 PyObject* PyDObject::_iternext(PyDObject::DPyObject* self)
 {
+    //std::cout << "Iter try to dcast self->pimpl in container" << container << std::endl;
+    //container = NULL; //XXX container jamais NULL ! a cause heritage qui herite voir avec un vrai pure iterator sans destruct mais c pas possible :)
+    //if (container)     
+    //{
+    ////std::cout << "PYTHON FIND AND CONVERT TO DCONTAINER // DITERABLE !!! " << std::endl; 
+    ////std::cout << "PyDObject::_iter return CPP Container of " << self->pimpl->instanceOf()->name() << std::endl; //XXX REUTNR TJRS ICI 
+    //iterator = container->iterator();
+    //}
    Destruct::DObject* iteratorObject = self->pimpl;
 
    Destruct::RealValue<DInt8> isDone(iteratorObject->call("isDone", Destruct::RealValue<Destruct::DObject* >(Destruct::DNone)).get<DInt8>());
@@ -395,7 +384,14 @@ PyObject* PyDObject::_iternext(PyDObject::DPyObject* self)
         
     //return PyString_FromString(result.asUnicodeString().c_str());
     //return PyString_FromString(result.get<DUnicodeString>().c_str());
-   return PythonBaseModule::dvalueAsPyObject(result); //slow TEMPLATE ETC ?  //XXX ca sert a rien normallement virer ca XXX XXX XXX car on peut recuper le type par instanceOf()-> !
+    const Destruct::DStruct* dstruct = iteratorObject->instanceOf();
+    int32_t index= dstruct->findAttribute("currentItem");
+    //std::cout << "current item index " << index << std::endl;
+   Destruct::DAttribute attribute = dstruct->attribute(index);
+   Destruct::DType::Type_t type = attribute.type().getReturnType();
+   return DValueDispatchTable[type]->asDValue(result);
+   //std::cout << "type found " << type << std::endl;
+   //return PythonBaseModule::dvalueAsPyObject(result); //slow TEMPLATE ETC ?  //XXX ca sert a rien normallement virer ca XXX XXX XXX car on peut recuper le type par instanceOf()-> !
    }
   
    return NULL;
@@ -418,6 +414,7 @@ PyObject* PyDObject::_item(PyDObject::DPyObject* self, Py_ssize_t i)
   Destruct::DValue result = self->pimpl->call("get", Destruct::RealValue<DUInt64>(i));
 //XXX object->instanceOf()->get("call") 
   //call.Type PythonReturn //XXX optime !!!! pas besoin de dvalueaspyObject  
+  std::cout << "hello " << std::endl;
   return PythonBaseModule::dvalueAsPyObject(result); 
 //XXX error a gerer 
 }
