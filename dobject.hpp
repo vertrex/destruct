@@ -15,9 +15,9 @@ class DObject : public RefcountPolicy<DObject> //public UUIDPolicy<DObject > pos
 public:
   friend class RefcountPolicy<DObject>;
  
-  DObject(DStruct const* dstructDef); //XXX pour la deserialization DObject.deserialize9) mais si non en static
+  DObject(DStruct * dstructDef); //XXX pour la deserialization DObject.deserialize9) mais si non en static
 
-  DStruct const* instanceOf() const;
+  DStruct * instanceOf() const;
   virtual DObject* clone() const = 0;
   virtual DValue getValue(size_t index) const = 0;               //set data member
   virtual void setValue(size_t idx, DValue const& ) = 0;         //set 
@@ -48,7 +48,7 @@ protected:
       // mais si y a un refcount on pourrait le call ici et a chaque newobject ?  utile ?
   }
 private:
-  DStruct const * const __dstructDef;
+  DStruct * const __dstructDef;
 };
 
 

@@ -32,7 +32,8 @@ public:
   static PyObject*    _iter(DPyObject* self);
   static PyObject*    _iternext(DPyObject* self);
   static Py_ssize_t   _length(DPyObject* self);
-  static PyObject*    _item(DPyObject* self, Py_ssize_t i);
+  static PyObject*    _item(DPyObject* self, Py_ssize_t index);
+  static int          _setitem(DPyObject* self, Py_ssize_t index, PyObject* item); 
 
   PyObject*           typeObject();
   

@@ -20,17 +20,20 @@ template< typename CppClass>
 class DClassObject : public DObject, public CppClass
 {
 public:
-  DClassObject(DStruct const* dstruct) : DObject(dstruct), CppClass() //XXX must give iterator or new style lambda iterator array
+        //DClassObject(DStruct const* dstruct) : DObject(dstruct), CppClass() //XXX must give iterator or new style lambda iterator array
+  DClassObject(DStruct * dstruct) : DObject(dstruct), CppClass() //XXX must give iterator or new style lambda iterator array
   {
     this->__members = this->memberBegin(); //init function in constructor (should be done elswhere ? XXX
   } 
 //get original cpp object to wrap by ref  as const so original object is not modified !!! XXX not modified !
-  DClassObject(DStruct const * dstruct, CppClass const&  classobject) : DObject(dstruct) , CppClass(classobject)
+//DClassObject(DStruct const * dstruct, CppClass const&  classobject) : DObject(dstruct) , CppClass(classobject)
+  DClassObject(DStruct * dstruct, CppClass const&  classobject) : DObject(dstruct) , CppClass(classobject)
   {
     this->__members = this->memberBegin();
   }
 
-  static DObject* newObject(DStruct const* dstruct)
+  //static DObject* newObject(DStruct const* dstruct)
+  static DObject* newObject(DStruct * dstruct)
   {
     return (new DClassObject(dstruct));
   }
@@ -82,28 +85,32 @@ private:
 
 template <typename CppClass>
 inline 
-DStruct  makeDClass(DStruct const* base, DUnicodeString const& name)
+//DStruct  makeDClass(DStruct const* base, DUnicodeString const& name)
+DStruct  makeDClass(DStruct * base, DUnicodeString const& name)
 {
   return DStruct(base, name, DClassObject<CppClass>::newObject, CppClass::ownAttributeBegin(), CppClass::ownAttributeEnd());
 }
 
 template <typename CppClass>
 inline 
-DStruct*  makeNewDClass(DStruct const* base, DUnicodeString const& name)
+//DStruct*  makeNewDClass(DStruct const* base, DUnicodeString const& name)
+DStruct*  makeNewDClass(DStruct * base, DUnicodeString const& name)
 {
   return (new DStruct(base, name, DClassObject<CppClass>::newObject, CppClass::ownAttributeBegin(), CppClass::ownAttributeEnd()));
 }
 
 template <typename CppClass>
 inline 
-DClassObject<CppClass> makeDObject(DStruct const* cl, CppClass const& obj)
+//DClassObject<CppClass> makeDObject(DStruct const* cl, CppClass const& obj)
+DClassObject<CppClass> makeDObject(DStruct * cl, CppClass const& obj)
 {
   return (DClassObject<CppClass>(cl, obj));
 }
 
 template <typename CppClass>
 inline 
-DClassObject<CppClass>* makeNewDObject(DStruct const* cl, CppClass const& obj)
+//DClassObject<CppClass>* makeNewDObject(DStruct const* cl, CppClass const& obj)
+DClassObject<CppClass>* makeNewDObject(DStruct * cl, CppClass const& obj)
 {
   return (new DClassObject<CppClass>(cl, obj));
 }

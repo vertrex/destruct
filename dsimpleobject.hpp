@@ -11,10 +11,10 @@ namespace Destruct
 class DSimpleObject : public DDynamicObject
 {
 public:
-  explicit DSimpleObject(DStruct const *);
+  explicit DSimpleObject(DStruct *);
   DSimpleObject(DSimpleObject const &);
 
-  static DObject*   newObject(DStruct const *);
+  static DObject*   newObject(DStruct *);
   virtual DObject*  clone() const;
 };
 

@@ -19,7 +19,7 @@ class DStruct : public RefcountPolicy<DStruct>
 public:
   typedef std::vector<DAttribute> DAttributeContainer;
   typedef DAttributeContainer::const_iterator DAttributeIterator;
-  typedef DObject* (*CreateObjectFunction)(DStruct const *);
+  typedef DObject* (*CreateObjectFunction)(DStruct *);
 
   template<typename Iterator> 
   DStruct(DStruct const* baseClass, const DUnicodeString& name, CreateObjectFunction createObjectFunction, Iterator attributeBegin, Iterator attributeEnd) : __baseClass(baseClass) ,  __name(name), __ownAttributes(attributeBegin, attributeEnd), __createObject(createObjectFunction), __definitionFix(false), __defaultObject(0)
@@ -34,7 +34,8 @@ public:
 
   DUnicodeString        name() const;
 
-  DObject*              newObject() const;
+  //DObject*              newObject() const;
+  DObject*              newObject(); //for mutable
  
   DObject const*        defaultDObject() const;//not serialized, could be usefull for destruct to set default value (dff argument)
   void                  setDefault(DObject const *);

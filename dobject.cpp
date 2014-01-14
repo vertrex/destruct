@@ -7,11 +7,11 @@
 namespace Destruct
 {
                                                                 //faudrait le ref count ou le forcer ds le dico aussi simple que ca !
-DObject::DObject(DStruct const* dstructDef) : RefcountPolicy(),  __dstructDef(dstructDef)
+DObject::DObject(DStruct * dstructDef) : RefcountPolicy(),  __dstructDef(dstructDef)
 {
 }
 
-DStruct const* DObject::instanceOf() const
+DStruct * DObject::instanceOf() const
 {
   return (this->__dstructDef);
 }

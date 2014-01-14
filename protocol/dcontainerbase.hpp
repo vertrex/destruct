@@ -12,10 +12,11 @@ class DContainerBase
 public:
   DContainerBase() {};
   virtual RealValue<DObject*>   iterator() = 0;
-  RealValue<DFunctionObject* >  pushObject;
-  RealValue<DFunctionObject* >  getObject;
-  RealValue<DFunctionObject* >  sizeObject;
   RealValue<DFunctionObject* >  iteratorObject;
+  RealValue<DFunctionObject* >  pushObject;// ici ou ds dconatienr plutot ?
+  RealValue<DFunctionObject* >  getObject;//
+  RealValue<DFunctionObject* >  sizeObject;//
+  RealValue<DFunctionObject* >  setItemObject; //
 };
 
 }

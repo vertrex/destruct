@@ -31,7 +31,17 @@ DUnicodeString  DStruct::name() const
 // en string et int mais du coup ca pete ??
 
 
-DObject* DStruct::newObject() const
+//DObject* DStruct::newObject() const
+//{
+//this->__definitionFix = true;
+//if (*this->__createObject == NULL)
+//{
+//return (NULL);
+//}
+//return (*this->__createObject)(this);
+//}
+
+DObject* DStruct::newObject() //for mutable non const so ++definitionFIx=false ?
 {
   this->__definitionFix = true;
   if (*this->__createObject == NULL)

@@ -211,7 +211,8 @@ void DestructTest::setObjectValue(DObject* object)
   object->setValue("num", RealValue<DInt64>(424242));
   object->setValue("text", RealValue<DUnicodeString>("My text."));
 
-  const DStruct* dstruct = object->instanceOf();
+  //const DStruct* dstruct = object->instanceOf();
+  DStruct* dstruct = object->instanceOf();
   DObject* parentObject = dstruct->newObject();
   parentObject->setValue("num", RealValue<DInt64>(414141));
   parentObject->setValue("text", RealValue<DUnicodeString>("My parent object"));

@@ -8,6 +8,8 @@
 #include "dcppobject.hpp"
 #include "protocol/diterator.hpp"
 #include "protocol/dcontainer.hpp"
+#include "protocol/dmutableobject.hpp"
+#include "protocol/dmutablestruct.hpp"
 
 #include "py_dstruct.hpp"
 #include "py_dtype.hpp"
@@ -46,6 +48,9 @@ PyDObject::PyDObject()
   pyType->tp_as_sequence = pySequenceMethods; //XXX
   pyType->tp_as_sequence->sq_length = (lenfunc)PyDObject::_length;
   pyType->tp_as_sequence->sq_item = (ssizeargfunc)PyDObject::_item;
+  pyType->tp_as_sequence->sq_ass_item = (ssizeobjargproc)PyDObject::_setitem;
+  //pyType->tp_as_map->
+
 
   if (PyType_Ready(pyType) < 0)
     throw std::string("PyType ready error");
@@ -423,12 +428,38 @@ Py_ssize_t PyDObject::_length(PyDObject::DPyObject* self)
 //XXX error catch !        
 }
 
-PyObject* PyDObject::_item(PyDObject::DPyObject* self, Py_ssize_t i)
+PyObject* PyDObject::_item(PyDObject::DPyObject* self, Py_ssize_t index)
 {
-  Destruct::DValue result = self->pimpl->call("get", Destruct::RealValue<DUInt64>(i));
+  Destruct::DValue result = self->pimpl->call("get", Destruct::RealValue<DUInt64>(index));
 //XXX object->instanceOf()->get("call") 
   //call.Type PythonReturn //XXX optime !!!! pas besoin de dvalueaspyObject  
-  std::cout << "hello " << std::endl;
   return PythonBaseModule::dvalueAsPyObject(result); 
 //XXX error a gerer 
+}
+
+int PyDObject::_setitem(PyDObject::DPyObject* self, Py_ssize_t index, PyObject* item)
+{
+//  Py_ErrSetString XXX
+  Destruct::DMutableStruct* dstruct = new Destruct::DMutableStruct(NULL, "argument", Destruct::DMutableObject::newObject);
+  dstruct->addAttribute(Destruct::DAttribute("item", Destruct::DType::DUnicodeStringType)); //DMutable ajouter method DMutable->setAttribute(DStringType, "item", value) cree and set !==> val par default ?
+  dstruct->addAttribute(Destruct::DAttribute("index", Destruct::DType::DInt64Type));
+  Destruct::DMutableObject* argument = new Destruct::DMutableObject(dstruct);//XXX NULL A REMPLACER !! create le constructeur maitnenant c pu const pour dstruct
+//XXX si oncree les arg apres ca segafault XXX car il y psa d attribut de cree donc faut un truc special addattribute ds l objet ou setAttribute /settAttributeValue ...et pas init ,mutable soit meme car si on rajoute a mutable il faut aussi modifier l objet donc i lfaudrait que ca soit refcount 
+ 
+//XXX segfault XXX car value existe pas au moment de set faire une list d attrib dynamique  ds objet si un attribut et add faut lui add aussi donc peut etre pas passer par instance mait directe par objet.addAttribute chaque objet a u nnew DMutableStruct et il a la value et cree un trucds un table pour la stocker aussi en dynamqiue donc aussi un del value ? 
+  // penser aussi  a registerDStruct qui devrait pas etre possible ou si ???
+  DInt32 attributeIndex = self->pimpl->instanceOf()->findAttribute("push");
+  Destruct::DAttribute pushAttribute = self->pimpl->instanceOf()->attribute(attributeIndex);
+  Destruct::DType      pushType = pushAttribute.type();
+
+  Destruct::DValue itemValue = DValueDispatchTable[pushType.getArgumentType()]->toDValue(item);
+
+  argument->setValue("item", itemValue); //comment on connait le type ? XXX
+  argument->setValue("index", Destruct::RealValue<DInt64>(index)); 
+  std::cout << self->pimpl->instanceOf()->name() << std::endl;
+  self->pimpl->call("setItem", Destruct::RealValue<Destruct::DObject*>(argument)); //& ? new object ? qu'est ce qu on va faire d arg ?
+
+///XXX template ?  DObject* ditemObject = CPPClass<DItem<> >(ditem);
+  return (0); 
+  return (-1); //XXX return si can't call ou autre probleme 
 }

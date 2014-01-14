@@ -12,7 +12,7 @@ namespace Destruct
 class DDynamicObject : public DObject
 {
 public :
-  DDynamicObject(DStruct const *);
+  DDynamicObject(DStruct *);
   DDynamicObject(DDynamicObject const &);
   ~DDynamicObject();
 

@@ -232,4 +232,8 @@ tree.count() -> 2323 nombre de node
 index.get()
 
 for i in tree
-  index(i)                        
+  index(i)                       
+
+==========> 
+
+XXX setItem -> const/non const a remttre ds dobjet etC 
