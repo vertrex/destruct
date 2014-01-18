@@ -236,4 +236,26 @@ for i in tree
 
 ==========> 
 
-XXX setItem -> const/non const a remttre ds dobjet etC 
+XXX setItem -> const/non const a remttre ds dobjet etC
+
+==
+
+idee possibilite  de setValue<>();
+
+comme ca on fait 
+
+setValue<typename t>(string name, DValue RealValue<t>(arg))
+
+ setValue<DObject*>("toto", object): //pas besoin de faire RealValue a chaque fois et conomise juste filer le type !  meme si plus long  a declarer 
+
+pour le retour les function sont en 
+DValue qui est un object cree sur la stack
+
+si on fait return ; le compilo dit rien car implicitement il cree un objet sur la stack
+met set object et psa set donc cava segault 
+
+il faudrait qu il soit set a DNone par default comme ca pas esoin de ce faire chier a retour DNone 
+et encore plus RealValue<DestruDNone ... 
+juste return; creera un DValue par default set a dnone (ou qui emule qu il est set a none ne renvoyant des truc par default ) 
+
+

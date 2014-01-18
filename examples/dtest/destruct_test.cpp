@@ -162,6 +162,7 @@ void    DestructTest::showObjectAttribute(DObject* object, int depth)
 
   fname = "output/test-" + object->instanceOf()->name() + ".raw";
   DStream binoutraw(fname, DStream::Output);
+
   DSerializers::to("Raw")->serialize(binoutraw, *object);
 }
 
@@ -384,6 +385,11 @@ void DestructTest::createNtfsBootSector(void)
   bootSector->setValue("endOfSector", RealValue<DUInt16>(0xAA55));
 
   this->showObjectAttribute(bootSector);
+
+  //std::string fname = "output/test-BIG-" + bootSector->instanceOf()->name() + ".raw";
+  //DStream binoutraw(fname, DStream::Output);
+  //for (int x = 0; x < 1000000*2; x++) //deserialize 10 go
+  //DSerializers::to("Raw")->serialize(binoutraw, *bootSector);
 
  //XXX read ntfs boot sector :)
 }

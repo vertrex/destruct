@@ -32,6 +32,7 @@ public:
   DStruct(DStruct const* base, const DUnicodeString& name, CreateObjectFunction objectFunction);
   virtual ~DStruct();
 
+  virtual void          addAttribute(const DAttribute&);
   DUnicodeString        name() const;
 
   //DObject*              newObject() const;
@@ -42,18 +43,19 @@ public:
 
   DAttribute const&     attribute(size_t index) const;
   size_t                attributeCount() const;
-  void                  addAttribute(const DAttribute&);
   int32_t               findAttribute(DUnicodeString const& name) const;
 
 
   DAttributeIterator    attributeBegin() const;
   DAttributeIterator    attributeEnd() const;
+protected:
+  DAttributeContainer           __ownAttributes;
+  DAttributeContainer           __effectiveAttributes;
+
 private:
   void                          __baseInit();
   DStruct const * const         __baseClass;
   const DUnicodeString          __name;
-  DAttributeContainer           __ownAttributes;
-  DAttributeContainer           __effectiveAttributes;
   const CreateObjectFunction    __createObject;
   mutable bool                  __definitionFix;
   DObject const *               __defaultObject;

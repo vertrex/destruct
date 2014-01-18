@@ -164,10 +164,13 @@ for x in range(0, len(vector)): #implem len
   print vector[x]
 
 print vector[0], type(vector[0])
+print 'vector set[0]'
 vector[0] = '100 strings'
 print vector[0]
 
+print 'vector set 0 10 str'
 for x in range(0, 10):
   vector[x] = 'test ' +str(x)
+print 'print vector content'
 for i in vector:
   print i

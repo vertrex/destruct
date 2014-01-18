@@ -35,10 +35,10 @@ protected:
   void                     init(DDynamicObject* self);
   void                     copy(DDynamicObject* self, DDynamicObject const& rhs);
 
-private:
   typedef std::vector<BaseValue*  > ValueContainer;
-  DDynamicObject& operator=(DDynamicObject const &);
   ValueContainer  __values;
+private:
+  DDynamicObject& operator=(DDynamicObject const &);
   DObject*        __object;
 };
 
