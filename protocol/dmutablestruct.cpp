@@ -20,9 +20,10 @@ DObject* DMutableStruct::newObject() //const
 
 void DMutableStruct::addAttribute(const DAttribute& attribute)
 {
-  std::cout << " MUTABLE ADD ATTIRUBGE DERIBED CALLED " << std::endl;
+  std::cout << "DMutableStruct::addAttribute" << std::endl;
   //if (!this->__definitionFix)
   //{
+//pourquoi on pushds les 2 ??
     this->__ownAttributes.push_back(attribute);
     this->__effectiveAttributes.push_back(attribute);
     //}
@@ -39,5 +40,15 @@ void DMutableStruct::addAttribute(const DAttribute& attribute)
 //{
 //this->__defaultObject = def;
 ////}
-
+/*
+void DMutableStruct::__baseInit()
+{
+  if (this->__baseClass)
+  {
+     this->__baseClass->__definitionFix = true;
+     std::copy(this->__baseClass->attributeBegin(), this->__baseClass->attributeEnd(), 
+               std::back_inserter<DAttributeContainer>(this->__effectiveAttributes));
+  }
+}
+*/
 }

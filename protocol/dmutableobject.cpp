@@ -9,6 +9,11 @@
 namespace Destruct
 {
 
+DMutableObject::DMutableObject(const DUnicodeString& name) : DDynamicObject(dynamic_cast<DStruct* >(new DMutableStruct(NULL, name, DMutableObject::newObject)))
+{
+  this->init(this);
+}
+
 DMutableObject::DMutableObject(DMutableStruct* dstructDef) : DDynamicObject(dynamic_cast<DStruct* >(dstructDef))
 {
   this->init(this);
@@ -31,11 +36,10 @@ DObject* DMutableObject::clone() const
 
 DValue DMutableObject::getValue(size_t idx) const
 {
-  std::cout <<"get value " << std::endl;
   if (idx > this->__values.size())
   {
     std::cout << "throw value doenst exist python must catch it ! and ret error " << std::endl;   
-      throw Destruct::DException("Value doesn't exist.");
+    throw Destruct::DException("Value doesn't exist.");
          
   }
   return (this->__values[idx]->getFinal());
@@ -46,33 +50,34 @@ DValue DMutableObject::getValue(size_t idx) const
 
 void DMutableObject::setValue(size_t idx, DValue const & v)
 {
- std::cout << "Set value " << std::endl;
-//creer une fonction newValue ? qui cree la value pour etr reutiliser apres ?
   if (idx >= this->__values.size())
   {
-    if (idx < this->instanceOf()->attributeCount())
-    {
-       this->__values[idx] = this->instanceOf()->attribute(idx).type().newValue();
-        //XXX c le bon truc a faire a reutiliser aileurs ou je fait n imp genre un new DValue
-       //*i = a->type().newValue();
-       this->__values[idx]->set(v);
-       std::cout << "new value setted" << std::endl;
-       return ;
-    }
+    DStruct* dstruct = this->instanceOf();
+    for (size_t i = this->__values.size() ; i < dstruct->attributeCount(); i++)
+        this->__values.push_back(dstruct->attribute(i).type().newValue());
   }
-  
   this->__values[idx]->set(v);
 }
 
 DValue DMutableObject::call(size_t idx, DValue const& v)
 {
- std::cout << "call " << std::endl;
-        //if (idx > this->__values.size())
-        //this->__values[idx] = new 
-
-        //return (this->__values[idx]->getFinal().get<DFunctionObject *>()->call(v));
-  return Destruct::RealValue<Destruct::DObject*>(Destruct::DNone);
+   if (idx > this->__values.size())
+   {
+     std::cout << "throw value doenst exist python must catch it ! and ret error " << std::endl;   
+     throw Destruct::DException("Value doesn't exist.");
+   }
+ 
+  return (this->__values[idx]->getFinal().get<DFunctionObject *>()->call(v));
 }
 
+void DMutableObject::setValueAttribute(std::string const& name, DValue const& v, DType::Type_t type)
+{
+  std::cout << "SET VALUE ATTRIBUTE" << std::endl;
+  DAttribute attribute(name, type);
+  this->instanceOf()->addAttribute(attribute);
+  this->__values.push_back(attribute.type().newValue()); //set new value ou directement v possible ?
+  this->__values.back()->set(v);
+
+}
 
 }

@@ -439,23 +439,31 @@ PyObject* PyDObject::_item(PyDObject::DPyObject* self, Py_ssize_t index)
 
 int PyDObject::_setitem(PyDObject::DPyObject* self, Py_ssize_t index, PyObject* item)
 {
-//  Py_ErrSetString XXX
-  Destruct::DMutableStruct* dstruct = new Destruct::DMutableStruct(NULL, "argument", Destruct::DMutableObject::newObject);
-  dstruct->addAttribute(Destruct::DAttribute("item", Destruct::DType::DUnicodeStringType)); 
-  Destruct::DMutableObject* argument = new Destruct::DMutableObject(dstruct);
-  dstruct->addAttribute(Destruct::DAttribute("index", Destruct::DType::DInt64Type));
-
- 
+ //XXX get template type dynamically finte avec push ...
   DInt32 attributeIndex = self->pimpl->instanceOf()->findAttribute("push");
   Destruct::DAttribute pushAttribute = self->pimpl->instanceOf()->attribute(attributeIndex);
   Destruct::DType      pushType = pushAttribute.type();
-
   Destruct::DValue itemValue = DValueDispatchTable[pushType.getArgumentType()]->toDValue(item);
 
-  argument->setValue("item", itemValue); //comment on connait le type ? XXX
-  argument->setValue("index", Destruct::RealValue<DInt64>(index)); 
-  self->pimpl->call("setItem", Destruct::RealValue<Destruct::DObject*>(argument)); //& ? new object ? qu'est ce qu on va faire d arg ?
+  //if (1 == 1)
+  //{
+  //Destruct::DMutableStruct* dstruct = new Destruct::DMutableStruct(NULL, "argument", Destruct::DMutableObject::newObject);
+  //dstruct->addAttribute(Destruct::DAttribute("item", Destruct::DType::DUnicodeStringType)); 
+  //Destruct::DMutableObject* argument = new Destruct::DMutableObject(dstruct);
+  //dstruct->addAttribute(Destruct::DAttribute("index", Destruct::DType::DInt64Type));
+
+  //argument->setValue("item", itemValue); //comment on connait le type ? XXX pas pratique
+  //argument->setValue("index", Destruct::RealValue<DInt64>(index));
+  //}
+//version simplifier : 
+
+  Destruct::DMutableObject* argument = new Destruct::DMutableObject("argument");
+  argument->setValueAttribute("index", Destruct::RealValue<DInt64>(index), Destruct::DType::DInt64Type);
+  argument->setValueAttribute("item", itemValue, Destruct::DType::DUnicodeStringType);
+
+  self->pimpl->call("setItem", Destruct::RealValue<Destruct::DObject*>(argument)); //& ? new object ? qu'est ce qu on va faire de arg ?
 
   return (0); 
+//  Py_ErrSetString XXX
   return (-1); //XXX return si can't call ou autre probleme 
 }
