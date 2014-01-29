@@ -142,12 +142,14 @@ public:
   RealValue<DObject*>    setItem(DValue const& args)
   {
     DObject*     argumentsObject = args.get<DObject*>();
-
     DInt64       index = argumentsObject->getValue("index").get<DInt64>();
     RealType     item = argumentsObject->getValue("item").get<RealType>();
      
+    if (index >= (DInt64)this->__vector.size()) 
+     throw DException("setItem : Index error");    
+
     this->__vector[index] = item; 
-     
+ 
     return (DNone);
   }
 

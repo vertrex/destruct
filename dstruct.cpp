@@ -4,6 +4,7 @@
 #include "dobject.hpp"
 #include "dattribute.hpp"
 #include "dvalue.hpp"
+#include "dexception.hpp"
 
 
 namespace Destruct
@@ -11,14 +12,12 @@ namespace Destruct
 
 DStruct::DStruct(DStruct const * base, const DUnicodeString & name, CreateObjectFunction objectFunction) : __baseClass(base), __name(name), __createObject(objectFunction), __definitionFix(false), __defaultObject(0)
 {
-        //std::cout << "dstruct.constructor " << name  << std::endl;
   this->__baseInit();
 }
 
 DStruct::~DStruct()
 {
-        //std::cout << "destruct.destructor " << this->__name  << std::endl;
-//should remove from Destruct if exist !
+  //should remove from Destruct if exist !
   Destruct::Destruct::instance().unregister(this);
 }
 
@@ -74,6 +73,16 @@ DStruct::DAttributeIterator  DStruct::attributeEnd() const
 DAttribute const& DStruct::attribute(size_t idx) const
 {
   return (this->__effectiveAttributes[idx]);
+}
+
+DAttribute const& DStruct::attribute(DUnicodeString const& name) const
+{
+  int32_t idx =  this->findAttribute(name);
+  
+  if (idx == -1)
+    throw DException(this->name() + " as no attribute " + name);
+  
+  return (this->attribute(idx));
 }
 
 void DStruct::addAttribute(const DAttribute& attribute)

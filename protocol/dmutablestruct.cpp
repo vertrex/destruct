@@ -20,7 +20,6 @@ DObject* DMutableStruct::newObject() //const
 
 void DMutableStruct::addAttribute(const DAttribute& attribute)
 {
-  std::cout << "DMutableStruct::addAttribute" << std::endl;
   //if (!this->__definitionFix)
   //{
 //pourquoi on pushds les 2 ??

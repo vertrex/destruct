@@ -5,6 +5,7 @@
 #include "dsimpleobject.hpp"
 #include "dnullobject.hpp"
 #include "destructmodule.hpp"
+#include "dexception.hpp"
 
 typedef PythonModule< class PyDObject, Destruct::DObject > PyDObjectT;
 class PyDObject : public PyDObjectT, public PythonTypeBaseModule
@@ -43,7 +44,7 @@ public:
        return Destruct::RealValue<Destruct::DObject* >(((DPyObject*)value)->pimpl);
      if (value == Py_None)
        return Destruct::RealValue<Destruct::DObject* >(Destruct::DNone); 
-     throw std::string("Can't cast to DObject*");
+     throw Destruct::DException("Can't cast to DObject*");
   }
 
   PyObject*     asDValue(Destruct::DValue v)

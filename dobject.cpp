@@ -3,6 +3,7 @@
 #include "dvalue.hpp"
 #include "dnullobject.hpp"
 #include "drealvalue.hpp"
+#include "dexception.hpp"
 
 namespace Destruct
 {
@@ -28,16 +29,13 @@ void DObject::setValue(DUnicodeString const& name, DValue const& v)
   this->setValue(index, v);
 }
 
-DValue DObject::call(std::string const& name, DValue const& v) //const ? XXX 
+DValue DObject::call(std::string const& name, DValue const& v) //const ? XXX  : throw
 {
   int32_t index = this->instanceOf()->findAttribute(name);
- //XXX mismatch int32_t en return de fin et pass size_t a call ou value pas logique 
-  if (index != -1)
-  {
-    return (this->call(index, v));
-  }
-  std::cout << "DObject::" << name << "() : Attribute not found" << std::endl; //XXX throw error ? 
-  return RealValue<DObject* >(DNone);
+
+  if (index == -1)
+    throw DException(this->instanceOf()->name() + " instance as no attribute " + name); 
+  return (this->call(index, v));
 }
 
 BaseValue* DObject::getBaseValue(DObject* dobject, size_t index)

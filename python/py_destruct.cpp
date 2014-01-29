@@ -1,3 +1,5 @@
+#include "dexception.hpp"
+
 #include "py_destruct.hpp"
 #include "py_dstruct.hpp"
 
@@ -20,7 +22,7 @@ PyDestruct::PyDestruct()
   pyType->tp_dealloc = (destructor)PyDestruct::_dealloc;
 
   if (PyType_Ready(pyType) < 0)
-    throw std::string("PyType ready error");
+    throw Destruct::DException("PyType ready error");
 }
 
 PyObject* PyDestruct::count(PyDestruct::DPyObject* self, PyObject* args, PyObject* kwds)

@@ -20,7 +20,7 @@ PyDInt8::PyDInt8()
   pyType->tp_init = (initproc)(PyDInt8::_init);
   pyType->tp_methods = pyMethods;
   if (PyType_Ready(pyType) < 0)
-    throw std::string("PyType ready error");
+    throw Destruct::DException("PyType ready error");
 }
 
 Destruct::DValue PyDInt8::toDValue(PyObject* value) 
@@ -30,7 +30,7 @@ Destruct::DValue PyDInt8::toDValue(PyObject* value)
     DInt8  fvalue = PyLong_AsLong(value);
     return Destruct::RealValue<DInt8>(fvalue);
   }
-  throw std::string("Can't cast to DInt8");
+  throw Destruct::DException("Can't cast to DInt8");
 }
 
 PyObject*     PyDInt8::asDValue(Destruct::DValue v)
@@ -71,7 +71,7 @@ PyDInt16::PyDInt16()
   pyType->tp_init = (initproc)(PyDInt16::_init);
   pyType->tp_methods = pyMethods;
   if (PyType_Ready(pyType) < 0)
-    throw std::string("PyType ready error");
+    throw Destruct::DException("PyType ready error");
 }
 
 Destruct::DValue PyDInt16::toDValue(PyObject* value) 
@@ -81,7 +81,7 @@ Destruct::DValue PyDInt16::toDValue(PyObject* value)
     DInt16  fvalue = PyLong_AsLong(value);
     return (Destruct::RealValue<DInt16>(fvalue));
   }
-  throw std::string("Can't cast to DInt16");
+  throw Destruct::DException("Can't cast to DInt16");
 }
 
 PyObject*     PyDInt16::asDValue(Destruct::DValue v)
@@ -122,7 +122,7 @@ PyDInt32::PyDInt32()
   pyType->tp_init = (initproc)(PyDInt32::_init);
   pyType->tp_methods = pyMethods;
   if (PyType_Ready(pyType) < 0)
-    throw std::string("PyType ready error");
+    throw Destruct::DException("PyType ready error");
 }
 
 Destruct::DValue PyDInt32::toDValue(PyObject* value) 
@@ -132,7 +132,7 @@ Destruct::DValue PyDInt32::toDValue(PyObject* value)
       DInt32  fvalue = PyLong_AsLong(value);
       return (Destruct::RealValue<DInt32>(fvalue));
   }
-  throw std::string("Can't cast to DInt32");
+  throw Destruct::DException("Can't cast to DInt32");
 }
 
 PyObject*        PyDInt32::asDValue(Destruct::DValue v)
@@ -173,7 +173,7 @@ PyDInt64::PyDInt64()
   pyType->tp_init = (initproc)(PyDInt64::_init);
   pyType->tp_methods = pyMethods;
   if (PyType_Ready(pyType) < 0)
-    throw std::string("PyType ready error");
+    throw Destruct::DException("PyType ready error");
 }
 
 Destruct::DValue PyDInt64::toDValue(PyObject* value) 
@@ -183,7 +183,7 @@ Destruct::DValue PyDInt64::toDValue(PyObject* value)
     DInt64 fvalue = PyLong_AsLong(value);
     return (Destruct::RealValue<DInt64>(fvalue));
   }
-  throw std::string("Can't cast to DInt64");
+  throw Destruct::DException("Can't cast to DInt64");
 }
 
 PyObject*     PyDInt64::asDValue(Destruct::DValue v)
@@ -224,7 +224,7 @@ PyDUInt8::PyDUInt8()
   pyType->tp_init = (initproc)(PyDUInt8::_init);
   pyType->tp_methods = pyMethods;
   if (PyType_Ready(pyType) < 0)
-    throw std::string("PyType ready error");
+    throw Destruct::DException("PyType ready error");
 }
 
 Destruct::DValue PyDUInt8::toDValue(PyObject* value) 
@@ -234,7 +234,7 @@ Destruct::DValue PyDUInt8::toDValue(PyObject* value)
     DUInt8  fvalue = PyLong_AsLong(value);
     return Destruct::RealValue<DUInt8>(fvalue);
   }
-  throw std::string("Can't cast to DUInt8");
+  throw Destruct::DException("Can't cast to DUInt8");
 }
 
 PyObject*     PyDUInt8::asDValue(Destruct::DValue v)
@@ -275,7 +275,7 @@ PyDUInt16::PyDUInt16()
   pyType->tp_init = (initproc)(PyDUInt16::_init);
   pyType->tp_methods = pyMethods;
   if (PyType_Ready(pyType) < 0)
-    throw std::string("PyType ready error");
+    throw Destruct::DException("PyType ready error");
 }
 
 Destruct::DValue PyDUInt16::toDValue(PyObject* value) 
@@ -285,7 +285,7 @@ Destruct::DValue PyDUInt16::toDValue(PyObject* value)
     DUInt16  fvalue = PyLong_AsLong(value);
     return (Destruct::RealValue<DUInt16>(fvalue));
   }
-  throw std::string("Can't cast to DUInt16");
+  throw Destruct::DException("Can't cast to DUInt16");
 }
 
 PyObject*     PyDUInt16::asDValue(Destruct::DValue v)
@@ -326,7 +326,7 @@ PyDUInt32::PyDUInt32()
   pyType->tp_init = (initproc)(PyDUInt32::_init);
   pyType->tp_methods = pyMethods;
   if (PyType_Ready(pyType) < 0)
-    throw std::string("PyType ready error");
+    throw Destruct::DException("PyType ready error");
 }
 
 Destruct::DValue PyDUInt32::toDValue(PyObject* value) 
@@ -336,7 +336,7 @@ Destruct::DValue PyDUInt32::toDValue(PyObject* value)
     DUInt32  fvalue = PyLong_AsLong(value);
     return (Destruct::RealValue<DUInt32>(fvalue));
   }
-  throw std::string("Can't cast to DUInt32");
+  throw Destruct::DException("Can't cast to DUInt32");
 }
 
 PyObject*     PyDUInt32::asDValue(Destruct::DValue v)
@@ -377,7 +377,7 @@ PyDUInt64::PyDUInt64()
   pyType->tp_init = (initproc)(PyDUInt64::_init);
   pyType->tp_methods = pyMethods;
   if (PyType_Ready(pyType) < 0)
-    throw std::string("PyType ready error");
+    throw Destruct::DException("PyType ready error");
 }
 
 Destruct::DValue PyDUInt64::toDValue(PyObject* value) 
@@ -387,7 +387,7 @@ Destruct::DValue PyDUInt64::toDValue(PyObject* value)
       DUInt64 fvalue = PyLong_AsLong(value);
       return (Destruct::RealValue<DUInt64>(fvalue));
   }
-  throw std::string("Can't cast to DUInt64");
+  throw Destruct::DException("Can't cast to DUInt64");
 }
 
 PyObject*     PyDUInt64::asDValue(Destruct::DValue v)
@@ -428,7 +428,7 @@ PyDUnicodeString::PyDUnicodeString()
   pyType->tp_init = (initproc)(PyDUnicodeString::_init);
   pyType->tp_methods = pyMethods;
   if (PyType_Ready(pyType) < 0)
-    throw std::string("PyType ready error");
+    throw Destruct::DException("PyType ready error");
 }
 
 Destruct::DValue PyDUnicodeString::toDValue(PyObject* value) 
@@ -438,7 +438,7 @@ Destruct::DValue PyDUnicodeString::toDValue(PyObject* value)
     Destruct::DUnicodeString fvalue = std::string(PyString_AsString(value));
     return Destruct::RealValue<Destruct::DUnicodeString>(fvalue);
   }
-  throw std::string("Can't cast to DUnicodeString");
+  throw Destruct::DException("Can't cast to DUnicodeString");
 }
 
 PyObject*     PyDUnicodeString::asDValue(Destruct::DValue v)

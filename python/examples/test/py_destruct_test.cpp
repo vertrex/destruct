@@ -26,7 +26,9 @@ PyTest::PyTest()
 
 PyObject*    PyTest::run(PyTest::DPyObject* self, PyObject* args, PyObject *kwds)
 {
+//Py_BEGIN_ALLOW_THREADS //alow threading
   self->pimpl->run();
+  //Py_END_ALLOW_THREADS
 
   Py_RETURN_NONE;
 }

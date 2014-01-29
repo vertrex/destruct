@@ -1,3 +1,5 @@
+#include "dexception.hpp"
+
 #include "py_dstream.hpp"
 
 #include <python2.7/Python.h>
@@ -21,7 +23,7 @@ PyDStream::PyDStream()
   pyType->tp_dealloc = (destructor)_dealloc;
 
   if (PyType_Ready(pyType) < 0)
-    throw std::string("PyType ready error");
+    throw Destruct::DException("PyType ready error");
 
   PyDict_SetItemString(pyType->tp_dict, "Input", PyInt_FromLong(0));
   PyDict_SetItemString(pyType->tp_dict, "Output", PyInt_FromLong(1));

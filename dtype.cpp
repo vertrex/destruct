@@ -28,7 +28,7 @@ const std::string DType::__typeName[] =
  "DUnicodeString",
 
  "DObject",
- "DMethod", //XXX method ou function faudrait savoir ?
+ "DMethod",
  "DNone",
  "DUnknown"
 };
@@ -90,8 +90,8 @@ void            DType::init(void)
  
   __prototypes[DUnicodeStringType] = new RealValue<DUnicodeString>("");
   __prototypes[DObjectType] = new RealValue<DObject* >(0);
-  __prototypes[DMethodType] = new RealValue<DFunctionObject* >(0);
-  __prototypes[DNoneType] = new RealValue<DObject* >(DNone);
+  __prototypes[DMethodType] = new RealValue<DFunctionObject* >(0); //XXX DMethod ou DFunction ?
+  __prototypes[DNoneType] = new RealValue<DObject* >(DNone); //XXX DObject ou DNullObject ?
 
 }
 

@@ -14,13 +14,12 @@ class DValue;
 
 //spliter les base value ds un autre fichier 
 
-/*
- *  This an interface, bae class for value,
+/*! \brief   This an interface, bae class for value,
+ *
  *  all value implementation must inherit this class 
  *  this let manipulate value , value implemetation are in a separe class called DValue
  *  objet can store this basevalue class to get access to derived class by inheritance
  */
-
 class BaseValue
 {
 public:
@@ -38,10 +37,8 @@ protected:
   }  
 };
 
-/*
- * inherit base value to create a new kind of value that call an internal function
+/*! \brief inherit base value to create a new kind of value that call an internal function
  */
-
 class FinalValue : public BaseValue
 {
 public:
@@ -58,10 +55,8 @@ protected:
   FinalValue& operator=(FinalValue const &);
 };
 
-/*
-* inherit final value who inherit base value
-* provide copy and plain type conversion operator
-*/
+/*! \brief provide copy and plain type conversion operator
+ */
 
 template <typename PlainType> 
 class TypedValue : public FinalValue
@@ -78,11 +73,12 @@ protected:
   }
 };
 
-/*
-* this is the value implementation to manipulate basevalue object allocate/delete embeded acess
-* through final value converter
-* it use a template class to specialize the get method 
-*/
+/*! \brief Value handle
+ *
+ * this is the value implementation to manipulate basevalue object allocate/delete embeded acess
+ * through final value converter
+ * it use a template class to specialize the get method 
+ */
 
 class DValue
 {

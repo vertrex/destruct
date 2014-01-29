@@ -22,7 +22,7 @@ PyDSerialize::PyDSerialize() //DSerializers XXX rename PyDSerialize.serialize se
   pyType->tp_dealloc = (destructor)_dealloc;
 
   if (PyType_Ready(pyType) < 0)
-    throw std::string("PyType ready error");
+    throw Destruct::DException("PyType ready error");
 }
 
 PyObject* PyDSerialize::serialize(PyDSerialize::DPyObject* self, PyObject* args, PyObject* kwds)

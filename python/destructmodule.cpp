@@ -264,28 +264,24 @@ const std::string  PythonBaseModule::pyErrorAsString(void)
  
   return (errorMessage);
 }
-//optimisation si object de type dobject ou dvalue tres rapide pour le get si pas type python !
-  //attention est ralentie par la construction dobjet qui prefere construire un objet python pour etre plus rapide et pas faire un callnewobject en python voir optimisation FASCALL ds dpython
 
+//XXX optimized ? 
 Destruct::DValue PythonBaseModule::pyObjectToDValue(PyObject* object)
 {
-  PyObject* objectTypeId = PyObject_CallMethod(object, (char *)"getType", NULL);
-  int typeId = PyInt_AsLong(objectTypeId);
+  //PyObject* objectTypeId = PyObject_CallMethod(object, (char *)"getType", NULL);
+  //if (typeId != -1)
+     //return Destruct::DValue(DValueDispatchTable[typeId]->toDValue(object)); -de check mais 1 call en plus possibilite de faire mieux avec unarg static ? objectTypeId.type ?
+    //XXX a utiliser pour forcer le type int8, int16, ... car pas gerer la !      
+ 
+  if (PyLong_Check(object) || PyInt_Check(object))
+    return (Destruct::RealValue<DInt64>(PyLong_AsLong(object)));
+  if (PyString_Check(object)) 
+    return Destruct::RealValue<Destruct::DUnicodeString>(std::string(PyString_AsString(object)));
+  if (PyObject_TypeCheck(object, PyDMethodObject::pyType))
+    return Destruct::RealValue<Destruct::DFunctionObject*>(((PyDMethodObject::DPyObject*)object)->pimpl);
+  if (PyObject_TypeCheck(object, PyDObject::pyType))
+    return Destruct::RealValue<Destruct::DObject* >(((PyDObject::DPyObject*)object)->pimpl);
 
-  if (typeId != -1)
-    return Destruct::DValue(DValueDispatchTable[typeId]->toDValue(object));
-
-  for (typeId = 0; typeId < 12; typeId++)
-  {
-     try
-     {
-       return Destruct::DValue(DValueDispatchTable[typeId]->toDValue(object));
-     }
-     catch(...)
-     { 
-        //clean python error de DValueDispatchTAble ! car si non en fi de boucle ca pete
-     }
-  }
   return (Destruct::RealValue<Destruct::DObject*>(Destruct::DNone));
 }
 

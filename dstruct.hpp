@@ -42,6 +42,7 @@ public:
   void                  setDefault(DObject const *);
 
   DAttribute const&     attribute(size_t index) const;
+  DAttribute const&     attribute(DUnicodeString const& name) const; //virtual ??XXX
   size_t                attributeCount() const;
   int32_t               findAttribute(DUnicodeString const& name) const;
 

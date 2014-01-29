@@ -386,10 +386,18 @@ void DestructTest::createNtfsBootSector(void)
 
   this->showObjectAttribute(bootSector);
 
-  //std::string fname = "output/test-BIG-" + bootSector->instanceOf()->name() + ".raw";
-  //DStream binoutraw(fname, DStream::Output);
+  std::string fname = "output/test-BIG-" + bootSector->instanceOf()->name() + ".raw";
+  DStream binoutraw(fname, DStream::Output);
   //for (int x = 0; x < 1000000*2; x++) //deserialize 10 go
   //DSerializers::to("Raw")->serialize(binoutraw, *bootSector);
+   DStream inbootsector(fname, DStream::Input);
+   for (int x = 0; x < 1000000*2; x++) //deserialize 1 go
+   {
+   //2 millions object new == a peu pres 6GO RAM !
+     DObject* bootSector = dstructBootSector->newObject(); 
+     DSerializers::to("Raw")->deserialize(inbootsector, *bootSector);
+     bootSector->destroy();
+   }
 
  //XXX read ntfs boot sector :)
 }

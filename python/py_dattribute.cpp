@@ -23,7 +23,7 @@ PyDAttribute::PyDAttribute()
   pyType->tp_dealloc = (destructor)_dealloc;
 
   if (PyType_Ready(pyType) < 0)
-    throw std::string("PyType ready error");
+    throw Destruct::DException("PyType ready error");
 }
 
 PyObject* PyDAttribute::name(PyDAttribute::DPyObject* self, PyObject* args, PyObject* kwds)

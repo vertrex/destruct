@@ -57,12 +57,11 @@ public :
 
   Destruct::DValue toDValue(PyObject* value) 
   {
-
     if (PyObject_TypeCheck(value, PyDMethodObject::pyType))
     {
        return Destruct::RealValue<Destruct::DFunctionObject*>(((DPyObject*)value)->pimpl);
     }
-    throw std::string("Can't cast to DMethodObject*");
+    throw Destruct::DException("Can't cast to DMethodObject*");
   }
 
   /* 

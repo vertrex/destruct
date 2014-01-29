@@ -4,6 +4,7 @@
 #include "destructmodule.hpp"
 #include "dnullobject.hpp"
 #include "drealvalue.hpp"
+#include "dexception.hpp"
 
 typedef PythonModule< class PyDNullObject, Destruct::DNullObject > PyDNullObjectT;
 class PyDNullObject : public PyDNullObjectT, public PythonTypeBaseModule
@@ -33,7 +34,7 @@ public:
   {
      if (!value || (value == Py_None) || PyObject_TypeCheck(value, PyDNullObject::pyType))
        return Destruct::RealValue<Destruct::DObject* >(Destruct::DNone); 
-     throw std::string("Can't cast to DNone");
+     throw Destruct::DException("Can't cast to DNone");
   }
 
   PyObject*     asDValue(Destruct::DValue v)

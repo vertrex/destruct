@@ -7,9 +7,9 @@ sys.path.append('../../')
 import time, timeit
 from _destruct import *
 
-#COUNT = 10
-COUNT = 10**6
-COUNT = 10**3
+COUNT = 10
+#COUNT = 10**6
+#COUNT = 10**3
 
 def timeFunc(func, args):
    a = time.time()
@@ -41,6 +41,11 @@ def iterate(dobject):
 class PySimpleIterator(DObject):
   def __init__(self):
      DObject.__init__(self, 'DIteratorString') 
+
+class PySimpleDVectorInt(DObject):
+  def __init__(self):
+     DObject.__init__(self, "DVector<DInt64>")
+
 
 class PySimpleDVectorString(DObject):
   def __init__(self):
@@ -170,7 +175,139 @@ print vector[0]
 
 print 'vector set 0 10 str'
 for x in range(0, 10):
+  print x
   vector[x] = 'test ' +str(x)
+
 print 'print vector content'
 for i in vector:
   print i
+
+print 'put int in string doit planter mais doit etre catchable'
+#try:
+ #for x in range(0, 10):
+   #vector[x] = x
+#except :
+  #pass
+
+vi = PySimpleDVectorInt()
+for x in range(0, 10):
+  vi.push(x)
+for x in range(0, 10):
+  vi[x] = x * 10
+
+for i in vi:
+  print i
+
+#XXX faudrait le call en C++ ! 
+
+class PyPureIterator(DObject):
+  def __init__(self):
+     DObject.__init__(self, "PyPureIterator")
+     self.i = 0  
+
+  def first(self):
+     self.i = 0
+ 
+  def next(self):
+     self.i += 1
+
+  def isDone(self):
+     if self.i >= self.pyvector.size():
+       return DInt8(1)
+     return DInt8(0) 
+
+  def currentItem(self):
+     if self.i < self.pyvector.size():
+       val = self.pyvector.get(self.i)
+       return val
+
+  def container(self, item):  
+     self.pyvector = item
+     return self.pyvector
+      
+
+class PythonPureIterable(DObject):
+  def __init__(self):
+     DObject.__init__(self, "DIterable") #faudrait un DIterable register avant DIterable64... sin on faut redefinir toute la struct soit meme c pas le but faudrait pouvoir heriter donc pour creer par un hex un objet node iterable 
+     self.l = ['a', 'b', 'c']
+
+  def get(self, index):
+     return self.l[index] 
+
+  def push(self, val):
+     self.l.append(val)
+
+  def size(self):
+      return len(self.l)
+
+  def iterator(self): 
+     iterator = PyPureIterator()
+     iterator.container(self)
+     return iterator
+
+ppi = PythonPureIterable()
+for x in ppi:
+  print x
+
+class Node(DObject):
+  def __int__(self):
+    
+
+  def children(self): # iterable ! 
+     return self.__childrenslist
+
+#  def size(self): #file ? 
+#  def file() ? 
+
+ 
+  def exif():
+    pass
+
+  def ntfs() ? 
+
+  def attribute(self):#
+     return dobject   #
+
+
+
+class NtfsNode(Node):
+  def DObject.Node ... herite
+
+
+  def modified
+
+  def accessed
+
+  def created
+
+
+d
+
+
+class NtfsNodeMFT(NtfsNOde)
+  def mftid
+
+  def cluster
+
+  def toto
+
+
+new Destruct()NtfsNode()
+return .. .
+
+
+if read les attribut dynamiquement ? 
+
+for i in data:
+  if addAttribute(name, type)
+    //possibilite de register ds DMutable un truc genre DTemp ? en singleton
+    //comme ca ds DFF recupere toute les struct genre et connais les type ? 
+    //car c le prob du dmutable 
+    //par ex: si contruit avec un nom ca register mais faudrait pas que ca regiter avec le meme nom 
+    //
+    DMutable().setAttributeValue("toto", 1, type)
+
+
+  return DMutable #les node avec attrib dynamqiue 
+
+

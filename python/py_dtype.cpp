@@ -1,3 +1,5 @@
+#include "dexception.hpp"
+
 #include "py_dtype.hpp"
 #include "py_dvalue.hpp"
 #include "py_dobject.hpp"
@@ -22,7 +24,7 @@ PyDType::PyDType()
   pyType->tp_dealloc = (destructor)_dealloc;
 
   if (PyType_Ready(pyType) < 0)
-    throw std::string("PyType ready error");
+    throw Destruct::DException("PyType ready error");
 }
 
 PyObject* PyDType::getType(PyDType::DPyObject* self, PyObject*args, PyObject* kwds)

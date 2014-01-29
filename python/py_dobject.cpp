@@ -39,7 +39,8 @@ PyDObject::PyDObject()
   pyType->tp_setattro = (setattrofunc)PyDObject::_setattr;
   pyType->tp_compare = (cmpfunc)PyDObject::_compare; 
 
-/* XXX test iterator */
+/* XXX test iterator Trouver solutions/herit PyDObect   ou on garde comme ca ?
+  pouvoir le faire dynamiquement ? mais y a pyType_Ready ! vant de ce connaitre le dstruct qu on connais que ds  init / dealloc  */
   pyType->tp_iter = (getiterfunc)PyDObject::_iter;
   pyType->tp_iternext = (iternextfunc)PyDObject::_iternext;
 
@@ -52,8 +53,8 @@ PyDObject::PyDObject()
   //pyType->tp_as_map->
 
 
-  if (PyType_Ready(pyType) < 0)
-    throw std::string("PyType ready error");
+  if (PyType_Ready(pyType) < 0) //probleme force a init des functions inutile si pas set 
+    throw Destruct::DException("PyType ready error");
 }
 
 PyObject* PyDObject::instanceOf(PyDObject::DPyObject* self)
@@ -170,23 +171,18 @@ PyObject*  PyDObject::setValue(PyDObject::DPyObject* self, int32_t attributeInde
     {
       if (PyCallable_Check(valueObject))
       {
-        Destruct::DFunctionObject* dpythonMethodObject = new DPythonMethodObject((PyObject*)self, valueObject, self->pimpl->instanceOf()->attribute(attributeIndex).type()); //new donc doit XXX del ! objet tous ca ! refcount ?
-        self->pimpl->setValue(attributeIndex, Destruct::RealValue<Destruct::DFunctionObject* >(dpythonMethodObject));  //?XXX DFUNCTION SET VALUE  to DVALUE ?
+        Destruct::DFunctionObject* dpythonMethodObject = new DPythonMethodObject((PyObject*)self, valueObject, self->pimpl->instanceOf()->attribute(attributeIndex).type()); //new donc doit XXX del si ecraser par un set value ou object detruit
+        self->pimpl->setValue(attributeIndex, Destruct::RealValue<Destruct::DFunctionObject* >(dpythonMethodObject));
         Py_RETURN_NONE; 
       }
-      throw std::string("Can't cast to DMethod"); //XXX
+      PyErr_SetString(PyExc_TypeError, "setValue : object must be callable");
+      return (0);
     }
-    else
-      self->pimpl->setValue(attributeIndex, DValueDispatchTable[typeId]->toDValue(valueObject));
+    
+    self->pimpl->setValue(attributeIndex, DValueDispatchTable[typeId]->toDValue(valueObject));
     Py_RETURN_NONE;
   }
-  //catch (std::string e)//text with d exce[tion
-  //{
-  //PyErr_SetString(PyExc_AttributeError, e.c_str());
-  //return (0);
-  //}
- //XXX
-  catch (Destruct::DException exception)
+  catch (Destruct::DException const& exception)
   {
     PyErr_SetString(PyExc_AttributeError, exception.error().c_str());
     return (0);
@@ -337,20 +333,13 @@ PyObject* PyDObject::getType(PyDObject::DPyObject* self, PyObject* args, PyObjec
 
 PyObject* PyDObject::_iter(PyDObject::DPyObject* self)
 {
-  if (self->pimpl)
+  CHECK_PIMPL
+  
+  Destruct::DObject* iterator = NULL;
+  try 
   {
-    Destruct::DObject* iterator = NULL;
-    try 
-    {
-      Destruct::DValue value = self->pimpl->call("iterator", Destruct::RealValue<Destruct::DObject*>(Destruct::DNone));
-      iterator = value.get<Destruct::DObject*>();
-    }
-    catch (std::string error)
-    {
-      error += "\n" + self->pimpl->instanceOf()->name() + " is not iterable";
-      PyErr_SetString(PyExc_TypeError, error.c_str());
-      return (NULL);
-    }
+    Destruct::DValue value = self->pimpl->call("iterator", Destruct::RealValue<Destruct::DObject*>(Destruct::DNone));
+    iterator = value.get<Destruct::DObject*>();
 
     if (iterator != Destruct::DNone)
     {
@@ -361,21 +350,28 @@ PyObject* PyDObject::_iter(PyDObject::DPyObject* self)
       return ((PyObject*)dobjectObject);
     }
 
-    const std::string error = self->pimpl->instanceOf()->name() + " is not iterable";
+    const std::string error = self->pimpl->instanceOf()->name() + " iterator not set";
     PyErr_SetString(PyExc_TypeError, error.c_str()); 
     return (NULL);
-  }
 
-  PyErr_SetString(PyExc_TypeError, "destruct.DObject is not iterable");
-  return (NULL);
+  }
+  catch (Destruct::DException const& exception)
+  {
+    const std::string error = self->pimpl->instanceOf()->name() + " is not iterable\n" + exception.error();
+    PyErr_SetString(PyExc_TypeError, error.c_str());
+    return (NULL);
+  }
 }
+
 
 PyObject* PyDObject::_iternext(PyDObject::DPyObject* self)
 {
   Destruct::DIteratorBase* iterator = dynamic_cast<Destruct::DIteratorBase* >(self->pimpl);
   Destruct::RealValue<Destruct::DObject*> realNone = Destruct::DNone;
 
-  if (iterator != NULL)     
+  try {
+
+  if (iterator != NULL) //tjrs utiliser le protocol ?  
   {
     Destruct::DFunctionObject* isDoneObject = iterator->isDoneObject;  
     DInt8 isDone = isDoneObject->call(realNone).get<DInt8>();
@@ -388,10 +384,7 @@ PyObject* PyDObject::_iternext(PyDObject::DPyObject* self)
       Destruct::DFunctionObject* nextItemObject = iterator->nextObject;
       nextItemObject->call(realNone);
 
-      const Destruct::DStruct* dstruct = self->pimpl->instanceOf();
-      int32_t index = dstruct->findAttribute("currentItem");
-
-      Destruct::DAttribute attribute = dstruct->attribute(index);
+      Destruct::DAttribute attribute = self->pimpl->instanceOf()->attribute("currentItem");
       Destruct::DType::Type_t type = attribute.type().getReturnType();
       return (DValueDispatchTable[type]->asDValue(result));
     }
@@ -405,65 +398,69 @@ PyObject* PyDObject::_iternext(PyDObject::DPyObject* self)
       Destruct::DValue result = self->pimpl->call("currentItem", realNone);
       self->pimpl->call("next", realNone);
         
-      const Destruct::DStruct* dstruct = self->pimpl->instanceOf();
-      int32_t index = dstruct->findAttribute("currentItem");
-
-      Destruct::DAttribute attribute = dstruct->attribute(index);
+      Destruct::DAttribute attribute = self->pimpl->instanceOf()->attribute("currentItem");
       Destruct::DType::Type_t type = attribute.type().getReturnType();
       return (DValueDispatchTable[type]->asDValue(result));
     }
   }
-     
-//if isDone raise iter iteration !!!!!!!!!!!!!!!!!!!!
-//return PyDString::asPyObject(result);
-   return (NULL);
+    
+  } 
+  catch (Destruct::DException const& exception) { }
+
+  return (NULL);
 }
 
 Py_ssize_t PyDObject::_length(PyDObject::DPyObject* self)
 {
-//XXX try catch si pas de method size ! 
-  Destruct::DValue result = self->pimpl->call("size", Destruct::RealValue<Destruct::DObject*>(Destruct::DNone));
-
-  return (result.get<DUInt64>());
-//XXX error catch !        
+  try 
+  { 
+    Destruct::DValue result = self->pimpl->call("size", Destruct::RealValue<Destruct::DObject*>(Destruct::DNone));
+    return (result.get<DUInt64>());
+  }
+  catch (Destruct::DException const& exception)
+  {
+    return (0);
+  }
 }
 
 PyObject* PyDObject::_item(PyDObject::DPyObject* self, Py_ssize_t index)
 {
-  Destruct::DValue result = self->pimpl->call("get", Destruct::RealValue<DUInt64>(index));
-//XXX object->instanceOf()->get("call") 
-  //call.Type PythonReturn //XXX optime !!!! pas besoin de dvalueaspyObject  
-  return PythonBaseModule::dvalueAsPyObject(result); 
-//XXX error a gerer 
+  try
+  { 
+    Destruct::DValue result = self->pimpl->call("get", Destruct::RealValue<DUInt64>(index));
+    Destruct::DType type = self->pimpl->instanceOf()->attribute("get").type(); 
+
+    return (DValueDispatchTable[type.getReturnType()]->asDValue(result)); 
+  }
+  catch (Destruct::DException const& exception)
+  {
+    PyErr_SetString(PyExc_TypeError, exception.error().c_str());
+    return (NULL);
+  }
 }
 
 int PyDObject::_setitem(PyDObject::DPyObject* self, Py_ssize_t index, PyObject* item)
 {
- //XXX get template type dynamically finte avec push ...
-  DInt32 attributeIndex = self->pimpl->instanceOf()->findAttribute("push");
-  Destruct::DAttribute pushAttribute = self->pimpl->instanceOf()->attribute(attributeIndex);
-  Destruct::DType      pushType = pushAttribute.type();
-  Destruct::DValue itemValue = DValueDispatchTable[pushType.getArgumentType()]->toDValue(item);
+  try 
+  {
+    Destruct::DMutableObject* argument = new Destruct::DMutableObject("argument"); //cree un objet a chaque fois ? pourrait reutiliser le meme ?
+   
+    //tester vitesse avec les pour comparer  
+    Destruct::DType pushType = self->pimpl->instanceOf()->attribute("push").type(); //getValue("templatetype") ??
+    Destruct::DValue itemValue = DValueDispatchTable[pushType.getArgumentType()]->toDValue(item);
 
-  //if (1 == 1)
-  //{
-  //Destruct::DMutableStruct* dstruct = new Destruct::DMutableStruct(NULL, "argument", Destruct::DMutableObject::newObject);
-  //dstruct->addAttribute(Destruct::DAttribute("item", Destruct::DType::DUnicodeStringType)); 
-  //Destruct::DMutableObject* argument = new Destruct::DMutableObject(dstruct);
-  //dstruct->addAttribute(Destruct::DAttribute("index", Destruct::DType::DInt64Type));
+    //Destruct::DValue itemValue = pyObjectToDValue(item); //faudrait un DValue ou un stockage de BaseValue* ds un objet special
+    argument->setValueAttribute("item", itemValue, pushType.getArgumentType());
+    argument->setValueAttribute("index", Destruct::RealValue<DInt64>(index), Destruct::DType::DInt64Type);
 
-  //argument->setValue("item", itemValue); //comment on connait le type ? XXX pas pratique
-  //argument->setValue("index", Destruct::RealValue<DInt64>(index));
-  //}
-//version simplifier : 
-
-  Destruct::DMutableObject* argument = new Destruct::DMutableObject("argument");
-  argument->setValueAttribute("index", Destruct::RealValue<DInt64>(index), Destruct::DType::DInt64Type);
-  argument->setValueAttribute("item", itemValue, Destruct::DType::DUnicodeStringType);
-
-  self->pimpl->call("setItem", Destruct::RealValue<Destruct::DObject*>(argument)); //& ? new object ? qu'est ce qu on va faire de arg ?
+    self->pimpl->call("setItem", Destruct::RealValue<Destruct::DObject*>(argument));
+    argument->destroy();
+  }
+  catch (Destruct::DException const& exception)
+  {
+    PyErr_SetString(PyExc_AttributeError, exception.error().c_str());
+    return (-1);
+  }
 
   return (0); 
-//  Py_ErrSetString XXX
-  return (-1); //XXX return si can't call ou autre probleme 
 }

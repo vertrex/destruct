@@ -72,12 +72,20 @@ DValue DMutableObject::call(size_t idx, DValue const& v)
 
 void DMutableObject::setValueAttribute(std::string const& name, DValue const& v, DType::Type_t type)
 {
-  std::cout << "SET VALUE ATTRIBUTE" << std::endl;
   DAttribute attribute(name, type);
+//add attribute        item  DTypeString
   this->instanceOf()->addAttribute(attribute);
-  this->__values.push_back(attribute.type().newValue()); //set new value ou directement v possible ?
-  this->__values.back()->set(v);
+  //DValue(RealValue<std::string>()) 
+  //this->__prototype[typeid]->clone();// !!a utiliser plus souvet non ? on devrait tjrs reutiliser clone et newObject /newValue relerie comment marche ce pattern et l utiliser ! si non ca sert a rien ! -> check partout et ecrire pourquoi ds un guide dev a faire de toute !
 
+                        // push back prend un BasevValue * // meme truc que PythonBaseValue ? 
+                        
+                //je cree un DValue( realvalue<std::string> ) ? 
+
+//  this->__values.push_back(DValue(v));
+  this->__values.push_back(attribute.type().newValue()); //XXX set new value ou directement v possible ?
+//set la value apres (DValue ds un autre DValue de pas le meme type / j ai deja eu ce pb je crois et je fainte je c pu ou comme pour replace 
+  this->__values.back()->set(v);
 }
 
 }

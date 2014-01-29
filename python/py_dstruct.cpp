@@ -27,7 +27,7 @@ PyDStruct::PyDStruct()
   pyType->tp_repr = (reprfunc)PyDStruct::repr;
 
   if (PyType_Ready(pyType) < 0)
-    throw std::string("PyType ready error");
+    throw Destruct::DException("PyType ready error");
 }
 
 PyObject* PyDStruct::name(PyDStruct::DPyObject* self, PyObject* args, PyObject* kwds)

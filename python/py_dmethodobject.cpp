@@ -4,6 +4,8 @@
 #include "dobject.hpp"
 #include "drealvalue.hpp"
 #include "dnullobject.hpp"
+#include "dexception.hpp"
+
 #include "py_dstruct.hpp"
 #include "py_dtype.hpp"
 #include "py_dmethodobject.hpp"
@@ -30,7 +32,7 @@ PyDMethodObject::PyDMethodObject()
   pyType->tp_call = (ternaryfunc)PyDMethodObject::call;
 
   if (PyType_Ready(pyType) < 0)
-    throw std::string("PyType ready error");
+    throw Destruct::DException("PyType ready error");
 }
 
 PyObject* PyDMethodObject::call(PyObject* _self, PyObject* args)
@@ -72,11 +74,11 @@ PyObject* PyDMethodObject::call(PyObject* _self, PyObject* args)
 
     return (DValueDispatchTable[returnTypeId]->asDValue(self->pimpl->call(DValueDispatchTable[argumentTypeId]->toDValue(argumentObject))));
   } 
-  catch (std::string error)
+  catch (Destruct::DException const& exception)
   {  
-    PyErr_SetString(PyExc_TypeError, error.c_str());
+    PyErr_SetString(PyExc_TypeError, exception.error().c_str());
   }
-  catch (std::bad_cast exception)
+  catch (std::bad_cast exception) // C++ catch ? que d dexception ici car call une api ? mais derrirer call du cpp donc poura tjrs avoir un probleme a part un catch(...)
   {
     std::string argumentString = "MethodObject must return a " + type.argumentName();
     PyErr_SetString(PyExc_TypeError, argumentString.c_str()); 
@@ -144,7 +146,7 @@ PyObject* PyDMethodObject::getType(PyDMethodObject::DPyObject* self, PyObject* a
 }
 
 /*   
- *  DPythonMethodObject
+ *  DPythonMethodObject : public DFunctionObject called by c++ code 
  */ 
 
 Destruct::DValue DPythonMethodObject::call(Destruct::DValue const& args) const
@@ -168,8 +170,7 @@ Destruct::DValue DPythonMethodObject::call(Destruct::DValue const& args) const
   if (!pythonResult)
   {
      const std::string error = PythonTypeBaseModule::pyErrorAsString();
-     std::cout << error << std::endl;
-     throw error;
+     throw Destruct::DException(error);
   }
 
   PyGILState_Release(gstate);

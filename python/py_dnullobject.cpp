@@ -1,3 +1,5 @@
+#include "dexception.hpp"
+
 #include "py_dnullobject.hpp"
 
 template<>
@@ -23,7 +25,7 @@ PyDNullObject::PyDNullObject()
   //pyType->tp_compare = (cmpfunc)PyDNullObject::_compare; 
 
   if (PyType_Ready(pyType) < 0)
-    throw std::string("PyType ready error");
+    throw Destruct::DException("PyType ready error");
 }
 
 PyMethodDef PyDNullObject::pyMethods[] = 

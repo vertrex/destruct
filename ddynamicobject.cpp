@@ -32,7 +32,6 @@ DValue DDynamicObject::getValue(size_t idx) const
 
 void DDynamicObject::setValue(size_t idx, DValue const & v)
 {
-//XXX la diff avec replace a part le type ???
   this->__values[idx]->set(v);
 }
 
