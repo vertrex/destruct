@@ -72,21 +72,17 @@ template <typename RealType, DType::Type_t  RealTypeId>
 class DIterator : public DIteratorBase 
 {
 public:
-  DIterator()
+  DIterator() : index(0), __container(NULL)
   {
-   //XXX peut pas etre appeller par les autres constructure ?  ou faire une fonction init() pour pas copier 2 fois la meme chose
-    this->index = 0;
-    this->__container = NULL;
   }
 
-  DIterator(DObject* dobject)
+  DIterator(const DIterator& copy) : index(copy.index), __container(copy.__container)
   {
-    this->index = 0;
-    this->__container = NULL;
+    if (this->__container)
+      this->__container->addRef();
   }
 
-
-  DIterator(const DIterator& copy,DObject* object)
+  DIterator(DObject* dobject) : index(0), __container(NULL)
   {
   }
 
@@ -142,7 +138,9 @@ public:
     DObject*  container = value.get<DObject* >();
 
     if (container != DNone)
+    {
       this->__container = container;
+    }
 
     return (this->__container);
   }

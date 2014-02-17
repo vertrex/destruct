@@ -31,8 +31,8 @@ public:
 
     if (self)
     {
-      iterator->first();
-      iterator->container(RealValue<DObject*>(self));
+      diterator->first();
+      diterator->container(RealValue<DObject*>(self));
 
       return (diterator);
     }
