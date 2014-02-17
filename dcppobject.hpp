@@ -5,7 +5,6 @@
 #include "dmemberpointer.hpp"
 #include "dobject.hpp"
 #include "drealvalue.hpp" 
-#include "dfunctionpointer.hpp"
 
 namespace Destruct
 {
@@ -25,11 +24,10 @@ public:
   {
     this->__members = this->memberBegin();
 
-    DFunctionPointer<CppClass >* methods = this->methodBegin();
-    for (size_t idx = 0; idx < this->methodCount(); ++idx)
+    DMemoryPointer<CppClass >* methods = this->memberBegin(); //bouger ailleurs genre ds makeNew ?
+    for (size_t idx = 0; idx < this->ownAttributeCount(); ++idx)
     {
-    std::cout << "set value " << idx << std::endl;
-    this->setValue(idx, RealValue<DFunctionObject*>(methods[idx].get(this)));
+       methods[idx].initMember(this); //XXX seem pas mal
     }
   }
  
@@ -39,10 +37,10 @@ public:
   {
     this->__members = this->memberBegin();
 
-    DFunctionPointer<CppClass >* methods = this->methodBegin();
-    for (size_t idx = 0; idx < this->methodCount(); ++idx)
+    DMemoryPointer<CppClass >* methods = this->memberBegin();
+    for (size_t idx = 0; idx < this->ownAttributeCount(); ++idx)
     {
-      this->setValue(idx, RealValue<DFunctionObject*>(methods[idx].get(this)));
+      methods[idx].initMember(this);
     }
   }
 
@@ -70,6 +68,12 @@ public:
   {
     return (this->__members[idx].value(this));
   }
+
+  //virtual DValue callBase(size_t idx, DValue const& args) implementer ca ? pour aller la base class si overwriten ? 
+  //{
+  //DValue v = this->__members[idx].default(this);
+  //return (v.get<DFunctionObject*>()->call(args);
+  //}
 
   virtual DValue call(size_t idx, DValue const & args)
   {

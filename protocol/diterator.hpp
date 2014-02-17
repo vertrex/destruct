@@ -53,30 +53,6 @@ class DObject;
     return (count);\
   };\
 
-#define declareAttributeCount(count)\
-  static size_t         ownAttributeCount()\
-  {\
-    return (count);\
-  };\
-
-
-#define objectFunctionList(f1, f2, f3, f4, f5, f6, f7)\
-  static DMemoryPointer<DIterator>* memberBegin()\
-  {\
-    static DMemoryPointer<DIterator> memberPointer[] = \
-          {\
-                  DMemoryPointer<DIterator>(&DIterator::f1##Object),\
-                  DMemoryPointer<DIterator>(&DIterator::f2##Object),\
-                  DMemoryPointer<DIterator>(&DIterator::f3##Object),\
-                  DMemoryPointer<DIterator>(&DIterator::f4##Object),\
-                  DMemoryPointer<DIterator>(&DIterator::f5##Object),\
-                  DMemoryPointer<DIterator>(&DIterator::f6##Object),\
-                  DMemoryPointer<DIterator>(&DIterator::f7),\
-          };\
-          return memberPointer;\
-  }\
-  static DMemoryPointer<DIterator>* memberEnd()\
-  { return (memberBegin() + ownAttributeCount()); }\
 
 namespace Destruct
 {
@@ -176,24 +152,9 @@ public:
     return (this->__container);
   }
 
-  static size_t methodCount(void)
-  {
-    return (6);
-  }
-
-  static DFunctionPointer<DIterator>* methodBegin()
-  {
-    static DFunctionPointer<DIterator > functionPointer[] = 
-    {
-      DFunctionPointer<DIterator>(&DIterator::next),
-      DFunctionPointer<DIterator>(&DIterator::first),
-      DFunctionPointer<DIterator>(&DIterator::isDone),
-      DFunctionPointer<DIterator>(&DIterator::currentItem),
-      DFunctionPointer<DIterator>(&DIterator::container),
-      DFunctionPointer<DIterator>(&DIterator::iterator),
-    };
-    return (functionPointer);
-  }
+/*
+ * DStruct declaration
+ */
 
   RealValue<DUInt64>    index; //signed en python
 
@@ -207,7 +168,26 @@ public:
 
   declareAttributeCount(7)
 
-  objectFunctionList(next, first, isDone, currentItem, container, iterator, index)
+  static DMemoryPointer<DIterator>* memberBegin()
+  {
+    static DMemoryPointer<DIterator> memberPointer[] = 
+    {
+      DMemoryPointer<DIterator>(&DIterator::nextObject, &DIterator::next),
+      DMemoryPointer<DIterator>(&DIterator::firstObject, &DIterator::first),
+      DMemoryPointer<DIterator>(&DIterator::isDoneObject, &DIterator::isDone),
+      DMemoryPointer<DIterator>(&DIterator::currentItemObject, &DIterator::currentItem),
+      DMemoryPointer<DIterator>(&DIterator::containerObject, &DIterator::container),
+      DMemoryPointer<DIterator>(&DIterator::iteratorObject, &DIterator::iterator),
+      DMemoryPointer<DIterator>(&DIterator::index),
+    };
+    return memberPointer;
+  }
+
+  static DMemoryPointer<DIterator>* memberEnd()
+  { 
+    return (memberBegin() + ownAttributeCount()); 
+  }
+
 private:
   DObject*              __container;
 };

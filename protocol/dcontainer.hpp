@@ -5,8 +5,6 @@
 #include "../dcppobject.hpp"
 #include "dcontainerbase.hpp"
 
-#include "../dfunctionpointer.hpp"
-
 namespace Destruct 
 {
 
@@ -100,6 +98,10 @@ public:
     return (DNone);
   }
 
+/*
+ *  DStruct declaration
+ */ 
+
   static size_t ownAttributeCount()
   {
     return (5);
@@ -107,7 +109,6 @@ public:
  
   static DAttribute* ownAttributeBegin()
   {
-
     static DAttribute  attributes[] = 
     {
       DAttribute("push", DType::DMethodType, DType::DUInt64Type, RealTypeId), 
@@ -124,38 +125,21 @@ public:
     return (ownAttributeBegin() + ownAttributeCount());
   }
 
-  static size_t methodCount()
-  {
-    return (5);
-  }
-//en faite c member mais bon .. but servir a init le tableau d en dessous dmemory pointer
-  static DFunctionPointer<DVectorType>* methodBegin()
-  {
-    static DFunctionPointer<DVectorType> functionPointer[] = 
-    {
-      DFunctionPointer<DVectorType>(&DVectorType::push),
-      DFunctionPointer<DVectorType>(&DVectorType::get),
-      DFunctionPointer<DVectorType>(&DVectorType::size),
-      DFunctionPointer<DVectorType>(&DVectorType::setItem),
-      DFunctionPointer<DVectorType>(&DVectorType::iterator),
-    };
-    return (functionPointer);
-  }
-
   static DMemoryPointer<DVectorType>* memberBegin()
   {
     static DMemoryPointer<DVectorType> memberPointer[] = 
     {
-      DMemoryPointer<DVectorType>(&DVectorType::pushObject),
-      DMemoryPointer<DVectorType>(&DVectorType::getObject),
-      DMemoryPointer<DVectorType>(&DVectorType::sizeObject),
-      DMemoryPointer<DVectorType>(&DVectorType::setItemObject),
-      DMemoryPointer<DVectorType>(&DVectorType::iteratorObject),
+      DMemoryPointer<DVectorType>(&DVectorType::pushObject, &DVectorType::push),
+      DMemoryPointer<DVectorType>(&DVectorType::getObject, &DVectorType::get),
+      DMemoryPointer<DVectorType>(&DVectorType::sizeObject, &DVectorType::size),
+      DMemoryPointer<DVectorType>(&DVectorType::setItemObject, &DVectorType::setItem),
+      DMemoryPointer<DVectorType>(&DVectorType::iteratorObject, &DVectorType::iterator),
+
+      //XXX ?
+      //DMemoryPointer<DVectorType>(&DVectorType::iteratorObject); //cree le DRealValue et le stock encore mieux ... car au final on a pas besoin d y accedder directemnet a par si on veut bypasse le mop pour aller plus vite et garder la compatibilite puisqu on call un truc qui pointer ves ququchose donc peut etre modifier ;  iteratorObject->call(); directement meux que iterator::iterator() car lui ne gere pas l overloading et que object->call("iterator") car lui et plus lent et si on connais le type on a pas besoin faut aussi la possibiltie de pouvor appeller la methode de l objet si overwrittent et vu qu on la stcok c possible maintnant :) appeller la method de la class parent Object::iteratorObject 
     };
     return (memberPointer);
   }
-
-  //DMethodPointer<>(setItemObject, setitem) !! XXX voila ce qu il doit y avoir au final !
 
   static DMemoryPointer<DVectorType >*  memberEnd()
   {

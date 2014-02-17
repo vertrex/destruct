@@ -20,6 +20,14 @@ class DMemoryPointerBase
 public:
   virtual FinalValue& value(CPPClass* obj) const = 0;
   virtual FinalValue const& value(CPPClass const * obj) const = 0;
+  virtual void initMember(CPPClass * obj)
+  {
+  }
+  //virtual void default(CPPClass* obj) pour avoir acces a la method de la class de base si overwritten ?
+  //{
+  // 
+  //}
+
   virtual ~DMemoryPointerBase() 
   {
   };
@@ -41,6 +49,10 @@ public:
   {
   }
 
+  void  initMember(CPPClass* obj) 
+  {
+  }
+
   FinalValue& value(CPPClass* obj) const
   {
     return (obj->*__member);
@@ -55,6 +67,136 @@ private:
   RealReturnType CPPClass::* __member;
 };
 
+/*
+ * DMemberFunctionPointer specialization : returnType CPPClass(void)
+*/
+
+template<typename CPPClass, typename RealReturnType, typename MReturnType, typename ArgumentType>
+class DMemberFunctionPointer : public DMemoryPointerBase<CPPClass>
+{
+public:
+    DMemberFunctionPointer(RealReturnType CPPClass::* member, MReturnType (CPPClass::* methodPtr)(ArgumentType)) : __member(member), __method(methodPtr)
+  {
+  }
+
+  void initMember(CPPClass* obj)
+  {
+    obj->*__member = new DMethodObject(obj, __method);
+  }
+
+  FinalValue& value(CPPClass* obj) const
+  {
+    return (obj->*__member);
+  }
+
+  FinalValue const& value(CPPClass const *obj) const
+  {
+    return (obj->*__member);
+  }
+
+private:
+  RealReturnType CPPClass::* __member;
+  MReturnType (CPPClass::* __method) (ArgumentType);
+};
+
+/*
+ * DMemberFunctionPointer specialization : void CPPClass(Argument)
+*/
+
+template<typename CPPClass, typename RealReturnType, typename ArgumentType>
+class DMemberFunctionPointer<CPPClass, RealReturnType, void, ArgumentType> : public DMemoryPointerBase<CPPClass>
+{
+public:
+    DMemberFunctionPointer(RealReturnType CPPClass::* member, void (CPPClass::* methodPtr)(ArgumentType)) : __member(member), __method(methodPtr)
+  {
+  }
+
+  void initMember(CPPClass* obj)
+  {
+    obj->*__member = new DMethodObject(obj, __method);
+  }
+
+  FinalValue& value(CPPClass* obj) const
+  {
+    return (obj->*__member);
+  }
+
+  FinalValue const& value(CPPClass const *obj) const
+  {
+    return (obj->*__member);
+  }
+
+private:
+  RealReturnType CPPClass::* __member;
+  void (CPPClass::* __method) (ArgumentType);
+};
+
+
+/*
+ * DMemberFunctionPointer specialization : returnType CPPClass(void)
+*/
+
+template<typename CPPClass, typename RealReturnType, typename MReturnType>
+class DMemberFunctionPointer<CPPClass, RealReturnType, MReturnType, void> : public DMemoryPointerBase<CPPClass>
+{
+public:
+  DMemberFunctionPointer(RealReturnType CPPClass::* member, MReturnType (CPPClass::* methodPtr)(void)) : __member(member), __method(methodPtr)
+  {
+  }
+
+  void initMember(CPPClass* obj)
+  {
+    /*DFunctionObject* = new DMethodObject XXX encore besoin de dobject ? de le new ? a reflechir*/
+    obj->*__member = new DMethodObject(obj, __method);
+  }
+
+  FinalValue& value(CPPClass* obj) const
+  {
+    return (obj->*__member);
+  }
+
+  FinalValue const& value(CPPClass const *obj) const
+  {
+    return (obj->*__member);
+  }
+
+private:
+  RealReturnType CPPClass::* __member;
+  MReturnType (CPPClass::* __method) (void);
+};
+
+/*
+ * DMemberFunctionPointer specialization : void CPPClass(void)
+*/
+
+template<typename CPPClass, typename RealReturnType>
+class DMemberFunctionPointer<CPPClass, RealReturnType, void, void> : public DMemoryPointerBase<CPPClass>
+{
+public:
+  DMemberFunctionPointer(RealReturnType CPPClass::* member, void (CPPClass::* methodPtr)(void)) : __member(member), __method(methodPtr)
+  {
+  }
+
+  void initMember(CPPClass* obj)
+  {
+    obj->*__member = new DMethodObject(obj, __method);
+  }
+
+  FinalValue& value(CPPClass* obj) const
+  {
+    return (obj->*__member);
+  }
+
+  FinalValue const& value(CPPClass const *obj) const
+  {
+    return (obj->*__member);
+  }
+
+private:
+  RealReturnType CPPClass::* __member;
+  void (CPPClass::* __method) (void);
+};
+
 template<typename CPPClass>
 class DMemoryPointer
 {
@@ -64,21 +206,34 @@ public:
   {
   }
 
-   ~DMemoryPointer()
+  template<typename RealCPPClass, typename ReturnType, typename MReturnType, typename ArgumentType> 
+  explicit DMemoryPointer(ReturnType RealCPPClass::* ptr, MReturnType (CPPClass::* method)(ArgumentType)) : __pointerBase(new DMemberFunctionPointer<CPPClass, ReturnType, MReturnType, ArgumentType>(static_cast<ReturnType CPPClass::*>(ptr), static_cast<MReturnType (CPPClass::*)(ArgumentType) >(method)))
+  {
+  }
+
+  template<typename RealCPPClass, typename ReturnType, typename MReturnType> 
+  explicit DMemoryPointer(ReturnType RealCPPClass::* ptr, MReturnType (CPPClass::* method)(void)) : __pointerBase(new DMemberFunctionPointer<CPPClass, ReturnType, MReturnType, void>(static_cast<ReturnType CPPClass::*>(ptr), static_cast<MReturnType (CPPClass::*)(void) >(method)))
+  {
+  }
+
+  ~DMemoryPointer()
   {
     delete __pointerBase;
   }
 
-  FinalValue&  value(CPPClass* obj) const
+  void  initMember(CPPClass* self)
   {
-    return (this->__pointerBase->value(obj));
+    return (this->__pointerBase->initMember(self));
   }
 
-//FINAL VALUE A TEMPLTER POUR ACCEDER DIRECTE SANS DECLARATION EN REALVALUE ? possible ? 
-
-  FinalValue const& value(CPPClass const* obj) const
+  FinalValue&  value(CPPClass* self) const
   {
-    return (this->__pointerBase->value(obj));
+    return (this->__pointerBase->value(self));
+  }
+
+  FinalValue const& value(CPPClass const* self) const
+  {
+    return (this->__pointerBase->value(self));
   }
 
 private:
