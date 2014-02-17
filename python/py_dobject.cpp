@@ -343,7 +343,6 @@ PyObject* PyDObject::_iter(PyDObject::DPyObject* self)
 
     if (iterator != Destruct::DNone)
     {
-      iterator->call("first", Destruct::RealValue<Destruct::DObject*>(Destruct::DNone));
       PyDObject::DPyObject*  dobjectObject = (PyDObject::DPyObject*)_PyObject_New(PyDObject::pyType);
       dobjectObject->pimpl = iterator;
 
@@ -371,10 +370,10 @@ PyObject* PyDObject::_iternext(PyDObject::DPyObject* self)
 
   try {
 
-  if (iterator != NULL) //tjrs utiliser le protocol ?  
+  if (iterator != NULL)
   {
     Destruct::DFunctionObject* isDoneObject = iterator->isDoneObject;  
-    DInt8 isDone = isDoneObject->call(realNone).get<DInt8>();
+    DInt8 isDone(isDoneObject->call(realNone).get<DInt8>());
      
     if (!isDone)
     {
