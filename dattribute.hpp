@@ -8,6 +8,8 @@ namespace Destruct
 {
 class DStruct;
 
+class DMethodObject;
+
 class DAttribute
 {
 public:
@@ -16,6 +18,9 @@ public:
   const DUnicodeString& name(void) const;
   const DUnicodeString& description(void) const;
   DType                 type(void) const;
+
+  //DAttribute(const std::string& _name, const DType::Type_t returnType, const DType::Type_t argumentTypeId, DMethodObject* object, const DUnicodeString& description = "");
+
 private:
   DUnicodeString        __name;
   DType                 __type;

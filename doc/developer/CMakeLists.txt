@@ -16,12 +16,10 @@ if(DOC_GENERATE_DEVELOPER)
   add_custom_target(doc.developer)
   add_dependencies(doc.developer doc)
 
-  message("dev1")
   find_package(Doxygen)
   if(DOXYGEN_FOUND)
     string (REPLACE ";" " " DOC_DEVELOPER_SOURCE_FILES "${DOC_DEVELOPER_SOURCES}")
     set(DOC_DEVELOPER_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
-    #set(DOC_DEVELOPER_QCH_OUTPUT_FILE_REL "../../qhc/${DOC_DEVELOPER_QCH_OUTPUT_FILE}")
 
     foreach (type ${DOC_DEVELOPER_OUTPUT_TYPES})
       set(DOC_DEVELOPER_${type}_OUTPUT "YES")
@@ -39,7 +37,7 @@ if(DOC_GENERATE_DEVELOPER)
                         COMMAND "${DOXYGEN_EXECUTABLE}" "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile"
                         DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile" ${DOC_DEVELOPER_SOURCES}
                         VERBATIM)
-    set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "html")
+    set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "html;")
 
     install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/html"
             DESTINATION ${DOC_INSTALL_DIR}/developer

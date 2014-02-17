@@ -5,60 +5,10 @@
 #include "../dcppobject.hpp"
 #include "dcontainerbase.hpp"
 
+#include "../dfunctionpointer.hpp"
+
 namespace Destruct 
 {
-
-
-//template <typename RealType, DType::Type_t RealTypeId>
-//class DItem
-//{
-//public:
-  //DItem()
-  //{
-  //}
-
-  //DItem(const DItem<RealType, RealTypeId>& copy) : index(copy.index), item(copy.item) 
-  //{
-  //}
-
-  //RealValue<DUInt64>  index;
-  //RealValue<RealType> item;
-
-  //static size_t ownAttributeCount()
-  //{
-    //return (2);
-  //}
- 
-  //static DAttribute* ownAttributeBegin()
-  //{
-
-    //static DAttribute  attributes[] = {
-                       //DAttribute("item", RealTypeId), 
-                       //DAttribute("index",  DType::DUInt64Type)
-                                      //};
-    //return (attributes);
-  //}
-
-  //static DAttribute* ownAttributeEnd()
-  //{
-    //return (ownAttributeBegin() + ownAttributeCount());
-  //}
-
-  //static DMemoryPointer<DItem<RealType, RealTypeId> >* memberBegin()
-  //{
-    //static DMemoryPointer<DItem<RealType, RealTypeId> > memberPointer[] = 
-    //{
-      //DMemoryPointer<DItem<RealType, RealTypeId> >(&DItem<RealType, RealTypeId>::index),
-      //DMemoryPointer<DItem<RealType, RealTypeId> >(&DItem<RealType, RealTypeId>::item),
-    //};
-    //return (memberPointer);
-  //}
-
-  //static DMemoryPointer<DItem<RealType, RealTypeId> >*  memberEnd()
-  //{
-    //return (memberBegin() + ownAttributeCount());
-  //} 
-//};
 
 template <typename RealType, DType::Type_t RealTypeId, typename RealTypee >
 class DContainer : public DContainerBase 
@@ -66,12 +16,10 @@ class DContainer : public DContainerBase
 public:
   DContainer()
   {
-    this->iteratorObject = new DMethodObject(this, &DContainer< RealType, RealTypeId, RealTypee >::iterator);
   }
 
   DContainer(const RealType& copy)
   {
-    this->iteratorObject = new DMethodObject(this, &DContainer< RealType, RealTypeId, RealTypee >::iterator);
   }
 
   RealValue<DObject*>    iterator(void)
@@ -98,22 +46,21 @@ public:
 template <typename RealType, DType::Type_t  RealTypeId>
 class DVector : public DContainer<DVector<RealType, RealTypeId>, RealTypeId, RealType > 
 {
+  typedef DVector<RealType, RealTypeId> DVectorType;
 public:
   DVector()
   {
-    this->pushObject = new DMethodObject(this, &DVector<RealType, RealTypeId>::push);
-    this->getObject = new DMethodObject(this, &DVector<RealType, RealTypeId>::get);
-    this->sizeObject = new DMethodObject(this, &DVector<RealType, RealTypeId>::size);
-    this->setItemObject = new DMethodObject(this, &DVector<RealType, RealTypeId>::setItem);
   };
 
   DVector(const DVector<RealType, RealTypeId>& copy) :  __vector(copy.__vector) 
   {
-    this->pushObject = new DMethodObject(this, &DVector<RealType, RealTypeId>::push);
-    this->getObject = new DMethodObject(this, &DVector<RealType, RealTypeId>::get);
-    this->sizeObject = new DMethodObject(this, &DVector<RealType, RealTypeId>::size);
-    this->setItemObject = new DMethodObject(this, &DVector<RealType, RealTypeId>::setItem);
   }
+
+  //using DContainer<DVector<RealType, RealTypeId>, RealTypeId, RealType >::iterator;
+  RealValue<DObject*>    iterator(void)
+  {
+    return DContainer<DVector<RealType, RealTypeId>, RealTypeId, RealType >::iterator();
+  };
 
   RealValue<DUInt64>  push(DValue const& args) 
   {
@@ -161,13 +108,14 @@ public:
   static DAttribute* ownAttributeBegin()
   {
 
-    static DAttribute  attributes[] = {
-                       DAttribute("push", DType::DMethodType, DType::DUInt64Type, RealTypeId), 
-                       DAttribute("get",  DType::DMethodType, RealTypeId, DType::DUInt64Type),
-                       DAttribute("size", DType::DMethodType, DType::DUInt64Type, DType::DNoneType),
-                       DAttribute("iterator", DType::DMethodType, DType::DObjectType, DType::DNoneType),
-                       DAttribute("setItem", DType::DMethodType, DType::DNoneType, DType::DObjectType), 
-                                      };
+    static DAttribute  attributes[] = 
+    {
+      DAttribute("push", DType::DMethodType, DType::DUInt64Type, RealTypeId), 
+      DAttribute("get",  DType::DMethodType, RealTypeId, DType::DUInt64Type),
+      DAttribute("size", DType::DMethodType, DType::DUInt64Type, DType::DNoneType),
+      DAttribute("setItem", DType::DMethodType, DType::DNoneType, DType::DObjectType), 
+      DAttribute("iterator", DType::DMethodType, DType::DObjectType, DType::DNoneType),
+    };
     return (attributes);
   }
 
@@ -176,20 +124,40 @@ public:
     return (ownAttributeBegin() + ownAttributeCount());
   }
 
-  static DMemoryPointer<DVector<RealType, RealTypeId> >* memberBegin()
+  static size_t methodCount()
   {
-    static DMemoryPointer<DVector<RealType, RealTypeId> > memberPointer[] = 
+    return (5);
+  }
+//en faite c member mais bon .. but servir a init le tableau d en dessous dmemory pointer
+  static DFunctionPointer<DVectorType>* methodBegin()
+  {
+    static DFunctionPointer<DVectorType> functionPointer[] = 
     {
-      DMemoryPointer<DVector<RealType, RealTypeId> >(&DVector<RealType, RealTypeId>::pushObject),
-      DMemoryPointer<DVector<RealType, RealTypeId> >(&DVector<RealType, RealTypeId>::getObject),
-      DMemoryPointer<DVector<RealType, RealTypeId> >(&DVector<RealType, RealTypeId>::sizeObject),
-      DMemoryPointer<DVector<RealType, RealTypeId> >(&DVector<RealType, RealTypeId>::iteratorObject),
-      DMemoryPointer<DVector<RealType, RealTypeId> >(&DVector<RealType, RealTypeId>::setItemObject)
+      DFunctionPointer<DVectorType>(&DVectorType::push),
+      DFunctionPointer<DVectorType>(&DVectorType::get),
+      DFunctionPointer<DVectorType>(&DVectorType::size),
+      DFunctionPointer<DVectorType>(&DVectorType::setItem),
+      DFunctionPointer<DVectorType>(&DVectorType::iterator),
+    };
+    return (functionPointer);
+  }
+
+  static DMemoryPointer<DVectorType>* memberBegin()
+  {
+    static DMemoryPointer<DVectorType> memberPointer[] = 
+    {
+      DMemoryPointer<DVectorType>(&DVectorType::pushObject),
+      DMemoryPointer<DVectorType>(&DVectorType::getObject),
+      DMemoryPointer<DVectorType>(&DVectorType::sizeObject),
+      DMemoryPointer<DVectorType>(&DVectorType::setItemObject),
+      DMemoryPointer<DVectorType>(&DVectorType::iteratorObject),
     };
     return (memberPointer);
   }
 
-  static DMemoryPointer<DVector<RealType, RealTypeId> >*  memberEnd()
+  //DMethodPointer<>(setItemObject, setitem) !! XXX voila ce qu il doit y avoir au final !
+
+  static DMemoryPointer<DVectorType >*  memberEnd()
   {
     return (memberBegin() + ownAttributeCount());
   } 

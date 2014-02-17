@@ -31,10 +31,11 @@ private:
 
 /*
  *  This implement the interface of DMethodObjectBase 
+ *  DMethodObjectTyped specialization : ReturnType CPPClass(Argument)
  */
 
 template<typename RealReturnType, typename CPPClass, typename ArgumentType>
-class DMethodObjectTyped : public DMethodObjectBase//<RealReturnType, CPPClass> 
+class DMethodObjectTyped : public DMethodObjectBase
 {
 public:
   DMethodObjectTyped(CPPClass* self, RealReturnType (CPPClass::* member) (ArgumentType)) : __self(self), __member(member)
@@ -51,11 +52,12 @@ private:
 };
 
 /*
- *  ReturnType void specialization of DMethodObjectTyped
+ * DMethodObjectTyped specialization : void CPPClass(Argument)
  */
 
+
 template<typename CPPClass, typename ArgumentType>
-class DMethodObjectTyped<void, CPPClass, ArgumentType> : public DMethodObjectBase//<void, CPPClass> 
+class DMethodObjectTyped<void, CPPClass, ArgumentType> : public DMethodObjectBase
 {
 public:
   DMethodObjectTyped(CPPClass* self, void (CPPClass::* member) (ArgumentType)) : __self(self), __member(member)
@@ -73,11 +75,11 @@ private:
 };
 
 /*
- *  ArgumentType void specialization
+ * DMethodObjectTyped specialization : returnType CPPClass(void)
  */
 
 template<typename RealReturnType, typename CPPClass>
-class DMethodObjectTyped<RealReturnType, CPPClass, void > : public DMethodObjectBase//<RealReturnType, CPPClass> 
+class DMethodObjectTyped<RealReturnType, CPPClass, void > : public DMethodObjectBase
 {
 public:
   DMethodObjectTyped(CPPClass* self, RealReturnType (CPPClass::* member) (void)) : __self(self), __member(member)
@@ -96,11 +98,11 @@ private:
 };
 
 /*
- *  ReturnType void & ArgumentType void specialization
+ * DMethodObjectTyped specialization : void CPPClass(void)
  */
 
 template<typename CPPClass>
-class DMethodObjectTyped<void, CPPClass, void > : public DMethodObjectBase//<void, CPPClass> 
+class DMethodObjectTyped<void, CPPClass, void > : public DMethodObjectBase
 {
 public:
   DMethodObjectTyped(CPPClass* self, void (CPPClass::* member) (void)) : __self(self), __member(member)

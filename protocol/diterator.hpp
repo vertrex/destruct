@@ -101,37 +101,17 @@ public:
    //XXX peut pas etre appeller par les autres constructure ?  ou faire une fonction init() pour pas copier 2 fois la meme chose
     this->index = 0;
     this->__container = NULL;
-    
-    this->nextObject = new DMethodObject(this, &DIterator::next);
-    this->firstObject = new DMethodObject(this, &DIterator::first); 
-    this->isDoneObject = new DMethodObject(this, &DIterator::isDone); 
-    this->currentItemObject = new DMethodObject(this, &DIterator::currentItem); 
-    this->containerObject = new DMethodObject(this, &DIterator::container); 
-    this->iteratorObject = new DMethodObject(this, &DIterator::iterator); 
   }
 
   DIterator(DObject* dobject)
   {
     this->index = 0;
     this->__container = NULL;
-    
-    this->nextObject = new DMethodObject(this, &DIterator::next);
-    this->firstObject = new DMethodObject(this, &DIterator::first); 
-    this->isDoneObject = new DMethodObject(this, &DIterator::isDone); 
-    this->currentItemObject = new DMethodObject(this, &DIterator::currentItem); 
-    this->containerObject = new DMethodObject(this, &DIterator::container); 
-    this->iteratorObject = new DMethodObject(this, &DIterator::iterator); 
   }
 
 
   DIterator(const DIterator& copy,DObject* object)
   {
-    this->nextObject = new DMethodObject(this, &DIterator::next);
-    this->firstObject = new DMethodObject(this, &DIterator::first); 
-    this->isDoneObject = new DMethodObject(this, &DIterator::isDone); 
-    this->currentItemObject = new DMethodObject(this, &DIterator::currentItem);
-    this->containerObject = new DMethodObject(this, &DIterator::container); 
-    this->iteratorObject = new DMethodObject(this, &DIterator::iterator); 
   }
 
   void  next(void)
@@ -194,6 +174,25 @@ public:
   RealValue<DObject*>   iterator(void)
   {
     return (this->__container);
+  }
+
+  static size_t methodCount(void)
+  {
+    return (6);
+  }
+
+  static DFunctionPointer<DIterator>* methodBegin()
+  {
+    static DFunctionPointer<DIterator > functionPointer[] = 
+    {
+      DFunctionPointer<DIterator>(&DIterator::next),
+      DFunctionPointer<DIterator>(&DIterator::first),
+      DFunctionPointer<DIterator>(&DIterator::isDone),
+      DFunctionPointer<DIterator>(&DIterator::currentItem),
+      DFunctionPointer<DIterator>(&DIterator::container),
+      DFunctionPointer<DIterator>(&DIterator::iterator),
+    };
+    return (functionPointer);
   }
 
   RealValue<DUInt64>    index; //signed en python

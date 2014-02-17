@@ -5,6 +5,7 @@
 #include "dmemberpointer.hpp"
 #include "dobject.hpp"
 #include "drealvalue.hpp" 
+#include "dfunctionpointer.hpp"
 
 namespace Destruct
 {
@@ -20,19 +21,31 @@ template< typename CppClass>
 class DClassObject : public DObject, public CppClass
 {
 public:
-        //DClassObject(DStruct const* dstruct) : DObject(dstruct), CppClass() //XXX must give iterator or new style lambda iterator array
-  DClassObject(DStruct * dstruct) : DObject(dstruct), CppClass() //XXX must give iterator or new style lambda iterator array
+  DClassObject(DStruct * dstruct) : DObject(dstruct), CppClass()
   {
-    this->__members = this->memberBegin(); //init function in constructor (should be done elswhere ? XXX
-  } 
+    this->__members = this->memberBegin();
+
+    DFunctionPointer<CppClass >* methods = this->methodBegin();
+    for (size_t idx = 0; idx < this->methodCount(); ++idx)
+    {
+    std::cout << "set value " << idx << std::endl;
+    this->setValue(idx, RealValue<DFunctionObject*>(methods[idx].get(this)));
+    }
+  }
+ 
 //get original cpp object to wrap by ref  as const so original object is not modified !!! XXX not modified !
 //DClassObject(DStruct const * dstruct, CppClass const&  classobject) : DObject(dstruct) , CppClass(classobject)
   DClassObject(DStruct * dstruct, CppClass const&  classobject) : DObject(dstruct) , CppClass(classobject)
   {
     this->__members = this->memberBegin();
+
+    DFunctionPointer<CppClass >* methods = this->methodBegin();
+    for (size_t idx = 0; idx < this->methodCount(); ++idx)
+    {
+      this->setValue(idx, RealValue<DFunctionObject*>(methods[idx].get(this)));
+    }
   }
 
-  //static DObject* newObject(DStruct const* dstruct)
   static DObject* newObject(DStruct * dstruct)
   {
     return (new DClassObject(dstruct));
@@ -80,7 +93,6 @@ protected:
 
 private:
   DMemoryPointer<CppClass >*       __members;
-
 };
 
 template <typename CppClass>

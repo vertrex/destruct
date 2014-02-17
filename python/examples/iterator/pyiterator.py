@@ -249,65 +249,65 @@ ppi = PythonPureIterable()
 for x in ppi:
   print x
 
-class Node(DObject):
-  def __int__(self):
+#class Node(DObject):
+  #def __int__(self):
     
 
-  def children(self): # iterable ! 
-     return self.__childrenslist
+  #def children(self): # iterable ! 
+     #return self.__childrenslist
 
-#  def size(self): #file ? 
-#  def file() ? 
+##  def size(self): #file ? 
+##  def file() ? 
 
  
-  def exif():
-    pass
+  #def exif():
+    #pass
 
-  def ntfs() ? 
+  #def ntfs() ? 
 
-  def attribute(self):#
-     return dobject   #
-
-
-
-class NtfsNode(Node):
-  def DObject.Node ... herite
+  #def attribute(self):#
+     #return dobject   #
 
 
-  def modified
 
-  def accessed
-
-  def created
+#class NtfsNode(Node):
+  #def DObject.Node ... herite
 
 
-d
+  #def modified
+
+  #def accessed
+
+  #def created
 
 
-class NtfsNodeMFT(NtfsNOde)
-  def mftid
-
-  def cluster
-
-  def toto
+#d
 
 
-new Destruct()NtfsNode()
-return .. .
+#class NtfsNodeMFT(NtfsNOde)
+  #def mftid
+
+  #def cluster
+
+  #def toto
 
 
-if read les attribut dynamiquement ? 
-
-for i in data:
-  if addAttribute(name, type)
-    //possibilite de register ds DMutable un truc genre DTemp ? en singleton
-    //comme ca ds DFF recupere toute les struct genre et connais les type ? 
-    //car c le prob du dmutable 
-    //par ex: si contruit avec un nom ca register mais faudrait pas que ca regiter avec le meme nom 
-    //
-    DMutable().setAttributeValue("toto", 1, type)
+#new Destruct()NtfsNode()
+#return .. .
 
 
-  return DMutable #les node avec attrib dynamqiue 
+#if read les attribut dynamiquement ? 
+
+#for i in data:
+  #if addAttribute(name, type)
+    #//possibilite de register ds DMutable un truc genre DTemp ? en singleton
+    #//comme ca ds DFF recupere toute les struct genre et connais les type ? 
+    #//car c le prob du dmutable 
+    #//par ex: si contruit avec un nom ca register mais faudrait pas que ca regiter avec le meme nom 
+    #//
+    #DMutable().setAttributeValue("toto", 1, type)
+
+
+  #return DMutable #les node avec attrib dynamqiue 
 
 

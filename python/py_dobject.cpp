@@ -443,6 +443,8 @@ int PyDObject::_setitem(PyDObject::DPyObject* self, Py_ssize_t index, PyObject* 
 {
   try 
   {
+    //XXX normallement on doit utiliser le prototype et newObject() le plus possible pour les perf donc test si ca change bien les perf ! 
+
     Destruct::DMutableObject* argument = new Destruct::DMutableObject("argument"); //cree un objet a chaque fois ? pourrait reutiliser le meme ?
    
     //tester vitesse avec les pour comparer  
