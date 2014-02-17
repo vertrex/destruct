@@ -14,7 +14,7 @@
 
 if(DOC_GENERATE_DEVELOPER)
   add_custom_target(doc.developer)
-  add_dependencies(doc.developer doc)
+  add_dependencies(doc doc.developer)
 
   find_package(Doxygen)
   if(DOXYGEN_FOUND)
