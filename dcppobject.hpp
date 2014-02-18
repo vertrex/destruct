@@ -24,11 +24,8 @@ public:
   {
     this->__members = this->memberBegin();
 
-    DMemoryPointer<CppClass >* methods = this->memberBegin(); //bouger ailleurs genre ds makeNew ?
     for (size_t idx = 0; idx < this->ownAttributeCount(); ++idx)
-    {
-       methods[idx].initMember(this); //XXX seem pas mal
-    }
+       this->__members[idx].init(this); //XXX seem pas mal
   }
  
 //get original cpp object to wrap by ref  as const so original object is not modified !!! XXX not modified !
@@ -37,11 +34,8 @@ public:
   {
     this->__members = this->memberBegin();
 
-    DMemoryPointer<CppClass >* methods = this->memberBegin();
     for (size_t idx = 0; idx < this->ownAttributeCount(); ++idx)
-    {
-      methods[idx].initMember(this);
-    }
+      this->__members[idx].init(this);
   }
 
   static DObject* newObject(DStruct * dstruct)

@@ -20,7 +20,7 @@ class DMemoryPointerBase
 public:
   virtual FinalValue& value(CPPClass* obj) const = 0;
   virtual FinalValue const& value(CPPClass const * obj) const = 0;
-  virtual void initMember(CPPClass * obj)
+  virtual void init(CPPClass * obj)
   {
   }
   //virtual void default(CPPClass* obj) pour avoir acces a la method de la class de base si overwritten ?
@@ -49,7 +49,7 @@ public:
   {
   }
 
-  void  initMember(CPPClass* obj) 
+  void  init(CPPClass* obj) 
   {
   }
 
@@ -79,7 +79,7 @@ public:
   {
   }
 
-  void initMember(CPPClass* obj)
+  void init(CPPClass* obj)
   {
     obj->*__member = new DMethodObject(obj, __method);
   }
@@ -111,7 +111,7 @@ public:
   {
   }
 
-  void initMember(CPPClass* obj)
+  void init(CPPClass* obj)
   {
     obj->*__member = new DMethodObject(obj, __method);
   }
@@ -144,7 +144,7 @@ public:
   {
   }
 
-  void initMember(CPPClass* obj)
+  void init(CPPClass* obj)
   {
     /*DFunctionObject* = new DMethodObject XXX encore besoin de dobject ? de le new ? a reflechir*/
     obj->*__member = new DMethodObject(obj, __method);
@@ -177,7 +177,7 @@ public:
   {
   }
 
-  void initMember(CPPClass* obj)
+  void init(CPPClass* obj)
   {
     obj->*__member = new DMethodObject(obj, __method);
   }
@@ -221,9 +221,9 @@ public:
     delete __pointerBase;
   }
 
-  void  initMember(CPPClass* self)
+  void  init(CPPClass* self)
   {
-    return (this->__pointerBase->initMember(self));
+    return (this->__pointerBase->init(self));
   }
 
   FinalValue&  value(CPPClass* self) const
