@@ -22,24 +22,12 @@ Protocol::Protocol(Destruct* destruct)
 
 void Protocol::__registerStruct(Destruct* destruct)
 {
-  DStruct* s =  makeNewDClass< DIterator<DUnicodeString, DType::DUnicodeStringType> >(NULL, "DIteratorString"); //DIterator<String>
-  destruct->registerDStruct(s);
-  s = makeNewDClass< DIterator<DInt32, DType::DInt32Type> >(NULL, "DIteratorInt32"); //DIterator<String>
-  destruct->registerDStruct(s);
-  s = makeNewDClass< DIterator<DInt64, DType::DInt64Type> >(NULL, "DIteratorInt64"); //DIterator<String>
-  destruct->registerDStruct(s);
-  DStruct* dvectorString = makeNewDClass< DVectorString  >(NULL, "DVector<String>");
-  destruct->registerDStruct(dvectorString);
+  destruct->registerDStruct(new DStruct(NULL, "DIterator", DIterator::newObject, DIterator::ownAttributeBegin(), DIterator::ownAttributeEnd()));
 
-  DStruct* dvectorInt32 = makeNewDClass< DVectorInt32 >(NULL, "DVector<Int32>");
-  destruct->registerDStruct(dvectorInt32);
-
-  DStruct* dvectorInt64 = makeNewDClass< DVectorInt64 >(NULL, "DVector<DInt64>");
-  destruct->registerDStruct(dvectorInt64);
-
-
-  DStruct* dvectorObject = makeNewDClass< DVectorObject  >(NULL, "DVector<DObject*>");
-  destruct->registerDStruct(dvectorObject);
+  destruct->registerDStruct(makeNewDClass< DVectorString >(NULL, "DVector<String>"));
+  destruct->registerDStruct(makeNewDClass< DVectorInt32  >(NULL, "DVector<Int32>"));
+  destruct->registerDStruct(makeNewDClass< DVectorInt64  >(NULL, "DVector<DInt64>"));
+  destruct->registerDStruct(makeNewDClass< DVectorObject  >(NULL, "DVector<DObject*>"));
 }
 
 }

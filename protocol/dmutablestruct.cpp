@@ -27,6 +27,8 @@ void DMutableStruct::addAttribute(const DAttribute& attribute)
     this->__effectiveAttributes.push_back(attribute);
     //}
 }
+
+
 //XXX pouvoir le cee en python / inherit dobject et changer la methode set/get pour set auto la value python ?  mutableObject.toto = 1  sans a avoir a ajouter la definition possibilite d heriter de DMutableObject aussi ...
 
 //XXX UTILISER DEFAULT OBJECT ! ? et utiliser aussi ds DNONE voir DCOntainer  ?

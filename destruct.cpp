@@ -74,8 +74,11 @@ DStruct*        Destruct::find(const size_t index)
 DObject *       Destruct::generate(DUnicodeString const& name)
 {
   DStruct* dstruct = this->find(name);
-  if (dstruct == NULL)
-    return (NULL);
+  if (dstruct == NULL) //return NULL ? 
+  {
+    std::string error = "Can't find DStruct : " + name;
+    throw DException(error);
+  }
 
   return (dstruct->newObject());
 } 

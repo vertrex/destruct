@@ -335,24 +335,15 @@ PyObject* PyDObject::_iter(PyDObject::DPyObject* self)
 {
   CHECK_PIMPL
   
-  Destruct::DObject* iterator = NULL;
   try 
   {
-    Destruct::DValue value = self->pimpl->call("iterator", Destruct::RealValue<Destruct::DObject*>(Destruct::DNone));
-    iterator = value.get<Destruct::DObject*>();
+    Destruct::DObject* iterator = Destruct::Destruct::instance().generate("DIterator");
+    iterator->setValue("container", Destruct::RealValue<Destruct::DObject*>(self->pimpl));
 
-    if (iterator != Destruct::DNone)
-    {
-      PyDObject::DPyObject*  dobjectObject = (PyDObject::DPyObject*)_PyObject_New(PyDObject::pyType);
-      dobjectObject->pimpl = iterator;
+    PyDObject::DPyObject*  dobjectObject = (PyDObject::DPyObject*)_PyObject_New(PyDObject::pyType);
+    dobjectObject->pimpl = iterator;
 
-      return ((PyObject*)dobjectObject);
-    }
-
-    const std::string error = self->pimpl->instanceOf()->name() + " iterator not set";
-    PyErr_SetString(PyExc_TypeError, error.c_str()); 
-    return (NULL);
-
+    return ((PyObject*)dobjectObject);
   }
   catch (Destruct::DException const& exception)
   {
@@ -365,21 +356,20 @@ PyObject* PyDObject::_iter(PyDObject::DPyObject* self)
 
 PyObject* PyDObject::_iternext(PyDObject::DPyObject* self)
 {
-  Destruct::DIteratorBase* iterator = dynamic_cast<Destruct::DIteratorBase* >(self->pimpl);
+  Destruct::DIterator* iterator = dynamic_cast<Destruct::DIterator *>(self->pimpl);
   Destruct::RealValue<Destruct::DObject*> realNone = Destruct::DNone;
 
-  try {
-
+  //try {
   if (iterator != NULL)
   {
     Destruct::DFunctionObject* isDoneObject = iterator->isDoneObject;  
     DInt8 isDone(isDoneObject->call(realNone).get<DInt8>());
-     
+
     if (!isDone)
     {
       Destruct::DFunctionObject* currentItemObject = iterator->currentItemObject;
       Destruct::DValue result = currentItemObject->call(realNone);
-     
+
       Destruct::DFunctionObject* nextItemObject = iterator->nextObject;
       nextItemObject->call(realNone);
 
@@ -387,7 +377,6 @@ PyObject* PyDObject::_iternext(PyDObject::DPyObject* self)
       Destruct::DType::Type_t type = attribute.type().getReturnType();
       return (DValueDispatchTable[type]->asDValue(result));
     }
- 
   }
   else
   {
@@ -396,15 +385,19 @@ PyObject* PyDObject::_iternext(PyDObject::DPyObject* self)
     {
       Destruct::DValue result = self->pimpl->call("currentItem", realNone);
       self->pimpl->call("next", realNone);
-        
+
       Destruct::DAttribute attribute = self->pimpl->instanceOf()->attribute("currentItem");
       Destruct::DType::Type_t type = attribute.type().getReturnType();
       return (DValueDispatchTable[type]->asDValue(result));
     }
   }
-    
-  } 
-  catch (Destruct::DException const& exception) { }
+
+  //} 
+  //catch (Destruct::DException const& exception) 
+  //{
+  // 
+  //}
+  //PyErr setString ?
 
   return (NULL);
 }

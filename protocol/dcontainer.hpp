@@ -3,46 +3,36 @@
 
 #include "../dvalue.hpp"
 #include "../dcppobject.hpp"
-#include "dcontainerbase.hpp"
 
 namespace Destruct 
 {
 
-template <typename RealType, DType::Type_t RealTypeId, typename RealTypee >
-class DContainer : public DContainerBase 
+class DContainer //DContainer ou DVector finallement ? heriet DVectorBase / DContainer DMapBase / DContainer ? 
 {
 public:
   DContainer()
   {
   }
 
-  DContainer(const RealType& copy)
+  DContainer(const DContainer& copy)
   {
   }
 
-  RealValue<DObject*>    iterator(void)
-  {
-    DStruct* iteratorStruct = makeNewDClass< DIterator<RealTypee, RealTypeId> >(NULL, "DIterator");
-    DIterator<RealTypee, RealTypeId>* iterator = new DIterator<RealTypee, RealTypeId>();
-    DClassObject<DIterator<RealTypee, RealTypeId> >* diterator = makeNewDObject<DIterator<RealTypee, RealTypeId> >(iteratorStruct, *iterator);
-                                    
-    DStruct* selfStruct = makeNewDClass< RealType >(NULL, "DContainer");
-    DClassObject<RealType>* self = makeNewDObject< RealType >(selfStruct, *(RealType *)this); 
+  virtual RealValue<DUInt64>    push(DValue const& args) = 0;
+  virtual DValue                get(DValue const& args) = 0;
+  virtual RealValue<DUInt64>    size(void) = 0;
+  virtual RealValue<DObject*>   setItem(DValue const& args) = 0;
 
-    if (self)
-    {
-      diterator->first();
-      diterator->container(RealValue<DObject*>(self));
-
-      return (diterator);
-    }
-
-    return RealValue<DObject*>(DNone);
-  }
+  RealValue<DFunctionObject* >  pushObject;
+  RealValue<DFunctionObject* >  getObject;
+  RealValue<DFunctionObject* >  sizeObject;
+  RealValue<DFunctionObject* >  setItemObject; 
 };
 
+//XXX move in DVector.hpp
+
 template <typename RealType, DType::Type_t  RealTypeId>
-class DVector : public DContainer<DVector<RealType, RealTypeId>, RealTypeId, RealType > 
+class DVector : public DContainer
 {
   typedef DVector<RealType, RealTypeId> DVectorType;
 public:
@@ -54,12 +44,6 @@ public:
   {
   }
 
-  //using DContainer<DVector<RealType, RealTypeId>, RealTypeId, RealType >::iterator;
-  RealValue<DObject*>    iterator(void)
-  {
-    return DContainer<DVector<RealType, RealTypeId>, RealTypeId, RealType >::iterator();
-  };
-
   RealValue<DUInt64>  push(DValue const& args) 
   {
     this->__vector.push_back(args.get<RealType>());
@@ -67,16 +51,13 @@ public:
     return (this->__vector.size() - 1);
   }
    
-  RealValue<RealType> get(DValue const& args)
+  DValue  get(DValue const& args)
   {
     DUInt64 index = args.get<DUInt64>();
     if (index >= this->__vector.size())
-    {
-      std::cout << "DContainer error in get : bad index" << std::endl;
       throw DException("DContainer::get bad index\n");
-    }
       
-    return (this->__vector[index]);
+    return (RealValue<RealType>(this->__vector[index]));
   }
 
   RealValue<DUInt64>   size(void)
@@ -101,10 +82,9 @@ public:
 /*
  *  DStruct declaration
  */ 
-
   static size_t ownAttributeCount()
   {
-    return (5);
+    return (4);
   }
  
   static DAttribute* ownAttributeBegin()
@@ -115,14 +95,8 @@ public:
       DAttribute("get",  DType::DMethodType, RealTypeId, DType::DUInt64Type),
       DAttribute("size", DType::DMethodType, DType::DUInt64Type, DType::DNoneType),
       DAttribute("setItem", DType::DMethodType, DType::DNoneType, DType::DObjectType), 
-      DAttribute("iterator", DType::DMethodType, DType::DObjectType, DType::DNoneType),
     };
     return (attributes);
-  }
-
-  static DAttribute* ownAttributeEnd()
-  {
-    return (ownAttributeBegin() + ownAttributeCount());
   }
 
   static DMemoryPointer<DVectorType>* memberBegin()
@@ -133,12 +107,13 @@ public:
       DMemoryPointer<DVectorType>(&DVectorType::getObject, &DVectorType::get),
       DMemoryPointer<DVectorType>(&DVectorType::sizeObject, &DVectorType::size),
       DMemoryPointer<DVectorType>(&DVectorType::setItemObject, &DVectorType::setItem),
-      DMemoryPointer<DVectorType>(&DVectorType::iteratorObject, &DVectorType::iterator),
-
-      //XXX ?
-      //DMemoryPointer<DVectorType>(&DVectorType::iteratorObject); //cree le DRealValue et le stock encore mieux ... car au final on a pas besoin d y accedder directemnet a par si on veut bypasse le mop pour aller plus vite et garder la compatibilite puisqu on call un truc qui pointer ves ququchose donc peut etre modifier ;  iteratorObject->call(); directement meux que iterator::iterator() car lui ne gere pas l overloading et que object->call("iterator") car lui et plus lent et si on connais le type on a pas besoin faut aussi la possibiltie de pouvor appeller la methode de l objet si overwrittent et vu qu on la stcok c possible maintnant :) appeller la method de la class parent Object::iteratorObject 
     };
     return (memberPointer);
+  }
+
+  static DAttribute* ownAttributeEnd()
+  {
+    return (ownAttributeBegin() + ownAttributeCount());
   }
 
   static DMemoryPointer<DVectorType >*  memberEnd()
