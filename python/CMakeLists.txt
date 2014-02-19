@@ -12,7 +12,6 @@
 # Author(s):
 #  Solal Jacob <sja@digital-forensic.org>
 
-add_subdirectory(examples)
 
 set (pydestruct_files
 py_destruct.cpp
@@ -34,3 +33,5 @@ set_target_properties(_destruct PROPERTIES PREFIX "")
 target_link_libraries(_destruct destruct python2.7)
 
 include_directories("../")
+
+add_subdirectory(examples)

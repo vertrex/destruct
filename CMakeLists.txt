@@ -139,4 +139,4 @@ add_library(destruct SHARED ${destruct_source_files})
 
 add_subdirectory(examples)
 add_subdirectory(python)
-add_subdirectory(doc)
+#add_subdirectory(doc)
