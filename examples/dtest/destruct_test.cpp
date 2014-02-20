@@ -17,8 +17,7 @@
     std::cout << msg << std::endl;
 
 #include "protocol/diterator.hpp"
-#include "protocol/dcontainer.hpp"
-#include "protocol/dcppobject.hpp"
+#include "protocol/dvector.hpp"
 #include "protocol/dclassobject.hpp"
 
 namespace Destruct

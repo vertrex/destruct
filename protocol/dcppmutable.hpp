@@ -22,9 +22,22 @@ public:
   {
     return (new CppClass());
   }
+
 protected:
-  DMutableStruct*     __struct;
+  DMutableStruct*     __struct; //delete ?
 };
+
+template<typename CppClass>
+inline DStruct* makeNewDMutable(DUnicodeString const& name)
+{
+  return ((DStruct*)new DMutableStruct(NULL, name, DCppMutable< CppClass >::newObject, CppClass::ownAttributeBegin(), CppClass::ownAttributeEnd()));
+}
+
+template<typename CppClass>
+inline DStruct* makeNewDMutable(DStruct* base, DUnicodeString const& name)
+{
+  return ((DStruct*)new DMutableStruct(base, name, CppClass::DIterator::newObject, CppClass::ownAttributeBegin(), CppClass::ownAttributeEnd()));
+}
 
 }
 #endif

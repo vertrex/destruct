@@ -21,13 +21,6 @@ namespace Destruct
 class DIterator : public DCppMutable<DIterator>
 {
 public:
-  RealValue<DUInt64>          index; //signed en python
-  RealValue<DObject*>         container; //setContainer pour update le type ?
-  RealValue<DFunctionObject*> nextObject;
-  RealValue<DFunctionObject*> firstObject;
-  RealValue<DFunctionObject*> isDoneObject;
-  RealValue<DFunctionObject*> currentItemObject;
-
   DIterator() : DCppMutable(new DMutableStruct(NULL, "DIterator", DIterator::newObject, DIterator::ownAttributeBegin(), DIterator::ownAttributeEnd())), index(0), container(NULL) //DObject None ? 
   {
     this->init(); //must be constructed to init  
@@ -38,11 +31,18 @@ public:
     this->init();
   }
 
-  void  next(void);
-  void  first(void);
-  void setValue(size_t idx, DValue const& v);
-  RealValue<DInt8>      isDone(void);
-  DValue currentItem(void);
+  RealValue<DUInt64>          index; //signed en python
+  RealValue<DObject*>         container; //setContainer pour update le type ?
+  RealValue<DFunctionObject*> nextObject;
+  RealValue<DFunctionObject*> firstObject;
+  RealValue<DFunctionObject*> isDoneObject;
+  RealValue<DFunctionObject*> currentItemObject;
+
+  void                        next(void);
+  void                        first(void);
+  RealValue<DInt8>            isDone(void);
+  DValue                      currentItem(void);
+  void                        setValue(size_t idx, DValue const& v);
 
 /*
  * DStruct declaration

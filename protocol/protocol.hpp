@@ -14,6 +14,5 @@ private:
    void __registerStruct(Destruct* destruct);
 };
 
-
 }
 #endif

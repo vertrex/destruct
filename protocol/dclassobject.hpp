@@ -101,6 +101,13 @@ DStruct*  makeNewDClass(DStruct * base, DUnicodeString const& name)
 
 template <typename CppClass>
 inline 
+DStruct*  makeNewDClass(DUnicodeString const& name)
+{
+  return (new DStruct(NULL, name, DClassObject<CppClass>::newObject, CppClass::ownAttributeBegin(), CppClass::ownAttributeEnd()));
+}
+
+template <typename CppClass>
+inline 
 DClassObject<CppClass> makeDObject(DStruct * cl, CppClass const& obj)
 {
   return (DClassObject<CppClass>(cl, obj));
