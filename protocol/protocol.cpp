@@ -1,6 +1,7 @@
 #include "../destruct.hpp"
 #include "../dstruct.hpp"
-#include "../dclassobject.hpp"
+
+#include "dclassobject.hpp"
 #include "dmutablestruct.hpp"
 
 #include "protocol.hpp"

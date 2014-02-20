@@ -5,13 +5,10 @@
 #include "dstruct.hpp"
 #include "dattribute.hpp"
 #include "dsimpleobject.hpp"
-#include "dcppobject.hpp"
-#include "dclassobject.hpp"
 #include "drealvalue.hpp"
 #include "dunicodestring.hpp"
 #include "dserialize.hpp"
 #include "dstream.hpp"
-
 
 #include "destruct_test.hpp"
 
@@ -21,6 +18,8 @@
 
 #include "protocol/diterator.hpp"
 #include "protocol/dcontainer.hpp"
+#include "protocol/dcppobject.hpp"
+#include "protocol/dclassobject.hpp"
 
 namespace Destruct
 {

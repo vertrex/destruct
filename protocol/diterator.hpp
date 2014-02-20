@@ -7,9 +7,10 @@
  *  next(), first(), isDone()  
  */ 
 #include "../dvalue.hpp"
-#include "../dcppmutable.hpp"
-#include "../dmemberpointer.hpp"
 #include "../dmethodobject.hpp"
+
+#include "dmemberpointer.hpp"
+#include "dcppmutable.hpp"
 #include "dcontainer.hpp"
 
 class DObject;

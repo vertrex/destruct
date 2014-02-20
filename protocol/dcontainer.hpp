@@ -2,7 +2,7 @@
 #define DESTRUCT_DCONTAINER_HPP_
 
 #include "../dvalue.hpp"
-#include "../dcppobject.hpp"
+#include "dcppobject.hpp"
 
 namespace Destruct 
 {
@@ -43,7 +43,6 @@ public:
   DVector(const DVector<RealType, RealTypeId>& copy) :  __vector(copy.__vector) 
   {
   }
-
 
   RealValue<DUInt64>  push(DValue const& args) 
   {

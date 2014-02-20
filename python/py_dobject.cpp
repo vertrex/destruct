@@ -4,8 +4,7 @@
 #include "drealvalue.hpp"
 #include "dexception.hpp"
 
-#include "dmemberpointer.hpp"
-#include "dcppobject.hpp"
+#include "protocol/dcppobject.hpp"
 #include "protocol/diterator.hpp"
 #include "protocol/dcontainer.hpp"
 #include "protocol/dmutablestruct.hpp"

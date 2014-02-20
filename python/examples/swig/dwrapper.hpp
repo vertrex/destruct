@@ -2,13 +2,6 @@
 #define DWRAPPER_HPP
 
 #include "dvalue.hpp"
-#include "dmethodobject.hpp"
-#include "destruct.hpp"
-#include "dmemberpointer.hpp"
-#include "drealvalue.hpp"
-#include "dcppobject.hpp"
-#include "dmethodobject.hpp"
-
 
 namespace Destruct
 {
