@@ -23,7 +23,8 @@ public:
   virtual void init(CPPClass * obj)
   {
   }
-  //virtual void default(CPPClass* obj) pour avoir acces a la method de la class de base si overwritten ?
+
+  //virtual void default(CPPClass* obj) access base method if overwriten  
   //{
   // 
   //}

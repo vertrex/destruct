@@ -7,7 +7,7 @@
  *  next(), first(), isDone()  
  */ 
 #include "../dvalue.hpp"
-#include "../dcppobject.hpp"
+#include "../dcppmutable.hpp"
 #include "../dmemberpointer.hpp"
 #include "../dmethodobject.hpp"
 #include "dcontainer.hpp"
@@ -17,107 +17,31 @@ class DObject;
 namespace Destruct
 {
 
-/*
-    DObject
-       ^
-       |
-       |        
- DCppObject     Dcontainer ? 
-       ^         ^
-       |         |
-       |         |
-    DConainerObject
-  
-    need access to this 
-    need access to member func
-
-
- */
-
-
-
-        //template< class DObjectType >
-        //class DIterator : public DObjectType<DIterator> 
-class DIterator : public DCppObject< DIterator > //C PU UNE TEMPLATE METTRE DS un .CPP  
+class DIterator : public DCppMutable<DIterator>
 {
 public:
+  RealValue<DUInt64>          index; //signed en python
+  RealValue<DObject*>         container; //setContainer pour update le type ?
   RealValue<DFunctionObject*> nextObject;
   RealValue<DFunctionObject*> firstObject;
   RealValue<DFunctionObject*> isDoneObject;
   RealValue<DFunctionObject*> currentItemObject;
-  RealValue<DFunctionObject*> contaienrObject;
-  RealValue<DUInt64>          index; //signed en python
-  RealValue<DObject*>         container; //setContainer pour update le field qu'il faut ? pour le type ?
 
-  DIterator(DStruct* dstruct) : DCppObject(dstruct), index(0), container(NULL) //DObject None ? 
+  DIterator() : DCppMutable(new DMutableStruct(NULL, "DIterator", DIterator::newObject, DIterator::ownAttributeBegin(), DIterator::ownAttributeEnd())), index(0), container(NULL) //DObject None ? 
   {
-    this->init(); //because object DIterator is not yet finished to create so can't point to func pointer ?
+    this->init(); //must be constructed to init  
   }
 
-  DIterator(const DIterator& copy) : DCppObject(copy), index(0), container(NULL)
+  DIterator(const DIterator& copy) : DCppMutable(copy), index(0), container(NULL)
   {
     this->init();
   }
 
-  void  next(void)
-  {
-    this->index = this->index + 1;
-  }
-
-  void  first(void)
-  {
-    this->index = 0;
-  }
-
-  void setValue(size_t idx, DValue const& v)
-  {
-    if (idx == 0) 
-    {
-      DAttribute attr = this->instanceOf()->attribute(idx);
-      //must change type accordingly to Container  
-      std::cout << "setting container " << std::endl;
-      //this->instanceOf()->attribute(idx)->type->modifyType("type")   
-
-    }
-    DCppObject<DIterator>::setValue(idx, v);
-  }
-
-  RealValue<DInt8>      isDone(void)
-  {
-    if (this->container) // !DNone ? 
-    {
-      DValue count;
-      DContainer* dcontainer = dynamic_cast<DContainer*>((DObject*)this->container);
-      if (dcontainer)
-      {
-        DFunctionObject* size = dcontainer->sizeObject;  
-        count = size->call(RealValue<DObject*>(DNone));
-      }
-      else
-        count = ((DObject*)this->container)->call("size", RealValue<DObject*>(DNone));
-
-      if (this->index < count.get<DUInt64>())
-        return (0);
-    }
-
-    return (1);
-  }
-
-  DValue currentItem(void)
-  {
-    if (this->container) // !DNone ?
-    {
-      DContainer* dcontainer = dynamic_cast<DContainer*>((DObject*)this->container);
-      if (dcontainer)
-      {
-        DFunctionObject* get = dcontainer->getObject;
-        return (get->call(RealValue<DUInt64>(this->index)));
-      }
-      else
-        return (((DObject*)this->container)->call("get", RealValue<DUInt64>(this->index)));
-    }
-    throw DException("DIterator::currentItem container is not set.\n");
-  } 
+  void  next(void);
+  void  first(void);
+  void setValue(size_t idx, DValue const& v);
+  RealValue<DInt8>      isDone(void);
+  DValue currentItem(void);
 
 /*
  * DStruct declaration
@@ -136,8 +60,7 @@ public:
        DAttribute("next",   DType::DMethodType, DType::DNoneType, DType::DNoneType), 
        DAttribute("first",  DType::DMethodType, DType::DNoneType, DType::DNoneType),
        DAttribute("isDone", DType::DMethodType, DType::DInt8Type, DType::DNoneType),
-       //DAttribute("currentItem",  DType::DMethodType, RealTypeId, DType::DNoneType), #XXX
-       DAttribute("currentItem",  DType::DMethodType, DType::DUnicodeStringType, DType::DNoneType),
+       DAttribute("currentItem",  DType::DMethodType, DType::DUnknownType, DType::DNoneType),
      };
      return (attributes);
   }

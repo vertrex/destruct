@@ -2,7 +2,7 @@
 #define _DESTRUCT_DPOLICY_HPP
 
 template< class Derived >
-class RefcountPolicy  //XXX move ds .policy.hpp refcount.hpp ?
+class RefcountPolicy 
 {
 public:
   RefcountPolicy() : __refCount(1)
@@ -34,7 +34,5 @@ public:
 private:
   volatile int32_t  __refCount;
 };
-
-
 
 #endif 

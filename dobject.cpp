@@ -7,7 +7,7 @@
 
 namespace Destruct
 {
-                                                                //faudrait le ref count ou le forcer ds le dico aussi simple que ca !
+ 
 DObject::DObject(DStruct * dstructDef) : RefcountPolicy(),  __dstructDef(dstructDef)
 {
 }

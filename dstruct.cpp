@@ -26,19 +26,6 @@ DUnicodeString  DStruct::name() const
   return (this->__name);
 }
 //XXX declare destructor to avoir destruction of attribute because some attribute are static and could be used twice 
-// -> regler ce probleme par ex ds la classe iterateur on l enregistre deux fois vue que c une template 
-// en string et int mais du coup ca pete ??
-
-
-//DObject* DStruct::newObject() const
-//{
-//this->__definitionFix = true;
-//if (*this->__createObject == NULL)
-//{
-//return (NULL);
-//}
-//return (*this->__createObject)(this);
-//}
 
 DObject* DStruct::newObject() //for mutable non const so ++definitionFIx=false ?
 {

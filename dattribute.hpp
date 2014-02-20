@@ -15,11 +15,11 @@ class DAttribute
 public:
                         DAttribute(const DUnicodeString& _name, const DType::Type_t typeId, const DUnicodeString &description = "");
                         DAttribute(const DUnicodeString& _name, const DType::Type_t typeId, const DType::Type_t returnTypeId,  const DType::Type_t argumentTypeId, const DUnicodeString &description = "");
+                        //DAttribute(const std::string& _name, const DType::Type_t returnType, const DType::Type_t argumentTypeId, DMethodObject* object, const DUnicodeString& description = "");
   const DUnicodeString& name(void) const;
   const DUnicodeString& description(void) const;
   DType                 type(void) const;
 
-  //DAttribute(const std::string& _name, const DType::Type_t returnType, const DType::Type_t argumentTypeId, DMethodObject* object, const DUnicodeString& description = "");
 
 private:
   DUnicodeString        __name;

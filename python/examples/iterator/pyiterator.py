@@ -8,7 +8,7 @@ import time, timeit
 from _destruct import *
 
 COUNT = 10
-#COUNT = 10**6
+COUNT = 10**6
 #COUNT = 10**3
 
 def timeFunc(func, args):
@@ -34,13 +34,18 @@ def fillInt(dobject):
 
 
 def iterate(dobject):
+   l = []
+   print 'will iteratte on ', len(dobject)
    for i in dobject:
       #print i, type(i)
+      #print i, type(i)
       s = i
+      l.append(s)
+   print 'have iterate on ' + str(len(l))
 
 class PySimpleIterator(DObject):
   def __init__(self):
-     DObject.__init__(self, 'DIteratorString') 
+     DObject.__init__(self, 'DIterator') 
 
 class PySimpleDVectorInt(DObject):
   def __init__(self):
@@ -53,7 +58,7 @@ class PySimpleDVectorString(DObject):
 
 class PyDIterator(DObject):
   def __init__(self):
-     DObject.__init__(self, "DIteratorString")
+     DObject.__init__(self, "DIterator")
      self.i = 0  
 
   def first(self):
@@ -64,19 +69,19 @@ class PyDIterator(DObject):
 
   def isDone(self):
      #print 'pyIterator isDone'
-     if self.i >= self.pyvector.size():
-       return DInt8(1)
-     return DInt8(0) 
+     if self.i >= self.container.size():
+       return 1
+     return 0 
 
   def currentItem(self):
      #print 'currentItem' 
-     if self.i < self.pyvector.size():
-       val = self.pyvector.get(self.i)
+     if self.i < self.container.size():
+       val = self.container.get(self.i)
        return val
 
   def container(self, item):  
-     self.pyvector = item
-     return self.pyvector
+     self.container = item
+     return self.container
       
 class PythonDVector(DObject):
   def __init__(self):
@@ -91,39 +96,37 @@ class PythonDVector(DObject):
      self.l.append(val)
 
   def size(self):
-      #print len(self.l)
       return len(self.l)
 
-  def iterator(self): #XXX si on la redefinie pas on peut psa utiliser literator c++ avec ce COntainer python car il faut qu il pointe sur ceux DObject c a corriger ds py_dobject.cpp eveidement c a lui de retourner un iterator qui pointe sur le pyobject et c mes thodes car par default il va retourner la methode du dobject c++  la parent pas la virtuel re donc voir ausis ds cpp object 
-     iterator = PyDIterator()
-     iterator.container(self)
-     return iterator
+  #def container(self):
+     #return self
+  #def iterator(self):
+     #iterator = PyDIterator()
+     #iterator.container = self
+     #return iterator
 #
 class PyReverseIterator(DObject):
   def __init__(self):
-     DObject.__init__(self, "DIteratorString")
-
-  def first(self):
-     self.index = self.container().size() - 1 #XXX else segfault donc check ds la template 
+     DObject.__init__(self, "DIterator")
+  #def first(self):
+     #self.index = self.container.size() - 1 #XXX else segfault donc check ds la template 
      #print 'first end'
 
-  def next(self):
-     #print 'next'
-     self.index = self.index - 1 #XXX bien l attribut et c ok !
+  #def next(self):
+     ##print 'next'
+     #self.index = self.index - 1 #XXX bien l attribut et c ok !
+#
+  #def isDone(self):
+     #print 'reverse is done'
+     ##print 'isDone', self.index, self.container().size()
+     #if self.index == 0:
+       #return 1
+     #return 0
 
-  def isDone(self):
-     #print 'isDone', self.index, self.container().size()
-     if self.index == 0:
-       return 1
-     return 0
-
-  #def currentItem(self): XXX ca serait bien de pouvoir le faire faut pas detruire la fonction parent quand une nouvelle est aloeur par un fils alors ? pour gerer l heritage ? 
-     #return DObject.currentItem(self, self.size() - index) #:)
-
-  def iterator(self):
-     #print 'iterator self return self'
-     return self 
-
+  def currentItem(self): #XXX ca serait bien de pouvoir le faire faut pas detruire la fonction parent quand une nouvelle est aloeur par un fils alors ? pour gerer l heritage ? 
+     print 'Reverse currentItem'
+     print self.container
+     return self.container.get(self.container.size() - self.index)
 
 print "======================"
 
@@ -146,7 +149,7 @@ a = timeFunc(fill, pi)
 b = timeFunc(iterate, pi)
 total((a, b,))
 
-print "------ Int Test  Python create c++ object via Destruct --"
+print "------ DINT64 Test  Python create c++ object via Destruct --"
 cs = Destruct().find('DVector<Int32>')
 c = cs.newObject()
 a = timeFunc(fillInt, c)
@@ -159,11 +162,11 @@ for i in range(0, 10):
   vector.push(str(i)) 
 
 iterator = PyReverseIterator()
-iterator.container(vector)
+iterator.container = vector
 print 'iterate reverse'
 for i in iterator:
   print i
-
+  pass
 print len(vector)
 for x in range(0, len(vector)): #implem len
   print vector[x]
@@ -179,8 +182,8 @@ for x in range(0, 10):
   vector[x] = 'test ' +str(x)
 
 print 'print vector content'
-for i in vector:
-  print i
+#for i in vector:
+  #print i
 
 print 'put int in string doit planter mais doit etre catchable'
 #try:
@@ -204,6 +207,7 @@ class PyPureIterator(DObject):
   def __init__(self):
      DObject.__init__(self, "PyPureIterator")
      self.i = 0  
+     self.container = None
 
   def first(self):
      self.i = 0
@@ -212,19 +216,15 @@ class PyPureIterator(DObject):
      self.i += 1
 
   def isDone(self):
-     if self.i >= self.pyvector.size():
+     if self.i >= self.container.size():
        return DInt8(1)
      return DInt8(0) 
 
   def currentItem(self):
-     if self.i < self.pyvector.size():
+     if self.i < self.container.size():
        val = self.pyvector.get(self.i)
        return val
 
-  def container(self, item):  
-     self.pyvector = item
-     return self.pyvector
-      
 
 class PythonPureIterable(DObject):
   def __init__(self):
@@ -242,72 +242,10 @@ class PythonPureIterable(DObject):
 
   def iterator(self): 
      iterator = PyPureIterator()
-     iterator.container(self)
+     iterator.container = self
      return iterator
 
 ppi = PythonPureIterable()
 for x in ppi:
   print x
-
-#class Node(DObject):
-  #def __int__(self):
-    
-
-  #def children(self): # iterable ! 
-     #return self.__childrenslist
-
-##  def size(self): #file ? 
-##  def file() ? 
-
- 
-  #def exif():
-    #pass
-
-  #def ntfs() ? 
-
-  #def attribute(self):#
-     #return dobject   #
-
-
-
-#class NtfsNode(Node):
-  #def DObject.Node ... herite
-
-
-  #def modified
-
-  #def accessed
-
-  #def created
-
-
-#d
-
-
-#class NtfsNodeMFT(NtfsNOde)
-  #def mftid
-
-  #def cluster
-
-  #def toto
-
-
-#new Destruct()NtfsNode()
-#return .. .
-
-
-#if read les attribut dynamiquement ? 
-
-#for i in data:
-  #if addAttribute(name, type)
-    #//possibilite de register ds DMutable un truc genre DTemp ? en singleton
-    #//comme ca ds DFF recupere toute les struct genre et connais les type ? 
-    #//car c le prob du dmutable 
-    #//par ex: si contruit avec un nom ca register mais faudrait pas que ca regiter avec le meme nom 
-    #//
-    #DMutable().setAttributeValue("toto", 1, type)
-
-
-  #return DMutable #les node avec attrib dynamqiue 
-
 

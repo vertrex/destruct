@@ -128,12 +128,11 @@ public:
   DStruct* deserialize(DStream& output); 
 };
 
-//init it in API.Session() / API.init() -> with DType, Destruct etc... ?
 class DSerializers
 {
 public:
   DSerializers();
-  ~DSerializers(); //XXX ajouter cement car valgrind geule
+  ~DSerializers(); 
   static DSerialize* to(const std::string type);
   static DSerialize* to(size_t id);
   static size_t      count(void);

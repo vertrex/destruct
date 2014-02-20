@@ -132,6 +132,7 @@ dexception.cpp
 protocol/protocol.cpp
 protocol/dmutablestruct.cpp
 protocol/dmutableobject.cpp
+protocol/diterator.cpp
 )
 
 add_library(destruct SHARED ${destruct_source_files})

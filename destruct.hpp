@@ -21,12 +21,12 @@ class Destruct
 public:
   typedef std::vector<DStruct* >  Container;
   typedef Container::iterator     Iterator;
+
   static Destruct& instance(void);
 
   size_t        count(void);
   DStruct*      find(DUnicodeString const & name);
-  DStruct*      find(const size_t name);
-  
+  DStruct*      find(const size_t name);  
   void          registerDStruct(DStruct* dstruct);
   bool          unregister(DStruct* dstruct);
   DObject*      generate(DUnicodeString const& name);

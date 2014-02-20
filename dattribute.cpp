@@ -15,8 +15,8 @@ DAttribute::DAttribute(const std::string& _name, const DType::Type_t typeId, con
 
 //DAttribute::DAttribute(const std::string& _name, const DType::Type_t returnTypeId, const DType::Type_t argumentTypeId, DMethodObject* object, const DUnicodeString& description) : __name(_name), __type(DType::DMethodType, returnTypeId, argumentTypeId), __description(description)
 //{
-        //__type(DMethodObjectType, returnTypeId, argumentTypeId);
-        //}
+  //__type(DMethodObjectType, returnTypeId, argumentTypeId);
+//}
 
 const DUnicodeString&     DAttribute::name(void) const
 {

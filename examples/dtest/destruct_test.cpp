@@ -6,6 +6,7 @@
 #include "dattribute.hpp"
 #include "dsimpleobject.hpp"
 #include "dcppobject.hpp"
+#include "dclassobject.hpp"
 #include "drealvalue.hpp"
 #include "dunicodestring.hpp"
 #include "dserialize.hpp"

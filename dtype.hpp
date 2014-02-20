@@ -33,9 +33,9 @@ class DString;
 class DType
 {
 public:
-  enum Type_t
+  enum Type_t //renomer type
   {
-    DInt8Type,
+    DInt8Type,  //virer le Type a la fi ncar de doute on fait DType:DInt8
     DInt16Type,
     DInt32Type,
     DInt64Type,

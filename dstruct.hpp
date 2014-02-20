@@ -38,7 +38,7 @@ public:
   //DObject*              newObject() const;
   DObject*              newObject(); //for mutable
  
-  DObject const*        defaultDObject() const;//not serialized, could be usefull for destruct to set default value (dff argument)
+  DObject const*        defaultDObject() const;//not serialized, could be usefull for destruct to set default value 
   void                  setDefault(DObject const *);
 
   DAttribute const&     attribute(size_t index) const;
@@ -49,9 +49,10 @@ public:
 
   DAttributeIterator    attributeBegin() const;
   DAttributeIterator    attributeEnd() const;
+
 protected:
-  DAttributeContainer           __ownAttributes;
-  DAttributeContainer           __effectiveAttributes;
+  DAttributeContainer   __ownAttributes;
+  DAttributeContainer   __effectiveAttributes;
 
 private:
   void                          __baseInit();

@@ -193,8 +193,6 @@ inline void RealValue<DObject* >::set(DValue const& v)
     this->__val->destroy();
   this->__val = v.get<DObject *>();
 }
-///XXX serialization pourquoi elle est pas coder directement dedans ? au lieu de faier une class qui prend un dobject en entree
-//on pourait faire value.serialize()   et d ailleurs utiliser un autre enpacker pour deseiralize autrement ? ArchiveValue(value).serialize?
 
 /*
  * DMethodObject specialization
@@ -214,7 +212,7 @@ inline RealValue<DFunctionObject* >::RealValue(DFunctionObject* val) : __val(val
 }
 
 template <>
-inline RealValue<DFunctionObject* >::RealValue() : __val(0) //XXX init a 0 ? call(0) ? renvoie sur uen fonction ki throw plutot ? 
+inline RealValue<DFunctionObject* >::RealValue() : __val(0) //XXX init a 0 ? call(0) ? throw ? 
 {
 }
 

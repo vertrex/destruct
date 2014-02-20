@@ -90,24 +90,9 @@ void            DType::init(void)
  
   __prototypes[DUnicodeStringType] = new RealValue<DUnicodeString>("");
   __prototypes[DObjectType] = new RealValue<DObject* >(0);
-  __prototypes[DMethodType] = new RealValue<DFunctionObject* >(0); //XXX DMethod ou DFunction ?
-  __prototypes[DNoneType] = new RealValue<DObject* >(DNone); //XXX DObject ou DNullObject ?
-  
-//pour gerer les function et objet fortement type oblige de  : ? ici comme ca possible de les declarer//
-
-//__prototypes[DMethodType] = new RealValue<DFunctionObject* >(classType, functPointer); //XXX DMethod ou DFunction ?
-//__prototypes[DObjectType] = new RealValue<DObject* >("ObjectName"); //pour l instant les objet sont enregistrer sd la bse destruct et les method sont ps enregistrer la on declarer un nouveau type pour chaque objet ce qui grandirais a chaque fois la base de type , du coup pu trop d utiliser d utiliser DStruct.find() ?  et-ce que le probleme et la plutot faire un que type soit un objet comme un python alors qu ici c une class 'fix' qu on peut pas fair eevoluer 
-
+  __prototypes[DMethodType] = new RealValue<DFunctionObject* >(0); //DMethodObject ? 
+  __prototypes[DNoneType] = new RealValue<DObject* >(DNone);
 }
-
-//void            DType::addType(typename, FinalValue* type)
-//{
-//__prototypes["typename"] = type; 
-//}
-//
-//DType::addType("DIterator", RealValue<DIteratorObject*)(new DIteratorObject);
-//DType::addType("DIterator::get", RealValue<DMethodObject*)(new DMethodObject(DIteratorObject::method);
-
 
 void            DType::clean(void)
 {

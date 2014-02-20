@@ -22,10 +22,8 @@ public :
   virtual DValue           getValue(size_t idx) const;
   virtual void             setValue(size_t idx, DValue const &);
   virtual DValue           call(size_t idx, DValue const&); //this is juste an helper function
-
-  //virtual void            replaceValue(size_t idx, BaseValue const& );
+  //virtual void           replaceValue(size_t idx, BaseValue const& );
   //void                   replaceValue(DUnicodeString const& name, BaseValue const&);
-
   DObject*                 privateObject() const;
   void                     setPrivate(DObject* );
 

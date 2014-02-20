@@ -22,7 +22,7 @@ DStruct* DNullObject::__dstructInstance()
 
 DNullObject::DNullObject() : DObject(this->__dstructInstance())
 {
-//XXX fix me remplacer newobject par renvoie du singleton ?
+//XXX use newobject to return singleton ?
 }
 
 DNullObject::~DNullObject()

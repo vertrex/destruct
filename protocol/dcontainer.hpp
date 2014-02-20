@@ -7,7 +7,7 @@
 namespace Destruct 
 {
 
-class DContainer //DContainer ou DVector finallement ? heriet DVectorBase / DContainer DMapBase / DContainer ? 
+class DContainer
 {
 public:
   DContainer()
@@ -44,10 +44,10 @@ public:
   {
   }
 
+
   RealValue<DUInt64>  push(DValue const& args) 
   {
     this->__vector.push_back(args.get<RealType>());
- 
     return (this->__vector.size() - 1);
   }
    
@@ -94,7 +94,7 @@ public:
       DAttribute("push", DType::DMethodType, DType::DUInt64Type, RealTypeId), 
       DAttribute("get",  DType::DMethodType, RealTypeId, DType::DUInt64Type),
       DAttribute("size", DType::DMethodType, DType::DUInt64Type, DType::DNoneType),
-      DAttribute("setItem", DType::DMethodType, DType::DNoneType, DType::DObjectType), 
+      DAttribute("setItem", DType::DMethodType, DType::DNoneType, DType::DObjectType),
     };
     return (attributes);
   }

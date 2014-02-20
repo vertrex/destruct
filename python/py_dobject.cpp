@@ -359,7 +359,6 @@ PyObject* PyDObject::_iternext(PyDObject::DPyObject* self)
   Destruct::DIterator* iterator = dynamic_cast<Destruct::DIterator *>(self->pimpl);
   Destruct::RealValue<Destruct::DObject*> realNone = Destruct::DNone;
 
-  //try {
   if (iterator != NULL)
   {
     Destruct::DFunctionObject* isDoneObject = iterator->isDoneObject;  
@@ -391,13 +390,6 @@ PyObject* PyDObject::_iternext(PyDObject::DPyObject* self)
       return (DValueDispatchTable[type]->asDValue(result));
     }
   }
-
-  //} 
-  //catch (Destruct::DException const& exception) 
-  //{
-  // 
-  //}
-  //PyErr setString ?
 
   return (NULL);
 }
@@ -436,7 +428,6 @@ int PyDObject::_setitem(PyDObject::DPyObject* self, Py_ssize_t index, PyObject* 
   try 
   {
     //XXX normallement on doit utiliser le prototype et newObject() le plus possible pour les perf donc test si ca change bien les perf ! 
-
     Destruct::DMutableObject* argument = new Destruct::DMutableObject("argument"); //cree un objet a chaque fois ? pourrait reutiliser le meme ?
    
     //tester vitesse avec les pour comparer  
