@@ -1,10 +1,10 @@
-#include "dmutablestruct.hpp"
-#include "dmutableobject.hpp"
+#include "dstruct.hpp"
+#include "dnullobject.hpp"
+#include "dexception.hpp"
+#include "drealvalue.hpp"
 
-#include "../dstruct.hpp"
-#include "../dnullobject.hpp"
-#include "../dexception.hpp"
-#include "../drealvalue.hpp"
+#include "protocol/dmutablestruct.hpp"
+#include "protocol/dmutableobject.hpp"
 
 namespace Destruct
 {

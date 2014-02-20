@@ -1,7 +1,7 @@
 #ifndef DESTRUCT_DMUTABLE_STRUCT_HPP_
 #define DESTRUCT_DMUTABLE_STRUCT_HPP_
 
-#include "../dstruct.hpp"
+#include "dstruct.hpp"
 
 namespace Destruct
 {

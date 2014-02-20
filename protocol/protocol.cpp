@@ -1,12 +1,12 @@
-#include "../destruct.hpp"
-#include "../dstruct.hpp"
+#include "destruct.hpp"
+#include "dstruct.hpp"
 
-#include "dclassobject.hpp"
-#include "dmutablestruct.hpp"
+#include "protocol/dclassobject.hpp"
+#include "protocol/dmutablestruct.hpp"
 
-#include "protocol.hpp"
-#include "diterator.hpp"
-#include "dcontainer.hpp"
+#include "protocol/protocol.hpp"
+#include "protocol/diterator.hpp"
+#include "protocol/dcontainer.hpp"
 
 namespace Destruct
 {

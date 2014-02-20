@@ -6,12 +6,12 @@
  *  the protocol need im plem of some function 
  *  next(), first(), isDone()  
  */ 
-#include "../dvalue.hpp"
-#include "../dmethodobject.hpp"
+#include "dvalue.hpp"
+#include "dmethodobject.hpp"
 
-#include "dmemberpointer.hpp"
-#include "dcppmutable.hpp"
-#include "dcontainer.hpp"
+#include "protocol/dmemberpointer.hpp"
+#include "protocol/dcppmutable.hpp"
+#include "protocol/dcontainer.hpp"
 
 class DObject;
 

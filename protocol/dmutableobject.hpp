@@ -1,9 +1,7 @@
-#include "../ddynamicobject.hpp"
-#include "../dsimpleobject.hpp"
-#include "../drealvalue.hpp"
+#include "ddynamicobject.hpp"
+#include "dsimpleobject.hpp"
+#include "drealvalue.hpp"
 
-#include <string>
-//#include "../dstruct.hpp"
 class DMutableStruct;
 
 namespace Destruct

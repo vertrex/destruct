@@ -113,8 +113,11 @@ else( "${CMAKE_SIZEOF_VOID_P}" EQUAL 4 )
   endif()
   set( HAVE_64_BITS 1 )
 endif( "${CMAKE_SIZEOF_VOID_P}" EQUAL 4 )
+#
 
+include_directories(.)
 add_subdirectory(protocol)
+
 set (destruct_source_files
 dattribute.cpp 
 ddynamicobject.cpp 

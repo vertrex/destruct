@@ -12,6 +12,3 @@
 # Author(s):
 #  Solal Jacob <sja@digital-forensic.org>
 
-include_directories("../")
-
-
