@@ -1,22 +1,22 @@
 #include "dattribute.hpp"
 #include "dstruct.hpp"
 #include "destruct.hpp"
+#include "dtype.hpp"
 
 namespace Destruct
 {
 
-DAttribute::DAttribute(const std::string& _name, const DType::Type_t typeId, const DUnicodeString& description) : __name(_name), __type(typeId), __description(description)
+DAttribute::DAttribute(const DType::Type_t typeId,  const std::string& _name, const DUnicodeString& description) : __name(_name), __type(typeId), __description(description)
 {
 }
 
-DAttribute::DAttribute(const std::string& _name, const DType::Type_t typeId, const DType::Type_t returnTypeId,  const DType::Type_t argumentTypeId, const DUnicodeString& description) : __name(_name), __type(typeId, returnTypeId, argumentTypeId), __description(description)
+DAttribute::DAttribute(const DType::Type_t returnTypeId, const std::string& _name, const DType::Type_t argumentTypeId, const DUnicodeString& description) : __name(_name), __type(DType::DMethodType, returnTypeId, argumentTypeId), __description(description)
 {
 }
 
-//DAttribute::DAttribute(const std::string& _name, const DType::Type_t returnTypeId, const DType::Type_t argumentTypeId, DMethodObject* object, const DUnicodeString& description) : __name(_name), __type(DType::DMethodType, returnTypeId, argumentTypeId), __description(description)
-//{
-  //__type(DMethodObjectType, returnTypeId, argumentTypeId);
-//}
+DAttribute::DAttribute(const DType::Type_t returnTypeId, const std::string& _name, const DType::Type_t argumentTypeId, const DType::Type_t typeId, const DUnicodeString& description) : __name(_name), __type(typeId, returnTypeId, argumentTypeId), __description(description)
+{
+}
 
 const DUnicodeString&     DAttribute::name(void) const
 {

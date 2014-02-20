@@ -90,10 +90,10 @@ public:
   {
     static DAttribute  attributes[] = 
     {
-      DAttribute("push", DType::DMethodType, DType::DUInt64Type, RealTypeId), 
-      DAttribute("get",  DType::DMethodType, RealTypeId, DType::DUInt64Type),
-      DAttribute("size", DType::DMethodType, DType::DUInt64Type, DType::DNoneType),
-      DAttribute("setItem", DType::DMethodType, DType::DNoneType, DType::DObjectType),
+      DAttribute(DType::DUInt64Type,"push", RealTypeId), 
+      DAttribute(RealTypeId, "get",  DType::DUInt64Type),
+      DAttribute(DType::DUInt64Type,"size", DType::DNoneType),
+      DAttribute(DType::DNoneType, "setItem", DType::DObjectType),
     };
     return (attributes);
   }

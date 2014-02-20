@@ -55,9 +55,9 @@ void DestructTest::createModifiableClass(void)
 // this class is not created with dobject so we can test if we can add method in python FIX =0
   DStruct* base = new DStruct(0, "Modify", DSimpleObject::newObject);
   
-  base->addAttribute(DAttribute("Size", DType::DInt64Type));
-  base->addAttribute(DAttribute("Children count", DType::DInt64Type));
-  base->addAttribute(DAttribute("Offset", DType::DInt64Type));
+  base->addAttribute(DAttribute(DType::DInt64Type, "Size"));
+  base->addAttribute(DAttribute(DType::DInt64Type, "Children count"));
+  base->addAttribute(DAttribute(DType::DInt64Type, "Offset"));
   this->structRegistry()->registerDStruct(base);
 }
 
@@ -67,9 +67,9 @@ void DestructTest::createBaseClass(void)
   this->structRegistry()->registerDStruct(base);
   this->structRegistry()->find("BaseNode");
   
-  base->addAttribute(DAttribute("Size", DType::DInt64Type));
-  base->addAttribute(DAttribute("Children count", DType::DInt64Type));
-  base->addAttribute(DAttribute("Offset", DType::DInt64Type));
+  base->addAttribute(DAttribute(DType::DInt64Type, "Size"));
+  base->addAttribute(DAttribute(DType::DInt64Type, "Children count"));
+  base->addAttribute(DAttribute(DType::DInt64Type, "Offset"));
 
   this->showAttribute(base);
 }
@@ -87,7 +87,7 @@ void DestructTest::createNtfsClass(void)
   DStruct* ntfsNodeStruct = new DStruct(base, "NtfsNode", DSimpleObject::newObject);
   this->structRegistry()->registerDStruct(ntfsNodeStruct);
  
-  ntfsNodeStruct->addAttribute(DAttribute("MBRStartOffset", DType::DInt64Type));
+  ntfsNodeStruct->addAttribute(DAttribute(DType::DInt64Type, "MBRStartOffset"));
  
   this->showAttribute(ntfsNodeStruct);
 
@@ -104,9 +104,9 @@ void DestructTest::createNestedClass(void)
 {
   DStruct* nestedStructDef = new DStruct(NULL, "Nested", DSimpleObject::newObject);
 
-  nestedStructDef->addAttribute(DAttribute("NestedStart", DType::DInt64Type));
-  nestedStructDef->addAttribute(DAttribute("ObjectNested", DType::DObjectType));
-  nestedStructDef->addAttribute(DAttribute("NestedEnd", DType::DUnicodeStringType));
+  nestedStructDef->addAttribute(DAttribute(DType::DInt64Type, "NestedStart"));
+  nestedStructDef->addAttribute(DAttribute(DType::DObjectType, "ObjectNested"));
+  nestedStructDef->addAttribute(DAttribute(DType::DUnicodeStringType, "NestedEnd"));
 
   this->structRegistry()->registerDStruct(nestedStructDef);
 
@@ -302,45 +302,46 @@ DObject*        DestructTest::createStringVector(void)
 void DestructTest::createNtfsBootSector(void)
 {
   DStruct* bootSectorHeader= new DStruct(0, "BootSectorHeader", DSimpleObject::newObject);
-  bootSectorHeader->addAttribute(DAttribute("jump0", DType::DUInt8Type)); 
-  bootSectorHeader->addAttribute(DAttribute("jump1", DType::DUInt8Type)); 
-  bootSectorHeader->addAttribute(DAttribute("jump2", DType::DUInt8Type)); 
-  bootSectorHeader->addAttribute(DAttribute("OEMID", DType::DUInt64Type)); 
+  bootSectorHeader->addAttribute(DAttribute(DType::DUInt8Type, "jump0")); 
+  bootSectorHeader->addAttribute(DAttribute(DType::DUInt8Type, "jump1")); 
+  bootSectorHeader->addAttribute(DAttribute(DType::DUInt8Type, "jump2")); 
+  bootSectorHeader->addAttribute(DAttribute(DType::DUInt64Type, "OEMID")); 
   this->structRegistry()->registerDStruct(bootSectorHeader);
 
   DStruct* dstruct = new DStruct(bootSectorHeader, "BPB", DSimpleObject::newObject);
 
-  dstruct->addAttribute(DAttribute("bytesPerSector", DType::DUInt16Type));
-  dstruct->addAttribute(DAttribute("sectorsPerCluster", DType::DUInt8Type));
-  dstruct->addAttribute(DAttribute("reserved1", DType::DUInt8Type));
-  dstruct->addAttribute(DAttribute("reserved2", DType::DUInt8Type));
-  dstruct->addAttribute(DAttribute("reserved3", DType::DUInt8Type));
-  dstruct->addAttribute(DAttribute("reserved4", DType::DUInt8Type));
-  dstruct->addAttribute(DAttribute("reserved5", DType::DUInt8Type));
-  dstruct->addAttribute(DAttribute("reserved6", DType::DUInt8Type));
-  dstruct->addAttribute(DAttribute("reserved7", DType::DUInt8Type));
-  dstruct->addAttribute(DAttribute("mediaDescriptor", DType::DUInt8Type));
+  dstruct->addAttribute(DAttribute(DType::DUInt16Type, "bytesPerSector"));
+  dstruct->addAttribute(DAttribute(DType::DUInt8Type, "sectorsPerCluser"));
+  dstruct->addAttribute(DAttribute(DType::DUInt8Type, "reserved1"));
+  dstruct->addAttribute(DAttribute(DType::DUInt8Type, "reserved2"));
+  dstruct->addAttribute(DAttribute(DType::DUInt8Type, "reserved3"));
+  dstruct->addAttribute(DAttribute(DType::DUInt8Type, "reserved4"));
+  dstruct->addAttribute(DAttribute(DType::DUInt8Type, "reserved5"));
+  dstruct->addAttribute(DAttribute(DType::DUInt8Type, "reserved6"));
+  dstruct->addAttribute(DAttribute(DType::DUInt8Type, "reserved7"));
+  dstruct->addAttribute(DAttribute(DType::DUInt8Type, "mediaDescriptor"));
 
-  dstruct->addAttribute(DAttribute("reserved2-0", DType::DUInt32Type));
-  dstruct->addAttribute(DAttribute("reserved2-1", DType::DUInt32Type));
-  dstruct->addAttribute(DAttribute("reserved2-2", DType::DUInt32Type));
-  dstruct->addAttribute(DAttribute("reserved2-3", DType::DUInt32Type));
-  dstruct->addAttribute(DAttribute("reserved2-4", DType::DUInt8Type));
-  dstruct->addAttribute(DAttribute("reserved2-5", DType::DUInt8Type));
+  dstruct->addAttribute(DAttribute(DType::DUInt32Type, "reserved2-0"));
+  dstruct->addAttribute(DAttribute(DType::DUInt32Type, "reserved2-1"));
+  dstruct->addAttribute(DAttribute(DType::DUInt32Type, "reserved2-2"));
+  dstruct->addAttribute(DAttribute(DType::DUInt32Type, "reserved2-3"));
+  dstruct->addAttribute(DAttribute(DType::DUInt8Type, "reserved2-4"));
+  dstruct->addAttribute(DAttribute(DType::DUInt8Type, "reserved2-5"));
 
-  dstruct->addAttribute(DAttribute("totalSectors", DType::DUInt64Type));
-  dstruct->addAttribute(DAttribute("MFTLogicalClusterNumber", DType::DUInt64Type));
-  dstruct->addAttribute(DAttribute("MFTMirrorLogicalClusterNumber", DType::DUInt64Type));
-  dstruct->addAttribute(DAttribute("clustersPerMFTRecord", DType::DUInt8Type));
-  dstruct->addAttribute(DAttribute("reserved3-0", DType::DUInt8Type));
-  dstruct->addAttribute(DAttribute("reserved3-1", DType::DUInt8Type));
-  dstruct->addAttribute(DAttribute("reserved3-2", DType::DUInt8Type));
-  dstruct->addAttribute(DAttribute("clustersPerIndexBuffer", DType::DInt8Type));
-  dstruct->addAttribute(DAttribute("reserved4-0", DType::DUInt8Type));
-  dstruct->addAttribute(DAttribute("reserved4-1", DType::DUInt8Type));
-  dstruct->addAttribute(DAttribute("reserved4-2", DType::DUInt8Type));
-  dstruct->addAttribute(DAttribute("volumeSerialNumber", DType::DUInt64Type));
-  dstruct->addAttribute(DAttribute("reserved5", DType::DUInt32Type));
+  dstruct->addAttribute(DAttribute(DType::DUInt64Type, "totalSectors"));
+  dstruct->addAttribute(DAttribute(DType::DUInt64Type, "MFTLogicalClusterNumber"));
+  dstruct->addAttribute(DAttribute(DType::DUInt64Type, "MFTMirrorLogicalCluserNumber"));
+  dstruct->addAttribute(DAttribute(DType::DUInt8Type, "clusersPerMFTRecord"));
+  dstruct->addAttribute(DAttribute(DType::DUInt8Type, "reserved3-0"));
+  dstruct->addAttribute(DAttribute(DType::DUInt8Type, "reserved3-1"));
+  dstruct->addAttribute(DAttribute(DType::DUInt8Type, "reserved3-2"));
+  dstruct->addAttribute(DAttribute(DType::DInt8Type, "clustersPerIndexBuffer"));
+  dstruct->addAttribute(DAttribute(DType::DUInt8Type, "reserved4-0"));
+  dstruct->addAttribute(DAttribute(DType::DUInt8Type, "reserved4-1"));
+  dstruct->addAttribute(DAttribute(DType::DUInt8Type, "reserved4-2"));
+
+  dstruct->addAttribute(DAttribute(DType::DUInt64Type, "volumeSerialNumber"));
+  dstruct->addAttribute(DAttribute(DType::DUInt32Type, "reserved5"));
 
   this->structRegistry()->registerDStruct(dstruct); 
 
@@ -350,13 +351,13 @@ void DestructTest::createNtfsBootSector(void)
     std::ostringstream name;
     name << "bootStrap-";
     name << i;
-    dstructBootStrap->addAttribute(DAttribute(name.str(), DType::DUInt64Type));
+    dstructBootStrap->addAttribute(DAttribute(DType::DUInt64Type, name.str()));
   }
-  dstructBootStrap->addAttribute(DAttribute("bootstrap-53", DType::DUInt16Type));
+  dstructBootStrap->addAttribute(DAttribute(DType::DUInt16Type,"bootstrap-53"));
   this->structRegistry()->registerDStruct(dstructBootStrap);
 
   DStruct* dstructBootSector = new DStruct(dstructBootStrap, "NtfsBootSector", DSimpleObject::newObject);
-  dstructBootSector->addAttribute(DAttribute("endOfSector", DType::DUInt16Type));
+  dstructBootSector->addAttribute(DAttribute(DType::DUInt16Type, "endOfSector"));
 
   this->structRegistry()->registerDStruct(dstructBootSector);
 

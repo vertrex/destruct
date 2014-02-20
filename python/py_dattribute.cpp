@@ -67,7 +67,7 @@ int PyDAttribute::_init(PyDAttributeT::DPyObject *self, PyObject *args, PyObject
      PyObject* objectTypeId = PyObject_CallMethod(dtypeObject, (char *)"getType", NULL);
 
      objectId = PyInt_AsLong(objectTypeId);
-     self->pimpl = new Destruct::DAttribute(std::string(name), (Destruct::DType::Type_t)objectId);
+     self->pimpl = new Destruct::DAttribute((Destruct::DType::Type_t)objectId, std::string(name));
      INIT_CHECK_ALLOC(self->pimpl)
 
      return (0);
@@ -87,7 +87,7 @@ int PyDAttribute::_init(PyDAttributeT::DPyObject *self, PyObject *args, PyObject
      returnId = PyInt_AsLong(returnTypeId);
      argumentId = PyInt_AsLong(argumentTypeId);
 
-     self->pimpl = new Destruct::DAttribute(std::string(name), (Destruct::DType::Type_t)objectId, (Destruct::DType::Type_t)returnId,  (Destruct::DType::Type_t)argumentId);
+     self->pimpl = new Destruct::DAttribute((Destruct::DType::Type_t)returnId, std::string(name), (Destruct::DType::Type_t)argumentId, (Destruct::DType::Type_t)objectId);
      INIT_CHECK_ALLOC(self->pimpl)
      return (0);
    }

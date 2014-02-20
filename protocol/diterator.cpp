@@ -19,7 +19,7 @@ void DIterator::setValue(size_t idx, DValue const& v)
   {
     DObject* container = v.get<DObject*>();
     DAttribute attr = container->instanceOf()->attribute("get"); //
-    this->__struct->replaceAttribute(5, DAttribute("currentItem", DType::DMethodType, attr.type().getReturnType(), DType::DNoneType));
+    this->__struct->replaceAttribute(5, DAttribute(attr.type().getReturnType(), "currentItem", DType::DNoneType));
   }
   DCppObject<DIterator>::setValue(idx, v);
 }

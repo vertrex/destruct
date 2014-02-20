@@ -72,7 +72,7 @@ DValue DMutableObject::call(size_t idx, DValue const& v)
 
 void DMutableObject::setValueAttribute(std::string const& name, DValue const& v, DType::Type_t type)
 {
-  DAttribute attribute(name, type);
+  DAttribute attribute(type, name);
 
   this->instanceOf()->addAttribute(attribute);
   this->__values.push_back(attribute.type().newValue()); // XXX clone 

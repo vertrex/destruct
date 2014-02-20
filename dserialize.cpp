@@ -252,7 +252,7 @@ DStruct* DSerializeBinary::deserialize(DStream& input)
      if (input.read((char*)&type, sizeof(type)).fail())
        return (NULL); //strange error checking !
 
-     dstruct->addAttribute(DAttribute(name, type));
+     dstruct->addAttribute(DAttribute(type, name));
   }
   return (dstruct); 
 }

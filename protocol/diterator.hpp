@@ -56,12 +56,12 @@ public:
   {
      static DAttribute  attributes[] = 
      {
-       DAttribute("container", DType::DObjectType),
-       DAttribute("index", DType::DUInt64Type),
-       DAttribute("next",   DType::DMethodType, DType::DNoneType, DType::DNoneType), 
-       DAttribute("first",  DType::DMethodType, DType::DNoneType, DType::DNoneType),
-       DAttribute("isDone", DType::DMethodType, DType::DInt8Type, DType::DNoneType),
-       DAttribute("currentItem",  DType::DMethodType, DType::DUnknownType, DType::DNoneType),
+       DAttribute(DType::DObjectType, "container"),
+       DAttribute(DType::DUInt64Type, "index"),
+       DAttribute(DType::DNoneType, "next", DType::DNoneType), 
+       DAttribute(DType::DNoneType, "first", DType::DNoneType),
+       DAttribute(DType::DInt8Type, "isDone", DType::DNoneType),
+       DAttribute(DType::DUnknownType, "currentItem",  DType::DNoneType),
      };
      return (attributes);
   }

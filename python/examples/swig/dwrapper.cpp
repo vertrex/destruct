@@ -14,8 +14,7 @@ DWrapper::DWrapper()
   //this->__value = NULL;
 
   Destruct::DStruct*  module = new Destruct::DStruct(NULL, "DModule", Destruct::DSimpleObject::newObject);
-  module->addAttribute(Destruct::DAttribute("start", Destruct::DType::DMethodType, Destruct::DType::DNoneType, 
-                       Destruct::DType::DObjectType));
+  module->addAttribute(Destruct::DAttribute(Destruct::DType::DNoneType, "start", Destruct::DType::DObjectType));
   Destruct::Destruct::instance().registerDStruct(module);
 }
 
