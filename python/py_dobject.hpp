@@ -38,42 +38,9 @@ public:
 
   PyObject*           typeObject();
   
-  Destruct::DValue toDValue(PyObject* value) 
-  {
-     if (PyObject_TypeCheck(value, PyDObject::pyType))
-       return Destruct::RealValue<Destruct::DObject* >(((DPyObject*)value)->pimpl);
-     if (value == Py_None)
-       return Destruct::RealValue<Destruct::DObject* >(Destruct::DNone); 
-     throw Destruct::DException("Can't cast to DObject*");
-  }
-
-  PyObject*     asDValue(Destruct::DValue v)
-  {
-    Destruct::DObject*     value = v.get<Destruct::DObject*>();
-
-    if (value == NULL || value == Destruct::DNone)
-      Py_RETURN_NONE;
-   
-    Py_INCREF(pyType);
-    PyDObject::DPyObject*  dobjectObject = (PyDObject::DPyObject*)_PyObject_New(PyDObject::pyType);
-    dobjectObject->pimpl = value;
-
-    return ((PyObject*)dobjectObject);
-  }
-
-  PyObject*     asPyObject(PyObject* self, int32_t attributeIndex)
-  {
-    Destruct::DObject*     value = ((PyDObject::DPyObject*)self)->pimpl->getValue(attributeIndex).get<Destruct::DObject*>();
-
-    if (value == NULL || value == Destruct::DNone)
-      Py_RETURN_NONE;
-   
-    Py_INCREF(pyType);
-    PyDObject::DPyObject*  dobjectObject = (PyDObject::DPyObject*)_PyObject_New(PyDObject::pyType);
-    dobjectObject->pimpl = value;
-
-    return ((PyObject*)dobjectObject);
-  }
+  Destruct::DValue toDValue(PyObject* value); 
+  PyObject*     asDValue(Destruct::DValue v);
+  PyObject*     asPyObject(PyObject* self, int32_t attributeIndex);
 };
 
 #endif

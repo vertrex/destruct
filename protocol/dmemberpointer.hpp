@@ -3,6 +3,7 @@
 
 #include "dvalue.hpp"
 #include "drealvalue.hpp"
+#include "dmethodobject.hpp"
 
 namespace Destruct
 {

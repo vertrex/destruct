@@ -15,6 +15,44 @@ using Destruct::DUnicodeString;
 template<>
 PyTypeObject* PyDMethodObjectT::pyType = NULL;
 
+Destruct::DValue PyDMethodObject::toDValue(PyObject* value) 
+{
+  if (PyObject_TypeCheck(value, PyDMethodObject::pyType))
+  {
+     return Destruct::RealValue<Destruct::DFunctionObject*>(((DPyObject*)value)->pimpl);
+  }
+  throw Destruct::DException("Can't cast to DMethodObject*");
+}
+
+/* 
+ * Only used by py_dmethodobject Call 
+ * Should implemented for method returing method but it's not implemented in Destruct now
+*/
+PyObject*     PyDMethodObject::asDValue(Destruct::DValue v)
+{
+  std::cout << "PyDMethodObject:asDValue(DValue v) not implemented" << std::endl;
+  Py_RETURN_NONE;
+}
+
+PyObject*     PyDMethodObject::asPyObject(PyObject* _self, int32_t attributeIndex)
+{
+  PyDObject::DPyObject* self = (PyDObject::DPyObject*)_self;
+  Destruct::DFunctionObject* value = self->pimpl->getValue(attributeIndex).get<Destruct::DFunctionObject*>();
+  
+  if (value == NULL)
+    Py_RETURN_NONE;
+// get ici type et sauvegarde le pointeur suffit au lieu de index + dobject (dobject qui est deja le this de l objet non ? en + ) 
+//mais le gain de temps est negligeable apparement !
+  PyDMethodObject::DPyObject* dmethodobject = (PyDMethodObject::DPyObject*)_PyObject_New(PyDMethodObject::pyType);
+  dmethodobject->pimpl = value;
+  dmethodobject->index = attributeIndex;
+  dmethodobject->dobject = self->pimpl;
+ 
+  Py_INCREF(dmethodobject);
+
+  return ((PyObject*)dmethodobject);
+}
+
 PyDMethodObject::PyDMethodObject()
 {
   pyType = (PyTypeObject*)malloc(sizeof(basePyType));

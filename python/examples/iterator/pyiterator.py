@@ -129,80 +129,6 @@ class PyReverseIterator(DObject):
      print self.container.size() - self.index
      return self.container.get(DUInt64(0))
 
-print "======================"
-
-print "------ Python create c++ object via Destruct --"
-cs = Destruct().find('DVector<String>')
-c = cs.newObject()
-a = timeFunc(fill, c)
-b = timeFunc(iterate, c)
-total((a, b,))
-
-print "------ Python call c++ via empty inherited class-----"
-vector = PySimpleDVectorString()
-a = timeFunc(fill, vector)
-b = timeFunc(iterate, vector)
-total((a, b,))
-
-print "------ Python call python herited class ----"
-pi = PythonDVector()
-a = timeFunc(fill, pi)
-b = timeFunc(iterate, pi)
-total((a, b,))
-
-print "------ DINT64 Test  Python create c++ object via Destruct --"
-cs = Destruct().find('DVector<Int32>')
-c = cs.newObject()
-a = timeFunc(fillInt, c)
-b = timeFunc(iterate, c)
-total((a, b,))
-
-print 'Push 0,10 in simpleDvectorSString'
-vector = PySimpleDVectorString()
-for i in range(0, 10):
-  vector.push(str(i)) 
-
-print 'create reverse iterator'
-iterator = PyReverseIterator()
-print 'iterator set container'
-iterator.container = vector
-#print 'iterate reverse'
-for i in iterator:
-  print i
-  #pass
-print 'for in len'
-for x in range(0, len(vector)): #implem len
-  print vector[x]
-
-print vector[0], type(vector[0])
-print 'vector set[0]'
-vector[0] = '100 strings'
-print vector[0]
-
-print 'vector set 0 10 str'
-for x in range(0, 10):
-  print x
-  vector[x] = 'test ' +str(x)
-
-print 'print vector content'
-#for i in vector:
-  #print i
-
-print 'put int in string doit planter mais doit etre catchable'
-#try:
- #for x in range(0, 10):
-   #vector[x] = x
-#except :
-  #pass
-
-vi = PySimpleDVectorInt()
-for x in range(0, 10):
-  vi.push(x)
-for x in range(0, 10):
-  vi[x] = x * 10
-
-for i in vi:
-  print i
 
 #XXX faudrait le call en C++ ! 
 
@@ -248,7 +174,101 @@ class PythonPureIterable(DObject):
      iterator.container = self
      return iterator
 
-ppi = PythonPureIterable()
-for x in ppi:
-  print x
+
+def dvectorstring():
+  print "------ Python create c++ object via Destruct --"
+  cs = Destruct().find('DVector<String>')
+  c = cs.newObject()
+  a = timeFunc(fill, c)
+  b = timeFunc(iterate, c)
+  total((a, b,))
+
+def simplevectorstring():
+  print "------ Python call c++ via empty inherited class-----"
+  vector = PySimpleDVectorString()
+  a = timeFunc(fill, vector)
+  b = timeFunc(iterate, vector)
+  total((a, b,))
+
+def pythonvector():
+  print "------ Python call python herited class ----"
+  pi = PythonDVector()
+  a = timeFunc(fill, pi)
+  b = timeFunc(iterate, pi)
+  total((a, b,))
+
+def simplevectorint():
+  print "------ DINT64 Test  Python create c++ object via Destruct --"
+  cs = Destruct().find('DVector<Int32>')
+  c = cs.newObject()
+  a = timeFunc(fillInt, c)
+  b = timeFunc(iterate, c)
+  total((a, b,))
+
+def reverseiterate(): 
+  print 'Push 0,10 in simpleDvectorSString'
+  vector = PySimpleDVectorString()
+  for i in range(0, 10):
+    vector.push(str(i)) 
+
+  print 'create reverse iterator'
+  iterator = PyReverseIterator()
+  print 'iterator set container'
+  iterator.container = vector
+  #print 'iterate reverse'
+  for i in iterator:
+    print i
+
+   #pass
+  print 'for in len'
+  for x in range(0, len(vector)): #implem len
+    print vector[x]
+
+
+def setvector():
+  #XXX vector = Vector
+  print vector[0], type(vector[0])
+  print 'vector set[0]'
+  vector[0] = '100 strings'
+  print vector[0]
+
+  print 'vector set 0 10 str'
+  for x in range(0, 10):
+    print x
+    vector[x] = 'test ' +str(x)
+
+  print 'print vector content'
+  for i in vector:
+    print i
+
+def pushint():
+ vi = PySimpleDVectorInt()
+ for x in range(0, 10):
+   vi.push(x)
+ for x in range(0, 10):
+    vi[x] = x * 10
+ for i in vi:
+    print i
+
+ print 'put int in string doit planter mais doit etre catchable'
+  #try:
+ #  for x in range(0, 10):
+   #  vector[x] = x
+   #except :
+    #pass
+def pythonpureiterable():
+  ppi = PythonPureIterable()
+  for x in ppi:
+    print x
+
+print "=" * 80
+
+dvectorstring()
+simplevectorstring()
+pythonvector()
+simplevectorint()
+reverseiterate()
+#setvector()
+#pushint()
+#pythonpureiterable()
 

@@ -30,22 +30,9 @@ public:
   PyObject*           typeObject();
 //CONSTRUCTOR SANS NEW 
 //FUNCTION RENVOIE SELF DNONE ETC>...
-  Destruct::DValue toDValue(PyObject* value) 
-  {
-     if (!value || (value == Py_None) || PyObject_TypeCheck(value, PyDNullObject::pyType))
-       return Destruct::RealValue<Destruct::DObject* >(Destruct::DNone); 
-     throw Destruct::DException("Can't cast to DNone");
-  }
-
-  PyObject*     asDValue(Destruct::DValue v)
-  {
-    Py_RETURN_NONE;
-  }
-
-  PyObject*     asPyObject(PyObject* self, int32_t attributeIndex)
-  {
-    Py_RETURN_NONE;
-  }
+  Destruct::DValue toDValue(PyObject* value); 
+  PyObject*     asDValue(Destruct::DValue v);
+  PyObject*     asPyObject(PyObject* self, int32_t attributeIndex);
 };
 
 #endif

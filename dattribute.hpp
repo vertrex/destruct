@@ -8,8 +8,6 @@ namespace Destruct
 {
 class DStruct;
 
-class DMethodObject;
-
 class DAttribute
 {
 public:

@@ -128,8 +128,7 @@ public:
 
   operator std::string() const
   {
-    DUnicodeString const &ref = *this;
-    return (ref);
+    return (*this);
   }
 
   void set(DValue const& v)

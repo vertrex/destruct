@@ -5,6 +5,23 @@
 template<>
 PyTypeObject* PyDNullObjectT::pyType = NULL;
 
+Destruct::DValue PyDNullObject::toDValue(PyObject* value)
+{
+  if (!value || (value == Py_None) || PyObject_TypeCheck(value, PyDNullObject::pyType))
+    return Destruct::RealValue<Destruct::DObject* >(Destruct::DNone); 
+  throw Destruct::DException("Can't cast to DNone");
+}
+
+PyObject*     PyDNullObject::asDValue(Destruct::DValue v)
+{
+  Py_RETURN_NONE;
+}
+
+PyObject*     PyDNullObject::asPyObject(PyObject* self, int32_t attributeIndex)
+{
+  Py_RETURN_NONE;
+}
+
 PyDNullObject::PyDNullObject()
 {
   pyType = (PyTypeObject*)malloc(sizeof(basePyType));
@@ -60,3 +77,4 @@ PyObject* PyDNullObject::getType(PyDNullObject::DPyObject* self, PyObject* args,
 {
   return (PyInt_FromSize_t(Destruct::DType::DNoneType));
 }
+

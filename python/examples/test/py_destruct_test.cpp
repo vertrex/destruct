@@ -99,3 +99,15 @@ PyMethodDef PyTest::pyMethods[] =
   {"getObjectValue", (PyCFunction)getObjectValue, METH_NOARGS, "Get a DObject with setted value (Test transfer of CPP object to Python)."},
   {NULL}
 };
+
+PyMODINIT_FUNC init_dtest(void)
+{
+  PyObject* module;
+
+  PyTest::moduleInit();
+
+  if ((module = Py_InitModule3("_dtest", destruct_methods, "Test library for destruct")) == NULL)
+    return;    
+
+  DESTRUCT_ADD_MODULE(PyTest::pyType, "Test")
+}

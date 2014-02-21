@@ -20,6 +20,43 @@ PyTypeObject* PyDObjectT::pyType = NULL;
 template<>
 PySequenceMethods* PyDObjectT::pySequenceMethods = NULL;
 
+Destruct::DValue PyDObject::toDValue(PyObject* value) 
+{
+  if (PyObject_TypeCheck(value, PyDObject::pyType))
+    return Destruct::RealValue<Destruct::DObject* >(((DPyObject*)value)->pimpl);
+  if (value == Py_None)
+    return Destruct::RealValue<Destruct::DObject* >(Destruct::DNone); 
+  throw Destruct::DException("Can't cast to DObject*");
+}
+
+PyObject*     PyDObject::asDValue(Destruct::DValue v)
+{
+  Destruct::DObject*     value = v.get<Destruct::DObject*>();
+
+  if (value == NULL || value == Destruct::DNone)
+    Py_RETURN_NONE;
+   
+  Py_INCREF(pyType);
+  PyDObject::DPyObject*  dobjectObject = (PyDObject::DPyObject*)_PyObject_New(PyDObject::pyType);
+  dobjectObject->pimpl = value;
+
+  return ((PyObject*)dobjectObject);
+}
+
+PyObject*     PyDObject::asPyObject(PyObject* self, int32_t attributeIndex)
+{
+  Destruct::DObject*     value = ((PyDObject::DPyObject*)self)->pimpl->getValue(attributeIndex).get<Destruct::DObject*>();
+
+  if (value == NULL || value == Destruct::DNone)
+    Py_RETURN_NONE;
+   
+  Py_INCREF(pyType);
+  PyDObject::DPyObject*  dobjectObject = (PyDObject::DPyObject*)_PyObject_New(PyDObject::pyType);
+  dobjectObject->pimpl = value;
+
+  return ((PyObject*)dobjectObject);
+}
+
 PyDObject::PyDObject()
 {
   pyType = (PyTypeObject*)malloc(sizeof(basePyType));
@@ -150,7 +187,8 @@ PyObject*  PyDObject::setValue(PyDObject::DPyObject* self, int32_t attributeInde
   if (attributeIndex == -1 || attributeIndex >= (int32_t)self->pimpl->instanceOf()->attributeCount())
   {
     std::string errorString = "destruct.DObject." + self->pimpl->instanceOf()->name() +  " instance as no attribute at index '"; 
-    errorString += attributeIndex + "'";
+    errorString += attributeIndex; 
+    errorString += std::string("'");
     PyErr_SetString(PyExc_AttributeError, errorString.c_str()); 
     return (0);
   }
