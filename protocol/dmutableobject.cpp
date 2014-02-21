@@ -9,12 +9,12 @@
 namespace Destruct
 {
 
-DMutableObject::DMutableObject(const DUnicodeString& name) : DDynamicObject(dynamic_cast<DStruct* >(new DMutableStruct(NULL, name, DMutableObject::newObject)))
+DMutableObject::DMutableObject(const DUnicodeString& name) : DDynamicObject(static_cast<DStruct* >(new DMutableStruct(NULL, name, DMutableObject::newObject)))
 {
   this->init(this);
 }
 
-DMutableObject::DMutableObject(DMutableStruct* dstructDef) : DDynamicObject(dynamic_cast<DStruct* >(dstructDef))
+DMutableObject::DMutableObject(DMutableStruct* dstructDef) : DDynamicObject(dstructDef)
 {
   this->init(this);
 }
@@ -23,6 +23,13 @@ DMutableObject::DMutableObject(DMutableObject const & rhs) : DDynamicObject(rhs)
 {
   this->copy(this, rhs);
 }
+
+//~DMutableObject 
+// delete this->instanceOf() -> car new a chaque fois !
+//DMutableObject::~DMutableObject()
+        //{
+  //delete this->instanceOf() !
+  //}
 
 DObject* DMutableObject::newObject(DMutableStruct* myClass)
 {
@@ -37,11 +44,8 @@ DObject* DMutableObject::clone() const
 DValue DMutableObject::getValue(size_t idx) const
 {
   if (idx > this->__values.size())
-  {
-    std::cout << "throw value doenst exist python must catch it ! and ret error " << std::endl;   
     throw Destruct::DException("Value doesn't exist.");
-         
-  }
+  
   return (this->__values[idx]->getFinal());
 
   //XXX values must be set to 0 by default 
@@ -62,10 +66,7 @@ void DMutableObject::setValue(size_t idx, DValue const & v)
 DValue DMutableObject::call(size_t idx, DValue const& v)
 {
    if (idx > this->__values.size())
-   {
-     std::cout << "throw value doenst exist python must catch it ! and ret error " << std::endl;   
      throw Destruct::DException("Value doesn't exist.");
-   }
  
   return (this->__values[idx]->getFinal().get<DFunctionObject *>()->call(v));
 }

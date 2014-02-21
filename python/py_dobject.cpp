@@ -38,8 +38,6 @@ PyDObject::PyDObject()
   pyType->tp_setattro = (setattrofunc)PyDObject::_setattr;
   pyType->tp_compare = (cmpfunc)PyDObject::_compare; 
 
-/* XXX test iterator Trouver solutions/herit PyDObect   ou on garde comme ca ?
-  pouvoir le faire dynamiquement ? mais y a pyType_Ready ! vant de ce connaitre le dstruct qu on connais que ds  init / dealloc  */
   pyType->tp_iter = (getiterfunc)PyDObject::_iter;
   pyType->tp_iternext = (iternextfunc)PyDObject::_iternext;
 
@@ -52,7 +50,7 @@ PyDObject::PyDObject()
   //pyType->tp_as_map->
 
 
-  if (PyType_Ready(pyType) < 0) //probleme force a init des functions inutile si pas set 
+  if (PyType_Ready(pyType) < 0)
     throw Destruct::DException("PyType ready error");
 }
 
@@ -335,6 +333,9 @@ PyObject* PyDObject::_iter(PyDObject::DPyObject* self)
   
   try 
   {
+    if (self->pimpl->instanceOf()->name() == "DIterator")    
+      return ((PyObject*)self);
+
     Destruct::DObject* iterator = Destruct::Destruct::instance().generate("DIterator");
     iterator->setValue("container", Destruct::RealValue<Destruct::DObject*>(self->pimpl));
 
@@ -363,11 +364,8 @@ PyObject* PyDObject::_iternext(PyDObject::DPyObject* self)
 
     if (!isDone)
     {
-      Destruct::DFunctionObject* currentItemObject = iterator->currentItemObject;
-      Destruct::DValue result = currentItemObject->call();
-
-      Destruct::DFunctionObject* nextItemObject = iterator->nextObject;
-      nextItemObject->call();
+      Destruct::DValue result = ((Destruct::DFunctionObject*)iterator->currentItemObject)->call();
+      ((Destruct::DFunctionObject*)iterator->nextObject)->call();
 
       Destruct::DAttribute attribute = self->pimpl->instanceOf()->attribute("currentItem");
       Destruct::DType::Type_t type = attribute.type().getReturnType();
@@ -395,8 +393,7 @@ Py_ssize_t PyDObject::_length(PyDObject::DPyObject* self)
 {
   try 
   { 
-    Destruct::DValue result = self->pimpl->call("size");
-    return (result.get<DUInt64>());
+    return (self->pimpl->call("size").get<DUInt64>());
   }
   catch (Destruct::DException const& exception)
   {
@@ -424,19 +421,16 @@ int PyDObject::_setitem(PyDObject::DPyObject* self, Py_ssize_t index, PyObject* 
 {
   try 
   {
-    //XXX normallement on doit utiliser le prototype et newObject() le plus possible pour les perf donc test si ca change bien les perf ! 
-    Destruct::DMutableObject* argument = new Destruct::DMutableObject("argument"); //cree un objet a chaque fois ? pourrait reutiliser le meme ?
+    Destruct::DMutableObject* argument = static_cast<Destruct::DMutableObject*>(Destruct::Destruct::instance().generate("DMutable"));
    
-    //tester vitesse avec les pour comparer  
-    Destruct::DType pushType = self->pimpl->instanceOf()->attribute("push").type(); //getValue("templatetype") ??
+    Destruct::DType pushType = self->pimpl->instanceOf()->attribute("push").type();
     Destruct::DValue itemValue = DValueDispatchTable[pushType.getArgumentType()]->toDValue(item);
 
-    //Destruct::DValue itemValue = pyObjectToDValue(item); //faudrait un DValue ou un stockage de BaseValue* ds un objet special
     argument->setValueAttribute("item", itemValue, pushType.getArgumentType());
     argument->setValueAttribute("index", Destruct::RealValue<DInt64>(index), Destruct::DType::DInt64Type);
 
     self->pimpl->call("setItem", Destruct::RealValue<Destruct::DObject*>(argument));
-    argument->destroy();
+    argument->destroy(); //seem to be not enough other must havbe forget to call destroy 
   }
   catch (Destruct::DException const& exception)
   {

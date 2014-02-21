@@ -15,8 +15,10 @@ void  DIterator::first(void)
 
 void DIterator::setValue(size_t idx, DValue const& v)
 {
+  std::cout << "SetValue DIterator CALLLLLLLLLEEEED" << std::endl;
   if (idx == 0)
   {
+    std::cout << "changing type for iterator " << std::endl;
     DObject* container = v.get<DObject*>();
     DAttribute attr = container->instanceOf()->attribute("get"); //
     this->__struct->replaceAttribute(5, DAttribute(attr.type().getReturnType(), "currentItem", DType::DNoneType));

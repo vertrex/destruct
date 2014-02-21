@@ -126,7 +126,8 @@ class PyReverseIterator(DObject):
   def currentItem(self): #XXX ca serait bien de pouvoir le faire faut pas detruire la fonction parent quand une nouvelle est aloeur par un fils alors ? pour gerer l heritage ? 
      print 'Reverse currentItem'
      print self.container
-     return self.container.get(self.container.size() - self.index)
+     print self.container.size() - self.index
+     return self.container.get(DUInt64(0))
 
 print "======================"
 
@@ -156,18 +157,20 @@ a = timeFunc(fillInt, c)
 b = timeFunc(iterate, c)
 total((a, b,))
 
-print 'Reverse iterator'
+print 'Push 0,10 in simpleDvectorSString'
 vector = PySimpleDVectorString()
 for i in range(0, 10):
   vector.push(str(i)) 
 
+print 'create reverse iterator'
 iterator = PyReverseIterator()
+print 'iterator set container'
 iterator.container = vector
-print 'iterate reverse'
+#print 'iterate reverse'
 for i in iterator:
   print i
-  pass
-print len(vector)
+  #pass
+print 'for in len'
 for x in range(0, len(vector)): #implem len
   print vector[x]
 
@@ -228,7 +231,7 @@ class PyPureIterator(DObject):
 
 class PythonPureIterable(DObject):
   def __init__(self):
-     DObject.__init__(self, "DIterable") #faudrait un DIterable register avant DIterable64... sin on faut redefinir toute la struct soit meme c pas le but faudrait pouvoir heriter donc pour creer par un hex un objet node iterable 
+     DObject.__init__(self, "DContainer") ##Dcequ on veut en faitef
      self.l = ['a', 'b', 'c']
 
   def get(self, index):

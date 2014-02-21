@@ -17,11 +17,11 @@ public:
   DMutableStruct(DStruct const* base, const DUnicodeString& name, CreateMutableObjectFunction newObj, Iterator attributeBegin, Iterator attributeEnd) : DStruct(base, name, (DObject* (*) (DStruct*))newObj, attributeBegin, attributeEnd), __createObject(newObj)
   {
   }
-
   DMutableStruct(DStruct const* base, const DUnicodeString& name, CreateMutableObjectFunction objectFunction);
 
-  void addAttribute(const DAttribute& attribute);
-  void replaceAttribute(size_t idx,const DAttribute& attribute);
+  DObject* newObject();
+  void     addAttribute(const DAttribute& attribute);
+  void     replaceAttribute(size_t idx,const DAttribute& attribute);
 private:
   const CreateMutableObjectFunction    __createObject;
 };

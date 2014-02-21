@@ -36,7 +36,7 @@ public:
   DUnicodeString        name() const;
 
   //DObject*              newObject() const;
-  DObject*              newObject(); //for mutable
+  virtual DObject*      newObject(); //for mutable
  
   DObject const*        defaultDObject() const;//not serialized, could be usefull for destruct to set default value 
   void                  setDefault(DObject const *);

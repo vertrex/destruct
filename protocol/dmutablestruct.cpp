@@ -8,6 +8,14 @@ DMutableStruct::DMutableStruct(DStruct const * base, const DUnicodeString & name
 
 }
 
+DObject* DMutableStruct::newObject() //for mutable non const so ++definitionFIx=false ?
+{
+  if (*this->__createObject == NULL)
+    return (NULL);
+  
+  return (*this->__createObject)(new DMutableStruct(*this)); //Delete the copy !
+}
+
 void DMutableStruct::addAttribute(const DAttribute& attribute)
 {
   this->__ownAttributes.push_back(attribute);           //?

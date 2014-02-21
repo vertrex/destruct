@@ -13,6 +13,7 @@ public:
   DMutableObject(const DUnicodeString& name); 
   DMutableObject(DMutableStruct* dstructDef); 
   DMutableObject(DMutableObject const &);
+  //~DMutableObject();
 
   using DObject::getValue;
   using DObject::setValue;
@@ -22,17 +23,6 @@ public:
   virtual DValue           call(size_t idx, DValue const&); //this is juste an helper function
 
   void setValueAttribute(std::string const& name, DValue const& v, DType::Type_t type);
-
-  //template<class realtype> //XXX style must have non templated version
-  //void setValueAttribute(std::string const& name, RealValue<realtype> v, DType::Type_t type)
-  ////void setValueAttribute(std::string const& name, DValue const &v = RealValue<realtype>(arg), DType::Type_t type);
-  //{
-    //DAttribute attribute(name, type);
-    //
-    //this->instanceOf()->addAttribute(attribute);
-    //this->__values.push_back(attribute.type().newValue()); //set new value ou directement v possible ?
-    //this->__values.back()->set(v);
-  //}
 
   static DObject* newObject(DMutableStruct* myClass);
   virtual DObject*  clone() const;

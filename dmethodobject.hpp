@@ -25,8 +25,8 @@ protected:
   {
   };
 private:
- DMethodObjectBase(DMethodObjectBase const&);
- DMethodObjectBase & operator =(DMethodObjectBase const &);
+  DMethodObjectBase(DMethodObjectBase const&);
+  DMethodObjectBase & operator =(DMethodObjectBase const &);
 };
 
 /*

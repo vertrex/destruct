@@ -3,6 +3,7 @@
 
 #include "protocol/dclassobject.hpp"
 #include "protocol/dmutablestruct.hpp"
+#include "protocol/dmutableobject.hpp"
 
 #include "protocol/protocol.hpp"
 #include "protocol/diterator.hpp"
@@ -23,8 +24,9 @@ Protocol::Protocol(Destruct* destruct)
 
 void Protocol::__registerStruct(Destruct* destruct)
 {
+  destruct->registerDStruct(static_cast<DStruct*>(new DMutableStruct(NULL,"DMutable", DMutableObject::newObject)));
   destruct->registerDStruct(makeNewDMutable<DIterator >("DIterator"));
-  destruct->registerDStruct(makeNewDClass<DVectorInt32 >("DVector<Int32>"));
+  destruct->registerDStruct(makeNewDClass<DVectorInt32 >("DVector<Int32>")); //DInt32 please
   destruct->registerDStruct(makeNewDClass<DVectorInt64 >("DVector<DInt64>"));
   destruct->registerDStruct(makeNewDClass<DVectorString >("DVector<String>"));
   destruct->registerDStruct(makeNewDClass<DVectorObject >("DVector<DObject*>"));

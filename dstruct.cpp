@@ -31,9 +31,8 @@ DObject* DStruct::newObject() //for mutable non const so ++definitionFIx=false ?
 {
   this->__definitionFix = true;
   if (*this->__createObject == NULL)
-  {
     return (NULL);
-  }
+  
   return (*this->__createObject)(this);
 }
 

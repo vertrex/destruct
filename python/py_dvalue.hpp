@@ -116,6 +116,7 @@ static PythonTypeBaseModule*  DValueDispatchTable[] =
   &PyDObject::moduleInit(),
   &PyDMethodObject::moduleInit(),
   &PyDNullObject::moduleInit(),
+//&PyDUnknownType::moduleInit(), throw error unknown type 
   NULL,
 };
 
