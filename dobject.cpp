@@ -38,6 +38,15 @@ DValue DObject::call(std::string const& name, DValue const& v) //const ? XXX  : 
   return (this->call(index, v));
 }
 
+DValue DObject::call(std::string const& name) //const ? XXX  : throw
+{
+  int32_t index = this->instanceOf()->findAttribute(name);
+
+  if (index == -1)
+    throw DException(this->instanceOf()->name() + " instance as no attribute " + name); 
+  return (this->call(index, RealValue<DObject*>(Destruct::DNone)));
+}
+
 BaseValue* DObject::getBaseValue(DObject* dobject, size_t index)
 {
   return (dobject->getBaseValue(index));

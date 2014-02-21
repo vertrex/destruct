@@ -44,17 +44,34 @@ public:
  
   DValue call(const DValue& args)
   {
-     return (__self->*__member)(args);
+    return RealValue<RealReturnType>((__self->*__member)(args));
   }
 private:
   CPPClass* __self;
   RealReturnType (CPPClass::* __member) (ArgumentType);
 };
 
+
+template<typename CPPClass, typename ArgumentType>
+class DMethodObjectTyped<DValue, CPPClass, ArgumentType> : public DMethodObjectBase
+{
+public:
+  DMethodObjectTyped(CPPClass* self, DValue (CPPClass::* member) (ArgumentType)) : __self(self), __member(member)
+  {
+  }
+ 
+  DValue call(const DValue& args)
+  {
+    return (__self->*__member)(args);
+  }
+private:
+  CPPClass* __self;
+  DValue (CPPClass::* __member) (ArgumentType);
+};
+
 /*
  * DMethodObjectTyped specialization : void CPPClass(Argument)
  */
-
 
 template<typename CPPClass, typename ArgumentType>
 class DMethodObjectTyped<void, CPPClass, ArgumentType> : public DMethodObjectBase
@@ -90,11 +107,30 @@ public:
   {
     if (args.get<DObject*>() != DNone)
       throw DException("Non DNone argument passed to function(void)");
-     return (__self->*__member)();
+    return RealValue<RealReturnType >((__self->*__member)());
   }
 private:
   CPPClass* __self;
   RealReturnType (CPPClass::* __member) (void);
+};
+
+template<typename CPPClass>
+class DMethodObjectTyped<DValue , CPPClass, void > : public DMethodObjectBase
+{
+public:
+  DMethodObjectTyped(CPPClass* self, DValue (CPPClass::* member) (void)) : __self(self), __member(member)
+  {
+  }
+ 
+  DValue call(const DValue& args)
+  {
+    if (args.get<DObject*>() != DNone)
+      throw DException("Non DNone argument passed to function(void)");
+    return  (__self->*__member)();
+  }
+private:
+  CPPClass* __self;
+  DValue (CPPClass::* __member) (void);
 };
 
 /*
@@ -148,6 +184,10 @@ public:
     return (__methodBase->call(args));
   }
 
+  DValue call(void) const
+  {
+    return (__methodBase->call(RealValue<DObject*>(DNone)));
+  }
 private:
   DMethodObjectBase*  __methodBase;
 };

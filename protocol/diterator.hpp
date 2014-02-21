@@ -40,7 +40,7 @@ public:
 
   void                        next(void);
   void                        first(void);
-  RealValue<DInt8>            isDone(void);
+  DInt8                       isDone(void);
   DValue                      currentItem(void);
   void                        setValue(size_t idx, DValue const& v);
 

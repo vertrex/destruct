@@ -17,7 +17,7 @@ public:
   {
   }
 
-  RealValue<DUInt64>  push(DValue const& args) 
+  DUInt64  push(DValue const& args) 
   {
     this->__vector.push_back(args.get<RealType>());
     return (this->__vector.size() - 1);
@@ -32,12 +32,12 @@ public:
     return (RealValue<RealType>(this->__vector[index]));
   }
 
-  RealValue<DUInt64>   size(void)
+  DUInt64   size(void)
   {
     return (this->__vector.size());
   }
 
-  RealValue<DObject*>    setItem(DValue const& args)
+  DObject*    setItem(DValue const& args)
   {
     DObject*     argumentsObject = args.get<DObject*>();
     DInt64       index = argumentsObject->getValue("index").get<DInt64>();

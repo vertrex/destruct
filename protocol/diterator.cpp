@@ -24,7 +24,7 @@ void DIterator::setValue(size_t idx, DValue const& v)
   DCppObject<DIterator>::setValue(idx, v);
 }
 
-RealValue<DInt8>        DIterator::isDone(void)
+DInt8        DIterator::isDone(void)
 {
   if (this->container) // !DNone ? 
   {

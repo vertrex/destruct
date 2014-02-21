@@ -18,10 +18,10 @@ public:
   {
   }
 
-  virtual RealValue<DUInt64>    push(DValue const& args) = 0;
-  virtual DValue                get(DValue const& args) = 0;
-  virtual RealValue<DUInt64>    size(void) = 0;
-  virtual RealValue<DObject*>   setItem(DValue const& args) = 0;
+  virtual DUInt64    size(void) = 0;
+  virtual DUInt64    push(DValue const& args) = 0;
+  virtual DObject*   setItem(DValue const& args) = 0;
+  virtual DValue     get(DValue const& args) = 0;
 
   RealValue<DFunctionObject* >  pushObject;
   RealValue<DFunctionObject* >  getObject;

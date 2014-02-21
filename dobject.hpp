@@ -22,12 +22,11 @@ public:
   virtual DValue getValue(size_t index) const = 0;               //set data member
   virtual void setValue(size_t idx, DValue const &) = 0;         //set 
   virtual DValue call(size_t index, DValue const &)  = 0;
-//virtual DValue call(size_t) = 0;  //XXX implem
 
   virtual DValue getValue(std::string const& name) const;        //set data member
   virtual void setValue(std::string const& name, DValue const &); //
   virtual DValue call(std::string const& name, DValue const &);
-//virtual DValue call(std::string const& name); //XXX implem
+  virtual DValue call(std::string const& name); //XXX implem
 
 protected:
   DObject(const DObject& rhs) : __dstructDef(rhs.__dstructDef) 

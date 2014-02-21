@@ -149,6 +149,23 @@ PyObject* PyDMethodObject::getType(PyDMethodObject::DPyObject* self, PyObject* a
  *  DPythonMethodObject : public DFunctionObject called by c++ code 
  */ 
 
+Destruct::DValue DPythonMethodObject::call(void) const
+{
+  PyGILState_STATE gstate;
+  gstate = PyGILState_Ensure();
+
+  PyObject* pythonResult = PyObject_CallFunctionObjArgs(this->__pythonCallable, this->__self, NULL, NULL);
+
+  if (!pythonResult)
+  {
+     const std::string error = PythonTypeBaseModule::pyErrorAsString();
+     throw Destruct::DException(error);
+  }
+
+  PyGILState_Release(gstate);
+  return DValueDispatchTable[this->__type.getReturnType()]->toDValue(pythonResult);
+}
+
 Destruct::DValue DPythonMethodObject::call(Destruct::DValue const& args) const
 {
   PyGILState_STATE gstate;

@@ -283,7 +283,6 @@ en python on aura bien access au func surcharger mais pas en c++ car elles auron
 
  */
 
-
 PyObject*    PyDObject::_getattr(PyDObject::DPyObject* self, PyObject* args)
 {
   PyObject* obj = PyDObject::getValue(self, args);
@@ -356,20 +355,19 @@ PyObject* PyDObject::_iter(PyDObject::DPyObject* self)
 PyObject* PyDObject::_iternext(PyDObject::DPyObject* self)
 {
   Destruct::DIterator* iterator = dynamic_cast<Destruct::DIterator *>(self->pimpl);
-  Destruct::RealValue<Destruct::DObject*> realNone = Destruct::DNone;
 
   if (iterator != NULL)
   {
     Destruct::DFunctionObject* isDoneObject = iterator->isDoneObject;  
-    DInt8 isDone(isDoneObject->call(realNone).get<DInt8>());
+    DInt8 isDone(isDoneObject->call().get<DInt8>());
 
     if (!isDone)
     {
       Destruct::DFunctionObject* currentItemObject = iterator->currentItemObject;
-      Destruct::DValue result = currentItemObject->call(realNone);
+      Destruct::DValue result = currentItemObject->call();
 
       Destruct::DFunctionObject* nextItemObject = iterator->nextObject;
-      nextItemObject->call(realNone);
+      nextItemObject->call();
 
       Destruct::DAttribute attribute = self->pimpl->instanceOf()->attribute("currentItem");
       Destruct::DType::Type_t type = attribute.type().getReturnType();
@@ -378,11 +376,11 @@ PyObject* PyDObject::_iternext(PyDObject::DPyObject* self)
   }
   else
   {
-    DInt8 isDone(self->pimpl->call("isDone", realNone).get<DInt8>());
+    DInt8 isDone(self->pimpl->call("isDone").get<DInt8>());
     if (!isDone)
     {
-      Destruct::DValue result = self->pimpl->call("currentItem", realNone);
-      self->pimpl->call("next", realNone);
+      Destruct::DValue result = self->pimpl->call("currentItem");
+      self->pimpl->call("next");
 
       Destruct::DAttribute attribute = self->pimpl->instanceOf()->attribute("currentItem");
       Destruct::DType::Type_t type = attribute.type().getReturnType();
@@ -397,7 +395,7 @@ Py_ssize_t PyDObject::_length(PyDObject::DPyObject* self)
 {
   try 
   { 
-    Destruct::DValue result = self->pimpl->call("size", Destruct::RealValue<Destruct::DObject*>(Destruct::DNone));
+    Destruct::DValue result = self->pimpl->call("size");
     return (result.get<DUInt64>());
   }
   catch (Destruct::DException const& exception)

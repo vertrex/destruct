@@ -18,6 +18,7 @@ public:
     Py_DECREF(__pythonCallable);
   }
 
+  Destruct::DValue      call(void) const;
   Destruct::DValue      call(Destruct::DValue const& args) const;
   PyObject*             fastCall(PyObject* args) const;
 private:
