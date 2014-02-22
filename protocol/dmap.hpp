@@ -2,6 +2,7 @@
 #define DESTRUCT_DMAP_HPP_
 
 #include <map>
+#include "dmapiterator.hpp"
 
 namespace Destruct
 {
@@ -34,7 +35,7 @@ public:
 
     iteratorType it = this->__map.find(key);
     if (it != this->__map.end())
-      return RealValue<ValueType>(this->__map[args.get<KeyType>()]);
+      return RealValue<ValueType>(it->second);
      
     std::string error("DMap key : " + args.asUnicodeString() + " not found.");
     throw DException(error);
@@ -58,9 +59,14 @@ public:
 
   DObject*    iterator(void)
   {
-    DObject* iterator = Destruct::instance().generate("DIterator");
+    DStruct* dstruct = makeNewDMutable<DMapIterator<KeyType, ValueType, ValueTypeId > >("DMapIterator");
+    DObject* iterator = dstruct->newObject();
     iterator->setValue("container", RealValue<DObject*>(this));
 
+    DMapIterator<KeyType,ValueType, KeyTypeId>* diterator = static_cast<DMapIterator<KeyType, ValueType, KeyTypeId> *>(iterator);
+
+    diterator->begin = this->__map.begin();
+    diterator->end = this->__map.end();
     return (iterator);
   }
 /*

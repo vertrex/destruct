@@ -136,6 +136,7 @@ protocol/protocol.cpp
 protocol/dmutablestruct.cpp
 protocol/dmutableobject.cpp
 protocol/diterator.cpp
+#protocol/dmapiterator.cpp
 )
 
 add_library(destruct SHARED ${destruct_source_files})

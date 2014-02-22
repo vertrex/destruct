@@ -422,7 +422,7 @@ PyObject* PyDObject::_iternext(PyDObject::DPyObject* self)
     if (!isDone)
     {
       Destruct::DValue result = self->pimpl->call("currentItem");
-      self->pimpl->call("next");
+      self->pimpl->call("nextItem");
 
       Destruct::DAttribute attribute = self->pimpl->instanceOf()->attribute("currentItem");
       Destruct::DType::Type_t type = attribute.type().getReturnType();

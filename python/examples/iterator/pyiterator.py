@@ -271,18 +271,14 @@ except KeyError as e:
 
 print 'for key in dict' 
 for key in d:
-  print key
+  print key, ',',  d[key]
 
-#print 'for key value in dict'
-#for key, value in d:
-  #print key, value
-#
-#try:
-  #print iteritems
-  #for key in d.iteritems():
-    #print key
-#except NameError as e:
-  #print 'name error ok ' , e
+try:
+  print iteritems
+  for key, value in d.iteritems():
+    print key, value
+except NameError as e:
+  print 'name error ok ' , e
 
 #print itervalues
 #for value in k.itervalues():

@@ -9,6 +9,7 @@
 #include "protocol/diterator.hpp"
 #include "protocol/dvector.hpp"
 #include "protocol/dmap.hpp"
+#include "protocol/dmapiterator.hpp"
 
 namespace Destruct
 {
@@ -34,6 +35,7 @@ void Protocol::__registerStruct(Destruct* destruct)
   destruct->registerDStruct(makeNewDCpp<DVectorObject >("DVector<DObject*>")); //virer le <> et * ! 
 
   destruct->registerDStruct(makeNewDCpp<DMap<DUnicodeString, DType::DUnicodeStringType,  DUnicodeString, DType::DUnicodeStringType > >("DMapString"));
+  //destruct->registerDStruct(makeNewDMutable<DMapIterator >("DMapIterator"));
 }
 
 }
