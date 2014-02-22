@@ -19,6 +19,8 @@ template<>
 PyTypeObject* PyDObjectT::pyType = NULL;
 template<>
 PySequenceMethods* PyDObjectT::pySequenceMethods = NULL;
+template<>
+PyMappingMethods* PyDObjectT::pyMappingMethods = NULL;
 
 Destruct::DValue PyDObject::toDValue(PyObject* value) 
 {
@@ -84,8 +86,13 @@ PyDObject::PyDObject()
   pyType->tp_as_sequence->sq_length = (lenfunc)PyDObject::_length;
   pyType->tp_as_sequence->sq_item = (ssizeargfunc)PyDObject::_item;
   pyType->tp_as_sequence->sq_ass_item = (ssizeobjargproc)PyDObject::_setitem;
-  //pyType->tp_as_map->
 
+  pyMappingMethods = (PyMappingMethods*)malloc(sizeof(baseMappingMethods));
+  memcpy(pyMappingMethods, &baseMappingMethods, sizeof(baseMappingMethods)); //is empty can bzero
+  pyType->tp_as_mapping = pyMappingMethods;
+  pyType->tp_as_mapping->mp_length = (lenfunc)PyDObject::_length;
+  pyType->tp_as_mapping->mp_subscript = (binaryfunc)PyDObject::_map;
+  pyType->tp_as_mapping->mp_ass_subscript  = (objobjargproc)PyDObject::_setmap; 
 
   if (PyType_Ready(pyType) < 0)
     throw Destruct::DException("PyType ready error");
@@ -374,8 +381,7 @@ PyObject* PyDObject::_iter(PyDObject::DPyObject* self)
     if (self->pimpl->instanceOf()->name() == "DIterator")    
       return ((PyObject*)self);
 
-    Destruct::DObject* iterator = Destruct::Destruct::instance().generate("DIterator");
-    iterator->setValue("container", Destruct::RealValue<Destruct::DObject*>(self->pimpl));
+    Destruct::DObject* iterator = self->pimpl->call("iterator").get<Destruct::DObject*>();
 
     PyDObject::DPyObject*  dobjectObject = (PyDObject::DPyObject*)_PyObject_New(PyDObject::pyType);
     dobjectObject->pimpl = iterator;
@@ -390,11 +396,12 @@ PyObject* PyDObject::_iter(PyDObject::DPyObject* self)
   }
 }
 
-
 PyObject* PyDObject::_iternext(PyDObject::DPyObject* self)
 {
   Destruct::DIterator* iterator = dynamic_cast<Destruct::DIterator *>(self->pimpl);
 
+  try {
+ 
   if (iterator != NULL)
   {
     Destruct::DFunctionObject* isDoneObject = iterator->isDoneObject;  
@@ -404,7 +411,6 @@ PyObject* PyDObject::_iternext(PyDObject::DPyObject* self)
     {
       Destruct::DValue result = ((Destruct::DFunctionObject*)iterator->currentItemObject)->call();
       ((Destruct::DFunctionObject*)iterator->nextObject)->call();
-
       Destruct::DAttribute attribute = self->pimpl->instanceOf()->attribute("currentItem");
       Destruct::DType::Type_t type = attribute.type().getReturnType();
       return (DValueDispatchTable[type]->asDValue(result));
@@ -422,6 +428,12 @@ PyObject* PyDObject::_iternext(PyDObject::DPyObject* self)
       Destruct::DType::Type_t type = attribute.type().getReturnType();
       return (DValueDispatchTable[type]->asDValue(result));
     }
+  }
+  } 
+  catch (Destruct::DException const& exception) 
+  {
+    const std::string error = self->pimpl->instanceOf()->name() + " is not iterable : " + exception.error();
+    PyErr_SetString(PyExc_TypeError, error.c_str());
   }
 
   return (NULL);
@@ -457,6 +469,7 @@ PyObject* PyDObject::_item(PyDObject::DPyObject* self, Py_ssize_t index)
 
 int PyDObject::_setitem(PyDObject::DPyObject* self, Py_ssize_t index, PyObject* item)
 {
+//XXX sert pu a rien !!
   try 
   {
     Destruct::DMutableObject* argument = static_cast<Destruct::DMutableObject*>(Destruct::Destruct::instance().generate("DMutable"));
@@ -464,9 +477,8 @@ int PyDObject::_setitem(PyDObject::DPyObject* self, Py_ssize_t index, PyObject* 
     Destruct::DType pushType = self->pimpl->instanceOf()->attribute("push").type();
     Destruct::DValue itemValue = DValueDispatchTable[pushType.getArgumentType()]->toDValue(item);
 
-    argument->setValueAttribute("item", itemValue, pushType.getArgumentType());
     argument->setValueAttribute("index", Destruct::RealValue<DInt64>(index), Destruct::DType::DInt64Type);
-
+    argument->setValueAttribute("item", itemValue, pushType.getArgumentType());
     self->pimpl->call("setItem", Destruct::RealValue<Destruct::DObject*>(argument));
     argument->destroy(); //seem to be not enough other must havbe forget to call destroy 
   }
@@ -477,4 +489,67 @@ int PyDObject::_setitem(PyDObject::DPyObject* self, Py_ssize_t index, PyObject* 
   }
 
   return (0); 
+}
+
+int  PyDObject::_setmap(DPyObject* self, PyObject* _key, PyObject* _value)
+{
+  if (_key == NULL)
+  {
+    std::cout << "del item not implemented" << std::endl; //XXX
+    return (0);
+  }
+  else
+  {
+    try 
+    {
+      Destruct::DMutableObject* argument = static_cast<Destruct::DMutableObject*>(Destruct::Destruct::instance().generate("DMutable"));
+  
+      Destruct::DType  getType = self->pimpl->instanceOf()->attribute("get").type();
+      Destruct::DType::Type_t  valueType = getType.getReturnType();
+      Destruct::DType::Type_t  keyType = getType.getArgumentType();
+
+      Destruct::DValue key = DValueDispatchTable[keyType]->toDValue(_key);
+      Destruct::DValue value = DValueDispatchTable[valueType]->toDValue(_value);
+
+      argument->setValueAttribute("index", key, keyType);
+      argument->setValueAttribute("value", value, valueType);
+
+      self->pimpl->call("setItem", Destruct::RealValue<Destruct::DObject*>(argument));
+      argument->destroy(); //seem to be not enough other must havbe forget to call destroy 
+    }
+    catch (Destruct::DException const& exception)
+    {
+      PyErr_SetString(PyExc_AttributeError, exception.error().c_str());
+      return (-1);
+    }
+
+    return (0);
+  }
+}
+
+PyObject* PyDObject::_map(PyDObject::DPyObject* self, register PyObject* _key)
+{
+  try
+  {
+    Destruct::DType  getType = self->pimpl->instanceOf()->attribute("get").type();
+    Destruct::DType::Type_t  valueType = getType.getReturnType();
+    Destruct::DType::Type_t  keyType = getType.getArgumentType();
+
+    Destruct::DValue key = DValueDispatchTable[keyType]->toDValue(_key);
+    Destruct::DValue value = self->pimpl->call("get", key);
+
+    return (DValueDispatchTable[valueType]->asDValue(value)); 
+  }
+//doit rnevoyer typerror de python quand c une type error
+// et keyerorr quand c une keyerror
+// pas tout le temps une key error
+//catch (Destruct::DContainerException const& exception) //herite dobject XXX
+//{
+//PyErr_SetString(PyExc_KeyError, exception.error().c_str());
+//} 
+  catch (Destruct::DException const& exception)
+  {
+    PyErr_SetString(PyExc_KeyError, exception.error().c_str());
+    return (NULL);
+  }
 }

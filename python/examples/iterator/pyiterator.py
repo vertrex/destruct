@@ -8,8 +8,8 @@ import time, timeit
 from _destruct import *
 
 COUNT = 10
-COUNT = 10**6
-#COUNT = 10**3
+#COUNT = 10**6
+COUNT = 10**3
 
 def timeFunc(func, args):
    a = time.time()
@@ -122,9 +122,11 @@ class PyPureIterator(DObject):
        return val
 
 
-class PythonPureIterable(DObject):
+class PythonPureContainer(DObject):
   def __init__(self):
-     DObject.__init__(self, "DContainer") ##Dcequ on veut en faitef
+     #DObject.__init__(self, "DContainer") ##faudrait changer le type dynamiquement ou faire un dmutable et set les valeur de retour etc...
+     #DObject.__init__(self, "DContainerString") ##possible aussi juste pour etre overwrite par python ou autre ...
+     DObject.__init__(self, "DVector<String>") ##Donc faire XXX DContainerString comme ca c overwriteable !!!!!!!!!!!!!
      self.l = ['a', 'b', 'c']
 
   def get(self, index):
@@ -135,12 +137,6 @@ class PythonPureIterable(DObject):
 
   def size(self):
       return len(self.l)
-
-  def iterator(self): 
-     iterator = PyPureIterator()
-     iterator.container = self
-     return iterator
-
 
 def dvectorstring():
   print "------ Python create c++ object via Destruct --"
@@ -195,22 +191,19 @@ def reverseiterate():
 
 
 def setvector():
-  #XXX vector = Vector
-  print vector[0], type(vector[0])
-  print 'vector set[0]'
+  print 'set vector with test str'
+  vector = PySimpleDVectorString()
+  for i in range(0, 10):
+    vector.push(str(i)) 
   vector[0] = '100 strings'
-  print vector[0]
-
-  print 'vector set 0 10 str'
   for x in range(0, 10):
-    print x
     vector[x] = 'test ' +str(x)
 
-  print 'print vector content'
   for i in vector:
     print i
 
 def pushint():
+ print 'set int'
  vi = PySimpleDVectorInt()
  for x in range(0, 10):
    vi.push(x)
@@ -219,14 +212,19 @@ def pushint():
  for i in vi:
     print i
 
- print 'put int in string doit planter mais doit etre catchable'
-  #try:
- #  for x in range(0, 10):
-   #  vector[x] = x
-   #except :
-    #pass
-def pythonpureiterable():
-  ppi = PythonPureIterable()
+def tryerror():
+ print 'put int in string must return error'
+ try:
+  vector = PySimpleDVectorString()
+  for i in range(0, 10):
+    vector.push(str(i)) 
+  for x in range(0, 10):
+     vector[x] = x
+ except Exception as e:
+    print e
+
+def pythonpurecontainer():
+  ppi = PythonPureContainer()
   for x in ppi:
     print x
 
@@ -237,7 +235,55 @@ simplevectorstring()
 pythonvector()
 simplevectorint()
 reverseiterate()
-#setvector()
-#pushint()
-#pythonpureiterable()
+setvector()
+pushint()
+tryerror()
+pythonpurecontainer()
 
+class PyMap(DObject):
+  def __init__(self):
+     DObject.__init__(self, "DMapString")
+
+print 'py map'
+d = PyMap()
+#set
+print d
+print len(d)
+d["a"] = "first string"
+d["b"] = "second string"
+print len(d)
+
+#get 
+print d
+print d["a"]
+print d["b"]
+try:
+  print d["c"]
+except KeyError as e: #XXX must return keyerror c pas les variant :) 
+  print 'Error OK', e
+
+try:
+  print d[1]
+except TypeError as e:
+  print 'Type error ok' , e
+except KeyError as e:
+  print 'Keyerror bad ! must be typerror'
+
+print 'for key in dict' 
+for key in d:
+  print key
+
+#print 'for key value in dict'
+#for key, value in d:
+  #print key, value
+#
+#try:
+  #print iteritems
+  #for key in d.iteritems():
+    #print key
+#except NameError as e:
+  #print 'name error ok ' , e
+
+#print itervalues
+#for value in k.itervalues():
+  #print value

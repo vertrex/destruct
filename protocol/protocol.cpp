@@ -8,6 +8,7 @@
 #include "protocol/protocol.hpp"
 #include "protocol/diterator.hpp"
 #include "protocol/dvector.hpp"
+#include "protocol/dmap.hpp"
 
 namespace Destruct
 {
@@ -26,10 +27,13 @@ void Protocol::__registerStruct(Destruct* destruct)
 {
   destruct->registerDStruct(static_cast<DStruct*>(new DMutableStruct(NULL,"DMutable", DMutableObject::newObject)));
   destruct->registerDStruct(makeNewDMutable<DIterator >("DIterator"));
-  destruct->registerDStruct(makeNewDClass<DVectorInt32 >("DVector<Int32>")); //DInt32 please
-  destruct->registerDStruct(makeNewDClass<DVectorInt64 >("DVector<DInt64>"));
-  destruct->registerDStruct(makeNewDClass<DVectorString >("DVector<String>"));
-  destruct->registerDStruct(makeNewDClass<DVectorObject >("DVector<DObject*>"));
+
+  destruct->registerDStruct(makeNewDCpp<DVectorInt32 >("DVector<Int32>")); //DInt32 please  //CppStruct ?
+  destruct->registerDStruct(makeNewDCpp<DVectorInt64 >("DVector<DInt64>")); //virer le <>
+  destruct->registerDStruct(makeNewDCpp<DVectorString >("DVector<String>"));
+  destruct->registerDStruct(makeNewDCpp<DVectorObject >("DVector<DObject*>")); //virer le <> et * ! 
+
+  destruct->registerDStruct(makeNewDCpp<DMap<DUnicodeString, DType::DUnicodeStringType,  DUnicodeString, DType::DUnicodeStringType > >("DMapString"));
 }
 
 }

@@ -35,6 +35,8 @@ public:
   static Py_ssize_t   _length(DPyObject* self);
   static PyObject*    _item(DPyObject* self, Py_ssize_t index);
   static int          _setitem(DPyObject* self, Py_ssize_t index, PyObject* item); 
+  static int          _setmap(DPyObject* self, PyObject* v, PyObject* w); 
+  static PyObject*    _map(PyDObject::DPyObject* self, register PyObject* key);
 
   PyObject*           typeObject();
   

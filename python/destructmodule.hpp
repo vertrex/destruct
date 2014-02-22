@@ -27,6 +27,7 @@ class PythonBaseModule
 public:
   static PyTypeObject        basePyType; 
   static PySequenceMethods   baseSequenceMethods;
+  static PyMappingMethods    baseMappingMethods;
   static const std::string   pyErrorAsString(void);
 
   static Destruct::DValue    pyObjectToDValue(PyObject* object);
@@ -50,9 +51,10 @@ public:
      PlainType*    pimpl;
   };
  
-  static DPyObject         pyObject;
-  static PyTypeObject      *pyType;
-  static PySequenceMethods *pySequenceMethods;
+  static DPyObject          pyObject;
+  static PyTypeObject*      pyType;
+  static PySequenceMethods* pySequenceMethods;
+  static PyMappingMethods* pyMappingMethods;
 
   static FinalType& moduleInit()
   {

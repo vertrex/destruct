@@ -128,6 +128,13 @@ PySequenceMethods PythonBaseModule::baseSequenceMethods =
     0,  /* intintobjargproc sq_ass_slice;  __setslice__ */
 };
 
+PyMappingMethods PythonBaseModule::baseMappingMethods =
+{
+ 0, /* mp_length*/
+ 0, /* mp_subscript*/
+ 0, /* mp_ass_subscript*/
+};
+
 int PythonBaseModule::pyTracebackInternalAsString(PyTracebackObject* tb, std::string& errorMessage, long limit)
 {
   int err = 0;

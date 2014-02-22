@@ -251,51 +251,55 @@ DObject*        DestructTest::createIntVector(void)
   typedef DVector<DInt32, DType::DInt32Type> DVectorInt;
 //XXX pas sur la stack pour python donc faut le delete !
 
-  DVectorInt* dvectori = new DVectorInt;
-  dvectori->push(RealValue<DInt32 >(0xbad));
-  dvectori->push(RealValue<DInt32 >(0xc00fee));
+//DVectorInt* dvectori = new DVectorInt;
 
-
-  DStruct* dstructvector = makeNewDClass< DVectorInt  >(NULL, "DVector<DInt32>");
-  this->structRegistry()->registerDStruct(dstructvector);
-
-  DClassObject<DVectorInt>* dcppvectori = makeNewDObject<DVectorInt>(dstructvector, *dvectori);
-
-  std::cout << dcppvectori->call("get", RealValue<DUInt64>(0)).asUnicodeString() << std::endl;
-  std::cout << dcppvectori->call("get", RealValue<DUInt64>(0)).asUnicodeString() << std::endl;
-   
-  dcppvectori->call("push", RealValue<DInt32>(0xdffdff));
   
-  std::cout << dcppvectori->call("get", RealValue<DUInt64>(2)).asUnicodeString() << std::endl;
+//dvectori->push(RealValue<DInt32 >(0xbad));
+//dvectori->push(RealValue<DInt32 >(0xc00fee));
+//
 
-  return (dcppvectori);
+//DStruct* dstructvector = makeNewDClass< DVectorInt  >(NULL, "DVector<DInt32>");
+//this->structRegistry()->registerDStruct(dstructvector);
+//
+//DClassObject<DVectorInt>* dcppvectori = makeNewDObject<DVectorInt>(dstructvector, *dvectori);
+//
+//std::cout << dcppvectori->call("get", RealValue<DUInt64>(0)).asUnicodeString() << std::endl;
+//std::cout << dcppvectori->call("get", RealValue<DUInt64>(0)).asUnicodeString() << std::endl;
+// 
+//dcppvectori->call("push", RealValue<DInt32>(0xdffdff));
+// 
+//std::cout << dcppvectori->call("get", RealValue<DUInt64>(2)).asUnicodeString() << std::endl;
+
+//return (dcppvectori);
+  return (DNone);
 }
 
 DObject*        DestructTest::createStringVector(void)
 {
-  typedef DVector<DUnicodeString, DType::DUnicodeStringType> DVectorString;
-  DVectorString* dvectors = new DVectorString(); 
-  
-  dvectors->push(RealValue<DUnicodeString>(std::string("my_first_string")));
-  dvectors->push(RealValue<DUnicodeString>("my_second_string"));
-
-  DStruct* dstructvectors = makeNewDClass < DVectorString >(NULL, "DVector<String>");
-                                                                                                ////si non ca plante en python
-  this->structRegistry()->registerDStruct(dstructvectors);
-                ////DVector<DunicodeString *>                                                 //*
-  DClassObject<DVectorString >* dcppvectors = makeNewDObject<DVectorString >(dstructvectors, *dvectors);
-
-  DValue gfunctionValue = dcppvectors->getValue("get");
-  DFunctionObject* g = dcppvectors->getValue("get").get< DFunctionObject*  >();
-
-  std::cout << g->call(RealValue<DUInt64>(0)).get<DUnicodeString>()<< std::endl;
-  std::cout << g->call(RealValue<DUInt64>(1)).get<DUnicodeString>()<< std::endl;
-
-  DFunctionObject* conv = dcppvectors->getObject;
-  conv->call(RealValue<DUInt64>(1)); 
+        //typedef DVector<DUnicodeString, DType::DUnicodeStringType> DVectorString;
+        //DVectorString* dvectors = new DVectorString(); 
+        // 
+        //dvectors->push(RealValue<DUnicodeString>(std::string("my_first_string")));
+        //dvectors->push(RealValue<DUnicodeString>("my_second_string"));
+        //
+        //DStruct* dstructvectors = makeNewDClass < DVectorString >(NULL, "DVector<String>");
+        //////si non ca plante en python
+        //this->structRegistry()->registerDStruct(dstructvectors);
+        //////DVector<DunicodeString *>                                                 //*
+        //DClassObject<DVectorString >* dcppvectors = makeNewDObject<DVectorString >(dstructvectors, *dvectors);
+        //
+        //DValue gfunctionValue = dcppvectors->getValue("get");
+        //DFunctionObject* g = dcppvectors->getValue("get").get< DFunctionObject*  >();
+        //
+        //std::cout << g->call(RealValue<DUInt64>(0)).get<DUnicodeString>()<< std::endl;
+        //std::cout << g->call(RealValue<DUInt64>(1)).get<DUnicodeString>()<< std::endl;
+        //
+        //DFunctionObject* conv = dcppvectors->getObject;
+        //conv->call(RealValue<DUInt64>(1)); 
 
   //dcppvectors->setValue("push", dcppvectors->getObject);
-  return (dcppvectors);
+  //return (dcppvectors);
+  return (DNone);
 }
 
 void DestructTest::createNtfsBootSector(void)

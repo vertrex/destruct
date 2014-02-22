@@ -44,7 +44,7 @@ DObject* DMutableObject::clone() const
 DValue DMutableObject::getValue(size_t idx) const
 {
   if (idx > this->__values.size())
-    throw Destruct::DException("Value doesn't exist.");
+    throw Destruct::DException("DMutableObject::Value(idx) doesn't exist.");
   
   return (this->__values[idx]->getFinal());
 

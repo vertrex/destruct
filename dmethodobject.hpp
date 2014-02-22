@@ -1,6 +1,8 @@
 #ifndef _DESTRUCT_DMETHODOBJECT_HPP_
 #define _DESTRUCT_DMETHODOBJECT_HPP_
 
+#include <typeinfo>
+
 #include "drealvalue.hpp"
 #include "dnullobject.hpp"
 #include "dvalue.hpp"
@@ -181,12 +183,26 @@ public:
 
   DValue call(DValue const& args) const
   {
-    return (__methodBase->call(args));
+    try 
+    {
+      return (__methodBase->call(args));
+    }
+    catch (std::bad_cast error)
+    { 
+      throw DException("DMethodObject::call(args) : Bad cast");
+    }
   }
 
   DValue call(void) const
   {
-    return (__methodBase->call(RealValue<DObject*>(DNone)));
+    try
+    {
+      return (__methodBase->call(RealValue<DObject*>(DNone)));
+    }
+    catch (std::bad_cast error)
+    {
+      throw DException("DMethodObject::call(args) : Bad cast");
+    }
   }
 private:
   DMethodObjectBase*  __methodBase;

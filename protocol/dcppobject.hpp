@@ -87,5 +87,13 @@ protected:
   DMemoryPointer<CppClass >*       __members;
 };
 
+
+template <typename CppClass>
+inline 
+DStruct*  makeNewDCpp(DUnicodeString const& name)
+{
+   return (new DStruct(NULL, name, DCppObject<CppClass>::newObject, CppClass::ownAttributeBegin(), CppClass::ownAttributeEnd()));
+}
+
 }
 #endif
