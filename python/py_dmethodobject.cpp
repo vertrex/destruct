@@ -30,7 +30,6 @@ Destruct::DValue PyDMethodObject::toDValue(PyObject* value)
 */
 PyObject*     PyDMethodObject::asDValue(Destruct::DValue v)
 {
-  std::cout << "PyDMethodObject:asDValue(DValue v) not implemented" << std::endl;
   Py_RETURN_NONE;
 }
 
@@ -43,7 +42,7 @@ PyObject*     PyDMethodObject::asPyObject(PyObject* _self, int32_t attributeInde
     Py_RETURN_NONE;
 // get ici type et sauvegarde le pointeur suffit au lieu de index + dobject (dobject qui est deja le this de l objet non ? en + ) 
 //mais le gain de temps est negligeable apparement !
-  PyDMethodObject::DPyObject* dmethodobject = (PyDMethodObject::DPyObject*)_PyObject_New(PyDMethodObject::pyType);
+  PyDMethodObject::DPyObject* dmethodobject = (PyDMethodObject::DPyObject*)_PyObject_New(PyDMethodObject::pyType); 
   dmethodobject->pimpl = value;
   dmethodobject->index = attributeIndex;
   dmethodobject->dobject = self->pimpl;
@@ -201,7 +200,11 @@ Destruct::DValue DPythonMethodObject::call(void) const
   }
 
   PyGILState_Release(gstate);
-  return DValueDispatchTable[this->__type.getReturnType()]->toDValue(pythonResult);
+  Destruct::DStruct* dstruct = ((PyDObject::DPyObject*)this->__self)->pimpl->instanceOf();
+  Destruct::DType type = dstruct->attribute(this->__attributeIndex).type();
+
+  //return DValueDispatchTable[this->__type.getReturnType()]->toDValue(pythonResult);
+  return DValueDispatchTable[type.getReturnType()]->toDValue(pythonResult);
 }
 
 Destruct::DValue DPythonMethodObject::call(Destruct::DValue const& args) const
@@ -210,7 +213,14 @@ Destruct::DValue DPythonMethodObject::call(Destruct::DValue const& args) const
   gstate = PyGILState_Ensure();
 
   PyObject* pythonResult = NULL;
-  Destruct::DType::Type_t argumentType = this->__type.getArgumentType();
+  //Destruct::DType::Type_t argumentType = this->__type.getArgumentType();
+
+//XXX sad but true :( car ca peut eter mutable !! ou alors check if mutable si vraiemnt trop lent !
+  //must have if object->isMutable ... c peut etre mieux de l itnegrer directement ...
+  //ca veut pas autant dire ds dobject on peut juste avoir une methode virtuel isMutable
+  Destruct::DStruct* dstruct = ((PyDObject::DPyObject*)this->__self)->pimpl->instanceOf();
+  Destruct::DType type = dstruct->attribute(this->__attributeIndex).type();
+  Destruct::DType::Type_t argumentType = type.getArgumentType();
 
   if (argumentType != Destruct::DType::DNoneType)
   {
@@ -229,7 +239,7 @@ Destruct::DValue DPythonMethodObject::call(Destruct::DValue const& args) const
   }
 
   PyGILState_Release(gstate);
-  return DValueDispatchTable[this->__type.getReturnType()]->toDValue(pythonResult);
+  return DValueDispatchTable[type.getReturnType()]->toDValue(pythonResult);
 }
 
 PyObject*       DPythonMethodObject::fastCall(PyObject * args) const

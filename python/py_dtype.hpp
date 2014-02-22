@@ -14,6 +14,8 @@ public:
 
   static int            _init(DPyObject* self, PyObject* args, PyObject* kwds);
   static PyObject*      getType(DPyObject* self, PyObject* args, PyObject* kwds);
+  static PyObject*      returnType(DPyObject* self, PyObject* args, PyObject* kwds);
+  static PyObject*      argumentType(DPyObject* self, PyObject* args, PyObject* kwds);
 };
 
 #endif

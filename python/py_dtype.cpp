@@ -33,9 +33,23 @@ PyObject* PyDType::getType(PyDType::DPyObject* self, PyObject*args, PyObject* kw
   return (DValueDispatchTable[typeId]->typeObject());
 }
 
+PyObject* PyDType::returnType(PyDType::DPyObject* self, PyObject*args, PyObject* kwds)
+{
+  int typeId = self->pimpl->getReturnType();
+  return (DValueDispatchTable[typeId]->typeObject());
+}
+
+PyObject* PyDType::argumentType(PyDType::DPyObject* self, PyObject*args, PyObject* kwds)
+{
+  int typeId = self->pimpl->getArgumentType();
+  return (DValueDispatchTable[typeId]->typeObject());
+}
+
 PyMethodDef PyDType::pyMethods[] = 
 {
   {"getType", (PyCFunction)PyDType::getType, METH_NOARGS, "Return the type."},
+  {"returnType", (PyCFunction)PyDType::returnType, METH_NOARGS, "Return method return type."},
+  {"argumentType", (PyCFunction)PyDType::argumentType, METH_NOARGS, "Return method argument type."},
 //XXX name() add for serialization
   {NULL}
 };

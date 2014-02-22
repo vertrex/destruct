@@ -206,7 +206,7 @@ PyObject*  PyDObject::setValue(PyDObject::DPyObject* self, int32_t attributeInde
     {
       if (PyCallable_Check(valueObject))
       {
-        Destruct::DFunctionObject* dpythonMethodObject = new DPythonMethodObject((PyObject*)self, valueObject, self->pimpl->instanceOf()->attribute(attributeIndex).type()); //new donc doit XXX del si ecraser par un set value ou object detruit
+        Destruct::DFunctionObject* dpythonMethodObject = new DPythonMethodObject((PyObject*)self, valueObject, attributeIndex); //new donc doit XXX del si ecraser par un set value ou object detruit
         self->pimpl->setValue(attributeIndex, Destruct::RealValue<Destruct::DFunctionObject* >(dpythonMethodObject));
         Py_RETURN_NONE; 
       }

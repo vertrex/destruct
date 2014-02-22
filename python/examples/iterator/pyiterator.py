@@ -59,30 +59,23 @@ class PySimpleDVectorString(DObject):
 class PyDIterator(DObject):
   def __init__(self):
      DObject.__init__(self, "DIterator")
-     self.i = 0  
+     self.index = 0  
 
   def first(self):
-     self.i = 0
+     self.index = 0
  
-  def next(self):
-     self.i += 1
+  def nextItem(self):
+   self.index = self.index + 1
 
   def isDone(self):
-     #print 'pyIterator isDone'
-     if self.i >= self.container.size():
-       return 1
-     return 0 
+    if self.index >= self.container.size():
+      return 1
+    return 0 
 
   def currentItem(self):
-     #print 'currentItem' 
-     if self.i < self.container.size():
-       val = self.container.get(self.i)
-       return val
+    if self.index < self.container.size():
+      return self.container.get(self.index)  
 
-  def container(self, item):  
-     self.container = item
-     return self.container
-      
 class PythonDVector(DObject):
   def __init__(self):
      DObject.__init__(self, "DVector<String>")
@@ -98,39 +91,13 @@ class PythonDVector(DObject):
   def size(self):
       return len(self.l)
 
-  #def container(self):
-     #return self
-  #def iterator(self):
-     #iterator = PyDIterator()
-     #iterator.container = self
-     #return iterator
-#
 class PyReverseIterator(DObject):
   def __init__(self):
      DObject.__init__(self, "DIterator")
-  #def first(self):
-     #self.index = self.container.size() - 1 #XXX else segfault donc check ds la template 
-     #print 'first end'
 
-  #def next(self):
-     ##print 'next'
-     #self.index = self.index - 1 #XXX bien l attribut et c ok !
-#
-  #def isDone(self):
-     #print 'reverse is done'
-     ##print 'isDone', self.index, self.container().size()
-     #if self.index == 0:
-       #return 1
-     #return 0
-
-  def currentItem(self): #XXX ca serait bien de pouvoir le faire faut pas detruire la fonction parent quand une nouvelle est aloeur par un fils alors ? pour gerer l heritage ? 
-     print 'Reverse currentItem'
-     print self.container
-     print self.container.size() - self.index
-     return self.container.get(DUInt64(0))
-
-
-#XXX faudrait le call en C++ ! 
+  def currentItem(self):
+    if self.index < self.container.size():
+      return self.container.get(self.container.size() - self.index - 1)  
 
 class PyPureIterator(DObject):
   def __init__(self):
@@ -141,7 +108,7 @@ class PyPureIterator(DObject):
   def first(self):
      self.i = 0
  
-  def next(self):
+  def nextItem(self):
      self.i += 1
 
   def isDone(self):
@@ -213,9 +180,11 @@ def reverseiterate():
 
   print 'create reverse iterator'
   iterator = PyReverseIterator()
+  #iterator = PyDIterator()
   print 'iterator set container'
   iterator.container = vector
   #print 'iterate reverse'
+  print 'Iterating'
   for i in iterator:
     print i
 

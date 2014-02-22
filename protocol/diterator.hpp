@@ -58,7 +58,7 @@ public:
      {
        DAttribute(DType::DObjectType, "container"),
        DAttribute(DType::DUInt64Type, "index"),
-       DAttribute(DType::DNoneType, "next", DType::DNoneType), 
+       DAttribute(DType::DNoneType, "nextItem", DType::DNoneType), 
        DAttribute(DType::DNoneType, "first", DType::DNoneType),
        DAttribute(DType::DInt8Type, "isDone", DType::DNoneType),
        DAttribute(DType::DUnknownType, "currentItem",  DType::DNoneType),

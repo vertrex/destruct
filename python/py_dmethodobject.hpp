@@ -6,7 +6,7 @@
 class DPythonMethodObject : public Destruct::DFunctionObject
 {
 public:
-  DPythonMethodObject(PyObject* self, PyObject* callable, Destruct::DType type) : __self(self), __pythonCallable(callable),  __type(type)
+  DPythonMethodObject(PyObject* self, PyObject* callable, int32_t attributeIndex) : __self(self), __pythonCallable(callable),  __attributeIndex(attributeIndex) 
   {
     Py_INCREF(__self);
     Py_INCREF(__pythonCallable);
@@ -24,7 +24,7 @@ public:
 private:
   PyObject*             __self;
   PyObject*             __pythonCallable;
-  Destruct::DType       __type;
+  int32_t               __attributeIndex; 
 };
 
 typedef PythonModule<class PyDMethodObject, Destruct::DFunctionObject > PyDMethodObjectT;
