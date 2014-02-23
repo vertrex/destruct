@@ -5,7 +5,8 @@
 #include "dattribute.hpp"
 #include "dvalue.hpp"
 #include "dexception.hpp"
-
+#include "drealvalue.hpp"
+#include "dnullobject.hpp"
 
 namespace Destruct
 {
@@ -27,13 +28,18 @@ DUnicodeString  DStruct::name() const
 }
 //XXX declare destructor to avoir destruction of attribute because some attribute are static and could be used twice 
 
-DObject* DStruct::newObject() //for mutable non const so ++definitionFIx=false ?
+DObject* DStruct::newObject()
+{
+  return (this->newObject(RealValue<DObject*>(DNone)));
+}
+
+DObject* DStruct::newObject(DValue const& args) //for mutable non const so ++definitionFIx=false ?
 {
   this->__definitionFix = true;
   if (*this->__createObject == NULL)
     return (NULL);
   
-  return (*this->__createObject)(this);
+  return (*this->__createObject)(this, args);
 }
 
 DObject const* DStruct::defaultDObject() const

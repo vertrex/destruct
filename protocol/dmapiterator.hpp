@@ -12,32 +12,34 @@
 #include "protocol/dmemberpointer.hpp"
 #include "protocol/dcppmutable.hpp"
 #include "protocol/dcontainer.hpp"
+#include "protocol/dmap.hpp"
 
 class DObject;
 
 namespace Destruct
 {
 
-template< typename KeyType, typename ValueType, DType::Type_t ValueTypeId>
-class DMapIterator : public DCppMutable<DMapIterator<KeyType, ValueType, ValueTypeId> > //pas besoin de DMutable car pas a muter ... car on peut avoir le type par template bon ok on va generer tous les types ...
+template< typename KeyType, DType::Type_t KeyTypeId,
+          typename ValueType, DType::Type_t ValueTypeId>
+class DMapIterator : public DCppObject<DMapIterator<KeyType, KeyTypeId, ValueType, ValueTypeId> > //pas besoin de DMutable car pas a muter ... car on peut avoir le type par template bon ok on va generer tous les types ...
 {
   typedef std::map<KeyType, ValueType>          MapType;
   typedef typename MapType::iterator            IteratorType;
-  typedef DMapIterator<KeyType, ValueType, ValueTypeId > DMapType;
+  typedef DMapIterator<KeyType, KeyTypeId, ValueType, ValueTypeId > DMapIteratorType;
 public:
-  DMapIterator() : DCppMutable<DMapType >(new DMutableStruct(NULL, "DMapIterator", DMapType::newObject, DMapType::ownAttributeBegin(), DMapType::ownAttributeEnd())), index(0), container(NULL) //DObject None ? 
+  DMapIterator(DStruct* dstruct, DValue const& args) : DCppObject<DMapIteratorType >(dstruct, args), index(0), container(NULL) //DObject None ? 
   {
     this->init(); //must be constructed to init 
-    //this->first(); 
   }
 
-  DMapIterator(const DMapIterator& copy) : DCppMutable<DMapType >(copy), index(0), container(NULL)
+  DMapIterator(const DMapIterator& copy) : DCppObject<DMapIteratorType >(copy), index(0), container(NULL)
   {
     this->init();
   }
 
   IteratorType                begin;
-  IteratorType                 end;
+  IteratorType                end;
+  IteratorType                it;
   RealValue<DUInt64>          index; //signed en python
   RealValue<DObject*>         container; //setContainer pour update le type ?
   RealValue<DFunctionObject*> nextObject;
@@ -47,18 +49,17 @@ public:
 
   void                        next(void)
   {
-    this->begin++;
+    this->it++;
   }
 
   void                        first(void)
   {
-     std::cout << "DMap first " << std::endl;
-     //XXX 
+    this->it = this->begin;
   }
 
   DInt8                       isDone(void)
   {  
-    if (this->begin == this->end)
+    if (this->it == this->end)
       return (1);
 
     return (0);
@@ -66,7 +67,7 @@ public:
 
   DValue                      currentItem(void) 
   {
-    return RealValue<ValueType>(this->begin->first);
+    return RealValue<ValueType>(this->it->first);
   }
 
 /*
@@ -91,16 +92,16 @@ public:
      return (attributes);
   }
 
-  static DMemoryPointer<DMapIterator>* memberBegin()
+  static DPointer<DMapIterator>* memberBegin()
   {
-    static DMemoryPointer<DMapIterator> memberPointer[] = 
+    static DPointer<DMapIterator> memberPointer[] = 
     {
-      DMemoryPointer<DMapIterator>(&DMapIterator::container),
-      DMemoryPointer<DMapIterator>(&DMapIterator::index),
-      DMemoryPointer<DMapIterator>(&DMapIterator::nextObject, &DMapIterator::next),
-      DMemoryPointer<DMapIterator>(&DMapIterator::firstObject, &DMapIterator::first),
-      DMemoryPointer<DMapIterator>(&DMapIterator::isDoneObject, &DMapIterator::isDone),
-      DMemoryPointer<DMapIterator>(&DMapIterator::currentItemObject, &DMapIterator::currentItem),
+      DPointer<DMapIterator>(&DMapIterator::container),
+      DPointer<DMapIterator>(&DMapIterator::index),
+      DPointer<DMapIterator>(&DMapIterator::nextObject, &DMapIterator::next),
+      DPointer<DMapIterator>(&DMapIterator::firstObject, &DMapIterator::first),
+      DPointer<DMapIterator>(&DMapIterator::isDoneObject, &DMapIterator::isDone),
+      DPointer<DMapIterator>(&DMapIterator::currentItemObject, &DMapIterator::currentItem),
     };
     return memberPointer;
   }
@@ -110,7 +111,7 @@ public:
     return (ownAttributeBegin() + ownAttributeCount());
   }
 
-  static DMemoryPointer<DMapIterator>* memberEnd()
+  static DPointer<DMapIterator>* memberEnd()
   { 
     return (memberBegin() + ownAttributeCount()); 
   }

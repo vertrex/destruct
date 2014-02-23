@@ -8,7 +8,7 @@
 namespace Destruct
 {
  
-DObject::DObject(DStruct * dstructDef) : RefcountPolicy(),  __dstructDef(dstructDef)
+DObject::DObject(DStruct * dstructDef, DValue const& args) : RefcountPolicy(),  __dstructDef(dstructDef)
 {
 }
 

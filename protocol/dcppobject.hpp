@@ -22,7 +22,7 @@ template<typename CppClass>
 class DCppObject : public DObject
 {
 public:
-  DCppObject(DStruct* dstruct) : DObject(dstruct), __members(CppClass::memberBegin()) 
+  DCppObject(DStruct* dstruct, DValue const& args) : DObject(dstruct, args), __members(CppClass::memberBegin()) 
   {
     this->init();
   }
@@ -40,9 +40,9 @@ public:
     }
   }
 
-  static DObject* newObject(DStruct * dstruct)
+  static DObject* newObject(DStruct * dstruct, DValue const& args)
   {
-    return (new CppClass(dstruct));
+    return (new CppClass(dstruct, args));
   }
 
   virtual DObject* clone() const
@@ -80,11 +80,12 @@ protected:
   {
     return (&this->__members[idx].value(static_cast<const CppClass *>(this)));
   }
+
   virtual ~DCppObject()
   {
   };
 
-  DMemoryPointer<CppClass >*       __members;
+  DPointer<CppClass>*       __members;
 };
 
 

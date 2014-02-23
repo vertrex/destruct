@@ -154,7 +154,7 @@ print "==============================="
 print "define PyIterator(DObject)"
 class PyIterator(DObject):
   def __init__(self):
-    DObject.__init__(self, "DVector<String>")
+    DObject.__init__(self, "DVectorString")
     self.l = [] #XXX class are frozen !!!   because of set /get qui call pas le truc original je suppose 
 
   def __getitem__(self, args):
@@ -300,7 +300,7 @@ wrapper.runValueMethod(pythonNtfs.report, default)
 print "---XXXXXXXXXX pyre pure iterator def"
 class PyPureIteratorDef(DStruct):
   def __init__(self):
-    DStruct.__init__(self, "DVector<String>", "DPureIterator")
+    DStruct.__init__(self, "DVectorString", "DPureIterator")
 
     self.addAttribute(DAttribute("__getitem__", DMethod, DUnicodeString, DInt32))
     self.addAttribute(DAttribute("__iter__", DMethod, DObject, DNone))
@@ -314,7 +314,7 @@ print "---py pure itrator"
 class PyPureIterator(DObject):
   def __init__(self):
     #DObject.__init__(self, "DPureIterator") XXX XXX XXX douvle heritage fait sefgfault !!! strange 
-    DObject.__init__(self, "DVector<String>")
+    DObject.__init__(self, "DVectorString")
     self.l = [] 
 
   def __getitem__(self, args):
@@ -388,7 +388,7 @@ iterate(di)
 di.setContainer(pureIterator)
 iterate(di)
 
-ci = Destruct().find('DVector<String>').newObject()
+ci = Destruct().find('DVectorString').newObject()
 ci.push('c++ object push in pi 1')
 ci.push('c++ object push in pi 2')
 ci.push('c++ object push in pi 3')
@@ -467,7 +467,7 @@ class PySimpleIterator(DObject):
 
 class PythonDVector(DObject):
   def __init__(self):
-     DObject.__init__(self, "DVector<String>")
+     DObject.__init__(self, "DVectorString")
      self.l = ['AAAAA', 'BBBBB', 'CCCC']
 
   def get(self, index):
@@ -502,7 +502,7 @@ wrapper.serialize(pyvector)
 
 #class PythonVector(DObject):
   #def __init__(self):
-    #DObject.__init__(self, "DVector<DString")
+    #DObject.__init__(self, "DVectorString")
 
 
 

@@ -11,11 +11,11 @@ template <typename KeyType, DType::Type_t  KeyTypeId,
           typename ValueType, DType::Type_t  ValueTypeId>
 class DMap : public DContainer, public DCppObject<DMap<KeyType, KeyTypeId, ValueType, ValueTypeId> >
 {
-  typedef std::map<KeyType, ValueType> MapType;
-  typedef typename MapType::iterator            iteratorType;
+  typedef std::map<KeyType, ValueType>                     MapType;
+  typedef typename MapType::iterator                       iteratorType;
   typedef DMap<KeyType, KeyTypeId, ValueType, ValueTypeId> DMapType;
 public:
-  DMap(DStruct* dstruct) : DCppObject<DMap<KeyType, KeyTypeId, ValueType, ValueTypeId> >(dstruct)
+  DMap(DStruct* dstruct, DValue const& args) : DCppObject<DMap<KeyType, KeyTypeId, ValueType, ValueTypeId> >(dstruct, args)
   {
   };
 
@@ -24,14 +24,9 @@ public:
   {
   }
 
-  DUInt64  push(DValue const& args) 
-  {
-    throw DException("DMap::push not implemented.");
-  }
-   
   DValue  get(DValue const& args)
   {
-    KeyType key = args.get<KeyType>();//bad cast car recois un index en int au lieu d une key et c pa gerer en cpp :( par index mais par iterator :( donc doit recevoir une clef  
+    KeyType key = args.get<KeyType>();  
 
     iteratorType it = this->__map.find(key);
     if (it != this->__map.end())
@@ -59,14 +54,15 @@ public:
 
   DObject*    iterator(void)
   {
-    DStruct* dstruct = makeNewDMutable<DMapIterator<KeyType, ValueType, ValueTypeId > >("DMapIterator");
-    DObject* iterator = dstruct->newObject();
-    iterator->setValue("container", RealValue<DObject*>(this));
-
-    DMapIterator<KeyType,ValueType, KeyTypeId>* diterator = static_cast<DMapIterator<KeyType, ValueType, KeyTypeId> *>(iterator);
+    DStruct* dstruct = makeNewDCpp<DMapIterator<KeyType, KeyTypeId, ValueType,  ValueTypeId > >("DMapIterator");
+    DObject* iterator = dstruct->newObject(RealValue<DObject*>(this));
+   
+    DMapIterator<KeyType, KeyTypeId, ValueType, KeyTypeId>* diterator = static_cast<DMapIterator<KeyType, KeyTypeId, ValueType, ValueTypeId> *>(iterator);
 
     diterator->begin = this->__map.begin();
     diterator->end = this->__map.end();
+    diterator->first();
+
     return (iterator);
   }
 /*
@@ -74,14 +70,13 @@ public:
  */ 
   static size_t ownAttributeCount()
   {
-    return (5);
+    return (4);
   }
 
   static DAttribute* ownAttributeBegin()
   {
     static DAttribute  attributes[] = 
     {
-      DAttribute(DType::DUInt64Type,"push", KeyTypeId), //ok mais encore utile ?
       DAttribute(ValueTypeId, "get",  KeyTypeId), 
       DAttribute(DType::DUInt64Type,"size", DType::DNoneType),
       DAttribute(DType::DNoneType, "setItem", DType::DObjectType),
@@ -90,15 +85,14 @@ public:
     return (attributes);
   }
 
-  static DMemoryPointer<DMapType>* memberBegin()
+  static DPointer<DMapType>* memberBegin()
   {
-    static DMemoryPointer<DMapType> memberPointer[] = 
+    static DPointer<DMapType> memberPointer[] = 
     {
-      DMemoryPointer<DMapType>(&DMapType::pushObject, &DMapType::push),
-      DMemoryPointer<DMapType>(&DMapType::getObject, &DMapType::get),
-      DMemoryPointer<DMapType>(&DMapType::sizeObject, &DMapType::size),
-      DMemoryPointer<DMapType>(&DMapType::setItemObject, &DMapType::setItem),
-      DMemoryPointer<DMapType>(&DMapType::iteratorObject, &DMapType::iterator),
+      DPointer<DMapType>(&DMapType::getObject, &DMapType::get),
+      DPointer<DMapType>(&DMapType::sizeObject, &DMapType::size),
+      DPointer<DMapType>(&DMapType::setItemObject, &DMapType::setItem),
+      DPointer<DMapType>(&DMapType::iteratorObject, &DMapType::iterator),
     };
     return (memberPointer);
   }
@@ -108,7 +102,7 @@ public:
     return (ownAttributeBegin() + ownAttributeCount());
   }
 
-  static DMemoryPointer<DMapType >*  memberEnd()
+  static DPointer<DMapType >*  memberEnd()
   {
     return (memberBegin() + ownAttributeCount());
   } 

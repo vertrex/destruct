@@ -10,7 +10,7 @@ template< typename CppClass >
 class DCppMutable : public DCppObject<CppClass>  //public DCppObject<Mutable, CppClass> //DObject<Mutable, CppClass, RefCount> 
 {
 public:
-  DCppMutable(DMutableStruct* dstruct) : DCppObject<CppClass>(dstruct), __struct(dstruct)
+  DCppMutable(DMutableStruct* dstruct, DValue const& args) : DCppObject<CppClass>(dstruct, args), __struct(dstruct)
   {
   }
 
@@ -18,9 +18,9 @@ public:
   {
   }
 
-  static DObject* newObject(DMutableStruct* dstruct)
+  static DObject* newObject(DMutableStruct* dstruct, DValue const& args)
   {
-    return (new CppClass());
+    return (new CppClass(args));
   }
 
 protected:

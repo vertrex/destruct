@@ -3,6 +3,7 @@
 
 #include "dstruct.hpp"
 #include "dobject.hpp"
+#include "dvalue.hpp"
 
 namespace Destruct
 {
@@ -28,6 +29,7 @@ protected:
 private:
   static DStruct*  __dstructInstance();
   DNullObject();
+  DNullObject(DValue const& args);
   ~DNullObject();
 }; 
 

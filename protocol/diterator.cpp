@@ -13,20 +13,6 @@ void  DIterator::first(void)
   this->index = 0;
 }
 
-void DIterator::setValue(size_t idx, DValue const& v)
-{
-  if (idx == 0)
-  {
-    DObject* container = v.get<DObject*>();
-    DAttribute attr = container->instanceOf()->attribute("get"); //
-    this->__struct->replaceAttribute(5, DAttribute(attr.type().getReturnType(), "currentItem", DType::DNoneType));
-    DCppMutable<DIterator>::setValue(idx, v);
-    this->index = 0;
-  }
-  else
-    DCppMutable<DIterator>::setValue(idx, v);
-}
-
 DInt8        DIterator::isDone(void)
 {
   if (this->container) // !DNone ? 

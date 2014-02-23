@@ -258,7 +258,7 @@ DObject*        DestructTest::createIntVector(void)
 //dvectori->push(RealValue<DInt32 >(0xc00fee));
 //
 
-//DStruct* dstructvector = makeNewDClass< DVectorInt  >(NULL, "DVector<DInt32>");
+//DStruct* dstructvector = makeNewDClass< DVectorInt  >(NULL, "DVectorDInt32");
 //this->structRegistry()->registerDStruct(dstructvector);
 //
 //DClassObject<DVectorInt>* dcppvectori = makeNewDObject<DVectorInt>(dstructvector, *dvectori);
@@ -282,7 +282,7 @@ DObject*        DestructTest::createStringVector(void)
         //dvectors->push(RealValue<DUnicodeString>(std::string("my_first_string")));
         //dvectors->push(RealValue<DUnicodeString>("my_second_string"));
         //
-        //DStruct* dstructvectors = makeNewDClass < DVectorString >(NULL, "DVector<String>");
+        //DStruct* dstructvectors = makeNewDClass < DVectorString >(NULL, "DVector<String");
         //////si non ca plante en python
         //this->structRegistry()->registerDStruct(dstructvectors);
         //////DVector<DunicodeString *>                                                 //*

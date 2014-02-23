@@ -30,6 +30,7 @@ public:
   void          registerDStruct(DStruct* dstruct);
   bool          unregister(DStruct* dstruct);
   DObject*      generate(DUnicodeString const& name);
+  DObject*      generate(DUnicodeString const& name, DValue const& args);
 private:
                 Destruct();
                 ~Destruct();

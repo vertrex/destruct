@@ -7,7 +7,6 @@
 namespace Destruct
 {
 
-class DValue;
 /*
  *   This is the base class to inherit from to create a functin/callable object
  */

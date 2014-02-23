@@ -10,8 +10,8 @@ namespace Destruct
 class DMutableObject : public DDynamicObject
 {
 public:
-  DMutableObject(const DUnicodeString& name); 
-  DMutableObject(DMutableStruct* dstructDef); 
+  DMutableObject(const DUnicodeString& name, DValue const& args); 
+  DMutableObject(DMutableStruct* dstructDef, DValue const& args); 
   DMutableObject(DMutableObject const &);
   //~DMutableObject();
 
@@ -24,7 +24,7 @@ public:
 
   void setValueAttribute(std::string const& name, DValue const& v, DType::Type_t type);
 
-  static DObject* newObject(DMutableStruct* myClass);
+  static DObject* newObject(DMutableStruct* myClass, DValue const& args);
   virtual DObject*  clone() const;
 };
 

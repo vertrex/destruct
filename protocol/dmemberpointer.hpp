@@ -16,7 +16,7 @@ namespace Destruct
  */
 
 template <typename CPPClass>
-class DMemoryPointerBase
+class DPointerBase
 {
 public:
   virtual FinalValue& value(CPPClass* obj) const = 0;
@@ -30,21 +30,21 @@ public:
   // 
   //}
 
-  virtual ~DMemoryPointerBase() 
+  virtual ~DPointerBase() 
   {
   };
 
 protected:
-  DMemoryPointerBase() 
+  DPointerBase() 
   {
   };
 private:
-  DMemoryPointerBase(DMemoryPointerBase const&);
-  DMemoryPointerBase & operator=(DMemoryPointerBase const &);
+  DPointerBase(DPointerBase const&);
+  DPointerBase & operator=(DPointerBase const &);
 };
 
 template<typename CPPClass, typename RealReturnType > 
-class DMemberPointer : public DMemoryPointerBase<CPPClass>
+class DMemberPointer : public DPointerBase<CPPClass>
 {
 public:
   DMemberPointer( RealReturnType CPPClass::* member )  : __member(member)
@@ -70,14 +70,14 @@ private:
 };
 
 /*
- * DMemberFunctionPointer specialization : returnType CPPClass(void)
+ * DFunctionPointer specialization : returnType CPPClass(void)
 */
 
 template<typename CPPClass, typename RealReturnType, typename MReturnType, typename ArgumentType>
-class DMemberFunctionPointer : public DMemoryPointerBase<CPPClass>
+class DFunctionPointer : public DPointerBase<CPPClass>
 {
 public:
-    DMemberFunctionPointer(RealReturnType CPPClass::* member, MReturnType (CPPClass::* methodPtr)(ArgumentType)) : __member(member), __method(methodPtr)
+    DFunctionPointer(RealReturnType CPPClass::* member, MReturnType (CPPClass::* methodPtr)(ArgumentType)) : __member(member), __method(methodPtr)
   {
   }
 
@@ -102,14 +102,14 @@ private:
 };
 
 /*
- * DMemberFunctionPointer specialization : void CPPClass(Argument)
+ * DFunctionPointer specialization : void CPPClass(Argument)
 */
 
 template<typename CPPClass, typename RealReturnType, typename ArgumentType>
-class DMemberFunctionPointer<CPPClass, RealReturnType, void, ArgumentType> : public DMemoryPointerBase<CPPClass>
+class DFunctionPointer<CPPClass, RealReturnType, void, ArgumentType> : public DPointerBase<CPPClass>
 {
 public:
-    DMemberFunctionPointer(RealReturnType CPPClass::* member, void (CPPClass::* methodPtr)(ArgumentType)) : __member(member), __method(methodPtr)
+    DFunctionPointer(RealReturnType CPPClass::* member, void (CPPClass::* methodPtr)(ArgumentType)) : __member(member), __method(methodPtr)
   {
   }
 
@@ -135,14 +135,14 @@ private:
 
 
 /*
- * DMemberFunctionPointer specialization : returnType CPPClass(void)
+ * DFunctionPointer specialization : returnType CPPClass(void)
 */
 
 template<typename CPPClass, typename RealReturnType, typename MReturnType>
-class DMemberFunctionPointer<CPPClass, RealReturnType, MReturnType, void> : public DMemoryPointerBase<CPPClass>
+class DFunctionPointer<CPPClass, RealReturnType, MReturnType, void> : public DPointerBase<CPPClass>
 {
 public:
-  DMemberFunctionPointer(RealReturnType CPPClass::* member, MReturnType (CPPClass::* methodPtr)(void)) : __member(member), __method(methodPtr)
+  DFunctionPointer(RealReturnType CPPClass::* member, MReturnType (CPPClass::* methodPtr)(void)) : __member(member), __method(methodPtr)
   {
   }
 
@@ -168,14 +168,14 @@ private:
 };
 
 /*
- * DMemberFunctionPointer specialization : void CPPClass(void)
+ * DFunctionPointer specialization : void CPPClass(void)
 */
 
 template<typename CPPClass, typename RealReturnType>
-class DMemberFunctionPointer<CPPClass, RealReturnType, void, void> : public DMemoryPointerBase<CPPClass>
+class DFunctionPointer<CPPClass, RealReturnType, void, void> : public DPointerBase<CPPClass>
 {
 public:
-  DMemberFunctionPointer(RealReturnType CPPClass::* member, void (CPPClass::* methodPtr)(void)) : __member(member), __method(methodPtr)
+  DFunctionPointer(RealReturnType CPPClass::* member, void (CPPClass::* methodPtr)(void)) : __member(member), __method(methodPtr)
   {
   }
 
@@ -200,25 +200,25 @@ private:
 };
 
 template<typename CPPClass>
-class DMemoryPointer
+class DPointer
 {
 public:
   template<typename RealCPPClass, typename ReturnType> 
-  explicit DMemoryPointer(ReturnType RealCPPClass::* ptr) : __pointerBase(new DMemberPointer<CPPClass, ReturnType>(static_cast<ReturnType CPPClass::*>(ptr)))
+  explicit DPointer(ReturnType RealCPPClass::* ptr) : __pointerBase(new DMemberPointer<CPPClass, ReturnType>(static_cast<ReturnType CPPClass::*>(ptr)))
   {
   }
 
   template<typename RealCPPClass, typename ReturnType, typename MReturnType, typename ArgumentType> 
-  explicit DMemoryPointer(ReturnType RealCPPClass::* ptr, MReturnType (CPPClass::* method)(ArgumentType)) : __pointerBase(new DMemberFunctionPointer<CPPClass, ReturnType, MReturnType, ArgumentType>(static_cast<ReturnType CPPClass::*>(ptr), static_cast<MReturnType (CPPClass::*)(ArgumentType) >(method)))
+  explicit DPointer(ReturnType RealCPPClass::* ptr, MReturnType (CPPClass::* method)(ArgumentType)) : __pointerBase(new DFunctionPointer<CPPClass, ReturnType, MReturnType, ArgumentType>(static_cast<ReturnType CPPClass::*>(ptr), static_cast<MReturnType (CPPClass::*)(ArgumentType) >(method)))
   {
   }
 
   template<typename RealCPPClass, typename ReturnType, typename MReturnType> 
-  explicit DMemoryPointer(ReturnType RealCPPClass::* ptr, MReturnType (CPPClass::* method)(void)) : __pointerBase(new DMemberFunctionPointer<CPPClass, ReturnType, MReturnType, void>(static_cast<ReturnType CPPClass::*>(ptr), static_cast<MReturnType (CPPClass::*)(void) >(method)))
+  explicit DPointer(ReturnType RealCPPClass::* ptr, MReturnType (CPPClass::* method)(void)) : __pointerBase(new DFunctionPointer<CPPClass, ReturnType, MReturnType, void>(static_cast<ReturnType CPPClass::*>(ptr), static_cast<MReturnType (CPPClass::*)(void) >(method)))
   {
   }
 
-  ~DMemoryPointer()
+  ~DPointer()
   {
     delete __pointerBase;
   }
@@ -239,7 +239,7 @@ public:
   }
 
 private:
-  DMemoryPointerBase<CPPClass >*   __pointerBase;  
+  DPointerBase<CPPClass >*   __pointerBase;  
 };
 
 }

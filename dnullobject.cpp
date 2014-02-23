@@ -1,6 +1,7 @@
 #include "dnullobject.hpp"
 #include "dvalue.hpp"
 #include "drealvalue.hpp"
+#include "dnullobject.hpp"
 
 #include "dsimpleobject.hpp"
 
@@ -9,7 +10,7 @@ namespace Destruct
 
 DNullObject*  DNullObject::instance()
 {
-  static DNullObject  instance;
+  static DNullObject  instance; //XXX sert a rien
   instance.addRef();
   return &instance;
 }
@@ -20,7 +21,11 @@ DStruct* DNullObject::__dstructInstance()
   return &dstruct;
 }
 
-DNullObject::DNullObject() : DObject(this->__dstructInstance())
+DNullObject::DNullObject() : DObject(this->__dstructInstance(), RealValue<DObject*>(DNone))
+{
+}
+
+DNullObject::DNullObject(DValue const& args) : DObject(this->__dstructInstance(), args) //XXX args sert clairement a rien
 {
 //XXX use newobject to return singleton ?
 }

@@ -49,12 +49,12 @@ class PySimpleIterator(DObject):
 
 class PySimpleDVectorInt(DObject):
   def __init__(self):
-     DObject.__init__(self, "DVector<DInt64>")
+     DObject.__init__(self, "DVectorInt64")
 
 
 class PySimpleDVectorString(DObject):
   def __init__(self):
-     DObject.__init__(self, "DVector<String>")
+     DObject.__init__(self, "DVectorString")
 
 class PyDIterator(DObject):
   def __init__(self):
@@ -78,7 +78,7 @@ class PyDIterator(DObject):
 
 class PythonDVector(DObject):
   def __init__(self):
-     DObject.__init__(self, "DVector<String>")
+     DObject.__init__(self, "DVectorString")
      self.l = []
 
   def get(self, index):
@@ -92,8 +92,8 @@ class PythonDVector(DObject):
       return len(self.l)
 
 class PyReverseIterator(DObject):
-  def __init__(self):
-     DObject.__init__(self, "DIterator")
+  def __init__(self, args):
+     DObject.__init__(self, "DIterator", args)
 
   def currentItem(self):
     if self.index < self.container.size():
@@ -126,7 +126,7 @@ class PythonPureContainer(DObject):
   def __init__(self):
      #DObject.__init__(self, "DContainer") ##faudrait changer le type dynamiquement ou faire un dmutable et set les valeur de retour etc...
      #DObject.__init__(self, "DContainerString") ##possible aussi juste pour etre overwrite par python ou autre ...
-     DObject.__init__(self, "DVector<String>") ##Donc faire XXX DContainerString comme ca c overwriteable !!!!!!!!!!!!!
+     DObject.__init__(self, "DVectorString") ##Donc faire XXX DContainerString comme ca c overwriteable !!!!!!!!!!!!!
      self.l = ['a', 'b', 'c']
 
   def get(self, index):
@@ -138,9 +138,17 @@ class PythonPureContainer(DObject):
   def size(self):
       return len(self.l)
 
+class PyMap(DObject):
+  def __init__(self):
+     DObject.__init__(self, "DMapString")
+
+class PyMapObject(DObject):
+  def __init__(self):
+     DObject.__init__(self, "DMapObject")
+
 def dvectorstring():
   print "------ Python create c++ object via Destruct --"
-  cs = Destruct().find('DVector<String>')
+  cs = Destruct().find('DVectorString')
   c = cs.newObject()
   a = timeFunc(fill, c)
   b = timeFunc(iterate, c)
@@ -162,36 +170,28 @@ def pythonvector():
 
 def simplevectorint():
   print "------ DINT64 Test  Python create c++ object via Destruct --"
-  cs = Destruct().find('DVector<Int32>')
+  cs = Destruct().find('DVectorInt32')
   c = cs.newObject()
   a = timeFunc(fillInt, c)
   b = timeFunc(iterate, c)
   total((a, b,))
 
-def reverseiterate(): 
-  print 'Push 0,10 in simpleDvectorSString'
+def reverseiterate():
+  print "------ PyReverseItertor test --------""" 
   vector = PySimpleDVectorString()
   for i in range(0, 10):
     vector.push(str(i)) 
-
-  print 'create reverse iterator'
-  iterator = PyReverseIterator()
-  #iterator = PyDIterator()
-  print 'iterator set container'
-  iterator.container = vector
-  #print 'iterate reverse'
-  print 'Iterating'
+  iterator = PyReverseIterator(vector)
+  print 'reverse iterate'
   for i in iterator:
     print i
 
-   #pass
-  print 'for in len'
   for x in range(0, len(vector)): #implem len
     print vector[x]
 
 
 def setvector():
-  print 'set vector with test str'
+  print "------ Vector string set v[x] = ---------"
   vector = PySimpleDVectorString()
   for i in range(0, 10):
     vector.push(str(i)) 
@@ -203,7 +203,7 @@ def setvector():
     print i
 
 def pushint():
- print 'set int'
+ print "------ Vector string set v[x] = ---------"
  vi = PySimpleDVectorInt()
  for x in range(0, 10):
    vi.push(x)
@@ -213,7 +213,7 @@ def pushint():
     print i
 
 def tryerror():
- print 'put int in string must return error'
+ print '------ VectorString set int : error -----'
  try:
   vector = PySimpleDVectorString()
   for i in range(0, 10):
@@ -224,9 +224,71 @@ def tryerror():
     print e
 
 def pythonpurecontainer():
+  print '------ PyPureContainer --------'
   ppi = PythonPureContainer()
   for x in ppi:
     print x
+
+def fillMapString(m):
+   for i in range(0, COUNT):
+     m[str(i)] = 'A'
+
+def getMap(m):
+   for i in range(0, COUNT):
+     m[str(i)]
+
+def iterateMap(m):
+   l = {}
+   s = 0
+   print 'will iteratte on ', len(m)
+   for k in m:
+      s += 1
+      #l[k] = m[k]
+   print 'have iterate on ' + str(s)
+
+def simplemapstring():
+  print "------ Fill & iterate Map string -----"
+  m = PyMap()
+  a = timeFunc(fillMapString, m)
+  b = timeFunc(iterateMap, m)
+  total((a, b,))
+
+def pymapobject():
+  mss = PyMap()
+  mss['aa'] = '11'
+  mss['bb'] = '22'
+
+  mo = PyMapObject()
+  mo[mss] = mss
+  mo[mo] = mo
+
+  for i in mo:
+    print i, mo[i]
+  
+    for x in mo[i]:
+      print x, mo[i][x]
+
+  print type(mo)
+
+def maperror():
+  try:
+    print d["c"]
+  except KeyError as e: #XXX must return keyerror c pas les variant :) 
+    print 'Error OK', e
+
+  try:
+    print d[1]
+  except TypeError as e:
+    print 'Type error ok' , e
+  except KeyError as e:
+    print 'Keyerror bad ! must be typerror'
+
+  try:
+    for key, value in d.iteritems():
+      print key, value
+  except AttributeError as e:
+    print 'name error ok ' , e
+
 
 print "=" * 80
 
@@ -239,47 +301,6 @@ setvector()
 pushint()
 tryerror()
 pythonpurecontainer()
+simplemapstring()
+pymapobject()
 
-class PyMap(DObject):
-  def __init__(self):
-     DObject.__init__(self, "DMapString")
-
-print 'py map'
-d = PyMap()
-#set
-print d
-print len(d)
-d["a"] = "first string"
-d["b"] = "second string"
-print len(d)
-
-#get 
-print d
-print d["a"]
-print d["b"]
-try:
-  print d["c"]
-except KeyError as e: #XXX must return keyerror c pas les variant :) 
-  print 'Error OK', e
-
-try:
-  print d[1]
-except TypeError as e:
-  print 'Type error ok' , e
-except KeyError as e:
-  print 'Keyerror bad ! must be typerror'
-
-print 'for key in dict' 
-for key in d:
-  print key, ',',  d[key]
-
-try:
-  print iteritems
-  for key, value in d.iteritems():
-    print key, value
-except NameError as e:
-  print 'name error ok ' , e
-
-#print itervalues
-#for value in k.itervalues():
-  #print value

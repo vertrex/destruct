@@ -9,12 +9,12 @@
 namespace Destruct
 {
 
-DMutableObject::DMutableObject(const DUnicodeString& name) : DDynamicObject(static_cast<DStruct* >(new DMutableStruct(NULL, name, DMutableObject::newObject)))
+DMutableObject::DMutableObject(const DUnicodeString& name, DValue const& args) : DDynamicObject(static_cast<DStruct* >(new DMutableStruct(NULL, name, DMutableObject::newObject)), args)
 {
   this->init(this);
 }
 
-DMutableObject::DMutableObject(DMutableStruct* dstructDef) : DDynamicObject(dstructDef)
+DMutableObject::DMutableObject(DMutableStruct* dstructDef, DValue const& args) : DDynamicObject(dstructDef, args)
 {
   this->init(this);
 }
@@ -31,9 +31,9 @@ DMutableObject::DMutableObject(DMutableObject const & rhs) : DDynamicObject(rhs)
   //delete this->instanceOf() !
   //}
 
-DObject* DMutableObject::newObject(DMutableStruct* myClass)
+DObject* DMutableObject::newObject(DMutableStruct* myClass, DValue const& args)
 {
-  return (new DMutableObject(myClass));
+  return (new DMutableObject(myClass, args));
 }
 
 DObject* DMutableObject::clone() const

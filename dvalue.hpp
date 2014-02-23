@@ -10,7 +10,7 @@ namespace Destruct
 {
 
 class DObject;
-class DValue;
+//class DValue;
 
 //spliter les base value ds un autre fichier 
 

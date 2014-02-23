@@ -15,7 +15,7 @@ class DObject : public RefcountPolicy<DObject>
 public:
   friend class RefcountPolicy<DObject>;
  
-  DObject(DStruct * dstructDef); //XXX pour la deserialization DObject.deserialize9) mais si non en static
+  DObject(DStruct * dstructDef, DValue const& args); //XXX pour la deserialization DObject.deserialize9) mais si non en static
 
   DStruct * instanceOf() const;
   virtual DObject* clone() const = 0;

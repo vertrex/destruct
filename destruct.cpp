@@ -1,6 +1,8 @@
 #include "destruct.hpp"
 #include "dexception.hpp"
 #include "protocol/protocol.hpp"
+#include "drealvalue.hpp"
+#include "dnullobject.hpp"
 
 #include <iostream>
 
@@ -70,8 +72,12 @@ DStruct*        Destruct::find(const size_t index)
   return (NULL);
 }
 
-
 DObject *       Destruct::generate(DUnicodeString const& name)
+{
+  return (this->generate(name, RealValue<DObject*>(DNone)));
+} 
+
+DObject *       Destruct::generate(DUnicodeString const& name, DValue const& args)
 {
   DStruct* dstruct = this->find(name);
   if (dstruct == NULL) //return NULL ? 
@@ -80,7 +86,6 @@ DObject *       Destruct::generate(DUnicodeString const& name)
     throw DException(error);
   }
 
-  return (dstruct->newObject());
+  return (dstruct->newObject(args));
 } 
-
 }

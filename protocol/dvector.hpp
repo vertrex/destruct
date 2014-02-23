@@ -6,23 +6,32 @@
 namespace Destruct
 {
 
-template <typename RealType, DType::Type_t  RealTypeId>
-class DVector : public DContainer, public DCppObject<DVector<RealType, RealTypeId> > //herite en DStruct plutot ?
+template <typename VectorType, DType::Type_t  VectorTypeId>
+class DVector : public DContainer, public DCppObject<DVector<VectorType, VectorTypeId> > //herite en DStruct plutot ?
 {
-  typedef DVector<RealType, RealTypeId> DVectorType;
+  typedef DVector<VectorType, VectorTypeId> DVectorType;
 public:
+  RealValue<DFunctionObject* >  pushObject;
 
-  DVector(DStruct* dstruct) : DCppObject<DVector<RealType, RealTypeId> >(dstruct)
+//XXX prendre container en argument ? DStruct* dstruct, DValue args) comme ca ca fait un constructeur 
+// par contre faut que new object prenne une value donc modifier destruct / dstruct et tous les dobjects
+  DVector(DStruct* dstruct, DValue const& args) : DCppObject<DVector<VectorType, VectorTypeId> >(dstruct, args)
   {
+    this->init(); //XXX if not init par lui meme mais par dcppobject push sera pas init on dirait qu il init une copie des object qui sont DCOntainer comme si il herite aussi de DContainer ??
   };
 
-  DVector(const DVectorType& copy) : DCppObject<DVector<RealType, RealTypeId> >(copy), __vector(copy.__vector) 
+  DVector(const DVectorType& copy) : DCppObject<DVector<VectorType, VectorTypeId> >(copy), __vector(copy.__vector) 
+  {
+    this->init();
+  }
+
+  ~DVector()
   {
   }
 
   DUInt64  push(DValue const& args) 
   {
-    this->__vector.push_back(args.get<RealType>());
+    this->__vector.push_back(args.get<VectorType>());
     return (this->__vector.size() - 1);
   }
    
@@ -32,7 +41,7 @@ public:
     if (index >= this->__vector.size())
       throw DException("DContainer::get bad index\n");
       
-    return (RealValue<RealType>(this->__vector[index]));
+    return (RealValue<VectorType>(this->__vector[index]));
   }
 
   DUInt64   size(void)
@@ -44,7 +53,7 @@ public:
   {
     DObject*     argumentsObject = args.get<DObject*>();
     DInt64       index = argumentsObject->getValue("index").get<DUInt64>();
-    RealType     item = argumentsObject->getValue("value").get<RealType>();
+    VectorType     item = argumentsObject->getValue("value").get<VectorType>();
      
     if (index >= (DInt64)this->__vector.size()) 
      throw DException("setItem : Index error");    
@@ -53,13 +62,10 @@ public:
  
     return (DNone);
   }
- 
 
   DObject*  iterator(void)
   {
-    DObject* iterator = Destruct::instance().generate("DIterator");
-    iterator->setValue("container", RealValue<DObject*>(this));
-
+    DObject* iterator = Destruct::instance().generate("DIterator", RealValue<DObject*>(this));
     return (iterator);
   }
 
@@ -71,17 +77,12 @@ public:
     return (5);
   }
 
-//XXX mettre ds DCOntainer pour pouvoir heriter en python de DCOntainerString 
-// et overwrite lse method par des methodes python :) 
-// ca devrait marcher et permet de faire un container complement different en python
-// sanns overwrite vector car par ex un pycontainerlinkedlist aurait plus a herite de dcontainer
-// que dvector   
   static DAttribute* ownAttributeBegin()
   {
     static DAttribute  attributes[] = 
     {
-      DAttribute(DType::DUInt64Type,"push", RealTypeId), 
-      DAttribute(RealTypeId, "get",  DType::DUInt64Type),
+      DAttribute(DType::DUInt64Type,"push", VectorTypeId), 
+      DAttribute(VectorTypeId, "get",  DType::DUInt64Type),
       DAttribute(DType::DUInt64Type,"size", DType::DNoneType),
       DAttribute(DType::DNoneType, "setItem", DType::DObjectType),
       DAttribute(DType::DObjectType, "iterator", DType::DNoneType),
@@ -89,15 +90,15 @@ public:
     return (attributes);
   }
 
-  static DMemoryPointer<DVectorType>* memberBegin()
+  static DPointer<DVectorType>* memberBegin()
   {
-    static DMemoryPointer<DVectorType> memberPointer[] = 
+    static DPointer<DVectorType> memberPointer[] = 
     {
-      DMemoryPointer<DVectorType>(&DVectorType::pushObject, &DVectorType::push),
-      DMemoryPointer<DVectorType>(&DVectorType::getObject, &DVectorType::get),
-      DMemoryPointer<DVectorType>(&DVectorType::sizeObject, &DVectorType::size),
-      DMemoryPointer<DVectorType>(&DVectorType::setItemObject, &DVectorType::setItem),
-      DMemoryPointer<DVectorType>(&DVectorType::iteratorObject, &DVectorType::iterator),
+      DPointer<DVectorType>(&DVectorType::pushObject, &DVectorType::push),
+      DPointer<DVectorType>(&DVectorType::getObject, &DVectorType::get),
+      DPointer<DVectorType>(&DVectorType::sizeObject, &DVectorType::size),
+      DPointer<DVectorType>(&DVectorType::setItemObject, &DVectorType::setItem),
+      DPointer<DVectorType>(&DVectorType::iteratorObject, &DVectorType::iterator),
     };
     return (memberPointer);
   }
@@ -107,12 +108,12 @@ public:
     return (ownAttributeBegin() + ownAttributeCount());
   }
 
-  static DMemoryPointer<DVectorType >*  memberEnd()
+  static DPointer<DVectorType >*  memberEnd()
   {
     return (memberBegin() + ownAttributeCount());
   } 
 private:
-  std::vector<RealType>   __vector;
+  std::vector<VectorType>   __vector;
 };
 
 }

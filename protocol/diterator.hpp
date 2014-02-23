@@ -14,6 +14,7 @@
 #include "protocol/dcontainer.hpp"
 
 class DObject;
+class DValue; 
 
 namespace Destruct
 {
@@ -21,9 +22,16 @@ namespace Destruct
 class DIterator : public DCppMutable<DIterator>
 {
 public:
-  DIterator() : DCppMutable(new DMutableStruct(NULL, "DIterator", DIterator::newObject, DIterator::ownAttributeBegin(), DIterator::ownAttributeEnd())), index(0), container(NULL) //DObject None ? 
+  DIterator(DValue const& args) : DCppMutable(new DMutableStruct(NULL, "DIterator", DIterator::newObject, DIterator::ownAttributeBegin(), DIterator::ownAttributeEnd()), args), index(0), container(NULL) //DObject None ? 
   {
-    this->init(); //must be constructed to init  
+    this->init(); //must be constructed to init 
+
+    DObject* ocontainer = args.get<DObject*>();
+
+    this->container = ocontainer;
+    DAttribute attr = ocontainer->instanceOf()->attribute("get"); //
+    this->__struct->replaceAttribute(5, DAttribute(attr.type().getReturnType(), "currentItem", DType::DNoneType));
+    this->index = 0;
   }
 
   DIterator(const DIterator& copy) : DCppMutable(copy), index(0), container(NULL)
@@ -42,7 +50,6 @@ public:
   void                        first(void);
   DInt8                       isDone(void);
   DValue                      currentItem(void);
-  void                        setValue(size_t idx, DValue const& v);
 
 /*
  * DStruct declaration
@@ -66,16 +73,16 @@ public:
      return (attributes);
   }
 
-  static DMemoryPointer<DIterator>* memberBegin()
+  static DPointer<DIterator>* memberBegin()
   {
-    static DMemoryPointer<DIterator> memberPointer[] = 
+    static DPointer<DIterator> memberPointer[] = 
     {
-      DMemoryPointer<DIterator>(&DIterator::container),
-      DMemoryPointer<DIterator>(&DIterator::index),
-      DMemoryPointer<DIterator>(&DIterator::nextObject, &DIterator::next),
-      DMemoryPointer<DIterator>(&DIterator::firstObject, &DIterator::first),
-      DMemoryPointer<DIterator>(&DIterator::isDoneObject, &DIterator::isDone),
-      DMemoryPointer<DIterator>(&DIterator::currentItemObject, &DIterator::currentItem),
+      DPointer<DIterator>(&DIterator::container),
+      DPointer<DIterator>(&DIterator::index),
+      DPointer<DIterator>(&DIterator::nextObject, &DIterator::next),
+      DPointer<DIterator>(&DIterator::firstObject, &DIterator::first),
+      DPointer<DIterator>(&DIterator::isDoneObject, &DIterator::isDone),
+      DPointer<DIterator>(&DIterator::currentItemObject, &DIterator::currentItem),
     };
     return memberPointer;
   }
@@ -85,7 +92,7 @@ public:
     return (ownAttributeBegin() + ownAttributeCount());
   }
 
-  static DMemoryPointer<DIterator>* memberEnd()
+  static DPointer<DIterator>* memberEnd()
   { 
     return (memberBegin() + ownAttributeCount()); 
   }

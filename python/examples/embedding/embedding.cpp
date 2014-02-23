@@ -28,7 +28,7 @@ void PythonInterpreter::loadModule(std::string path)
 void PythonInterpreter::registerStructures(void)
 {
         //typedef Destruct::DVector<Destruct::DUnicodeString, Destruct::DType::DUnicodeStringType> DVectorString;
-        //Destruct::DStruct* dstructvectors = Destruct::makeNewDClass < DVectorString >(NULL, "DVector<String>");
+        //Destruct::DStruct* dstructvectors = Destruct::makeNewDClass < DVectorString >(NULL, "DVectorString");
         //Destruct::Destruct::instance().registerDStruct(dstructvectors);
 }
 

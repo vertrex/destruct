@@ -13,13 +13,14 @@ namespace Destruct
 {
 
 class DObject;
+class DValue;
 
 class DStruct : public RefcountPolicy<DStruct> 
 {
 public:
   typedef std::vector<DAttribute> DAttributeContainer;
   typedef DAttributeContainer::const_iterator DAttributeIterator;
-  typedef DObject* (*CreateObjectFunction)(DStruct *);
+  typedef DObject* (*CreateObjectFunction)(DStruct *, DValue const& args);
 
   template<typename Iterator> 
   DStruct(DStruct const* baseClass, const DUnicodeString& name, CreateObjectFunction createObjectFunction, Iterator attributeBegin, Iterator attributeEnd) : __ownAttributes(attributeBegin, attributeEnd), __baseClass(baseClass) ,  __name(name),  __createObject(createObjectFunction), __definitionFix(false), __defaultObject(0)
@@ -36,7 +37,8 @@ public:
   DUnicodeString        name() const;
 
   //DObject*              newObject() const;
-  virtual DObject*      newObject(); //for mutable
+  DObject*              newObject(); 
+  virtual DObject*      newObject(DValue const& args); //for mutable
  
   DObject const*        defaultDObject() const;//not serialized, could be usefull for destruct to set default value 
   void                  setDefault(DObject const *);

@@ -9,10 +9,12 @@
 namespace Destruct
 {
 
+        //class DValue;
+
 class DDynamicObject : public DObject
 {
 public :
-  DDynamicObject(DStruct *);
+  DDynamicObject(DStruct *, DValue const& args);
   DDynamicObject(DDynamicObject const &);
   ~DDynamicObject();
 

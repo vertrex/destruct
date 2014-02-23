@@ -6,7 +6,7 @@
 namespace Destruct
 {
 
-DDynamicObject::DDynamicObject(DStruct * class_) : DObject(class_), __values(class_->attributeCount(), 0), __object(0)
+DDynamicObject::DDynamicObject(DStruct * class_, DValue const& args) : DObject(class_, args), __values(class_->attributeCount(), 0), __object(0)
 {
   // we can't initialize 'values' here, as 'this' is not a valid pointer
 }

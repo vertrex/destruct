@@ -14,7 +14,7 @@ template< typename CppClass>
 class DClassObject : public DObject, public CppClass
 {
 public:
-  DClassObject(DStruct * dstruct) : DObject(dstruct), CppClass()
+  DClassObject(DStruct * dstruct, DValue const& args) : DObject(dstruct, args), CppClass()
   {
     this->__members = this->memberBegin();
 
@@ -22,7 +22,7 @@ public:
        this->__members[idx].init(this);
   }
  
-  DClassObject(DStruct * dstruct, CppClass const&  classobject) : DObject(dstruct) , CppClass(classobject)
+  DClassObject(DStruct * dstruct, DValue const& args, CppClass const&  classobject) : DObject(dstruct, args) , CppClass(classobject)
   {
     this->__members = this->memberBegin();
 
@@ -30,9 +30,9 @@ public:
       this->__members[idx].init(this);
   }
 
-  static DObject* newObject(DStruct * dstruct)
+  static DObject* newObject(DStruct * dstruct, DValue const& args)
   {
-    return (new DClassObject(dstruct));
+    return (new DClassObject(dstruct, args));
   }
 
   virtual DObject* clone() const
@@ -82,7 +82,7 @@ protected:
   };
 
 private:
-  DMemoryPointer<CppClass >*       __members;
+  DPointer<CppClass >*       __members;
 };
 
 template <typename CppClass>

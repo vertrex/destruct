@@ -1,4 +1,5 @@
 #include "py_dobject.hpp"
+#include "dvalue.hpp"
 #include "destruct.hpp"
 #include "dobject.hpp"
 #include "drealvalue.hpp"
@@ -244,11 +245,16 @@ int PyDObject::_init(PyDObjectT::DPyObject* self, PyObject *args, PyObject *kwds
 {
   self->pimpl = NULL;
   char* dstructName = NULL;
+  PyObject*     pyArgs = NULL;
 
   if (!PyArg_ParseTuple(args, "s", &dstructName))
   {
-    PyErr_SetString(PyExc_TypeError, "must be string or integer, and a compatible DType or Python Object");
-    return (-1);
+    if (!PyArg_ParseTuple(args, "sO", &dstructName, &pyArgs))
+    {
+      PyErr_SetString(PyExc_TypeError, "must be string or string and DValue");
+      return (-1);
+    }
+    PyErr_Clear();
   }
 
   Destruct::DStruct* dstruct = Destruct::Destruct::instance().find(std::string(dstructName));
@@ -257,7 +263,15 @@ int PyDObject::_init(PyDObjectT::DPyObject* self, PyObject *args, PyObject *kwds
     Py_ssize_t pos = 0;
     PyObject *key, *value = NULL;
 
-    self->pimpl = dstruct->newObject();
+    if (pyArgs != NULL)
+    {
+      //XXX
+      //Destruct::DValue dstructArgs = Destruct::RealValue<Destruct::DObject*>(Destruct::DNone);
+      Destruct::DValue dstructArgs = DValueDispatchTable[9]->toDValue(pyArgs);
+      self->pimpl = dstruct->newObject(dstructArgs);
+    }
+    else
+      self->pimpl = dstruct->newObject();
 
 //XXX check tp_dict for each func/value ? (only func ?)
 // if func is found set func to the c++ object with setvalue -> overiding the c++ function
@@ -378,9 +392,10 @@ PyObject* PyDObject::_iter(PyDObject::DPyObject* self)
   
   try 
   {
-    if (self->pimpl->instanceOf()->name() == "DIterator")    
+    if (self->pimpl->instanceOf()->name() == "DIterator")
+    {
       return ((PyObject*)self);
-
+    }
     Destruct::DObject* iterator = self->pimpl->call("iterator").get<Destruct::DObject*>();
 
     PyDObject::DPyObject*  dobjectObject = (PyDObject::DPyObject*)_PyObject_New(PyDObject::pyType);
@@ -406,7 +421,7 @@ PyObject* PyDObject::_iternext(PyDObject::DPyObject* self)
   {
     Destruct::DFunctionObject* isDoneObject = iterator->isDoneObject;  
     DInt8 isDone(isDoneObject->call().get<DInt8>());
-
+    
     if (!isDone)
     {
       Destruct::DValue result = ((Destruct::DFunctionObject*)iterator->currentItemObject)->call();
