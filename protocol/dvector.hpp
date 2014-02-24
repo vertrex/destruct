@@ -3,6 +3,7 @@
 
 #include "protocol/dcppobject.hpp"
 #include "protocol/dcontainer.hpp"
+#include "protocol/dstream.hpp"
 
 namespace Destruct
 {
@@ -12,8 +13,6 @@ class DVector : public DContainer, public DCppObject<DVector<VectorType, VectorT
 {
   typedef DVector<VectorType, VectorTypeId> DVectorType;
 public:
-  RealValue<DFunctionObject* >  pushObject;
-
 //XXX prendre container en argument ? DStruct* dstruct, DValue args) comme ca ca fait un constructeur 
 // par contre faut que new object prenne une value donc modifier destruct / dstruct et tous les dobjects
   DVector(DStruct* dstruct, DValue const& args) : DCppObject<DVector<VectorType, VectorTypeId> >(dstruct, args)
@@ -70,12 +69,32 @@ public:
     return (iterator);
   }
 
+  DObject*  serialize(DValue const& args)
+  {
+    std::cout << "DIterator::serialize()" << std::endl;
+    DStream* output = static_cast<DStream*>(args.get<DObject*>()->getValue("stream").get<DObject*>());
+
+    *output << "<list>" << std::endl;
+    DUInt64 size = static_cast<DFunctionObject*>(this->sizeObject)->call().get<DUInt64>();
+    for (DUInt64 idx = 0; idx < size ; idx++) //cout < this->sizeObject()->call()->get<DUint>
+    {
+      //XXX devrait stocker des RealValue de toute ? plus logique mais prend plus de ram ?
+      *output << RealValue<VectorType>(this->__vector[idx]).asUnicodeString() << ","; //curent item
+      ////XMLTag(output, ",", item.asUnicodeString(), depth);
+    }
+    *output << std::endl << "</list>" << std::endl;
+      
+    return RealValue<DObject*>(DNone);
+  }
+
+  RealValue<DFunctionObject* >  _serialize;
+  RealValue<DFunctionObject* >  pushObject;
 /*
  *  DStruct declaration
  */ 
   static size_t ownAttributeCount()
   {
-    return (5);
+    return (6);
   }
 
   static DAttribute* ownAttributeBegin()
@@ -87,6 +106,7 @@ public:
       DAttribute(DType::DUInt64Type,"size", DType::DNoneType),
       DAttribute(DType::DNoneType, "setItem", DType::DObjectType),
       DAttribute(DType::DObjectType, "iterator", DType::DNoneType),
+      DAttribute(DType::DObjectType, "serialize", DType::DObjectType),
     };
     return (attributes);
   }
@@ -100,6 +120,7 @@ public:
       DPointer<DVectorType>(&DVectorType::sizeObject, &DVectorType::size),
       DPointer<DVectorType>(&DVectorType::setItemObject, &DVectorType::setItem),
       DPointer<DVectorType>(&DVectorType::iteratorObject, &DVectorType::iterator),
+      DPointer<DVectorType>(&DVectorType::_serialize, &DVectorType::serialize),
     };
     return (memberPointer);
   }
@@ -114,7 +135,7 @@ public:
     return (memberBegin() + ownAttributeCount());
   } 
 private:
-  std::vector<VectorType>   __vector;
+  std::vector<VectorType>   __vector; //XXX sont on stock des dvalue le type doit suffir pour mette n importe koi et etre generic 
 };
 
 }

@@ -337,3 +337,6 @@ print 'deserialization of map of ' +str(len(vector)) + ' item'
 serializer = DSerialize("XML")
 serializer.serialize(stream, vector)
 serializer.serialize(PyDStreamCout(), vector)
+serializer = DSerialize("Text")
+serializer.serialize(stream, vector)
+serializer.serialize(PyDStreamCout(), vector)

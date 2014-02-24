@@ -197,7 +197,7 @@ inline void RealValue<DObject* >::set(DValue const& v)
 template <>
 inline DUnicodeString RealValue<DFunctionObject* >::asUnicodeString() const
 {
-  return ("DFunctionObject *"); //throw ?
+  return ("DFunctionObject"); //throw ?
 }
 
 template <>
