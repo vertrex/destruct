@@ -5,11 +5,11 @@
 
 #include "dobject.hpp"
 #include "dunicodestring.hpp"
-#include "protocol/dstream.hpp" //XXX must not include protocol in base src
 
 namespace Destruct
 {
 
+class DStream;
 class DObject;
 //class DValue;
 

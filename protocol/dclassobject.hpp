@@ -1,7 +1,7 @@
 #ifndef DSTRUCT_CLASS_OBJECT_HPP_
 #define DSTRUCT_CLASS_OBJECT_HPP_
 
-#include "protocol/dmemberpointer.hpp"
+#include "protocol/dcpppointer.hpp"
 
 namespace Destruct
 {

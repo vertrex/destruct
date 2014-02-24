@@ -22,7 +22,7 @@ py_dtype.cpp
 py_dvalue.cpp
 py_dobject.cpp
 py_dmethodobject.cpp
-py_dstream.cpp
+#py_dstream.cpp
 py_dserialize.cpp
 destructmodule.cpp
 )

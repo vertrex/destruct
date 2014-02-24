@@ -45,8 +45,8 @@ void DWrapper::setValue(Destruct::DValue value)
 
 void DWrapper::serialize(Destruct::DObject* object)
 {
-  Destruct::DSerializers::to("XML")->serialize(Destruct::cout, *object);
-  Destruct::DSerializers::to("Text")->serialize(Destruct::cout, *object);
+        //Destruct::DSerializers::to("XML")->serialize(Destruct::cout, *object);
+        //Destruct::DSerializers::to("Text")->serialize(Destruct::cout, *object);
 }
 
 

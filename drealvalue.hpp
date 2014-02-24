@@ -10,11 +10,11 @@
 
 namespace Destruct
 {
-
 /*
 * implemented typedvalue who inherit final value who inherite basevalue
 * all specialize method by type must be implem here ! that's why we use template
 */
+class DStream;
 
 template <typename PlainType>
 class RealValue : public TypedValue<PlainType>
@@ -47,13 +47,13 @@ public:
 
   DStream& serialize(DStream& os) const
   {
-    os.write((char *)&this->__val, sizeof(this->__val));
+    //os.write((char *)&this->__val, sizeof(this->__val));
     return (os);
   }
 
   DStream& unserialize(DStream& is)
   {
-    is.read((char *)&this->__val, sizeof(this->__val));
+    //is.read((char *)&this->__val, sizeof(this->__val));
     return (is);
   }
 
@@ -103,23 +103,23 @@ public:
 
   DStream& serialize(DStream& os) const
   {
-    os.write((char *)this->c_str(), this->size()); // pascal string ? 00
-    os.write("\x00", 1); //\x00\x00 in unicode 16 ? 
+          //os.write((char *)this->c_str(), this->size()); // pascal string ? 00
+          //os.write("\x00", 1); //\x00\x00 in unicode 16 ? 
     return (os);
   }
 
   DStream& unserialize(DStream& is)
   {
     //XXX this is a pure implem so we will look for \x00 PascalString could be better for binary but maybe not for raw 
-    char c = '\xff';
-    std::string buffer;
+    //char c = '\xff';
+    //std::string buffer;
 
-    while (c != '\x00')
-    {
-      is.read(&c, sizeof(char)); 
-      buffer += c;
-    }
-    *this = buffer;
+    //while (c != '\x00')
+    //{
+    //is.read(&c, sizeof(char)); 
+    //buffer += c;
+    //}
+    //*this = buffer;
     return (is);
   }
 

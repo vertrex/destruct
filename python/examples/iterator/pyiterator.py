@@ -304,7 +304,30 @@ pythonpurecontainer()
 simplemapstring()
 pymapobject()
 
-stream = DStream()
+class PyDStream(DObject):
+ def __init__(self, args):
+   DObject.__init__(self, "DStream", args)
+
+class PyDStreamCout(DObject):
+  def __init__(self):
+    DObject.__init__(self, "DStreamCout")
+
+class DStreamArgumentS(DStruct):
+  def __init__(self):
+    DStruct.__init__(self, DNone, "Argument")
+    self.addAttribute(DAttribute("input", DInt8))   
+    self.addAttribute(DAttribute("filePath", DUnicodeString))   
+    Destruct().registerDStruct(self)
+DStreamArgumentS()
+
+class DStreamArgument(DObject):
+  def __init__(self, filePath, input):
+    DObject.__init__(self, "Argument") 
+    self.filePath = filePath 
+    self.input = input
+
+
+stream = PyDStream(DStreamArgument("pyfilearg", 0))
 vector = PySimpleDVectorString()
 for i in range(100):
   vector.push(str(i))
@@ -313,5 +336,4 @@ print 'deserialization of map of ' +str(len(vector)) + ' item'
 
 serializer = DSerialize("XML")
 serializer.serialize(stream, vector)
-
-
+serializer.serialize(PyDStreamCout(), vector)

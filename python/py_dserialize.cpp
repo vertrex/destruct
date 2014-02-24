@@ -1,5 +1,6 @@
+#include "protocol/dstream.hpp"
+
 #include "py_dserialize.hpp"
-#include "py_dstream.hpp"
 #include "py_dstruct.hpp"
 #include "py_dobject.hpp"
 
@@ -27,21 +28,23 @@ PyDSerialize::PyDSerialize() //DSerializers XXX rename PyDSerialize.serialize se
 
 PyObject* PyDSerialize::serialize(PyDSerialize::DPyObject* self, PyObject* args, PyObject* kwds)
 {
-  PyDStream::DPyObject* dstream;
+  PyDObject::DPyObject* pyStream;
   PyObject*             object;
 
-  if (!PyArg_ParseTuple(args, "OO", &dstream, &object))
+
+  if (!PyArg_ParseTuple(args, "OO", &pyStream, &object))
   {
     PyErr_SetString(PyExc_TypeError, "must be dstream, and a dstruct or dobject.");
     return (0);
   }
 
   bool result = false;
+  Destruct::DStream*    dstream = (Destruct::DStream*)pyStream->pimpl; //force cast car serializer prend pas encore un dobject pour stream 
 
   if (PyObject_TypeCheck(object, PyDStruct::pyType))
-    result = self->pimpl->serialize(*dstream->pimpl, *((PyDStruct::DPyObject*)object)->pimpl);
+    result = self->pimpl->serialize(*dstream, *((PyDStruct::DPyObject*)object)->pimpl);
   else if (PyObject_TypeCheck(object, PyDObject::pyType))
-    result = self->pimpl->serialize(*dstream->pimpl, *((PyDObject::DPyObject*)object)->pimpl);
+    result = self->pimpl->serialize(*dstream, *((PyDObject::DPyObject*)object)->pimpl);
 
   if (result)
     Py_RETURN_TRUE;
@@ -51,18 +54,19 @@ PyObject* PyDSerialize::serialize(PyDSerialize::DPyObject* self, PyObject* args,
 
 PyObject* PyDSerialize::deserialize(PyDSerialize::DPyObject* self, PyObject* args, PyObject* kwds)
 {
-  PyDStream::DPyObject* dstream = NULL;
+  PyDObject::DPyObject* pyStream = NULL;
   PyObject*             object = NULL;
 
-  if (!PyArg_ParseTuple(args, "O|O", &dstream, &object))
+  if (!PyArg_ParseTuple(args, "O|O", &pyStream, &object))
   {
     PyErr_SetString(PyExc_TypeError, "must be dstream, and dobject or none.");
     return (0);
-  } 
-
+  
+  }
+  Destruct::DStream*    dstream = (Destruct::DStream*)pyStream->pimpl; //force cast car .. 
   if (object == NULL)
   {
-    Destruct::DStruct* dstruct = self->pimpl->deserialize(*dstream->pimpl); 
+    Destruct::DStruct* dstruct = self->pimpl->deserialize(*dstream); 
     if (dstruct == NULL)
       Py_RETURN_NONE;
     else
@@ -76,7 +80,7 @@ PyObject* PyDSerialize::deserialize(PyDSerialize::DPyObject* self, PyObject* arg
 
   if (PyObject_TypeCheck(object, PyDObject::pyType))
   {
-    bool result = self->pimpl->deserialize(*(dstream->pimpl), *((PyDObject::DPyObject*)object)->pimpl);
+    bool result = self->pimpl->deserialize(*(dstream), *((PyDObject::DPyObject*)object)->pimpl);
 
     if (result)
       Py_RETURN_TRUE;

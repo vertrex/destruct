@@ -36,7 +36,7 @@ public :
 
   const std::string name(void);
   DSerializeXML*   create(void);
-  bool serialize(DStream&output, DObject& dobject); 
+  bool serialize(DStream& output, DObject& dobject); 
   bool serialize(DStream& output, DObject& dobject, int depth);
   bool deserialize(DStream&input, DObject& dobject);
 

@@ -3,6 +3,7 @@
 
 #include <typeinfo>
 
+#include "dvalue.hpp"
 #include "drealvalue.hpp"
 #include "dexception.hpp"
 

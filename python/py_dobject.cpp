@@ -265,7 +265,7 @@ int PyDObject::_init(PyDObjectT::DPyObject* self, PyObject *args, PyObject *kwds
 
     if (pyArgs != NULL)
     {
-      //XXX
+      //XXX Add init type ds dstruct ou DObject par default  ? XXX XXX XXX 
       //Destruct::DValue dstructArgs = Destruct::RealValue<Destruct::DObject*>(Destruct::DNone);
       Destruct::DValue dstructArgs = DValueDispatchTable[9]->toDValue(pyArgs);
       self->pimpl = dstruct->newObject(dstructArgs);
@@ -284,7 +284,6 @@ int PyDObject::_init(PyDObjectT::DPyObject* self, PyObject *args, PyObject *kwds
 
 //XXX IT WILL BE DONE AT EACH INIT or object() instantiation :*(
 //    Better modify the dict ? But how to push the object on destruct def ? (the func) ?
-//    Better call saul ? 
 
     while (PyDict_Next(((PyObject*)self)->ob_type->tp_dict, &pos, &key, &value))
     {

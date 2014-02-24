@@ -11,6 +11,7 @@
 #include "protocol/dvector.hpp"
 #include "protocol/dmap.hpp"
 #include "protocol/dmapiterator.hpp"
+#include "protocol/dstream.hpp"
 
 namespace Destruct
 {
@@ -38,6 +39,9 @@ void Protocol::__registerStruct(Destruct* destruct)
   destruct->registerDStruct(makeNewDCpp<DMap<DUnicodeString, DType::DUnicodeStringType,  DUnicodeString, DType::DUnicodeStringType > >("DMapString"));
   destruct->registerDStruct(makeNewDCpp<DMap<DObject* , DType::DObjectType,  DObject* , DType::DObjectType> >("DMapObject"));
   //destruct->registerDStruct(makeNewDMutable<DMapIterator >("DMapIterator"));
+  
+  destruct->registerDStruct(makeNewDCpp<DStream >("DStream")); //virer le <> et * ! 
+  destruct->registerDStruct(makeNewDCpp<DStreamCout >("DStreamCout")); //virer le <> et * ! 
 }
 
 }

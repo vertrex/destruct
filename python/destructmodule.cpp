@@ -9,7 +9,6 @@
 #include "py_dobject.hpp"
 #include "py_dmethodobject.hpp"
 #include "py_dnullobject.hpp"
-#include "py_dstream.hpp"
 #include "py_dserialize.hpp"
 
 #define DESTRUCT_ADD_MODULE(moduleType, moduleName)\
@@ -33,7 +32,7 @@ PyMODINIT_FUNC init_destruct(void)
   PyDMethodObject::moduleInit();
   PyDNullObject::moduleInit();
   PyDType::moduleInit();
-  PyDStream::moduleInit();
+  //PyDStream::moduleInit();
   PyDSerialize::moduleInit();
   //PyTest::moduleInit();
 
@@ -62,7 +61,6 @@ PyMODINIT_FUNC init_destruct(void)
 //end type specialization 
 
   DESTRUCT_ADD_MODULE(PyDType::pyType, "DType")
-  DESTRUCT_ADD_MODULE(PyDStream::pyType, "DStream");
   DESTRUCT_ADD_MODULE(PyDSerialize::pyType, "DSerialize");
   //DESTRUCT_ADD_MODULE(PyTest::pyType, "Test")
 }

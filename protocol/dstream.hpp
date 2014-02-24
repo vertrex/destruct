@@ -5,16 +5,17 @@
 #include <iostream>
 #include <fstream>
 
+#include "dcppobject.hpp" //XXX peut pas etre include drealvalue car dmethodobject a bespin de realvalue et ca fait de l inclusion en boucle ?
+
+class DValue;
 namespace Destruct
 {
-
 /*
  *  Basic stream object used for serialization test
  *      - Could be enhanced / replaced by file, buffer (data), socket protocol object for reflectivy
  */
-class DValue;
 
-class DStream
+class DStream : public DCppObject<DStream>
 {
 public:
   enum whence
@@ -24,18 +25,17 @@ public:
     End,
   };
 
-  enum mode
+  enum mode //AddAttribute(Enum()); 
   {
-    Input,
-    Output
+    Output,
+    Input
   };
 
   typedef std::basic_ostream<char, std::char_traits<char> > CoutType;
   typedef CoutType& (*StandardEndLine)(CoutType&);
 
-  DStream();
-  DStream(std::string filePath, mode _mode = Input); 
-//  DStream(int32_t fd, mode _mode = mode::Input);  for python and C fd ? 
+  DStream(DStruct* dstruct, DValue const& args);
+  DStream(const DStream& copy);
   virtual ~DStream();
   virtual DStream& operator>>(std::string& val); 
   virtual DStream& operator<<(std::string val);
@@ -44,14 +44,56 @@ public:
   virtual DStream& read(char*  buff, uint32_t size);
   virtual DStream& write(const char* buff, uint32_t size);
   virtual bool fail(void);
+protected:
+  DStream(DStruct* dstruct);
 private:
   std::fstream  __fstream; //if not fd !
+
+/*
+ *  DStruct declaration
+ */ 
+public:
+  static size_t ownAttributeCount()
+  {
+    return (0);
+  }
+
+  static DAttribute* ownAttributeBegin()
+  {
+    static DAttribute  attributes[] = 
+    {
+      //DAttribute(DType::DInt64Type,"read", DType::DObjectType), 
+      //DAttribute(DType::DInt64Type,"write",  DType::DObjectType),
+    };
+    return (attributes);
+  }
+
+  static DPointer<DStream>* memberBegin()
+  {
+    static DPointer<DStream> memberPointer[] = 
+    {
+      //DPointer<DVectorType>(&DVectorType::pushObject, &DVectorType::push),
+      //DPointer<DVectorType>(&DVectorType::getObject, &DVectorType::get),
+    };
+    return (memberPointer);
+  }
+
+  static DAttribute* ownAttributeEnd()
+  {
+    return (ownAttributeBegin() + ownAttributeCount());
+  }
+
+  static DPointer<DStream>*  memberEnd()
+  {
+    return (memberBegin() + ownAttributeCount());
+  } 
 };
 
 class DStreamCout : public DStream
 {
 public:
-  DStreamCout();
+  DStreamCout(DStruct* dstruct, DValue const &args);
+  DStreamCout(const DStreamCout& copy);
   ~DStreamCout();
   DStream& operator>>(std::string& val);
   DStream& operator<<(std::string val);
@@ -62,10 +104,7 @@ public:
   bool fail(void);
 };
 
-static DStreamCout cout; //this is a strange implem as << and >> are implem for cout ( cin & cout implem)
-
-//static DStreamFD cout(0)
-//static DStreamFD cout(1)
+//static DStreamCout cout; //this is a strange implem as << and >> are implem for cout ( cin & cout implem)
 
 }
 

@@ -2,19 +2,26 @@
 
 namespace Destruct
 {
-
-
-DStream::DStream()
+DStream::DStream(DStruct* dstruct) : DCppObject<DStream>(dstruct, RealValue<DObject*>(DNone))
 {
-
 }
 
-DStream::DStream(std::string filePath, mode _mode)
+DStream::DStream(DStruct* dstruct, DValue const& args) : DCppObject<DStream>(dstruct, args)
 {
-  if (_mode == Input)
-    this->__fstream.open(filePath.c_str(), std::iostream::in | std::iostream::binary);
-  else
+// this->init();
+  DObject* dargs = args.get<DObject*>();
+
+  DInt8 _mode = dargs->getValue("input").get<DInt8>();
+  DUnicodeString filePath = dargs->getValue("filePath").get<DUnicodeString>();
+
+  if (_mode == 0)
     this->__fstream.open(filePath.c_str(), std::iostream::out | std::iostream::binary | std::iostream::trunc);
+  else
+    this->__fstream.open(filePath.c_str(), std::iostream::in | std::iostream::binary);
+}
+
+DStream::DStream(const DStream& copy) : DCppObject<DStream>(copy) 
+{
 }
 
 DStream::~DStream()
@@ -67,9 +74,14 @@ bool DStream::fail(void)
  * DStreamCout
 */
 
-DStreamCout::DStreamCout()
+DStreamCout::DStreamCout(DStruct* dstruct, DValue const& args): DStream(dstruct)
 {
 }
+
+DStreamCout::DStreamCout(const DStreamCout& copy) : DStream(copy)
+{
+}
+
 
 DStreamCout::~DStreamCout()
 {
