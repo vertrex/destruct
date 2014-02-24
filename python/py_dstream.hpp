@@ -1,7 +1,7 @@
 #ifndef _DESTRUCT_MODULE_DSTREAM_HPP_
 #define _DESTRUCT_MODULE_DSTREAM_HPP_
 
-#include "dstream.hpp"
+#include "protocol/dstream.hpp"
 #include "destructmodule.hpp"
 
 typedef PythonModule< class PyDStream, Destruct::DStream> PyDStreamT;

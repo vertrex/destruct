@@ -5,13 +5,14 @@
 #include <iostream> 
 #include <vector>
 
-#include "dvalue.hpp"
-#include "dobject.hpp"
 #include "dstream.hpp"
-
 
 namespace Destruct
 {
+
+class DObject;
+class DStruct;
+class DStream;
 
 class DSerialize
 {

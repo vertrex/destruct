@@ -1,4 +1,5 @@
 #include "diterator.hpp"
+#include "protocol/dcontainer.hpp"
 
 namespace Destruct
 {

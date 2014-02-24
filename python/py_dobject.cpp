@@ -492,8 +492,8 @@ int PyDObject::_setitem(PyDObject::DPyObject* self, Py_ssize_t index, PyObject* 
     Destruct::DType pushType = self->pimpl->instanceOf()->attribute("push").type();
     Destruct::DValue itemValue = DValueDispatchTable[pushType.getArgumentType()]->toDValue(item);
 
-    argument->setValueAttribute("index", Destruct::RealValue<DInt64>(index), Destruct::DType::DInt64Type);
-    argument->setValueAttribute("item", itemValue, pushType.getArgumentType());
+    argument->setValueAttribute(Destruct::DType::DInt64Type, "index", Destruct::RealValue<DInt64>(index));
+    argument->setValueAttribute(pushType.getArgumentType(), "item", itemValue);
     self->pimpl->call("setItem", Destruct::RealValue<Destruct::DObject*>(argument));
     argument->destroy(); //seem to be not enough other must havbe forget to call destroy 
   }
@@ -526,8 +526,8 @@ int  PyDObject::_setmap(DPyObject* self, PyObject* _key, PyObject* _value)
       Destruct::DValue key = DValueDispatchTable[keyType]->toDValue(_key);
       Destruct::DValue value = DValueDispatchTable[valueType]->toDValue(_value);
 
-      argument->setValueAttribute("index", key, keyType);
-      argument->setValueAttribute("value", value, valueType);
+      argument->setValueAttribute(keyType, "index", key);
+      argument->setValueAttribute(valueType, "value", value);
 
       self->pimpl->call("setItem", Destruct::RealValue<Destruct::DObject*>(argument));
       argument->destroy(); //seem to be not enough other must havbe forget to call destroy 

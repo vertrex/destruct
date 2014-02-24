@@ -7,8 +7,6 @@
 #include "dsimpleobject.hpp"
 #include "drealvalue.hpp"
 #include "dunicodestring.hpp"
-#include "dserialize.hpp"
-#include "dstream.hpp"
 
 #include "destruct_test.hpp"
 
@@ -19,6 +17,8 @@
 #include "protocol/diterator.hpp"
 #include "protocol/dvector.hpp"
 #include "protocol/dclassobject.hpp"
+#include "protocol/dserialize.hpp"
+#include "protocol/dstream.hpp"
 
 namespace Destruct
 {

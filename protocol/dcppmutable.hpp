@@ -2,6 +2,7 @@
 #define DSTRUCT_CPPMUTABLE_OBJECT_HPP_
 
 #include "dcppobject.hpp"
+#include "dmutablestruct.hpp"
 
 namespace Destruct
 {

@@ -3,10 +3,9 @@
 #include "drealvalue.hpp"
 #include "dtype.hpp"
 #include "dmethodobject.hpp"
-#include "dstream.hpp"
-#include "dserialize.hpp"
 #include "dsimpleobject.hpp"
 #include "destruct.hpp"
+#include "protocol/dserialize.hpp"
 
 DWrapper::DWrapper()
 {

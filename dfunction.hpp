@@ -1,9 +1,6 @@
 #ifndef _DESTRUCT_DFUNCTION_HPP_
 #define _DESTRUCT_DFUNCTION_HPP_
 
-#include "dnullobject.hpp"
-#include "dvalue.hpp"
-
 namespace Destruct
 {
 

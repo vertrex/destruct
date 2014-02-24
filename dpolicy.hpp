@@ -1,6 +1,8 @@
 #ifndef _DESTRUCT_DPOLICY_HPP
 #define _DESTRUCT_DPOLICY_HPP
 
+#include <stdint.h>
+
 template< class Derived >
 class RefcountPolicy 
 {

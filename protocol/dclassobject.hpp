@@ -1,10 +1,6 @@
 #ifndef DSTRUCT_CLASS_OBJECT_HPP_
 #define DSTRUCT_CLASS_OBJECT_HPP_
 
-#include "dunicodestring.hpp"
-#include "dobject.hpp"
-#include "drealvalue.hpp" 
-
 #include "protocol/dmemberpointer.hpp"
 
 namespace Destruct

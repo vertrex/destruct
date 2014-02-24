@@ -3,8 +3,6 @@
 
 #include "ddynamicobject.hpp"
 
-#include "dstruct.hpp"
-
 namespace Destruct
 {
 

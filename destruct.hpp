@@ -1,12 +1,7 @@
 #ifndef DESTRUCT_DESTRUCT_HPP_
 #define DESTRUCT_DESTRUCT_HPP_
 
-#include <list>
-#include <algorithm>
-#include <iterator>
-#include "dunicodestring.hpp"
 #include "dstruct.hpp"
-
 
 namespace Destruct
 {

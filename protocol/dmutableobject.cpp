@@ -71,7 +71,7 @@ DValue DMutableObject::call(size_t idx, DValue const& v)
   return (this->__values[idx]->getFinal().get<DFunctionObject *>()->call(v));
 }
 
-void DMutableObject::setValueAttribute(std::string const& name, DValue const& v, DType::Type_t type)
+void DMutableObject::setValueAttribute(DType::Type_t type, std::string const& name, DValue const& v)
 {
   DAttribute attribute(type, name);
 

@@ -304,3 +304,14 @@ pythonpurecontainer()
 simplemapstring()
 pymapobject()
 
+stream = DStream()
+vector = PySimpleDVectorString()
+for i in range(100):
+  vector.push(str(i))
+
+print 'deserialization of map of ' +str(len(vector)) + ' item'
+
+serializer = DSerialize("XML")
+serializer.serialize(stream, vector)
+
+

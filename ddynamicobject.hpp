@@ -2,14 +2,10 @@
 #define DESTRUCT_DYNAOBJECT_HPP
 
 #include <vector>
-
 #include "dobject.hpp"
-#include "dvalue.hpp"
 
 namespace Destruct
 {
-
-        //class DValue;
 
 class DDynamicObject : public DObject
 {

@@ -1,12 +1,7 @@
 #ifndef DSTRUCT_CPP_OBJECT_HPP_
 #define DSTRUCT_CPP_OBJECT_HPP_
 
-#include "dunicodestring.hpp"
-#include "dobject.hpp"
-#include "drealvalue.hpp" 
-
 #include "protocol/dmemberpointer.hpp"
-#include "protocol/dmutablestruct.hpp"
 
 namespace Destruct
 {

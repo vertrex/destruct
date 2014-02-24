@@ -1,12 +1,8 @@
 #ifndef DESTRUCT_DCONTAINER_HPP_
 #define DESTRUCT_DCONTAINER_HPP_
 
-#include "dvalue.hpp"
-#include "dcppobject.hpp"
-
 namespace Destruct 
 {
-
 class DContainer
 {
 public:

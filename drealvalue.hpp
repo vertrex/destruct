@@ -3,13 +3,10 @@
 
 #include <string>
 #include <sstream>
-#include <iostream>
+
 #include "dvalue.hpp"
-#include "dobject.hpp"
 #include "dnullobject.hpp"
 #include "dfunction.hpp"
-#include "dunicodestring.hpp"
-#include "dstream.hpp"
 
 namespace Destruct
 {

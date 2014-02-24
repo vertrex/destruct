@@ -2,7 +2,6 @@
 #define DESTRUCT_DMUTABLE_STRUCT_HPP_
 
 #include "dstruct.hpp"
-#include "dvalue.hpp"
 
 namespace Destruct
 {

@@ -2,9 +2,10 @@
 #define DSTRUCT_DVALUE_HPP_
 
 #include <string>
-#include "dunicodestring.hpp"
+
 #include "dobject.hpp"
-#include "dstream.hpp"
+#include "dunicodestring.hpp"
+#include "protocol/dstream.hpp" //XXX must not include protocol in base src
 
 namespace Destruct
 {

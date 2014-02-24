@@ -4,16 +4,16 @@
 #include <vector>
 #include <algorithm>
 #include <iterator>
-#include "dunicodestring.hpp"
-#include "dattribute.hpp"
 
 #include "dpolicy.hpp"
+#include "dattribute.hpp"
 
 namespace Destruct 
 {
 
 class DObject;
 class DValue;
+class DAttribute;
 
 class DStruct : public RefcountPolicy<DStruct> 
 {

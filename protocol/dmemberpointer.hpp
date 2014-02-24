@@ -1,8 +1,6 @@
 #ifndef DESTRUCT_MEMPTR_H
 #define DESTRUCT_MEMPTR_H
 
-#include "dvalue.hpp"
-#include "drealvalue.hpp"
 #include "dmethodobject.hpp"
 
 namespace Destruct

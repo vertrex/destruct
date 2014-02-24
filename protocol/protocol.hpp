@@ -3,7 +3,6 @@
 
 namespace Destruct
 {
-
 class Destruct;
 
 class Protocol

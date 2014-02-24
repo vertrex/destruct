@@ -1,12 +1,8 @@
 #include <iterator>
-#include "dstruct.hpp"
+
 #include "destruct.hpp"
-#include "dobject.hpp"
-#include "dattribute.hpp"
-#include "dvalue.hpp"
 #include "dexception.hpp"
 #include "drealvalue.hpp"
-#include "dnullobject.hpp"
 
 namespace Destruct
 {

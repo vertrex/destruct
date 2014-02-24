@@ -4,8 +4,6 @@
 #include <typeinfo>
 
 #include "drealvalue.hpp"
-#include "dnullobject.hpp"
-#include "dvalue.hpp"
 #include "dexception.hpp"
 
 /*

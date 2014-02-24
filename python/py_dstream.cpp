@@ -39,16 +39,21 @@ int PyDStream::_init(PyDStream::DPyObject* self, PyObject* args, PyObject* kwds)
   int           mode = 0;
   const char*   fileName = NULL;
 
-  if (!PyArg_ParseTuple(args, "si", &fileName, &mode))
-    return (-1);
-
-  if (fileName == NULL)
+  if (PyArg_ParseTuple(args, "si", &fileName, &mode))
   {
-    PyErr_SetString(PyExc_ValueError, "file name must not be empty");
-    return (-1);
+    self->pimpl = new Destruct::DStream(fileName, (Destruct::DStream::mode)mode);
+    INIT_CHECK_ALLOC(self->pimpl);
+
+    if (fileName == NULL)
+    {
+      PyErr_SetString(PyExc_ValueError, "file name must not be empty");
+      return (-1);
+    }
+    return (0);
   }
 
-  self->pimpl = new Destruct::DStream(fileName, (Destruct::DStream::mode)mode);
+  PyErr_Clear(); 
+  self->pimpl = new Destruct::DStreamCout();
   INIT_CHECK_ALLOC(self->pimpl);
 
   return (0);

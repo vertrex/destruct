@@ -2,8 +2,8 @@
 #define _DESTRUCT_DOBJECT_HPP_
 
 #include <memory>
-#include "dstruct.hpp"
 #include "dpolicy.hpp"
+#include "dstruct.hpp"
 
 namespace Destruct
 {

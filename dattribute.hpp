@@ -3,7 +3,6 @@
 
 #include "dtype.hpp"
 
-
 namespace Destruct
 {
 class DStruct;

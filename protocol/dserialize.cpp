@@ -1,7 +1,11 @@
 #include "dserialize.hpp"
 #include "dstruct.hpp"
+#include "destruct.hpp"
 #include "dobject.hpp"
 #include "dsimpleobject.hpp"
+#include "dnullobject.hpp"
+#include "dmutableobject.hpp"
+#include "drealvalue.hpp"
 
 #include <iostream>
 
@@ -33,6 +37,42 @@ bool DSerializeXML::serialize(DStream& output, DObject& dobject, int depth)
   DStruct const* dstruct = dobject.instanceOf();
   XMLTag tag = XMLTag(output, dstruct->name(), "\n", depth++, true);
 
+  //special serialization
+  //if dobject.serialize:
+  //{
+  //dobject.serialize(DStream& output, this);
+  //return ;
+  //} 
+  //default serialization
+
+//try catch ? mettre ds iterator / dcontainer ? 
+  
+///
+
+  DMutableObject* arguments = static_cast<DMutableObject*>(Destruct::instance().find("DMutable")->newObject());
+  //arguments->setValueAttribute(DType::DObjectType, "stream", stream);
+  //arguments->setAttributeValue(DType::DObjectType, "serializer", serializer);
+  arguments->setValueAttribute(DType::DUnicodeStringType, "serializerType", RealValue<DUnicodeString>("XML"));
+
+  //output = dobject.call("serialize", "XML", stream, serializer);
+
+  DObject* iterator =  dobject.call("iterator").get<DObject*>();
+  if (iterator != DNone)
+  {
+   std::cout << "serializating an iterable " << std::endl;
+   output << "<list>" << std::endl;
+   while(!(iterator->call("isDone").get<DInt8>()))
+   {
+     DValue item = iterator->call("currentItem");
+     iterator->call("nextItem");
+     output  << item.asUnicodeString() << ",";
+     //XMLTag(output, ",", item.asUnicodeString(), depth);
+   }
+   output << std::endl << "</list>" << std::endl;
+  }
+///
+
+
   for (DStruct::DAttributeIterator i = dstruct->attributeBegin(); i != dstruct->attributeEnd(); ++i, ++x)
   {
     if (i->type().getType() == DType::DObjectType)
@@ -52,6 +92,7 @@ bool DSerializeXML::serialize(DStream& output, DObject& dobject, int depth)
       //XMLTag(output, i->name(), tag, depth);
     //}
     else    
+      //Dserialize(value) //sauf dobject 
       XMLTag(output, i->name(), dobject.getValue(x).asUnicodeString(), depth);
   }   
  
@@ -357,7 +398,7 @@ DSerializers::~DSerializers()
 {
   for (std::vector<DSerialize* >::iterator i = __serializers.begin(); i != __serializers.end(); ++i)
   {
-     delete (*i);
+          //delete (*i);
   }
 }
 

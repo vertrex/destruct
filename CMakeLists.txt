@@ -127,8 +127,6 @@ dstruct.cpp
 dtype.cpp 
 dvalue.cpp
 destruct.cpp
-dserialize.cpp
-dstream.cpp
 dnullobject.cpp
 dexception.cpp
 
@@ -136,7 +134,8 @@ protocol/protocol.cpp
 protocol/dmutablestruct.cpp
 protocol/dmutableobject.cpp
 protocol/diterator.cpp
-#protocol/dmapiterator.cpp
+protocol/dserialize.cpp
+protocol/dstream.cpp
 )
 
 add_library(destruct SHARED ${destruct_source_files})

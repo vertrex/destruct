@@ -1,9 +1,7 @@
 #ifndef _DESTRUCT_DNULLOBJECT_HPP_
 #define _DESTRUCT_DNULLOBJECT_HPP_
 
-#include "dstruct.hpp"
 #include "dobject.hpp"
-#include "dvalue.hpp"
 
 namespace Destruct
 {

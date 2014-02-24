@@ -1,7 +1,6 @@
-#include "ddynamicobject.hpp"
 #include "dstruct.hpp"
-#include "dvalue.hpp"
 #include "drealvalue.hpp"
+#include "ddynamicobject.hpp"
 
 namespace Destruct
 {

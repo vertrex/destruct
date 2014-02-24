@@ -1,7 +1,7 @@
 #include "dvalue.hpp"
 #include "dobject.hpp"
 
-#include "dserialize.hpp" //for dstream !
+#include "protocol/dserialize.hpp" //for dstream ! must not include protocol
 
 namespace Destruct
 {

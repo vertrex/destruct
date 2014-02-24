@@ -12,6 +12,7 @@ namespace Destruct
  *  Basic stream object used for serialization test
  *      - Could be enhanced / replaced by file, buffer (data), socket protocol object for reflectivy
  */
+class DValue;
 
 class DStream
 {

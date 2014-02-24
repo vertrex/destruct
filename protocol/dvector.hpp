@@ -2,6 +2,7 @@
 #define DESTRUCT_DVECTOR_HPP_
 
 #include "protocol/dcppobject.hpp"
+#include "protocol/dcontainer.hpp"
 
 namespace Destruct
 {

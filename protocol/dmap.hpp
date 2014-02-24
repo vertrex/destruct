@@ -2,6 +2,7 @@
 #define DESTRUCT_DMAP_HPP_
 
 #include <map>
+
 #include "dmapiterator.hpp"
 
 namespace Destruct
