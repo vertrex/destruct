@@ -289,9 +289,7 @@ def maperror():
   except AttributeError as e:
     print 'name error ok ' , e
 
-
 print "=" * 80
-
 dvectorstring()
 simplevectorstring()
 pythonvector()
@@ -326,10 +324,9 @@ class DStreamArgument(DObject):
     self.filePath = filePath 
     self.input = input
 
-
-stream = PyDStream(DStreamArgument("pyfilearg", 0))
+stream = PyDStream(DStreamArgument("pyfilearg", 1))
 vector = PySimpleDVectorString()
-for i in range(100):
+for i in range(10000):
   vector.push(str(i))
 
 print 'deserialization of map of ' +str(len(vector)) + ' item'
@@ -337,6 +334,22 @@ print 'deserialization of map of ' +str(len(vector)) + ' item'
 serializer = DSerialize("XML")
 serializer.serialize(stream, vector)
 serializer.serialize(PyDStreamCout(), vector)
-serializer = DSerialize("Text")
-serializer.serialize(stream, vector)
-serializer.serialize(PyDStreamCout(), vector)
+#serializer = DSerialize("Text")
+
+#stream = PyDStream(DStreamArgument("deserialieztext", 1))
+#serializer.serialize(stream, vector)
+#serializer.serialize(PyDStream(), vector)
+
+def serialize(self):
+  serializer = DSerialize("XML")
+
+  stream = PyDStreamCout()
+  stream = PyDStream(DStreamArgument("pyfilearg", 0))
+  vector = PySimpleDVectorString()
+  for i in range(10**6):
+    vector.push(str(i))
+  for i in range(10**6):
+    print i
+    serializer.serialize(stream, vector)
+
+timeFunc(serialize, None)
