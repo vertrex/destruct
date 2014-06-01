@@ -8,12 +8,15 @@ DStream::DStream(DStruct* dstruct) : DCppObject<DStream>(dstruct, RealValue<DObj
 
 DStream::DStream(DStruct* dstruct, DValue const& args) : DCppObject<DStream>(dstruct, args)
 {
-// this->init();
+  this->init();
   DObject* dargs = args.get<DObject*>();
 
   DInt8 _mode = dargs->getValue("input").get<DInt8>();
   DUnicodeString filePath = dargs->getValue("filePath").get<DUnicodeString>();
 
+  std::cout << "opening stream " << std::endl;
+  _mode = 0;
+  filePath = "output";
   if (_mode == 0)
     this->__fstream.open(filePath.c_str(), std::iostream::out | std::iostream::binary | std::iostream::trunc);
   else
@@ -29,14 +32,10 @@ DStream::~DStream()
   this->__fstream.close(); 
 }
 
-DStream& DStream::operator>>(std::string& val) 
-{
-  this->__fstream >> val;
-  return (*this);
-}
-
+/* write */
 DStream& DStream::operator<<(std::string val) 
 {
+  std::cout << val;
   this->__fstream << val;
   return (*this);
 }
@@ -49,7 +48,30 @@ DStream& DStream::operator<<(char val)
 
 DStream& DStream::operator<<(StandardEndLine func)
 {
+  std::cout << std::endl;
   func(this->__fstream);
+  return (*this);
+}
+
+DStream& DStream::write(const char* buff, uint32_t size) 
+{
+  this->__fstream.write((const char*)buff, size);
+  return (*this);
+} 
+
+DInt64 DStream::write(DValue const& args)
+{
+ //this->__fstream >> args.getValue(buff) args.getValue(size) 
+  DUnicodeString val = args.get<DUnicodeString>();
+  this->__fstream << val;
+
+  return (0);
+}
+
+/* read */
+DStream& DStream::operator>>(std::string& val) 
+{
+  this->__fstream >> val;
   return (*this);
 }
 
@@ -59,11 +81,12 @@ DStream& DStream::read(char*  buff, uint32_t size)
   return (*this);
 }
 
-DStream& DStream::write(const char* buff, uint32_t size) 
+DInt64 DStream::read(DValue const& args)
 {
-  this->__fstream.write((const char*)buff, size);
-  return (*this);
-} 
+//XXX get args.buff, args.size  ...
+
+  return (0);
+}
 
 bool DStream::fail(void)
 {

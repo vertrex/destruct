@@ -143,8 +143,8 @@ void DestructTest::createNestedClass(void)
 
 void    DestructTest::showAttribute(DStruct* def)
 {
-        //DSerializers::to("XML")->serialize(cout, *def);  //XXX DSerializer
-        //DSerializers::to("Text")->serialize(cout, *def);
+  //DSerializers::to("XML")->serialize(cout, *def);  //XXX DSerializer
+  //DSerializers::to("Text")->serialize(cout, *def);
 }
 
 

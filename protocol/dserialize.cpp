@@ -23,7 +23,7 @@ const std::string DSerializeXML::name(void)
 
 DSerializeXML*   DSerializeXML::create(void)
 {
-  return (new DSerializeXML);
+  return (new DSerializeXML(NULL, RealValue<DObject*>(DNone)));
 }
 
 bool DSerializeXML::serialize(DStream& output, DObject& dobject)
@@ -123,16 +123,20 @@ bool DSerializeText::serialize(DStream& output, DObject&  dobject)
 bool DSerializeText::serialize(DStream& output, DObject& dobject, int depth)
 {
   int x = 0;
-  DStruct const* dstruct = dobject.instanceOf(); 
+  DStruct const* dstruct = dobject.instanceOf();
+
   output << std::string(2*depth, ' ') << dstruct->name() << std::endl;
   output << std::string(2*depth++, ' ') <<  "{" << std::endl;
+
+  //2 choix if object have method serialize
+  //        if object have method iterator 
+  // probleme comment savoir coment serializer :) 
 
   for (DStruct::DAttributeIterator i = dstruct->attributeBegin(); i != dstruct->attributeEnd(); ++i, ++x)
   {
     if (i->type().getType() == DType::DObjectType)
     {
       DObject* subDObject = dobject.getValue(x).get<DObject*>();
-
       output << std::string(2*depth, ' ') << i->type().name() << " " << i->name() << " = " <<  std::endl;
       if (subDObject != NULL)
       {
@@ -142,6 +146,23 @@ bool DSerializeText::serialize(DStream& output, DObject& dobject, int depth)
     }
     else
       output << std::string(2*depth, ' ') << i->type().name() << " " << i->name() << " = " << dobject.getValue(x).asUnicodeString() << ";" << std::endl;
+
+   if (i->name() == "serializeText")
+   {
+     //passer depth en parametre 
+//     DArgument argument.add
+//std::cout << "get DMJUTABLE" << std::endl;
+     DMutableObject* arguments = static_cast<DMutableObject*>(Destruct::Destruct::instance().generate("DMutable"));
+
+     if (arguments == NULL)
+        std::cout << "Arguments is null " << std::endl;
+     if ((DObject*)arguments == DNone)
+        std::cout << "arguments id dnone " << std::endl;
+     arguments->setValueAttribute(DType::DObjectType, "stream", RealValue<DObject*>(&output));
+     arguments->setValueAttribute(DType::DInt32Type, "depth", RealValue<DInt32>(depth));
+     DValue output = dobject.call("serializeText", RealValue<DObject*>(arguments));
+     arguments->destroy();
+   }
   }
  
   output << std::string(2*depth - 2, ' ') << "};" << std::endl;
@@ -368,7 +389,9 @@ static DSerializers dserializers = DSerializers();
 
 DSerializers::DSerializers()
 {
-  this->registerSerializer(new DSerializeXML());
+                                   //type
+                                //Encoders ? != serializer ? 
+  this->registerSerializer(new DSerializeXML(NULL, RealValue<DObject*>(DNone)));
   this->registerSerializer(new DSerializeText());
   this->registerSerializer(new DSerializeBinary());
   this->registerSerializer(new DSerializeRaw());
@@ -401,9 +424,8 @@ DSerialize* DSerializers::to(const std::string type)
   for (i = __serializers.begin() ; i != __serializers.end(); ++i)
   {
     if (type == (*i)->name())
-      return ((*i)->create());
+      return ((*i)->create()); 
   }
-
   return (NULL); 
 }
 

@@ -106,20 +106,35 @@ PyObject* PyDMethodObject::call(PyObject* _self, PyObject* args)
     return (pyMethod->fastCall(argumentObject)); //check return ? if compatible ? permet de call avec n importe koi comme une variant ?
   try
   {
+    Destruct::DValue result;
     if (argumentTypeId == Destruct::DType::DObjectType && argumentObject == NULL)
-      return (DValueDispatchTable[returnTypeId]->asDValue(self->pimpl->call(Destruct::RealValue<Destruct::DObject*>(Destruct::DNone))));
-
-    return (DValueDispatchTable[returnTypeId]->asDValue(self->pimpl->call(DValueDispatchTable[argumentTypeId]->toDValue(argumentObject))));
+    {
+            //Py_BEGIN_ALLOW_THREADS
+      result = self->pimpl->call(Destruct::RealValue<Destruct::DObject*>(Destruct::DNone));
+      //Py_END_ALLOW_THREADS
+        
+      return (DValueDispatchTable[returnTypeId]->asDValue(result));
+      //return (DValueDispatchTable[returnTypeId]->asDValue(self->pimpl->call(Destruct::RealValue<Destruct::DObject*>(Destruct::DNone))));
+    }
+    //Py_BEGIN_ALLOW_THREADS
+    result = self->pimpl->call(DValueDispatchTable[argumentTypeId]->toDValue(argumentObject));
+    //Py_END_ALLOW_THREADS
+   
+    return (DValueDispatchTable[returnTypeId]->asDValue(result));
+    //return (DValueDispatchTable[returnTypeId]->asDValue(self->pimpl->call(DValueDispatchTable[argumentTypeId]->toDValue(argumentObject))));
   } 
   catch (Destruct::DException const& exception)
   {  
+          //Py_END_ALLOW_THREADS
     PyErr_SetString(PyExc_TypeError, exception.error().c_str());
   }
   catch (std::bad_cast exception) // C++ catch ? que d dexception ici car call une api ? mais derrirer call du cpp donc poura tjrs avoir un probleme a part un catch(...)
   {
+          //Py_END_ALLOW_THREADS
     std::string argumentString = "MethodObject must return a " + type.argumentName();
     PyErr_SetString(PyExc_TypeError, argumentString.c_str()); 
   }
+  //Py_END_ALLOW_THREADS
   return (0);
 }
 

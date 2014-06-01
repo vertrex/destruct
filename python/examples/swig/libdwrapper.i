@@ -58,7 +58,7 @@
   $result = (PyObject*)dobjectObject;
 }
 
-%typemap(in) (Destruct::DValue ) 
+%typemap(in) (Destruct::DValue) 
 {
   $1 = Destruct::DValue(PythonBaseModule::pyObjectToDValue($input));
 }

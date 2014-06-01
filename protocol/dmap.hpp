@@ -90,10 +90,10 @@ public:
   {
     static DPointer<DMapType> memberPointer[] = 
     {
-      DPointer<DMapType>(&DMapType::getObject, &DMapType::get),
-      DPointer<DMapType>(&DMapType::sizeObject, &DMapType::size),
-      DPointer<DMapType>(&DMapType::setItemObject, &DMapType::setItem),
-      DPointer<DMapType>(&DMapType::iteratorObject, &DMapType::iterator),
+      DPointer<DMapType>(&DMapType::_get, &DMapType::get),
+      DPointer<DMapType>(&DMapType::_size, &DMapType::size),
+      DPointer<DMapType>(&DMapType::_setItem, &DMapType::setItem),
+      DPointer<DMapType>(&DMapType::_iterator, &DMapType::iterator),
     };
     return (memberPointer);
   }

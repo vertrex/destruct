@@ -6,15 +6,114 @@
 #include <vector>
 
 #include "dstream.hpp"
+#include "protocol/dcppobject.hpp"
 
 namespace Destruct
 {
 
-class DObject;
 class DStruct;
 class DStream;
+/*
+class DStruct::write()
+{
+  for this->attribute:
+     serialize.writeAttribute(value);
 
-class DSerialize
+
+}
+
+class DObject::write()
+{
+  for this->dstruct->value != func or func without arg 
+  {
+    serializer.writeValue(value);
+  }
+
+  if serialize.type == textserializer
+
+  if serliaze.type == raw 
+}
+
+class Raw()
+{
+  read int
+  read long
+  read buff
+  read list  
+}
+
+DStream()
+{
+  seek
+  read
+  []
+  open/close 
+}
+
+DBuffer : DStream
+{
+  DBUffer(size)
+  read(, offset)
+  serialize()
+        for x in buff[x]
+           serializer.writevalue(x)
+}
+
+DMap 
+{
+  serialize:
+        for key, value:
+         serializer.write(key)
+         serializer.write(value)
+}
+
+
+
+
+class NTFS()
+{
+
+  DValue serialize:
+
+        return lsit de dvalue
+                [valuem object., (funcobject, argument), funcobject]
+
+        for i in ntfs.serialize
+             xml.serializevalue(value)
+             
+             if (dfunctiobobject, args)
+              value =  dfunction(args)
+              xml.serializevalue(value)
+
+}
+
+class XML(Stream)
+{
+  writeStructBase()
+
+
+  for read in dstruct in stream:
+     read object
+        ..
+
+  for object in object:
+        write struct if not yet written:
+              write(object)
+
+
+  XMLSerialize(object, recurse);
+  XMLDSerialize(&object, recusrse);
+  XMLDSerialize(dstruct)
+  XMLSerialize(dstruct)
+  XMLSerialize(value)
+  XMLDEserializ(value)
+
+  writeValue()
+  writeAttribute()
+}
+*/
+
+class DSerialize 
 {
 public:
   virtual const std::string  name(void) = 0;
@@ -25,12 +124,37 @@ public:
   virtual DStruct* deserialize(DStream& output) = 0;  //Can't pass DStruct by ref& an object must be create void for deserialization that's will be strange
   virtual DSerialize* create(void) = 0;
   virtual ~DSerialize() {};
+/*
+  DValue  readValue();
+  DObject readObject();
+  DInt32  readInt32();
+
+
+  object.write(sterializer)
+  serializer.writeValue(value)
+  serializer.writeValue(value2)
+  serializer.writeValue(object.toto)
+  
+  deserializer.readValue(a)
+  deserializer.readValue(b)
+
+//ok mais vraiment generique ?? 
+// faire un exemple : raw / xml / json
+// et pour le .dbin c peut etre special car y a la descritpion a ecrire (mais pour xml, json aussi pourquoi pa ? 
+*/
+
 };
 
-class DSerializeXML : public DSerialize
+class DSerializeXML : public DSerialize, public DCppObject<DSerializeXML>
 {
 public :
-  DSerializeXML()
+        //DSerializeXML()
+        //{
+        //}
+  DSerializeXML(DStruct* dstruct, DValue const& args) : DCppObject<DSerializeXML>(dstruct, args)
+  {
+  }
+  DSerializeXML(const DSerializeXML& copy) : DCppObject<DSerializeXML>(copy) 
   {
   }
 
@@ -66,6 +190,41 @@ private:
     int                __depth;
     bool               __enclose;
   };
+public:
+  static size_t ownAttributeCount()
+  {
+    return (0);
+  }
+
+  static DAttribute* ownAttributeBegin()
+  {
+    static DAttribute  attributes[] = 
+    {
+      //DAttribute(DType::DInt64Type,"read", DType::DObjectType), 
+      //DAttribute(DType::DInt64Type,"write",  DType::DObjectType),
+    };
+    return (attributes);
+  }
+
+  static DPointer<DSerializeXML>* memberBegin()
+  {
+    static DPointer<DSerializeXML> memberPointer[] = 
+    {
+      //DPointer<DVectorType>(&DVectorType::pushObject, &DVectorType::push),
+      //DPointer<DVectorType>(&DVectorType::getObject, &DVectorType::get),
+    };
+    return (memberPointer);
+  }
+
+  static DAttribute* ownAttributeEnd()
+  {
+    return (ownAttributeBegin() + ownAttributeCount());
+  }
+
+  static DPointer<DSerializeXML>*  memberEnd()
+  {
+    return (memberBegin() + ownAttributeCount());
+  } 
 };
 
 class DSerializeText : public DSerialize

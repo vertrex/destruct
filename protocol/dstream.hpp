@@ -33,7 +33,6 @@ public:
 
   typedef std::basic_ostream<char, std::char_traits<char> > CoutType;
   typedef CoutType& (*StandardEndLine)(CoutType&);
-
   DStream(DStruct* dstruct, DValue const& args);
   DStream(const DStream& copy);
   virtual ~DStream();
@@ -45,14 +44,19 @@ public:
   virtual DStream& write(const char* buff, uint32_t size);
   virtual bool fail(void);
 protected:
-  DStream(DStruct* dstruct);
+ // DStream(DStruct* dstruct);
 private:
   std::fstream  __fstream; //if not fd !
-
-/*
+ /*
  *  DStruct declaration
  */ 
 public:
+  DStream(DStruct* dstruct);
+  RealValue<DFunctionObject* > _read;
+  RealValue<DFunctionObject* > _write;
+
+  DInt64 write(DValue const& args);
+  DInt64 read(DValue const& args);
   static size_t ownAttributeCount()
   {
     return (0);
@@ -62,8 +66,8 @@ public:
   {
     static DAttribute  attributes[] = 
     {
-      //DAttribute(DType::DInt64Type,"read", DType::DObjectType), 
-      //DAttribute(DType::DInt64Type,"write",  DType::DObjectType),
+       DAttribute(DType::DInt64Type,"read", DType::DObjectType), 
+       DAttribute(DType::DInt64Type,"write",  DType::DObjectType),
     };
     return (attributes);
   }
@@ -72,8 +76,8 @@ public:
   {
     static DPointer<DStream> memberPointer[] = 
     {
-      //DPointer<DVectorType>(&DVectorType::pushObject, &DVectorType::push),
-      //DPointer<DVectorType>(&DVectorType::getObject, &DVectorType::get),
+       DPointer<DStream>(&DStream::_read, &DStream::read),
+       DPointer<DStream>(&DStream::_write, &DStream::write),
     };
     return (memberPointer);
   }

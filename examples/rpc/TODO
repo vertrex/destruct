@@ -1,0 +1,50 @@
+RPCProxyObject :public dobject 
+{
+  RPCProxyObject(DConnection connectio, DObject *proxyfied) : DObject(profixied->dstruct) //dstruct ? proxyfier aussi ou garde copye en local ? 
+  {
+    this->profyfied = proxified
+  }
+
+
+  setValue(DValue value)
+  {
+     this->connection(proxyfied.id(), "setValue", value);
+  }
+
+  getValue(DValue value)
+  {
+     return this->connection(proxyfied.id(), "getValue", value):
+  }
+
+  call(DValue value)
+  {
+    ..
+  }
+}
+
+
+DestructRPCProxy : public destruct   //obliger pour destruct voir meme dstruct car c pas un dobject donc on peut pas le proxyfier aussi facilement
+{
+  DStructRPCPRoxy find();
+}
+
+DStructRPCProxy : public DStruct
+{
+  RPCPRoxyObject newObject();
+}
+
+appz:
+
+if (network == true) 
+  connection = connect(ip, por)
+        
+  dstruct = connection.dstruct.find('toto')  //un manager /session serez donc nikel pour avoir le meme code partout et tjrs utilise la session au lieu de faire en dur dstruct() etc...
+            //session('ip').dstruct().find()
+  obj = dstruct.newObject()
+  obj.call()
+
+else
+  dstruct = dstruct() // session().dstruct().find()
+  dobject = ...
+
+

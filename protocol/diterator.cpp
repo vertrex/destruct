@@ -22,7 +22,7 @@ DInt8        DIterator::isDone(void)
     DContainer* dcontainer = dynamic_cast<DContainer*>((DObject*)this->container);
     if (dcontainer)
     {
-      DFunctionObject* size = dcontainer->sizeObject;  
+      DFunctionObject* size = dcontainer->_size;  
       count = size->call(RealValue<DObject*>(DNone));
     }
     else
@@ -42,7 +42,7 @@ DValue DIterator::currentItem(void)
     DContainer* dcontainer = dynamic_cast<DContainer*>((DObject*)this->container);
     if (dcontainer)
     {
-      DFunctionObject* get = dcontainer->getObject;
+      DFunctionObject* get = dcontainer->_get;
       return (get->call(RealValue<DUInt64>(this->index)));
     }
     else

@@ -19,10 +19,10 @@ public:
   virtual DObject*   setItem(DValue const& args) = 0;
   virtual DObject*   iterator(void) = 0;
 public:
-  RealValue<DFunctionObject* >  getObject;
-  RealValue<DFunctionObject* >  sizeObject;
-  RealValue<DFunctionObject* >  setItemObject; 
-  RealValue<DFunctionObject* >  iteratorObject; 
+  RealValue<DFunctionObject* >  _get;
+  RealValue<DFunctionObject* >  _size;
+  RealValue<DFunctionObject* >  _setItem; 
+  RealValue<DFunctionObject* >  _iterator; 
 };
 }
 #endif 

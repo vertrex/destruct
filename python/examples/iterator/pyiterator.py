@@ -346,9 +346,9 @@ def serialize(self):
   stream = PyDStreamCout()
   stream = PyDStream(DStreamArgument("pyfilearg", 0))
   vector = PySimpleDVectorString()
-  for i in range(10**6):
+  for i in range(10**2):
     vector.push(str(i))
-  for i in range(10**6):
+  for i in range(10**2):
     print i
     serializer.serialize(stream, vector)
 

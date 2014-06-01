@@ -37,10 +37,10 @@ public:
 
   RealValue<DUInt64>          index; //signed en python
   RealValue<DObject*>         container; //setContainer pour update le type ?
-  RealValue<DFunctionObject*> nextObject;
-  RealValue<DFunctionObject*> firstObject;
-  RealValue<DFunctionObject*> isDoneObject;
-  RealValue<DFunctionObject*> currentItemObject;
+  RealValue<DFunctionObject*> _next;
+  RealValue<DFunctionObject*> _first;
+  RealValue<DFunctionObject*> _isDone;
+  RealValue<DFunctionObject*> _currentItem;
 
   void                        next(void);
   void                        first(void);
@@ -75,10 +75,10 @@ public:
     {
       DPointer<DIterator>(&DIterator::container),
       DPointer<DIterator>(&DIterator::index),
-      DPointer<DIterator>(&DIterator::nextObject, &DIterator::next),
-      DPointer<DIterator>(&DIterator::firstObject, &DIterator::first),
-      DPointer<DIterator>(&DIterator::isDoneObject, &DIterator::isDone),
-      DPointer<DIterator>(&DIterator::currentItemObject, &DIterator::currentItem),
+      DPointer<DIterator>(&DIterator::_next, &DIterator::next),
+      DPointer<DIterator>(&DIterator::_first, &DIterator::first),
+      DPointer<DIterator>(&DIterator::_isDone, &DIterator::isDone),
+      DPointer<DIterator>(&DIterator::_currentItem, &DIterator::currentItem),
     };
     return memberPointer;
   }

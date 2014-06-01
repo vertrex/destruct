@@ -12,13 +12,15 @@
 # Author(s):
 #  Solal Jacob <sja@digital-forensic.org>
 
-add_subdirectory(dtest)
-add_subdirectory(rpc)
+include_directories("../../")
 
-include_directories("../")
-set (test_files
-test.cpp
-)
+set (rpc_files
+fsobject.cpp
+rpcobject.cpp
+networkstream.cpp
+server.cpp
+client.cpp
+rpc.cpp)
 
-add_executable(test ${test_files})
-target_link_libraries(test destruct destruct_test)
+add_executable(rpc ${rpc_files})
+target_link_libraries(rpc destruct)
