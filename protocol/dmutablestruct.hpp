@@ -5,8 +5,6 @@
 
 namespace Destruct
 {
-        //cclass DValue;
-
 class DMutableStruct : public DStruct
 {
 public:

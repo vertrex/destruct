@@ -51,7 +51,7 @@ void    Client::start(void)
   //keep communicating with server
 
   //get Root Object
-  RPCObject* remote = new RPCObject(this->stream());
+  RPCObject* remote = new RPCObject(this->stream(), "Root");
   DUnicodeString remoteName = remote->getValue("name").get<DUnicodeString>();
   std::cout << "root->name : " << remoteName << std::endl;
 

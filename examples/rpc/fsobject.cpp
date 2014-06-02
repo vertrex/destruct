@@ -25,5 +25,3 @@ DUnicodeString        Directory::path(DValue const& args)
 {
   return DUnicodeString("/home/destruct/");
 }
-
-

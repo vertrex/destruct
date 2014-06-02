@@ -142,15 +142,15 @@ public:
 // faire un exemple : raw / xml / json
 // et pour le .dbin c peut etre special car y a la descritpion a ecrire (mais pour xml, json aussi pourquoi pa ? 
 */
-
 };
 
 class DSerializeXML : public DSerialize, public DCppObject<DSerializeXML>
 {
 public :
-        //DSerializeXML()
-        //{
-        //}
+  //DSerializeXML()
+  //{
+  //}
+
   DSerializeXML(DStruct* dstruct, DValue const& args) : DCppObject<DSerializeXML>(dstruct, args)
   {
   }
@@ -243,6 +243,7 @@ public:
   bool serialize(DStream& output, DStruct& dstruct); 
   DStruct* deserialize(DStream& output); //can overload return type ...
 };
+
 class DSerializeBinary : public DSerialize
 {
 /*

@@ -12,10 +12,9 @@
 namespace Destruct
 {
 
-/*
+/**
  *   XML serialization
  */ 
-
 const std::string DSerializeXML::name(void)
 {
   return ("XML");
@@ -101,10 +100,9 @@ DStruct* DSerializeXML::deserialize(DStream& output)
   return (NULL);
 }
 
-/* 
+/** 
  *  Text serialization
  */
-
 const std::string DSerializeText::name(void)
 {
   return ("Text");
@@ -193,12 +191,11 @@ DStruct* DSerializeText::deserialize(DStream& output)
   return (NULL);
 }
 
-/*
+/**
  *  Binary serialization // marshaling
  *  This is the default serialization format for destruct 
  *  All object & protocol must be serializable and unserializable trough it's interface 
  */
-
 const std::string DSerializeBinary::name(void)
 {
   return ("Binary");
@@ -300,10 +297,9 @@ DStruct* DSerializeBinary::deserialize(DStream& input)
 }
 
 
-/*
+/**
  *  Raw serialization 
  */
-
 const std::string DSerializeRaw::name(void)
 {
   return ("Raw");
@@ -389,8 +385,8 @@ static DSerializers dserializers = DSerializers();
 
 DSerializers::DSerializers()
 {
-                                   //type
-                                //Encoders ? != serializer ? 
+  //type
+  //Encoders ? != serializer ? 
   this->registerSerializer(new DSerializeXML(NULL, RealValue<DObject*>(DNone)));
   this->registerSerializer(new DSerializeText());
   this->registerSerializer(new DSerializeBinary());
@@ -401,7 +397,7 @@ DSerializers::~DSerializers()
 {
   for (std::vector<DSerialize* >::iterator i = __serializers.begin(); i != __serializers.end(); ++i)
   {
-          //delete (*i);
+    //delete (*i);
   }
 }
 

@@ -106,6 +106,7 @@ void            Server::initFS(void)
 
 void            Server::showFS(void)
 {
+  std::cout << "Remote exec -> Execute 'show' on server : done" << std::endl;
   Destruct::Destruct& destruct = Destruct::Destruct::instance();
   
   DStruct* streamStruct = destruct.find("DStreamCout");
@@ -116,6 +117,54 @@ void            Server::showFS(void)
 
   std::cout << "DSeriailize tree " << std::endl;
   Destruct::DSerializers::to("Text")->serialize(*stream, *root);
+}
+
+void            Server::getValue(NetworkStream stream, DObject* object)
+{
+  std::cout << "Remote call -> getValue : " << std::endl;
+  std::string name;
+  stream.read(name);
+  Destruct::DValue value = object->getValue(name);
+  DUnicodeString rvalue = value.get<DUnicodeString>();
+  stream.write(rvalue);
+}
+
+void            Server::setValue(NetworkStream stream, DObject* object)
+{
+  std::cout << "Remote call -> setValue" << std::endl;
+  std::string name, args;
+  stream.read(name);
+  stream.read(args);
+  object->setValue(name, RealValue<DUnicodeString>(args));
+}
+
+void            Server::call(NetworkStream stream, DObject* object)
+{
+  std::cout << "Remote call -> call" << std::endl;
+  std::string name, args;
+  stream.read(name);
+  stream.read(args);
+  Destruct::DValue value = object->call(name, RealValue<DUnicodeString>(args));
+  DUnicodeString rvalue = value.get<DUnicodeString>();
+  stream.write(rvalue); 
+
+  std::cout << "Object.call" << std::endl;
+}
+
+void            Server::call0(NetworkStream stream, DObject* object)
+{
+  std::cout << "Object.call 0 args" << std::endl;
+  std::string name;
+  stream.read(name);
+  Destruct::DValue value = object->call(name);
+  DUnicodeString rvalue = value.get<DUnicodeString>();
+  stream.write(rvalue);
+}
+
+void            Server::unknown(NetworkStream stream)
+{
+  std::cout << "Receive unknown command" << std::endl;
+  stream.write("Unknown command");
 }
 
 void            Server::serve(void)
@@ -138,53 +187,18 @@ void            Server::serve(void)
       readed = msg.size();
       if (msg == "show") 
       {
-        std::cout << "Remote exec -> Execute 'show' on server : done" << std::endl;
         this->showFS();
       }
       else if(msg == "setValue")
-      {
-        std::cout << "Remote call -> setValue" << std::endl;
-        std::string name, args;
-        stream.read(name);
-        stream.read(args);
-        currentObject->setValue(name, RealValue<DUnicodeString>(args));
-      }  
+        this->setValue(stream, currentObject);
       else if(msg == "getValue")
-      {
-        std::cout << "Remote call -> getValue : " << std::endl;
-        std::string name;
-        stream.read(name);
-        Destruct::DValue value = currentObject->getValue(name);
-        DUnicodeString rvalue = value.get<DUnicodeString>();
-        stream.write(rvalue);
-      }
-      else if(msg == "call0")
-      {
-        std::cout << "Object.call 0 args" << std::endl;
-        std::string name;
-        stream.read(name);
-        Destruct::DValue value = currentObject->call(name);
-        DUnicodeString rvalue = value.get<DUnicodeString>();
-        stream.write(rvalue);
-      }
+        this->getValue(stream, currentObject);
       else if(msg == "call")
-      {
-        std::cout << "Remote call -> call" << std::endl;
-        std::string name, args;
-        stream.read(name);
-        stream.read(args);
-        Destruct::DValue value = currentObject->call(name, RealValue<DUnicodeString>(args));
-        DUnicodeString rvalue = value.get<DUnicodeString>();
-        stream.write(rvalue); 
-
-        std::cout << "Object.call" << std::endl;
-      }
+        this->call(stream, currentObject);
+      else if(msg == "call0")
+        this->call0(stream, currentObject); 
       else 
-      {
-        std::cout << "Receive unknown command" << std::endl;
-        std::string unknown = "Unknown command";
-        this->_send((char*)unknown.c_str(), unknown.size());
-      }
+        this->unknown(stream);
     }
     else
      break;
