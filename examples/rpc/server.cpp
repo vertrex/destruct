@@ -64,7 +64,9 @@ int32_t         Server::_send(void* buff, int32_t size) const
 
 NetworkStream   Server::stream(void)
 {
-  return (NetworkStream(this->__connectionSocket));
+  return (NetworkStream(NULL, RealValue<DInt32>(this->__connectionSocket))); //XXX
+
+//  return (NetworkStream(this->__connectionSocket)); //XXX
 }
 
 /**
@@ -78,6 +80,10 @@ void            Server::initFS(void)
 {
   DStruct* fileStruct = makeNewDCpp<File>("File");
   DStruct* directoryStruct = makeNewDCpp<Directory>("Directory");
+  Destruct::Destruct& dstruct = Destruct::Destruct::instance();
+
+  dstruct.registerDStruct(fileStruct);
+  dstruct.registerDStruct(directoryStruct);
 
   this->root = directoryStruct->newObject();
   DObject* children = root->getValue("children").get<DObject*>();
@@ -117,6 +123,29 @@ void            Server::showFS(void)
 
   std::cout << "DSeriailize tree " << std::endl;
   Destruct::DSerializers::to("Text")->serialize(*stream, *root);
+}
+
+void            Server::findDStruct(NetworkStream stream)
+{
+  std::string name;
+  stream.read(name);
+
+  Destruct::Destruct& destruct = Destruct::Destruct::instance();
+
+  DStruct* dstruct = destruct.find(name);
+  if (!dstruct)
+   throw std::string("DStruct not found");
+
+  DSerialize* binarySerializer = DSerializers::to("Binary");
+  DStruct* streamStringStruct = destruct.find("DStreamString"); //makeNew ou cast new object !! XXX
+  DStreamString* streamString = new DStreamString(streamStringStruct, RealValue<DObject*>(DNone));
+  binarySerializer->serialize(*streamString, *dstruct);// use buff then send to compact data
+
+//  streamString.seek(0);
+//stream.write(streamString->str());
+ 
+  std::cout << " ok deserializing struct " << name << std::endl;
+
 }
 
 void            Server::getValue(NetworkStream stream, DObject* object)
@@ -172,76 +201,27 @@ void            Server::serve(void)
   this->initFS();
   this->showFS();
 
-  int  readed;
   DObject* currentObject = this->root;
-  readed = 1;
 
   while (true)
   {
     std::cout << "Wait for message..." << std::endl;
-    if (readed > 0 && readed <= 512)
-    {
-      std::string msg;
-      NetworkStream stream = this->stream();
-      stream.read(msg);
-      readed = msg.size();
-      if (msg == "show") 
-      {
-        this->showFS();
-      }
-      else if(msg == "setValue")
-        this->setValue(stream, currentObject);
-      else if(msg == "getValue")
-        this->getValue(stream, currentObject);
-      else if(msg == "call")
-        this->call(stream, currentObject);
-      else if(msg == "call0")
-        this->call0(stream, currentObject); 
-      else 
-        this->unknown(stream);
-    }
-    else
-     break;
+    std::string msg;
+    NetworkStream stream = this->stream();
+    stream.read(msg);
+    if (msg == "show") 
+      this->showFS();
+    else if (msg == "findDStruct")
+      this->findDStruct(stream);
+    else if(msg == "setValue")
+      this->setValue(stream, currentObject);
+    else if(msg == "getValue")
+      this->getValue(stream, currentObject);
+    else if(msg == "call")
+      this->call(stream, currentObject);
+    else if(msg == "call0")
+      this->call0(stream, currentObject); 
+    else 
+      this->unknown(stream);
   }
-     
-  if(readed == 0)
-    std::cout << "Client disconnected" << std::endl;
-  else if(readed == -1)
-   std::cout << "recv failed" << std::endl;
 }
-/*
-void sendObject(void)
-{
-  this->serializeBin(root);
-
-  return DRPCProxyObject(this, root);
-}
-
-
-int main(int argc, char** argv)
-{
-  std::cout << "server listen on port 0xdff" << std::endl;
-  Server server;
-
-  try 
-  {
-    server.serve();
-  }
-  catch (const std::string& error)
-  {
-    std::cout << error << std::endl;
-  }
-*
-  DObject root; //
-  DObject file;
-  DObject directory;
-  root->add(file)
-  root->add(directory);
-  root->show();
-
-  rpcroot = dserver.send(root);
-  rpcroot.receive();
-
-  return (0); 
-}
-*/

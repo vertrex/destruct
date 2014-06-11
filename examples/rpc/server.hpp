@@ -21,6 +21,7 @@ public:
   void          showFS(void);
   NetworkStream stream(void); //return NetworkStream
 
+  void          findDStruct(NetworkStream stream);
   void          getValue(NetworkStream stream, DObject* object);
   void          setValue(NetworkStream stream, DObject* object);
   void          call(NetworkStream stream, DObject* object);
@@ -29,7 +30,7 @@ public:
 private:
   DObject*      root;
   int           __listenSocket;
-  int           __connectionSocket;
+  int32_t       __connectionSocket;
   void          __bind(void);
   void          __listen(void);
   

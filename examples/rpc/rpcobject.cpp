@@ -1,5 +1,7 @@
 #include "rpcobject.hpp"
 
+namespace Destruct {
+
 /**
  *  RPCStruct Proxy that handle transparent remote communication and localy create struct from a remote dstruct 
  */
@@ -51,7 +53,7 @@ RPCObject::RPCObject(NetworkStream stream, std::string const& name) : DDynamicOb
   this->init(this);
 }
 
-RPCObject::RPCObject(RPCStruct* dstruct, DValue const& args) : DDynamicObject(dstruct, args), __stream(0) //XXX fix me stream
+RPCObject::RPCObject(RPCStruct* dstruct, DValue const& args) : DDynamicObject(dstruct, args), __stream(0, RealValue<DInt64>(0)) //XXX fix me stream as DOBject
 {
   this->init(this);
 }
@@ -142,3 +144,5 @@ DObject* RPCObject::clone() const
 //{
   //return (this->__realObject->call(index, v));
 //}
+
+ }

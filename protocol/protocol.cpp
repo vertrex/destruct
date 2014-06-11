@@ -42,6 +42,7 @@ void Protocol::__registerStruct(Destruct* destruct)
   
   destruct->registerDStruct(makeNewDCpp<DStream >("DStream")); //virer le <> et * ! 
   destruct->registerDStruct(makeNewDCpp<DStreamCout >("DStreamCout")); //virer le <> et * ! 
+  destruct->registerDStruct(makeNewDCpp<DStreamString >("DStreamString")); //virer le <> et * ! 
 }
 
 }

@@ -155,4 +155,47 @@ bool DStreamCout::fail(void)
   return (std::cout.fail());
 }
 
+
+/**
+ *  DStream string
+ */
+
+DStreamString::DStreamString(DStruct* dstruct, DValue const& args): DStream(dstruct)
+{
+  this->init();
+  //DObject* dargs = args.get<DObject*>();
+  //DInt8 _mode = dargs->getValue("input").get<DInt8>();
+
+  //std::cout << "opening stream " << std::endl;
+  //_mode = 0;
+  //filePath = "output";
+  //if (_mode == 0)
+    //this->__fstream.open(filePath.c_str(), std::iostream::out | std::iostream::binary | std::iostream::trunc);
+  //else
+    //this->__fstream.open(filePath.c_str(), std::iostream::in | std::iostream::binary);
+}
+
+DStreamString::DStreamString(const DStreamString& copy) : DStream(copy)
+{
+}
+
+
+DStreamString::~DStreamString()
+{
+}
+
+DStream& DStreamString::read(char*  buff, uint32_t size)
+{
+  std::cout << "StreamString read " << std::endl;
+  this->__stream.read(buff, size);
+  return (*this);
+}
+
+DStream& DStreamString::write(const char* buff, uint32_t size) 
+{
+  std::cout << "StreamString write " << std::endl; 
+  this->__stream.write(buff, size);
+  return (*this);
+} 
+
 }

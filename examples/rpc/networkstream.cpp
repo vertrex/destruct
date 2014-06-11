@@ -2,9 +2,13 @@
 #include<sys/socket.h>    //socket
 #include<arpa/inet.h> //inet_addr
 
-
-NetworkStream::NetworkStream(int socket) : __socket(socket)
+namespace Destruct 
 {
+
+//NetworkStream::NetworkStream(int socket) : __socket(socket)
+NetworkStream::NetworkStream(Destruct::DStruct* dstruct, DValue const& args) : DStream(dstruct)
+{
+  this->__socket = args.get<DInt32>();
 }
 
 NetworkStream::~NetworkStream()
@@ -27,15 +31,18 @@ int32_t NetworkStream::write(std::string const& str) const
 
 int32_t NetworkStream::write(void* buff, int32_t size) const 
 {
+  std::cout << "network write" << std::endl;
   return (send(this->__socket, buff, size, 0));
 }
 
 int32_t NetworkStream::read(std::string & readValue)
 {
-  uint64_t size;
-  this->read(&size, sizeof(size));
+  std::cout << "network read" << std::endl;
+  uint64_t size = 0;
+  if (this->read(&size, sizeof(size)) != sizeof(size))
+    throw std::string("NetworkStream::read can't get size");
   uint8_t*  value = new uint8_t[size + 1];
-  this->read(value, size);
+  this->read(value, size); //test return value
   value[size] = 0;
   readValue = std::string((char*)value);
   delete value;
@@ -53,3 +60,5 @@ void NetworkStream::__close(void)
 {
 }
 
+
+}

@@ -8,8 +8,8 @@ using namespace Destruct;
 class File : public DCppObject<File>
 {
 public:
-  File(DStruct* dstruct, DValue const& args);
-  DUnicodeString        path(DValue const& args);
+  File(DStruct* dstruct, Destruct::DValue const& args);
+  DUnicodeString        path(Destruct::DValue const& args);
 
   RealValue<DUInt64 >           size;
   RealValue<DUnicodeString >    name;
@@ -59,8 +59,8 @@ public:
 class Directory : public DCppObject<Directory>
 {
 public:
-  Directory(DStruct* dstruct, DValue const& args);
-  DUnicodeString        path(DValue const& args);
+  Directory(DStruct* dstruct, Destruct::DValue const& args);
+  DUnicodeString        path(Destruct::DValue const& args);
 
   RealValue<DUnicodeString >    name;
   RealValue<DFunctionObject* >  _path;

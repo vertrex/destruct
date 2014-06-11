@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <iostream>
 #include <fstream>
+#include <sstream>
 
 #include "dcppobject.hpp" //XXX peut pas etre include drealvalue car dmethodobject a bespin de realvalue et ca fait de l inclusion en boucle ?
 
@@ -15,7 +16,7 @@ namespace Destruct
  *      - Could be enhanced / replaced by file, buffer (data), socket protocol object for reflectivy
  */
 
-class DStream : public DCppObject<DStream>
+class DStream : public DCppObject<DStream> //DStreamFile deriver d'une DStream sans membre private
 {
 public:
   enum whence
@@ -55,8 +56,8 @@ public:
   RealValue<DFunctionObject* > _read;
   RealValue<DFunctionObject* > _write;
 
-  DInt64 write(DValue const& args);
-  DInt64 read(DValue const& args);
+  virtual DInt64 write(DValue const& args);
+  virtual DInt64 read(DValue const& args);
   static size_t ownAttributeCount()
   {
     return (0);
@@ -93,6 +94,7 @@ public:
   } 
 };
 
+
 class DStreamCout : public DStream
 {
 public:
@@ -106,6 +108,21 @@ public:
   DStream& read(char*  buff, uint32_t size);
   DStream& write(const char* buff, uint32_t size);
   bool fail(void);
+};
+
+class DStreamString : public DStream
+{
+public:
+  DStreamString(DStruct* dstruct, DValue const &args);
+  DStreamString(const DStreamString& copy);
+  ~DStreamString();
+  DStream& read(char*  buff, uint32_t size);
+  DStream& write(const char* buff, uint32_t size);
+  //virtual DInt64 write(DValue const& args);
+  //virtual DInt64 read(DValue const& args);
+private:
+  //std::iostream  __buffStream;  
+  std::stringstream   __stream; 
 };
 
 //static DStreamCout cout; //this is a strange implem as << and >> are implem for cout ( cin & cout implem)

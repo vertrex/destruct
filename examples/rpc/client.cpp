@@ -5,7 +5,12 @@
 #include<arpa/inet.h> //inet_addr
 
 #include "client.hpp"
-#include "rpcobject.hpp" 
+#include "rpcobject.hpp"
+
+#include "destruct.hpp"
+#include "dstruct.hpp" 
+
+#include "protocol/dserialize.hpp" 
 
 Client::Client(std::string const& addr, uint32_t port)
 {
@@ -19,7 +24,8 @@ Client::~Client()
 
 NetworkStream   Client::stream(void)
 {
-  return (NetworkStream(this->__connectionSocket));
+  return (NetworkStream(NULL, RealValue<DInt32>(this->__connectionSocket))); //XXX
+//  return (NetworkStream(this->__connectionSocket)); //XXX
 }
 void    Client::__connect(std::string const& addr, uint32_t port)
 {
@@ -38,7 +44,39 @@ void    Client::__connect(std::string const& addr, uint32_t port)
     throw std::string("connect failed. Error");
 }
 
+Destruct::DStruct* Client::remoteFind(const std::string name)
+{
+  NetworkStream stream = this->stream();
 
+  stream.write("findDStruct");
+  stream.write(name);
+
+//  DStruct* dstruct = destruct.find(name);
+//if already have ...
+
+  DSerialize* binarySerializer = DSerializers::to("Binary");
+  DStruct* dstruct = binarySerializer->deserialize(stream);// XXX au moins ca compile :) 
+ 
+  ///XXX ca peut pas marcher en paralle le proto et pas le meme autant recup un buffer
+  //et le deseralizer apres c plus simple fo un stream qui dserialize ds un buff c tout 
+
+  //destruct.registerDStruct(dstruct);
+  std::cout << "[OK] client get struct " << name << " : " << std::endl;
+  Destruct::Destruct& destruct = Destruct::Destruct::instance();
+  DStruct* streamStruct = destruct.find("DStreamCout");
+  DStream* outStream = new  DStream(streamStruct);  
+  if (outStream == NULL)
+    std::cout << "Can't find stream to output fs tree" << std::endl;
+
+  if (!dstruct)
+  {
+     std::cout << "Struct " << name << " is NULL can't remote deserialize " << std::endl;
+     return (NULL);
+  }
+  Destruct::DSerializers::to("Text")->serialize(*outStream, *dstruct);
+
+  return (dstruct);
+}
 
 void    Client::__close(void)
 {
@@ -47,10 +85,12 @@ void    Client::__close(void)
 
 void    Client::start(void)
 {
-  char message[1000] , server_reply[2000];
-  //keep communicating with server
+  //Destruct::DStruct* directoryS = this->remoteFind("Directory");  //recursive & method
+  Destruct::DStruct* directoryS = this->remoteFind("File");  // method XXX ?
+  if (!directoryS)
+    throw std::string("Directory struct not found");
 
-  //get Root Object
+  return ;
   RPCObject* remote = new RPCObject(this->stream(), "Root");
   DUnicodeString remoteName = remote->getValue("name").get<DUnicodeString>();
   std::cout << "root->name : " << remoteName << std::endl;
@@ -65,27 +105,5 @@ void    Client::start(void)
   remoteName = remote->call("path").get<DUnicodeString>();
   std::cout << "remote call path : " << remoteName << std::endl;
 
-//call path
-    //Serializers::to("Text")->(remote); //show remote object locally
-
-  //while(1)
-  //{
-    /*  
-    std::cout << "Enter message : " << std::endl;
-    scanf("%s" , message);
-    if(this->_send(message , strlen(message)) < 0)
-      throw std::string("Send failed");
-        
-    int32_t received = this->_receive(server_reply , 2000);
-
-    if (received < 0)
-      throw std::string("recv failed");
-    if (received >= 2000)
-      *(server_reply + 2000) = 0;
-    else
-      *(server_reply + received) = 0; 
-
-    std::cout << "Server reply :" << std::endl;
-    std::cout << server_reply << std::endl; */
-    //}
+  //Serializers::to("Text")->(remote); //show remote object locally
 }

@@ -2,15 +2,18 @@
 #define __RPCOBJECT__
 
 #include "ddynamicobject.hpp"
+#include "dvalue.hpp"
 
 #include "protocol/dcppobject.hpp"
 #include "protocol/dmutablestruct.hpp"
 
 #include "networkstream.hpp"
 
-using namespace Destruct;
+//using namespace Destruct;
 
 //sert pas vraiment a grd chose en faite autant faire un DSerializeRaw(&struct, stream) register(struct, name)
+
+namespace Destruct {
 
 class RPCStruct : public DStruct
 {
@@ -58,5 +61,5 @@ private:
   NetworkStream __stream;
 //RawSerializer serializer;
 };
-
+}
 #endif
