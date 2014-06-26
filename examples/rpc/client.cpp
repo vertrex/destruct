@@ -29,7 +29,7 @@ NetworkStream   Client::stream(void)
 }
 void    Client::__connect(std::string const& addr, uint32_t port)
 {
-  struct sockaddr_in server;
+  sockaddr_in server;
 
   this->__connectionSocket = socket(AF_INET , SOCK_STREAM , 0);
   if (this->__connectionSocket == -1)
@@ -40,42 +40,53 @@ void    Client::__connect(std::string const& addr, uint32_t port)
   server.sin_family = AF_INET;
   server.sin_port = htons(port);
  
-  if (connect(this->__connectionSocket, (struct sockaddr *)&server , sizeof(server)) < 0)
+  if (connect(this->__connectionSocket, (sockaddr *)&server , sizeof(server)) < 0)
     throw std::string("connect failed. Error");
 }
 
 Destruct::DStruct* Client::remoteFind(const std::string name)
 {
+  DStruct *dstruct = NULL; 
   NetworkStream stream = this->stream();
 
+  std::string structBuff;
   stream.write("findDStruct");
   stream.write(name);
+  stream.read(structBuff);  
 
-//  DStruct* dstruct = destruct.find(name);
-//if already have ...
+  Destruct::Destruct& destruct = Destruct::Destruct::instance();
+  DStruct*  streamStringStruct = destruct.find("DStreamString");
+  DStreamString* streamString = new DStreamString(streamStringStruct, RealValue<DObject*>(DNone));
+
+  streamString->write(structBuff.c_str(), structBuff.size());
 
   DSerialize* binarySerializer = DSerializers::to("Binary");
-  DStruct* dstruct = binarySerializer->deserialize(stream);// XXX au moins ca compile :) 
- 
-  ///XXX ca peut pas marcher en paralle le proto et pas le meme autant recup un buffer
-  //et le deseralizer apres c plus simple fo un stream qui dserialize ds un buff c tout 
+  dstruct = binarySerializer->deserialize(*streamString);// use buff then send to compact data
 
-  //destruct.registerDStruct(dstruct);
-  std::cout << "[OK] client get struct " << name << " : " << std::endl;
+  if (dstruct)
+  {
+    std::cout << "[OK] client get struct " << name << " : " << std::endl;
+    destruct.registerDStruct(dstruct);
+    this->print(dstruct); 
+  } 
+  else
+    std::cout << "Struct " << name << " is NULL can't show content " << std::endl;
+  return (dstruct);
+}
+
+bool    Client::print(DStruct* dstruct) const
+{
   Destruct::Destruct& destruct = Destruct::Destruct::instance();
   DStruct* streamStruct = destruct.find("DStreamCout");
-  DStream* outStream = new  DStream(streamStruct);  
+  DStream* outStream = new DStream(streamStruct);  
   if (outStream == NULL)
     std::cout << "Can't find stream to output fs tree" << std::endl;
 
   if (!dstruct)
-  {
-     std::cout << "Struct " << name << " is NULL can't remote deserialize " << std::endl;
-     return (NULL);
-  }
+    return (false);
+  
   Destruct::DSerializers::to("Text")->serialize(*outStream, *dstruct);
-
-  return (dstruct);
+  return (true);
 }
 
 void    Client::__close(void)
@@ -86,11 +97,24 @@ void    Client::__close(void)
 void    Client::start(void)
 {
   //Destruct::DStruct* directoryS = this->remoteFind("Directory");  //recursive & method
-  Destruct::DStruct* directoryS = this->remoteFind("File");  // method XXX ?
+  Destruct::DStruct* fileS = this->remoteFind("File"); 
+  if (!fileS)
+    throw std::string("Directory struct not found");
+
+  Destruct::DStruct* directoryS = this->remoteFind("Directory"); 
   if (!directoryS)
     throw std::string("Directory struct not found");
 
-  return ;
+   Destruct::DStruct* vectorS = this->remoteFind("DVectorObject"); 
+  if (!vectorS)
+    throw std::string("Directory struct not found");
+
+
+//XXX OK ON PEUT CODER LA SUITE MAINTENANT !!!
+                        //RCPObject(&directoryS, "Root")
+//XXX reimpleim RCPObject avec un Struct en parametre comme ca on peut connaiter le type des truc a passer ...
+//XXX faudra surrenet reimpem pour les fonctions de toute  
+
   RPCObject* remote = new RPCObject(this->stream(), "Root");
   DUnicodeString remoteName = remote->getValue("name").get<DUnicodeString>();
   std::cout << "root->name : " << remoteName << std::endl;

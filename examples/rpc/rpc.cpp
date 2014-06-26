@@ -42,16 +42,15 @@ int main(int argc, char** argv)
 
   RPC   rpc;
   
-
-  try {
-
-  if (std::string(argv[1]) == std::string("-d"))
-    rpc.serve();
-  else if (std::string(argv[1]) == std::string("-c"))
-    rpc.connect("127.0.0.1", 0xdff);
-  else
-    std::cout << "Launch server : -d" << std::endl
-              << "Launch client : -c" << std::endl;       
+  try 
+  {
+    if (std::string(argv[1]) == std::string("-d"))
+      rpc.serve();
+    else if (std::string(argv[1]) == std::string("-c"))
+      rpc.connect("127.0.0.1", 0xdff);
+    else
+      std::cout << "Launch server : -d" << std::endl
+                << "Launch client : -c" << std::endl;       
   }
   catch (const std::string& error)
   {

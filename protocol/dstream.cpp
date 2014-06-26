@@ -186,16 +186,19 @@ DStreamString::~DStreamString()
 
 DStream& DStreamString::read(char*  buff, uint32_t size)
 {
-  std::cout << "StreamString read " << std::endl;
   this->__stream.read(buff, size);
   return (*this);
 }
 
 DStream& DStreamString::write(const char* buff, uint32_t size) 
 {
-  std::cout << "StreamString write " << std::endl; 
   this->__stream.write(buff, size);
   return (*this);
 } 
+
+const std::string DStreamString::str(void) const //seek etc ?
+{
+  return (this->__stream.str());
+}
 
 }

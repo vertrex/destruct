@@ -31,20 +31,18 @@ int32_t NetworkStream::write(std::string const& str) const
 
 int32_t NetworkStream::write(void* buff, int32_t size) const 
 {
-  std::cout << "network write" << std::endl;
   return (send(this->__socket, buff, size, 0));
 }
 
 int32_t NetworkStream::read(std::string & readValue)
 {
-  std::cout << "network read" << std::endl;
   uint64_t size = 0;
   if (this->read(&size, sizeof(size)) != sizeof(size))
     throw std::string("NetworkStream::read can't get size");
   uint8_t*  value = new uint8_t[size + 1];
   this->read(value, size); //test return value
   value[size] = 0;
-  readValue = std::string((char*)value);
+  readValue = std::string((char*)value, size);
   delete value;
 
   return readValue.size();

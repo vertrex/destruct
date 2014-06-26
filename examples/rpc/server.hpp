@@ -33,7 +33,6 @@ private:
   int32_t       __connectionSocket;
   void          __bind(void);
   void          __listen(void);
-  
 };
 
 #endif

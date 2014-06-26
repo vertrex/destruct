@@ -118,6 +118,7 @@ public:
   ~DStreamString();
   DStream& read(char*  buff, uint32_t size);
   DStream& write(const char* buff, uint32_t size);
+  const std::string str(void) const;
   //virtual DInt64 write(DValue const& args);
   //virtual DInt64 read(DValue const& args);
 private:

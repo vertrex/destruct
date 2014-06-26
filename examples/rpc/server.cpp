@@ -24,17 +24,15 @@ void            Server::__bind(void)
 {
   this->__listenSocket = socket(AF_INET , SOCK_STREAM, 0);
   int on = 1;
-  setsockopt(this->__listenSocket, SOL_SOCKET,
-      SO_REUSEADDR,
-        (const char *) &on, sizeof(on));
+  setsockopt(this->__listenSocket, SOL_SOCKET, SO_REUSEADDR, (const char *) &on, sizeof(on));
   if (this->__listenSocket == -1)
     throw std::string("Could not create socket");
      
-  struct sockaddr_in server;
+  sockaddr_in server;
   server.sin_family = AF_INET;
   server.sin_addr.s_addr = INADDR_ANY;
   server.sin_port = htons(0xdff);
-  if(bind(this->__listenSocket,(struct sockaddr *)&server , sizeof(server)) < 0)
+  if(bind(this->__listenSocket,(sockaddr *)&server , sizeof(server)) < 0)
     throw std::string("bind failed. Error");
 }
 
@@ -45,8 +43,8 @@ void            Server::__listen(void)
  
   listen(this->__listenSocket , 3);
   std::cout << "Waiting for incoming connections..." << std::endl;
-  c = sizeof(struct sockaddr_in);
-  this->__connectionSocket = accept(this->__listenSocket, (struct sockaddr *)&client, (socklen_t*)&c);
+  c = sizeof(sockaddr_in);
+  this->__connectionSocket = accept(this->__listenSocket, (sockaddr *)&client, (socklen_t*)&c);
   if (this->__connectionSocket < 0)
     throw std::string("accept failed");
   std::cout << "Connection accepted" << std::endl;
@@ -54,7 +52,7 @@ void            Server::__listen(void)
 
 int32_t         Server::_receive(void* buff, int32_t size) 
 {
-  return(recv(this->__connectionSocket, buff, size, 0));
+  return (recv(this->__connectionSocket, buff, size, 0));
 }
 
 int32_t         Server::_send(void* buff, int32_t size) const
@@ -100,7 +98,8 @@ void            Server::initFS(void)
   children->call("push", RealValue<DObject*>(directory1));
   DObject* d1children = directory1->getValue("children").get<DObject*>();
 
-/*  Directory* directory1 = new Directory(directoryStruct, RealValue<DObject*>(DNone));
+/*  
+  Directory* directory1 = new Directory(directoryStruct, RealValue<DObject*>(DNone));
   directory1->name = "Directory1";
   DObject* d1children = directory1->children;
   */
@@ -141,9 +140,8 @@ void            Server::findDStruct(NetworkStream stream)
   DStreamString* streamString = new DStreamString(streamStringStruct, RealValue<DObject*>(DNone));
   binarySerializer->serialize(*streamString, *dstruct);// use buff then send to compact data
 
-//  streamString.seek(0);
-//stream.write(streamString->str());
- 
+  std::string structBuff = streamString->str();
+  stream.write(structBuff);
   std::cout << " ok deserializing struct " << name << std::endl;
 
 }
