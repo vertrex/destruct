@@ -39,8 +39,8 @@ private:
 class RPCObject : public DDynamicObject
 {
 public:
-  RPCObject(NetworkStream stream, std::string const& name); //et on passe la struct plus simple 
-  RPCObject(RPCStruct* dstruct, DValue const& args);
+  RPCObject(NetworkStream stream, std::string const& name, DStruct* dstruct); //et on passe la struct plus simple 
+  RPCObject(DStruct* dstruct, DValue const& args);
   RPCObject(RPCObject const & rhs);
   ~RPCObject();
 
@@ -59,7 +59,7 @@ public:
 
 private:
   NetworkStream __stream;
-//RawSerializer serializer;
+  std::string   __URI;
 };
 }
 #endif

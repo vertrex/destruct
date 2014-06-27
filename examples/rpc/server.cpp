@@ -209,6 +209,8 @@ void            Server::serve(void)
     stream.read(msg);
     if (msg == "show") 
       this->showFS();
+    //else if (msg == changeObject)
+   //objectPath 
     else if (msg == "findDStruct")
       this->findDStruct(stream);
     else if(msg == "setValue")

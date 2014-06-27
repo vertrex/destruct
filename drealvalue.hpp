@@ -3,10 +3,12 @@
 
 #include <string>
 #include <sstream>
+#include <iostream>
 
 #include "dvalue.hpp"
 #include "dnullobject.hpp"
 #include "dfunction.hpp"
+#include "protocol/dstreambase.hpp"
 
 namespace Destruct
 {
@@ -14,7 +16,6 @@ namespace Destruct
 * implemented typedvalue who inherit final value who inherite basevalue
 * all specialize method by type must be implem here ! that's why we use template
 */
-class DStream;
 
 template <typename PlainType>
 class RealValue : public TypedValue<PlainType>
@@ -45,13 +46,13 @@ public:
     return (os.str());
   }
 
-  DStream& serialize(DStream& os) const
+  DStreamBase& serialize(DStreamBase& os) const
   {
     //os.write((char *)&this->__val, sizeof(this->__val));
     return (os);
   }
 
-  DStream& unserialize(DStream& is)
+  DStreamBase& unserialize(DStreamBase& is)
   {
     //is.read((char *)&this->__val, sizeof(this->__val));
     return (is);
@@ -73,7 +74,7 @@ protected:
 /*
  * DUnicodeString class specialization
  */
-  
+ 
 template <> 
 class RealValue<DUnicodeString> : public TypedValue<DUnicodeString>, public DUnicodeString
 {
@@ -101,25 +102,25 @@ public:
     return (ref);
   }
 
-  DStream& serialize(DStream& os) const
+  DStreamBase& serialize(DStreamBase& os) const
   {
-          //os.write((char *)this->c_str(), this->size()); // pascal string ? 00
-          //os.write("\x00", 1); //\x00\x00 in unicode 16 ? 
+    os.write((char *)this->c_str(), this->size()); // pascal string ? 00
+    os.write("\x00", 1); //\x00\x00 in unicode 16 ? 
     return (os);
   }
 
-  DStream& unserialize(DStream& is)
+  DStreamBase& unserialize(DStreamBase& is)
   {
     //XXX this is a pure implem so we will look for \x00 PascalString could be better for binary but maybe not for raw 
-    //char c = '\xff';
-    //std::string buffer;
+    char c = '\xff';
+    std::string buffer;
 
-    //while (c != '\x00')
-    //{
-    //is.read(&c, sizeof(char)); 
-    //buffer += c;
-    //}
-    //*this = buffer;
+    while (c != '\x00')
+    {
+      is.read(&c, sizeof(char));
+      buffer += c;
+    }
+    *this = buffer;
     return (is);
   }
 

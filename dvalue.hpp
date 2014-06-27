@@ -5,11 +5,11 @@
 
 #include "dobject.hpp"
 #include "dunicodestring.hpp"
+#include "protocol/dstreambase.hpp"
 
 namespace Destruct
 {
 
-class DStream;
 class DObject;
 //class DValue;
 
@@ -47,8 +47,8 @@ public:
   virtual FinalValue * clone() const = 0;
  
   virtual DUnicodeString asUnicodeString() const = 0;
-  virtual DStream&  serialize(DStream& os) const = 0;//XXX Better use an object protocol ?
-  virtual DStream&  unserialize(DStream& is) = 0;   //XXX Better use an object protocol ?
+  virtual DStreamBase&  serialize(DStreamBase& os) const = 0;//XXX Better use an object protocol ?
+  virtual DStreamBase&  unserialize(DStreamBase& is) = 0;   //XXX Better use an object protocol ?
   virtual DValue    getFinal() const;
 protected:
   FinalValue();
@@ -105,8 +105,11 @@ public:
       return PlainType();
   }
 
-  friend DStream& operator<<(DStream& os, DValue& value);
-  friend DStream& operator>>(DStream& is, DValue& value);
+  friend DStreamBase& operator<<(DStreamBase& os, DValue& value);
+  friend DStreamBase& operator>>(DStreamBase& is, DValue& value);
+
+  
+
   //std::ostream& serialize (std::ostream& os) const;
   DUnicodeString asUnicodeString() const;
 private:
@@ -116,7 +119,6 @@ private:
 /*
  * We specialize DValue because of refCount this shouldn't happen in normal case ...
  */
-
 template <>
 inline DObject* DValue::get<DObject* >() const
 {

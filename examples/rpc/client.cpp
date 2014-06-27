@@ -115,7 +115,7 @@ void    Client::start(void)
 //XXX reimpleim RCPObject avec un Struct en parametre comme ca on peut connaiter le type des truc a passer ...
 //XXX faudra surrenet reimpem pour les fonctions de toute  
 
-  RPCObject* remote = new RPCObject(this->stream(), "Root");
+  RPCObject* remote = new RPCObject(this->stream(), "Root", directoryS);
   DUnicodeString remoteName = remote->getValue("name").get<DUnicodeString>();
   std::cout << "root->name : " << remoteName << std::endl;
 

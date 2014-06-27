@@ -7,6 +7,7 @@
 #include <sstream>
 
 #include "dcppobject.hpp" //XXX peut pas etre include drealvalue car dmethodobject a bespin de realvalue et ca fait de l inclusion en boucle ?
+#include "protocol/dstreambase.hpp"
 
 class DValue;
 namespace Destruct
@@ -16,7 +17,7 @@ namespace Destruct
  *      - Could be enhanced / replaced by file, buffer (data), socket protocol object for reflectivy
  */
 
-class DStream : public DCppObject<DStream> //DStreamFile deriver d'une DStream sans membre private
+class DStream : public DStreamBase,  public DCppObject<DStream> //DStreamFile deriver d'une DStream sans membre private
 {
 public:
   enum whence
@@ -95,7 +96,7 @@ public:
 };
 
 
-class DStreamCout : public DStream
+class DStreamCout : public DStream //Base
 {
 public:
   DStreamCout(DStruct* dstruct, DValue const &args);
@@ -110,7 +111,7 @@ public:
   bool fail(void);
 };
 
-class DStreamString : public DStream
+class DStreamString : public DStream //Base
 {
 public:
   DStreamString(DStruct* dstruct, DValue const &args);
@@ -119,6 +120,9 @@ public:
   DStream& read(char*  buff, uint32_t size);
   DStream& write(const char* buff, uint32_t size);
   const std::string str(void) const;
+
+  //DStream& operator>>(std::string& val); 
+  //DStream& operator<<(std::string val);
   //virtual DInt64 write(DValue const& args);
   //virtual DInt64 read(DValue const& args);
 private:

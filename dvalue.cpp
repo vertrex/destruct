@@ -84,7 +84,7 @@ DUnicodeString DValue::asUnicodeString() const
   return (DUnicodeString());
 }
 
-DStream& operator<<(DStream& os, DValue& value) //asRaw() ? //from raw //python binding ? Value.serialize() Value.dserialize(stream)
+DStreamBase& operator<<(DStreamBase& os, DValue& value) //asRaw() ? //from raw //python binding ? Value.serialize() Value.dserialize(stream)
 {
   if (value.__value)
     return (value.__value->serialize(os));
@@ -93,7 +93,7 @@ DStream& operator<<(DStream& os, DValue& value) //asRaw() ? //from raw //python 
   return os;
 }
 
-DStream& operator>>(DStream& is, DValue& value)
+DStreamBase& operator>>(DStreamBase& is, DValue& value)
 {
   if (value.__value)
     return (value.__value->unserialize(is));
