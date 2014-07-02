@@ -1,5 +1,7 @@
 #include "rpcobject.hpp"
+#include "networkstream.hpp"
 #include "destruct.hpp"
+#include "protocol/dserialize.hpp"
 #include "protocol/dstream.hpp"
 
 namespace Destruct {
@@ -7,7 +9,7 @@ namespace Destruct {
 /**
  *  RPCObject Proxy object that handle transparent remote communication and let you use your object as a local object
  */
-RPCObject::RPCObject(NetworkStream stream, std::string const& uri, DStruct* dstruct) : DDynamicObject(dstruct, RealValue<DObject*>(DNone)), __stream(stream), __URI(uri) //args
+RPCObject::RPCObject(NetworkStream stream, std::string const& uri, DStruct* dstruct) : DDynamicObject(dstruct, RealValue<DObject*>(DNone)), __stream(stream), __URI(uri), __serializer(new DSerializeRPC) //args
 {
   //serialize DStruct & create member ? 
   //DStream = args.getValue("Stream"); //XXX else throw !
@@ -39,17 +41,18 @@ DValue RPCObject::getValue(std::string const& name) const
   this->__stream.write(std::string("getValue"));
   this->__stream.write(name);
 
-  std::string value;
-  ((NetworkStream)this->__stream).read(value);
+  std::string valueBuffer;
+  ((NetworkStream)this->__stream).read(valueBuffer);
 
-  DValue dvalue = DDynamicObject::getValue(name); 
-  //((DStream&)this->__stream) >> dvalue; //best :) 
-  DStruct* dstruct =  Destruct::instance().find("DStreamString") ;
+  DStruct* dstruct =  Destruct::instance().find("DStreamString"); //Virer moi cet merde :)
   DStreamString streamString = DStreamString(dstruct, RealValue<DObject*>(DNone));
+  streamString.write(valueBuffer.c_str(), valueBuffer.size());
+  streamString.write("\x00", 1); //si c pas une string aussi ? 
 
-  streamString.write(value.c_str(), value.size());
-  streamString.write("\x00", 1);
-  streamString >> dvalue;
+  DType  dtype = this->instanceOf()->attribute(name).type();
+  DValue dvalue = this->__serializer->deserialize(streamString, dtype); // ==>  streamString >> dvalue;
+//XXX ok  mais bof quand meme
+
   return dvalue;
 }
 
@@ -70,23 +73,52 @@ DValue RPCObject::call(std::string const& name, DValue const &v)
   this->__stream.write(std::string("call"));
   this->__stream.write(name);
 //XXX code me generic
-  DUnicodeString value = v.get<DUnicodeString>();
-  this->__stream.write(value);
 
-  std::string rvalue;
-  ((NetworkStream)this->__stream).read(rvalue);
-  return RealValue<DUnicodeString>(rvalue);
+//send argument 1 
+  DStruct* dstruct =  Destruct::instance().find("DStreamString") ;
+  DStreamString argumentStreamString = DStreamString(dstruct, RealValue<DObject*>(DNone));
+  argumentStreamString << (DValue&)v;
+  this->__stream.write(argumentStreamString.str());
+
+//Return Value
+//get results
+  std::string returnValueBuffer;
+  ((NetworkStream)this->__stream).read(returnValueBuffer);
+//if value or if object create object of type Struct
+//or read value
+  DStreamString streamString = DStreamString(dstruct, RealValue<DObject*>(DNone));
+  streamString.write(returnValueBuffer.c_str(), returnValueBuffer.size()); 
+  streamString.write("\x00", 1); // heheheheheoooo c pas tjrs des string ! 
+
+
+  DValue returnValue(this->instanceOf()->attribute(name).type().newReturnValue());
+  streamString >> returnValue;
+  return (returnValue);
 }
 
 DValue RPCObject::call(std::string const& name)
 {
 //XXX code me generic
   this->__stream.write(std::string("call0"));
-  this->__stream.write(name);
+  this->__stream.write(name); //send func name to call
 
-  std::string rvalue;
-  ((NetworkStream)this->__stream).read(rvalue);
-  return RealValue<DUnicodeString>(rvalue);
+
+//Return Value
+//get results
+  std::string returnValueBuffer;
+  ((NetworkStream)this->__stream).read(returnValueBuffer);
+//if value or if object create object of type Struct
+//or read value
+  DStruct* dstruct =  Destruct::instance().find("DStreamString") ;
+  DStreamString streamString = DStreamString(dstruct, RealValue<DObject*>(DNone));
+  streamString.write(returnValueBuffer.c_str(), returnValueBuffer.size()); 
+  streamString.write("\x00", 1); // heheheheheoooo c pas tjrs des string ! 
+
+
+  DValue returnValue(this->instanceOf()->attribute(name).type().newReturnValue());
+  streamString >> returnValue;
+  std::cout << "call0 return as unicodestring " << returnValue.asUnicodeString() << std::endl;
+  return (returnValue);
 }
 
 void RPCObject::wait(void)

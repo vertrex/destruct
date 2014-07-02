@@ -135,7 +135,7 @@ void            Server::findDStruct(NetworkStream stream)
   if (!dstruct)
    throw std::string("DStruct not found");
 
-  DSerialize* binarySerializer = DSerializers::to("Binary");
+  DSerialize* binarySerializer = new DSerializeRPC();
   DStruct* streamStringStruct = destruct.find("DStreamString"); //makeNew ou cast new object !! XXX
   DStreamString* streamString = new DStreamString(streamStringStruct, RealValue<DObject*>(DNone));
   binarySerializer->serialize(*streamString, *dstruct);// use buff then send to compact data
@@ -148,12 +148,22 @@ void            Server::findDStruct(NetworkStream stream)
 
 void            Server::getValue(NetworkStream stream, DObject* object)
 {
-  std::cout << "Remote call -> getValue : " << std::endl;
   std::string name;
   stream.read(name);
+  std::cout << "Remote call -> getValue : " << name <<  std::endl;
   Destruct::DValue value = object->getValue(name);
-  DUnicodeString rvalue = value.get<DUnicodeString>();
-  stream.write(rvalue);
+
+  Destruct::Destruct& destruct = Destruct::Destruct::instance();
+  DStruct* streamStringStruct = destruct.find("DStreamString"); //makeNew ou cast new object !! XXX
+  DStreamString streamString(streamStringStruct, RealValue<DObject*>(DNone));
+
+  DType type = object->instanceOf()->attribute(name).type();
+
+  DSerialize* binarySerializer = new DSerializeRPC();
+  binarySerializer->serialize(streamString, value, type);
+
+  std::string buffValue = streamString.str();
+  stream.write(buffValue); //XXX \0 ? send size then ..
 }
 
 void            Server::setValue(NetworkStream stream, DObject* object)
@@ -162,7 +172,17 @@ void            Server::setValue(NetworkStream stream, DObject* object)
   std::string name, args;
   stream.read(name);
   stream.read(args);
-  object->setValue(name, RealValue<DUnicodeString>(args));
+
+  Destruct::Destruct& destruct = Destruct::Destruct::instance();
+  DStruct* streamStringStruct = destruct.find("DStreamString"); //makeNew ou cast new object !! XXX
+  DStreamString streamString(streamStringStruct, RealValue<DObject*>(DNone));
+
+  streamString.write(args.c_str(), args.size());
+
+  Destruct::DValue value = object->getValue(name);  //to type it at construction //better call attributes(find).type.newValue()
+  streamString >> value;
+
+  object->setValue(name, value);
 }
 
 void            Server::call(NetworkStream stream, DObject* object)
@@ -171,8 +191,8 @@ void            Server::call(NetworkStream stream, DObject* object)
   std::string name, args;
   stream.read(name);
   stream.read(args);
-  Destruct::DValue value = object->call(name, RealValue<DUnicodeString>(args));
-  DUnicodeString rvalue = value.get<DUnicodeString>();
+  Destruct::DValue value = object->call(name, RealValue<DUnicodeString>(args)); //XXX
+  DUnicodeString rvalue = value.get<DUnicodeString>();//XXX
   stream.write(rvalue); 
 
   std::cout << "Object.call" << std::endl;
@@ -180,12 +200,19 @@ void            Server::call(NetworkStream stream, DObject* object)
 
 void            Server::call0(NetworkStream stream, DObject* object)
 {
-  std::cout << "Object.call 0 args" << std::endl;
   std::string name;
   stream.read(name);
+  std::cout << "Object.call 0 args " << name << std::endl;
   Destruct::DValue value = object->call(name);
-  DUnicodeString rvalue = value.get<DUnicodeString>();
-  stream.write(rvalue);
+ 
+  Destruct::Destruct& destruct = Destruct::Destruct::instance();
+  DStruct* streamStringStruct = destruct.find("DStreamString"); //makeNew ou cast new object !! XXX
+  DStreamString streamString(streamStringStruct, RealValue<DObject*>(DNone));
+
+  streamString << value;  //XXX special case for dobject ? 
+
+  std::string buffValue = streamString.str();
+  stream.write(buffValue); //XXX \0 ? send size then ..
 }
 
 void            Server::unknown(NetworkStream stream)

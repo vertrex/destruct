@@ -43,7 +43,17 @@ DType::DType(Type_t typeId, Type_t returnTypeId, Type_t argumentTypeId) : __type
 
 FinalValue*     DType::newValue(void) const
 {
-  return (this->__prototypes[this->__typeId]->clone());
+  return (this->__prototypes[this->__typeId]->clone()); ///XXX no meaning anymore as there is 3 type on a type with getType returnType etc ... a bit stupid or bad designed
+}
+
+FinalValue*     DType::newReturnValue(void) const
+{
+  return (this->__prototypes[this->__returnTypeId]->clone()); //? return and aergument in type ? or in attribute or other inherited 
+}
+
+FinalValue*     DType::newArgumentValue(void) const
+{
+  return (this->__prototypes[this->__argumentTypeId]->clone());
 }
 
 DType::Type_t    DType::getType(void) const
@@ -92,6 +102,7 @@ void            DType::init(void)
   __prototypes[DObjectType] = new RealValue<DObject* >(0);
   __prototypes[DMethodType] = new RealValue<DFunctionObject* >(0); //DMethodObject ? 
   __prototypes[DNoneType] = new RealValue<DObject* >(DNone);
+//dunknown type ? 
 }
 
 void            DType::clean(void)

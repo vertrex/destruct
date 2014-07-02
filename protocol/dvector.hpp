@@ -54,7 +54,7 @@ public:
   {
     DObject*     argumentsObject = args.get<DObject*>();
     DInt64       index = argumentsObject->getValue("index").get<DUInt64>();
-    VectorType     item = argumentsObject->getValue("value").get<VectorType>();
+    VectorType   item = argumentsObject->getValue("value").get<VectorType>();
      
     if (index >= (DInt64)this->__vector.size()) 
      throw DException("setItem : Index error");    

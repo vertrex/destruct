@@ -15,6 +15,8 @@
 
 namespace Destruct {
 
+class DSerialize;
+
 class RPCStruct : public DStruct
 {
 //get On de deserialize struct 
@@ -60,6 +62,8 @@ public:
 private:
   NetworkStream __stream;
   std::string   __URI;
+  DSerialize*   __serializer;
+  //DRPCSerializer __serializer;
 };
 }
 #endif

@@ -110,24 +110,37 @@ void    Client::start(void)
     throw std::string("Directory struct not found");
 
 
-//XXX OK ON PEUT CODER LA SUITE MAINTENANT !!!
-                        //RCPObject(&directoryS, "Root")
-//XXX reimpleim RCPObject avec un Struct en parametre comme ca on peut connaiter le type des truc a passer ...
-//XXX faudra surrenet reimpem pour les fonctions de toute  
-
   RPCObject* remote = new RPCObject(this->stream(), "Root", directoryS);
   DUnicodeString remoteName = remote->getValue("name").get<DUnicodeString>();
   std::cout << "root->name : " << remoteName << std::endl;
 
+  std::cout << "set remove value to 'rename-by-remote'" << std::endl;
   remote->setValue("name", RealValue<DUnicodeString>("rename-by-remote"));
 
   remoteName = remote->getValue("name").get<DUnicodeString>();
-  std::cout << "root->name after rename: " << remoteName << std::endl;
+  std::cout << "root->name after setValue('name') : " << remoteName << std::endl;
 
   this->stream().write("show");
 
   remoteName = remote->call("path").get<DUnicodeString>();
   std::cout << "remote call path : " << remoteName << std::endl;
 
-  //Serializers::to("Text")->(remote); //show remote object locally
+  std::cout << "get children list " << std::endl;
+  DObject* remoteChild = remote->getValue("children").get<DObject*>();
+
+  std::cout << "get object of type " << remoteChild->instanceOf()->name() << std::endl;
+
+//iterate remote chil
+  DObject* iterator = remoteChild->call("iterator").get<DObject*>(); 
+
+  std::cout << "iterating on child " << std::endl;
+  DInt8 isDone = iterator->call("isDone").get<DInt8>();
+  while (!isDone)
+  {
+    DObject* item = iterator->call("currentItem").get<DObject*>();
+    std::cout << "found new object " << item->instanceOf()->name() << std::endl;
+    iterator->call("nextItem");
+    isDone = iterator->call("isDone").get<DInt8>();
+  }
+  std::cout << "iteration done " << std::endl;
 }

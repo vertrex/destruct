@@ -122,6 +122,10 @@ public:
   
   virtual bool serialize(DStream& output, DStruct& dstruct) = 0;
   virtual DStruct* deserialize(DStream& output) = 0;  //Can't pass DStruct by ref& an object must be create void for deserialization that's will be strange
+  virtual bool serialize(DStream& output, DValue value, DType type) = 0;
+  virtual DValue deserialize(DStream& input, DType type) = 0; //inplky type is in descriptor/databuff
+
+
   virtual DSerialize* create(void) = 0;
   virtual ~DSerialize() {};
 /*
@@ -163,6 +167,8 @@ public :
   bool serialize(DStream& output, DObject& dobject); 
   bool serialize(DStream& output, DObject& dobject, int depth);
   bool deserialize(DStream&input, DObject& dobject);
+  bool serialize(DStream& output, DValue value, DType type);
+  DValue deserialize(DStream& input, DType type);
 
   bool     serialize(DStream& output, DStruct& dstruct); 
   DStruct* deserialize(DStream& output); 
@@ -239,6 +245,8 @@ public:
   bool serialize(DStream& output, DObject& dobject); 
   bool serialize(DStream& output, DObject& dobject, int depth);
   bool deserialize(DStream& input, DObject& dobject);
+  bool serialize(DStream& output, DValue value, DType type);
+  DValue deserialize(DStream& input, DType type);
 
   bool serialize(DStream& output, DStruct& dstruct); 
   DStruct* deserialize(DStream& output); //can overload return type ...
@@ -266,6 +274,9 @@ public:
 // pascal string deserialization
   bool serialize(DStream& output, const std::string& str);
   bool deserialize(DStream& input, std::string& str);
+
+  bool serialize(DStream& output, DValue value, DType type);
+  DValue deserialize(DStream& input, DType type);
 };
 
 class DSerializeRaw : public DSerialize
@@ -287,6 +298,10 @@ public:
 
   bool serialize(DStream& output, DStruct& dstruct); 
   DStruct* deserialize(DStream& output); 
+
+
+  bool serialize(DStream& output, DValue value, DType type);
+  DValue deserialize(DStream& input, DType type);
 };
 
 class DSerializers

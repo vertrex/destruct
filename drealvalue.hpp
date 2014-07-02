@@ -48,13 +48,15 @@ public:
 
   DStreamBase& serialize(DStreamBase& os) const
   {
-    //os.write((char *)&this->__val, sizeof(this->__val));
+    std::cout << "unserialize default implem " << std::endl;
+    os.write((char *)&this->__val, sizeof(this->__val));
     return (os);
   }
 
   DStreamBase& unserialize(DStreamBase& is)
   {
-    //is.read((char *)&this->__val, sizeof(this->__val));
+    std::cout << "serialize default implem " << std::endl;
+    is.read((char *)&this->__val, sizeof(this->__val));
     return (is);
   }
 
@@ -74,7 +76,6 @@ protected:
 /*
  * DUnicodeString class specialization
  */
- 
 template <> 
 class RealValue<DUnicodeString> : public TypedValue<DUnicodeString>, public DUnicodeString
 {
@@ -115,11 +116,13 @@ public:
     char c = '\xff';
     std::string buffer;
 
+    is.read(&c, sizeof(char));
     while (c != '\x00')
-    {
-      is.read(&c, sizeof(char));
+    {  
       buffer += c;
+      is.read(&c, sizeof(char));
     }
+
     *this = buffer;
     return (is);
   }

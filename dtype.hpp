@@ -58,6 +58,8 @@ public:
   explicit DType(Type_t typeId, Type_t ReturnTypeId, Type_t ArgumentTypeId);
 
   FinalValue*                           newValue(void) const;
+  FinalValue*                           newReturnValue(void) const; //hum hum
+  FinalValue*                           newArgumentValue(void) const; //hum hum only usefull for func object ...
   Type_t                                getType(void) const;
   Type_t                                getReturnType(void) const;
   Type_t                                getArgumentType(void) const;

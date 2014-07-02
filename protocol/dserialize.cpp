@@ -13,6 +13,163 @@ namespace Destruct
 {
 
 /**
+ *  Binary serialization // marshaling
+ *  This is the default serialization format for destruct 
+ *  All object & protocol must be serializable and unserializable trough it's interface 
+ */
+const std::string DSerializeBinary::name(void)
+{
+  return ("Binary");
+}
+
+DSerializeBinary*   DSerializeBinary::create(void)
+{
+  return (new DSerializeBinary);
+}
+
+//throw rather than many check // ? use ./open read rather than slow stream?
+bool DSerializeBinary::serialize(DStream& output, DStruct& dstruct)
+{
+  if (this->serialize(output, dstruct.name()) == false)
+    return (false);
+
+  size_t attributeCount = dstruct.attributeCount(); 
+  output.write((char *)&attributeCount, sizeof(attributeCount));
+
+  for (DStruct::DAttributeIterator i = dstruct.attributeBegin(); i != dstruct.attributeEnd(); ++i)
+  {
+    if (this->serialize(output, (*i).name()) == false)
+      return (false);
+   
+//un peu bizarre avec les fonctions car comment on c combien on doit deserializer ...
+    DType::Type_t type = (*i).type().getType();
+    if (output.write((char*)&type, sizeof(type)).fail())
+      return (false);
+    if (type == DType::DMethodType)
+    {
+       DType::Type_t argumentType = (*i).type().getArgumentType();
+       DType::Type_t returnType = (*i).type().getReturnType();
+       if (output.write((char*)&argumentType, sizeof(type)).fail())
+         return (false);
+       if (output.write((char*)&returnType, sizeof(type)).fail())
+         return (false);
+    }
+  } 
+
+  return (true);
+}
+
+DStruct* DSerializeBinary::deserialize(DStream& input)
+{ 
+  std::string name;
+  size_t attributeCount;
+  DStruct* dstruct = NULL; 
+
+  if (this->deserialize(input, name) == false)
+    return (NULL);
+  if (input.read((char*)&attributeCount, sizeof(size_t)).fail())
+    return (NULL);
+ 
+  if ((dstruct = new DStruct(0, name, DSimpleObject::newObject)) == NULL) //XXX parent etc !!
+    return (NULL);
+  for (size_t i = 0; i < attributeCount; i++) 
+  {
+     DType::Type_t type;
+     std::string   name;
+
+     if (this->deserialize(input, name) == false)
+       return (NULL);
+     if (input.read((char*)&type, sizeof(type)).fail())
+       return (NULL); //strange error checking !
+     if (type == DType::DMethodType)
+     {
+       DType::Type_t argumentType;
+       DType::Type_t returnType;
+       if (input.read((char*)&argumentType, sizeof(type)).fail())
+         return (NULL); //s
+       if (input.read((char*)&returnType, sizeof(type)).fail())
+         return (NULL); //s
+       dstruct->addAttribute(DAttribute(returnType, name, argumentType, type));
+     }
+     else
+       dstruct->addAttribute(DAttribute(type, name));
+  }
+  return (dstruct); 
+}
+
+bool DSerializeBinary::serialize(DStream& output, DValue value, DType type)
+{
+//  if //type == dobject XXX 
+   //if not in Destruct//
+   // throw ? retturn (false )
+//write struct ? 
+
+//else //write name, then content ///XXX serializer avecun DRPCSerializer  ?
+
+  output << value;
+//if type == object/  function ,, ? 
+
+  return (false);
+}
+
+DValue DSerializeBinary::deserialize(DStream& input, DType dtype)
+{
+  DValue value(dtype.newValue());
+  input >> value;
+
+//if type == object
+
+  return (value);
+}
+
+
+bool DSerializeBinary::serialize(DStream& output, DObject&  dobject)
+{
+  return (true);
+}
+
+bool DSerializeBinary::deserialize(DStream& input, DObject& dobject)
+{
+  return (false);
+}
+
+//king of specialization for string type 
+
+bool DSerializeBinary::serialize(DStream& output, const std::string& str)
+{
+ size_t ssize = str.size();
+  
+  if (output.write((char*)&ssize, sizeof(ssize)).fail())
+    return (false);
+  if (output.write(str.c_str(), ssize).fail())
+    return (false);
+
+  return (true);
+}
+
+bool DSerializeBinary::deserialize(DStream& input, std::string& str)
+{
+  size_t ssize;
+  if (input.read((char*)&ssize, sizeof(size_t)).fail())
+    return (false);
+
+  char* buff = new char[ssize];
+
+  if (buff == NULL)
+    return (false);
+  if (input.read(buff, ssize).fail())
+    return (false);
+
+  str = std::string(buff, ssize);
+  delete[] buff;  
+
+  return (true);
+}
+
+
+
+
+/**
  *   XML serialization
  */ 
 const std::string DSerializeXML::name(void)
@@ -76,6 +233,17 @@ bool DSerializeXML::serialize(DStream& output, DObject& dobject, int depth)
   }   
  
   return (true);
+}
+
+bool DSerializeXML::serialize(DStream& output, DValue value, DType type)
+{
+  return (false);
+}
+
+DValue DSerializeXML::deserialize(DStream& input, DType type)
+{
+  DValue value;
+  return value;
 }
 
 bool DSerializeXML::deserialize(DStream& input, DObject& dobject)
@@ -167,6 +335,18 @@ bool DSerializeText::serialize(DStream& output, DObject& dobject, int depth)
   return (true);
 }
 
+
+bool DSerializeText::serialize(DStream& output, DValue value, DType type)
+{
+  return (false);
+}
+
+DValue DSerializeText::deserialize(DStream& input, DType type)
+{
+  DValue value;
+  return value;
+}
+
 bool DSerializeText::deserialize(DStream& input, DObject& dobject)
 {
   return (false);
@@ -191,114 +371,9 @@ DStruct* DSerializeText::deserialize(DStream& output)
   return (NULL);
 }
 
-/**
- *  Binary serialization // marshaling
- *  This is the default serialization format for destruct 
- *  All object & protocol must be serializable and unserializable trough it's interface 
- */
-const std::string DSerializeBinary::name(void)
-{
-  return ("Binary");
-}
-
-DSerializeBinary*   DSerializeBinary::create(void)
-{
-  return (new DSerializeBinary);
-}
-
-bool DSerializeBinary::serialize(DStream& output, DObject&  dobject)
-{
-  return (true);
-}
-
-bool DSerializeBinary::deserialize(DStream& input, DObject& dobject)
-{
-  return (false);
-}
-
-bool DSerializeBinary::serialize(DStream& output, const std::string& str)
-{
- size_t ssize = str.size();
-  
-  if (output.write((char*)&ssize, sizeof(ssize)).fail())
-    return (false);
-  if (output.write(str.c_str(), ssize).fail())
-    return (false);
-
-  return (true);
-}
-
-bool DSerializeBinary::deserialize(DStream& input, std::string& str)
-{
-  size_t ssize;
-  if (input.read((char*)&ssize, sizeof(size_t)).fail())
-    return (false);
-
-  char* buff = new char[ssize];
-
-  if (buff == NULL)
-    return (false);
-  if (input.read(buff, ssize).fail())
-    return (false);
-
-  str = std::string(buff, ssize);
-  delete[] buff;  
-
-  return (true);
-}
-//throw rather than many check // ? use ./open read rather than slow stream?
-bool DSerializeBinary::serialize(DStream& output, DStruct& dstruct)
-{
-  if (this->serialize(output, dstruct.name()) == false)
-    return (false);
-
-  size_t attributeCount = dstruct.attributeCount(); 
-  output.write((char *)&attributeCount, sizeof(attributeCount));
-
-  for (DStruct::DAttributeIterator i = dstruct.attributeBegin(); i != dstruct.attributeEnd(); ++i)
-  {
-    if (this->serialize(output, (*i).name()) == false)
-      return (false);
-    
-    DType::Type_t type = (*i).type().getType();
-    if (output.write((char*)&type, sizeof(type)).fail())
-      return (false);
-  } 
-
-  return (true);
-}
-
-DStruct* DSerializeBinary::deserialize(DStream& input)
-{ 
-  std::string name;
-  size_t attributeCount;
-  DStruct* dstruct = NULL; 
-
-  if (this->deserialize(input, name) == false)
-    return (NULL);
-  if (input.read((char*)&attributeCount, sizeof(size_t)).fail())
-    return (NULL);
- 
-  if ((dstruct = new DStruct(0, name, DSimpleObject::newObject)) == NULL) //XXX parent etc !!
-    return (NULL);
-  for (size_t i = 0; i < attributeCount; i++) 
-  {
-     DType::Type_t type;
-     std::string   name;
-
-     if (this->deserialize(input, name) == false)
-       return (NULL);
-     if (input.read((char*)&type, sizeof(type)).fail())
-       return (NULL); //strange error checking !
-
-     dstruct->addAttribute(DAttribute(type, name));
-  }
-  return (dstruct); 
-}
-
 
 /**
- *  Raw serialization 
+ *  Raw serialization (on disk/memory serialization without meta info on type 
  */
 const std::string DSerializeRaw::name(void)
 {
@@ -365,6 +440,17 @@ bool DSerializeRaw::deserialize(DStream& input, DObject& dobject)
   return (true);
 }
 
+bool DSerializeRaw::serialize(DStream& output, DValue value, DType type)
+{
+  return (false);
+}
+
+DValue DSerializeRaw::deserialize(DStream& input, DType type)
+{
+  DValue value;
+  return value;
+}
+
 bool DSerializeRaw::serialize(DStream& output, DStruct& dstruct)
 {
 //throw notImplemented !
@@ -379,7 +465,6 @@ DStruct* DSerializeRaw::deserialize(DStream& output)
 /* 
  *  Serializers factory 
  */ 
-
 std::vector<DSerialize* > DSerializers::__serializers;
 static DSerializers dserializers = DSerializers();
 
