@@ -110,7 +110,7 @@ void    Client::start(void)
     throw std::string("Directory struct not found");
 
 
-  RPCObject* remote = new RPCObject(this->stream(), "Root", directoryS);
+  RPCObject* remote = new RPCObject(this->stream(), 0, directoryS); // 0 is root use id instead of string but path could work too
   DUnicodeString remoteName = remote->getValue("name").get<DUnicodeString>();
   std::cout << "root->name : " << remoteName << std::endl;
 

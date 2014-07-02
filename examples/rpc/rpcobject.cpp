@@ -4,12 +4,14 @@
 #include "protocol/dserialize.hpp"
 #include "protocol/dstream.hpp"
 
+#include "serializerpc.hpp"
+
 namespace Destruct {
 
 /**
  *  RPCObject Proxy object that handle transparent remote communication and let you use your object as a local object
  */
-RPCObject::RPCObject(NetworkStream stream, std::string const& uri, DStruct* dstruct) : DDynamicObject(dstruct, RealValue<DObject*>(DNone)), __stream(stream), __URI(uri), __serializer(new DSerializeRPC) //args
+RPCObject::RPCObject(NetworkStream stream, uint64_t id, DStruct* dstruct) : DDynamicObject(dstruct, RealValue<DObject*>(DNone)), __stream(stream), __id(id), __serializer(new DSerializeRPC(stream)) //args
 {
   //serialize DStruct & create member ? 
   //DStream = args.getValue("Stream"); //XXX else throw !
@@ -31,7 +33,7 @@ RPCObject::~RPCObject()
 {
 }
 
-DObject* RPCObject::newObject(RPCStruct* dstruct, DValue const& args)//XXX fix me stream
+DObject* RPCObject::newObject(DStruct* dstruct, DValue const& args)//XXX fix me stream
 {
   return (new RPCObject(dstruct, args)); //XXX copy network stream, handle connection & struct etc...
 }
@@ -39,6 +41,7 @@ DObject* RPCObject::newObject(RPCStruct* dstruct, DValue const& args)//XXX fix m
 DValue RPCObject::getValue(std::string const& name) const
 {
   this->__stream.write(std::string("getValue"));
+  this->__stream.write(this->__id);
   this->__stream.write(name);
 
   std::string valueBuffer;
@@ -59,6 +62,7 @@ DValue RPCObject::getValue(std::string const& name) const
 void RPCObject::setValue(std::string const& name, DValue const &v)
 {
   this->__stream.write(std::string("setValue"));
+  this->__stream.write(this->__id);
   this->__stream.write(name);
 
   DStruct* dstruct =  Destruct::instance().find("DStreamString") ;
@@ -68,9 +72,10 @@ void RPCObject::setValue(std::string const& name, DValue const &v)
   this->__stream.write(streamString.str());
 }
                                         
-DValue RPCObject::call(std::string const& name, DValue const &v)
+DValue RPCObject::call(std::string const& name, DValue const &v)//XXX UNTESTED
 {
   this->__stream.write(std::string("call"));
+  this->__stream.write(this->__id);
   this->__stream.write(name);
 //XXX code me generic
 
@@ -98,26 +103,20 @@ DValue RPCObject::call(std::string const& name, DValue const &v)
 
 DValue RPCObject::call(std::string const& name)
 {
-//XXX code me generic
   this->__stream.write(std::string("call0"));
+  this->__stream.write(this->__id);
   this->__stream.write(name); //send func name to call
 
-
-//Return Value
-//get results
   std::string returnValueBuffer;
   ((NetworkStream)this->__stream).read(returnValueBuffer);
-//if value or if object create object of type Struct
-//or read value
+
   DStruct* dstruct =  Destruct::instance().find("DStreamString") ;
   DStreamString streamString = DStreamString(dstruct, RealValue<DObject*>(DNone));
   streamString.write(returnValueBuffer.c_str(), returnValueBuffer.size()); 
   streamString.write("\x00", 1); // heheheheheoooo c pas tjrs des string ! 
 
-
   DValue returnValue(this->instanceOf()->attribute(name).type().newReturnValue());
   streamString >> returnValue;
-  std::cout << "call0 return as unicodestring " << returnValue.asUnicodeString() << std::endl;
   return (returnValue);
 }
 

@@ -5,16 +5,20 @@
 #include<arpa/inet.h> //inet_addr
 #include<unistd.h>    //write
 
+#include "fsobject.hpp"
 #include "server.hpp"
 #include "networkstream.hpp"
 #include "rpcobject.hpp"
+#include "serializerpc.hpp"
 
 #include "destruct.hpp"
 #include "dvalue.hpp"
 #include "protocol/dstream.hpp"
 #include "protocol/dserialize.hpp"
 
-Server::Server()
+using namespace Destruct;
+
+Server::Server() : __currentID(0)
 {
   this->__bind();
   this->__listen();
@@ -74,6 +78,20 @@ NetworkStream   Server::stream(void)
        File2
        Directory1/File3 
 */
+void            Server::registerObject(DObject* object)
+{
+  this->__objectsID[this->__currentID] = object;
+  this->__currentID++;
+}
+
+DObject*        Server::objectById(uint64_t id)
+{
+  std::map<uint64_t, DObject*>::iterator object = this->__objectsID.find(id);
+  if (object != this->__objectsID.end())
+    return (object->second);
+  return RealValue<DObject*>(DNone); 
+}
+
 void            Server::initFS(void)
 {
   DStruct* fileStruct = makeNewDCpp<File>("File");
@@ -84,19 +102,27 @@ void            Server::initFS(void)
   dstruct.registerDStruct(directoryStruct);
 
   this->root = directoryStruct->newObject();
+  this->registerObject(root);
+
   DObject* children = root->getValue("children").get<DObject*>();
+  this->registerObject(children);
  
   DObject* file1 = fileStruct->newObject();
+  this->registerObject(file1);
+
   file1->setValue("name", RealValue<DUnicodeString>("File1"));
   children->call("push", RealValue<DObject*>(file1));
 
-  File* file2 = new File(fileStruct, RealValue<DObject*>(DNone));  
+  File* file2 = new File(fileStruct, RealValue<DObject*>(DNone)); 
+  this->registerObject(file2); 
   file2->name = "File2"; 
   children->call("push", RealValue<DObject*>(file2));
 
   DObject* directory1 = directoryStruct->newObject();
+  this->registerObject(directory1);
   children->call("push", RealValue<DObject*>(directory1));
   DObject* d1children = directory1->getValue("children").get<DObject*>();
+  this->registerObject(d1children);
 
 /*  
   Directory* directory1 = new Directory(directoryStruct, RealValue<DObject*>(DNone));
@@ -105,6 +131,7 @@ void            Server::initFS(void)
   */
 
   File* file3 = new File(fileStruct, RealValue<DObject*>(DNone));  
+  this->registerObject(file3);
   file3->name = "File3"; 
   d1children->call("push", RealValue<DObject*>(file3));
 }
@@ -135,7 +162,8 @@ void            Server::findDStruct(NetworkStream stream)
   if (!dstruct)
    throw std::string("DStruct not found");
 
-  DSerialize* binarySerializer = new DSerializeRPC();
+  DSerialize* binarySerializer = new DSerializeRPC(this->stream());
+
   DStruct* streamStringStruct = destruct.find("DStreamString"); //makeNew ou cast new object !! XXX
   DStreamString* streamString = new DStreamString(streamStringStruct, RealValue<DObject*>(DNone));
   binarySerializer->serialize(*streamString, *dstruct);// use buff then send to compact data
@@ -146,10 +174,74 @@ void            Server::findDStruct(NetworkStream stream)
 
 }
 
-void            Server::getValue(NetworkStream stream, DObject* object)
+void            Server::unknown(NetworkStream stream)
+{
+  std::cout << "Receive unknown command" << std::endl;
+  stream.write("Unknown command");
+}
+
+void            Server::serve(void)
+{
+  this->initFS();
+  this->showFS();
+  uint64_t id = 0;
+  DObject* currentObject = RealValue<DObject*>(DNone);
+
+  RPCServer rpcServer(this->stream());
+
+  while (true)
+  {
+    std::cout << "Wait for message..." << std::endl;
+    std::string msg;
+    NetworkStream stream = this->stream();
+    stream.read(msg);
+//readObject ID !
+
+    if (msg == "show") 
+      this->showFS();
+    else if (msg == "findDStruct")
+      this->findDStruct(stream);
+    else if(msg == "setValue")
+    {
+      stream.read(id); 
+      currentObject = this->objectById(id);
+      rpcServer.setValue(currentObject);
+    }
+    else if(msg == "getValue")
+    {
+      stream.read(id); 
+      std::cout << "FOUND ID " << id << std::endl;
+      currentObject = this->objectById(id);
+      rpcServer.getValue(currentObject);
+    }
+    else if(msg == "call")
+    {
+      std::cout << "FOUND ID " << id << std::endl;
+      stream.read(id); 
+      currentObject = this->objectById(id);
+      rpcServer.call(currentObject);
+    }
+    else if(msg == "call0")
+    {
+      std::cout << "FOUND ID " << id << std::endl;
+      stream.read(id); 
+      currentObject = this->objectById(id);
+      rpcServer.call0(currentObject);
+    }
+    else 
+      this->unknown(stream);
+  }
+}
+
+RPCServer::RPCServer(NetworkStream networkStream) : __networkStream(networkStream)
+{
+
+}
+
+void    RPCServer::getValue(DObject* object)
 {
   std::string name;
-  stream.read(name);
+  this->__networkStream.read(name);
   std::cout << "Remote call -> getValue : " << name <<  std::endl;
   Destruct::DValue value = object->getValue(name);
 
@@ -159,19 +251,19 @@ void            Server::getValue(NetworkStream stream, DObject* object)
 
   DType type = object->instanceOf()->attribute(name).type();
 
-  DSerialize* binarySerializer = new DSerializeRPC();
+  DSerialize* binarySerializer = new DSerializeRPC(this->__networkStream);
   binarySerializer->serialize(streamString, value, type);
 
   std::string buffValue = streamString.str();
-  stream.write(buffValue); //XXX \0 ? send size then ..
+  this->__networkStream.write(buffValue); //XXX \0 ? send size then ..
 }
 
-void            Server::setValue(NetworkStream stream, DObject* object)
+void    RPCServer::setValue(DObject* object)
 {
   std::cout << "Remote call -> setValue" << std::endl;
   std::string name, args;
-  stream.read(name);
-  stream.read(args);
+  this->__networkStream.read(name);
+  this->__networkStream.read(args);
 
   Destruct::Destruct& destruct = Destruct::Destruct::instance();
   DStruct* streamStringStruct = destruct.find("DStreamString"); //makeNew ou cast new object !! XXX
@@ -185,26 +277,26 @@ void            Server::setValue(NetworkStream stream, DObject* object)
   object->setValue(name, value);
 }
 
-void            Server::call(NetworkStream stream, DObject* object)
+void    RPCServer::call(DObject* object)
 {
   std::cout << "Remote call -> call" << std::endl;
   std::string name, args;
-  stream.read(name);
-  stream.read(args);
+  this->__networkStream.read(name);
+  this->__networkStream.read(args);
   Destruct::DValue value = object->call(name, RealValue<DUnicodeString>(args)); //XXX
   DUnicodeString rvalue = value.get<DUnicodeString>();//XXX
-  stream.write(rvalue); 
+  this->__networkStream.write(rvalue); 
 
   std::cout << "Object.call" << std::endl;
 }
 
-void            Server::call0(NetworkStream stream, DObject* object)
+void    RPCServer::call0(DObject* object)
 {
   std::string name;
-  stream.read(name);
-  std::cout << "Object.call 0 args " << name << std::endl;
-  Destruct::DValue value = object->call(name);
- 
+  this->__networkStream.read(name);
+
+  Destruct::DValue value = object->call(name); 
+  
   Destruct::Destruct& destruct = Destruct::Destruct::instance();
   DStruct* streamStringStruct = destruct.find("DStreamString"); //makeNew ou cast new object !! XXX
   DStreamString streamString(streamStringStruct, RealValue<DObject*>(DNone));
@@ -212,43 +304,6 @@ void            Server::call0(NetworkStream stream, DObject* object)
   streamString << value;  //XXX special case for dobject ? 
 
   std::string buffValue = streamString.str();
-  stream.write(buffValue); //XXX \0 ? send size then ..
+  this->__networkStream.write(buffValue); //XXX \0 ? send size then .
 }
 
-void            Server::unknown(NetworkStream stream)
-{
-  std::cout << "Receive unknown command" << std::endl;
-  stream.write("Unknown command");
-}
-
-void            Server::serve(void)
-{
-  this->initFS();
-  this->showFS();
-
-  DObject* currentObject = this->root;
-
-  while (true)
-  {
-    std::cout << "Wait for message..." << std::endl;
-    std::string msg;
-    NetworkStream stream = this->stream();
-    stream.read(msg);
-    if (msg == "show") 
-      this->showFS();
-    //else if (msg == changeObject)
-   //objectPath 
-    else if (msg == "findDStruct")
-      this->findDStruct(stream);
-    else if(msg == "setValue")
-      this->setValue(stream, currentObject);
-    else if(msg == "getValue")
-      this->getValue(stream, currentObject);
-    else if(msg == "call")
-      this->call(stream, currentObject);
-    else if(msg == "call0")
-      this->call0(stream, currentObject); 
-    else 
-      this->unknown(stream);
-  }
-}

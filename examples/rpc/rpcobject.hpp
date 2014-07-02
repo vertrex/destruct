@@ -17,36 +17,15 @@ namespace Destruct {
 
 class DSerialize;
 
-class RPCStruct : public DStruct
-{
-//get On de deserialize struct 
-// factorize new object too ? 
-public:
-  typedef DObject* (*CreateMutableObjectFunction)(RPCStruct*, DValue const&); //DStream ? 
-  typedef std::vector<DAttribute> DAttributeContainer;
-  typedef DAttributeContainer::const_iterator DAttributeIterator;
-
-  template<typename Iterator> 
-  RPCStruct(NetworkStream stream, const DUnicodeString& name, CreateMutableObjectFunction newObj, Iterator attributeBegin, Iterator attributeEnd) : DStruct(NULL, name, (DObject* (*) (DStruct*, DValue const&))newObj, attributeBegin, attributeEnd), __createObject(newObj)
-  {
-  }
-  RPCStruct(NetworkStream stream, const DUnicodeString& name, CreateMutableObjectFunction objectFunction);
-  DObject* newObject(DValue const& args);
-private:
-  const CreateMutableObjectFunction    __createObject;
-};
-
-//MakeNewRPC(stream, "StructName"); ...
-
 class RPCObject : public DDynamicObject
 {
 public:
-  RPCObject(NetworkStream stream, std::string const& name, DStruct* dstruct); //et on passe la struct plus simple 
+  RPCObject(NetworkStream stream, uint64_t id, DStruct* dstruct); //et on passe la struct plus simple 
   RPCObject(DStruct* dstruct, DValue const& args);
   RPCObject(RPCObject const & rhs);
   ~RPCObject();
 
-  static DObject* newObject(RPCStruct* dstruct, DValue const& args);
+  static DObject* newObject(DStruct* dstruct, DValue const& args);
   DObject* clone() const;
   //DValue getValue(size_t index) const;               //set data member
   //void setValue(size_t idx, DValue const &);         //set 
@@ -60,8 +39,8 @@ public:
   void wait(void);
 
 private:
+  uint64_t      __id;
   NetworkStream __stream;
-  std::string   __URI;
   DSerialize*   __serializer;
   //DRPCSerializer __serializer;
 };

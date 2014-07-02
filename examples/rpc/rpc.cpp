@@ -18,15 +18,7 @@ RPC::~RPC()
 void RPC::serve(void)
 {
   Server  server;
-
   server.serve();
-
-  //DRPCObject* object = DServerObject(server.stream());
-  //object->wait(); 
-
-  //message = server.message();
-  //if message == "get"
-  //while (stream.recv)
 }
 
 void RPC::connect(std::string const& addr, uint32_t port)
@@ -52,8 +44,12 @@ int main(int argc, char** argv)
       std::cout << "Launch server : -d" << std::endl
                 << "Launch client : -c" << std::endl;       
   }
+  catch (Destruct::DException const& exception)
+  {
+    std::cout << "Error : " << std::endl << exception.error() << std::endl; 
+  }
   catch (const std::string& error)
   {
-     std::cout << error << std::endl;
+     std::cout << "Error : " << std::endl << error << std::endl;
   }
 }

@@ -2,37 +2,45 @@
 #define __SERVER__
 
 #include <stdint.h>
+#include <map>
 
 #include "networkstream.hpp"
-#include "dstruct.hpp"
-#include "protocol/dcppobject.hpp"
-#include "fsobject.hpp"
 
-using namespace Destruct;
+class RPCServer
+{
+public:
+                        RPCServer(Destruct::NetworkStream networkStream);
+  void                  getValue(Destruct::DObject* object);
+  void                  setValue(Destruct::DObject* object);
+  void                  call(Destruct::DObject* object);
+  void                  call0(Destruct::DObject* object);
+private:
+  Destruct::NetworkStream         __networkStream;
+};
 
 class Server
 {
 public:
-                Server(); 
-  int32_t       _receive(void* buff, int32_t lenflags);
-  int32_t       _send(void* buff, int32_t size) const;
-  void          serve(void);
-  void          initFS(void);
-  void          showFS(void);
-  NetworkStream stream(void); //return NetworkStream
+                        Server(); 
+  int32_t               _receive(void* buff, int32_t lenflags);
+  int32_t               _send(void* buff, int32_t size) const;
+  void                  serve(void);
+  void                  initFS(void);
+  void                  showFS(void);
 
-  void          findDStruct(NetworkStream stream);
-  void          getValue(NetworkStream stream, DObject* object);
-  void          setValue(NetworkStream stream, DObject* object);
-  void          call(NetworkStream stream, DObject* object);
-  void          call0(NetworkStream stream, DObject* object);
-  void          unknown(NetworkStream stream);
+  void                  findDStruct(Destruct::NetworkStream stream);
+  void                  unknown(Destruct::NetworkStream stream);
+  void                  registerObject(Destruct::DObject* object);
+  Destruct::DObject*    objectById(uint64_t id);
+  Destruct::NetworkStream stream(void); //return Destruct::NetworkStream
 private:
-  DObject*      root;
-  int           __listenSocket;
-  int32_t       __connectionSocket;
-  void          __bind(void);
-  void          __listen(void);
+  Destruct::DObject*      root;
+  int                   __listenSocket;
+  int32_t               __connectionSocket;
+  void                  __bind(void);
+  void                  __listen(void);
+  int64_t               __currentID; 
+  std::map<uint64_t, Destruct::DObject* > __objectsID;
 };
 
 #endif

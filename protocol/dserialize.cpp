@@ -42,6 +42,7 @@ bool DSerializeBinary::serialize(DStream& output, DStruct& dstruct)
       return (false);
    
 //un peu bizarre avec les fonctions car comment on c combien on doit deserializer ...
+ 
     DType::Type_t type = (*i).type().getType();
     if (output.write((char*)&type, sizeof(type)).fail())
       return (false);
@@ -99,15 +100,7 @@ DStruct* DSerializeBinary::deserialize(DStream& input)
 
 bool DSerializeBinary::serialize(DStream& output, DValue value, DType type)
 {
-//  if //type == dobject XXX 
-   //if not in Destruct//
-   // throw ? retturn (false )
-//write struct ? 
-
-//else //write name, then content ///XXX serializer avecun DRPCSerializer  ?
-
   output << value;
-//if type == object/  function ,, ? 
 
   return (false);
 }
@@ -116,8 +109,6 @@ DValue DSerializeBinary::deserialize(DStream& input, DType dtype)
 {
   DValue value(dtype.newValue());
   input >> value;
-
-//if type == object
 
   return (value);
 }
@@ -165,7 +156,6 @@ bool DSerializeBinary::deserialize(DStream& input, std::string& str)
 
   return (true);
 }
-
 
 
 
