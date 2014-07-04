@@ -27,17 +27,16 @@ public:
 
   static DObject* newObject(DStruct* dstruct, DValue const& args);
   DObject* clone() const;
-  //DValue getValue(size_t index) const;               //set data member
-  //void setValue(size_t idx, DValue const &);         //set 
-  //DValue call(size_t index, DValue const &);
 
   DValue getValue(std::string const& name) const;        //set data member
   void setValue(std::string const& name, DValue const &);
                                         
   DValue call(std::string const& name, DValue const &);
-  DValue call(std::string const& name); 
-  void wait(void);
+  DValue call(std::string const& name);
 
+  DValue getValue(size_t index) const;               //set data member
+  void setValue(size_t idx, DValue const &);         //set 
+  DValue call(size_t index, DValue const &);
 private:
   uint64_t      __id;
   NetworkStream __stream;

@@ -17,6 +17,7 @@ public:
                         ~Client();
   void                  start(void); //return NetworkStream 
   bool                  print(DStruct* dstruct) const;
+  bool                  print(DObject* dobject) const;
   int32_t               _send(void* buff, int32_t size) const;
   int32_t               _receive(void* buff, int32_t len);
   NetworkStream         stream(void); //return NetworkStream

@@ -187,33 +187,28 @@ void            Server::serve(void)
       this->showFS();
     else if (msg == "findDStruct")
     {
-      std::cout << "find struct " << std::endl;
       this->findDStruct(stream);
     }
     else if(msg == "setValue")
     {
       stream.read(&id); 
-      std::cout << "setValue get object id " << id << std::endl;
       currentObject = this->__objectManager.object(id);
       rpcServer.setValue(currentObject);
     }
     else if(msg == "getValue")
     {
       stream.read(&id); 
-      std::cout << "getvalue get object id  " << id << std::endl;
       currentObject = this->__objectManager.object(id);
       rpcServer.getValue(currentObject);
     }
     else if(msg == "call")
     {
-      std::cout << "call get object id " << id << std::endl;
       stream.read(&id); 
       currentObject = this->__objectManager.object(id);
       rpcServer.call(currentObject);
     }
     else if(msg == "call0")
     {
-      std::cout << "call0 get object id " << id << std::endl;
       stream.read(&id); //XXX is working vby ret ? 
       currentObject = this->__objectManager.object(id);
       rpcServer.call0(currentObject);

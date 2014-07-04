@@ -89,6 +89,23 @@ bool    Client::print(DStruct* dstruct) const
   return (true);
 }
 
+bool    Client::print(DObject* dobject) const
+{
+  Destruct::Destruct& destruct = Destruct::Destruct::instance();
+  DStruct* streamStruct = destruct.find("DStreamCout");
+  DStream* outStream = new DStream(streamStruct);  
+  if (outStream == NULL)
+    std::cout << "Can't find stream to output fs tree" << std::endl;
+
+  if (!dobject)
+    return (false);
+
+  DObject& object = *dobject;
+ 
+  Destruct::DSerializers::to("Text")->serialize(*outStream, *dobject);
+  return (true);
+}
+
 void    Client::__close(void)
 {
   //close(this->__connectionSocket);
@@ -111,6 +128,7 @@ void    Client::start(void)
 
 
   RPCObject* remote = new RPCObject(this->stream(), 0, directoryS, this->__objectManager); // 0 is root use id instead of string but path could work too
+ 
   DUnicodeString remoteName = remote->getValue("name").get<DUnicodeString>();
   std::cout << "root name : " << remoteName << std::endl;
 
@@ -135,5 +153,5 @@ void    Client::start(void)
     std::cout <<  "child is of type : " <<  child->instanceOf()->name() << std::endl;
   }
   std::cout << "done " << std::endl;
-   //deserialize to text DRPCObject Root ( bon test pour avoir toute les val etc en rursif tout seul comme sur el serv ?
+  //this->print(remote); ///XXX XXX XXX RPC OBJECT DOESN'T IMPLEMENT FUNCTION BY ID( pos in list of attribute ONLY NAME (String) CODE IT NOW TO MAKE IT WORK AND IT WILL BE CRRRRAZY
 }

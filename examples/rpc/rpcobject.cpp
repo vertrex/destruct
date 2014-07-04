@@ -16,7 +16,6 @@ RPCObject::RPCObject(NetworkStream stream, uint64_t id, DStruct* dstruct, Object
 {
   //serialize DStruct & create member ? 
   //DStream = args.getValue("Stream"); //XXX else throw !
-
   this->init(this);
 }
 
@@ -120,9 +119,27 @@ DValue RPCObject::call(std::string const& name)
   return dvalue;
 }
 
-void RPCObject::wait(void)
+//XXX XXX XX CODE BY INDEX NOW NOW NOW NOW NOW NOW NOW !!!!
+DValue RPCObject::getValue(size_t index) const
 {
-  //this->recv();
+  DAttribute attribute = this->instanceOf()->attribute(index);
+  //XXX error call getValue on method ...
+ 
+  if (attribute.type().getType() != DType::DMethodType)
+    return this->getValue(attribute.name());
+  return RealValue<DObject*>(DNone);
+}
+
+void RPCObject::setValue(size_t index, DValue const &value)
+{
+  std::string name = this->instanceOf()->attribute(index).name();
+  this->setValue(name, value); 
+}
+
+DValue RPCObject::call(size_t index, DValue const &value)
+{
+  std::string name = this->instanceOf()->attribute(index).name();
+  return (this->call(name, value));  //use call 0 if None ?
 }
 
 DObject* RPCObject::clone() const
@@ -130,4 +147,4 @@ DObject* RPCObject::clone() const
   return (new RPCObject(*this)); //XXX 
 }
 
- }
+}
