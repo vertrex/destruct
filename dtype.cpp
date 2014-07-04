@@ -43,6 +43,8 @@ DType::DType(Type_t typeId, Type_t returnTypeId, Type_t argumentTypeId) : __type
 
 FinalValue*     DType::newValue(void) const
 {
+//(  if this->__typeId == DUnknownType)
+  //throw DException() ; ...
   return (this->__prototypes[this->__typeId]->clone()); ///XXX no meaning anymore as there is 3 type on a type with getType returnType etc ... a bit stupid or bad designed
 }
 

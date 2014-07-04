@@ -4,6 +4,7 @@
 #include "protocol/dserialize.hpp"
 #include "protocol/dstream.hpp"
 
+#include "server.hpp"
 #include "serializerpc.hpp"
 
 namespace Destruct {
@@ -11,7 +12,7 @@ namespace Destruct {
 /**
  *  RPCObject Proxy object that handle transparent remote communication and let you use your object as a local object
  */
-RPCObject::RPCObject(NetworkStream stream, uint64_t id, DStruct* dstruct) : DDynamicObject(dstruct, RealValue<DObject*>(DNone)), __stream(stream), __id(id), __serializer(new DSerializeRPC(stream)) //args
+RPCObject::RPCObject(NetworkStream stream, uint64_t id, DStruct* dstruct, ObjectManager & objects) : DDynamicObject(dstruct, RealValue<DObject*>(DNone)), __id(id), __stream(stream), __serializer(new DSerializeRPC(stream, objects)) //args
 {
   //serialize DStruct & create member ? 
   //DStream = args.getValue("Stream"); //XXX else throw !
@@ -50,11 +51,10 @@ DValue RPCObject::getValue(std::string const& name) const
   DStruct* dstruct =  Destruct::instance().find("DStreamString"); //Virer moi cet merde :)
   DStreamString streamString = DStreamString(dstruct, RealValue<DObject*>(DNone));
   streamString.write(valueBuffer.c_str(), valueBuffer.size());
-  streamString.write("\x00", 1); //si c pas une string aussi ? 
+  streamString.write("\x00", 1);
 
   DType  dtype = this->instanceOf()->attribute(name).type();
-  DValue dvalue = this->__serializer->deserialize(streamString, dtype); // ==>  streamString >> dvalue;
-//XXX ok  mais bof quand meme
+  DValue dvalue = this->__serializer->deserialize(streamString, dtype.getType());
 
   return dvalue;
 }
@@ -67,7 +67,7 @@ void RPCObject::setValue(std::string const& name, DValue const &v)
 
   DStruct* dstruct =  Destruct::instance().find("DStreamString") ;
   DStreamString streamString = DStreamString(dstruct, RealValue<DObject*>(DNone));
-  streamString << (DValue&)v;
+  streamString << (DValue&)v; ///XXX fix me with deserializer please ? for object etc.. ?
 
   this->__stream.write(streamString.str());
 }
@@ -77,28 +77,27 @@ DValue RPCObject::call(std::string const& name, DValue const &v)//XXX UNTESTED
   this->__stream.write(std::string("call"));
   this->__stream.write(this->__id);
   this->__stream.write(name);
-//XXX code me generic
 
-//send argument 1 
+  /* Send argument (object is not compatible) */
   DStruct* dstruct =  Destruct::instance().find("DStreamString") ;
-  DStreamString argumentStreamString = DStreamString(dstruct, RealValue<DObject*>(DNone));
-  argumentStreamString << (DValue&)v;
-  this->__stream.write(argumentStreamString.str());
+  DStreamString streamString = DStreamString(dstruct, RealValue<DObject*>(DNone));
+  streamString << (DValue&)v; ///XXX fix me with deserializer please ? for object etc.. ?
 
-//Return Value
-//get results
+  this->__stream.write(streamString.str());
+
+  /* get return value */
   std::string returnValueBuffer;
   ((NetworkStream)this->__stream).read(returnValueBuffer);
-//if value or if object create object of type Struct
-//or read value
-  DStreamString streamString = DStreamString(dstruct, RealValue<DObject*>(DNone));
-  streamString.write(returnValueBuffer.c_str(), returnValueBuffer.size()); 
-  streamString.write("\x00", 1); // heheheheheoooo c pas tjrs des string ! 
 
+  DStreamString rstreamString = DStreamString(dstruct, RealValue<DObject*>(DNone));
+  rstreamString.write(returnValueBuffer.c_str(), returnValueBuffer.size()); 
+  rstreamString.write("\x00", 1); // heheheheheoooo c pas tjrs des string ! 
 
-  DValue returnValue(this->instanceOf()->attribute(name).type().newReturnValue());
-  streamString >> returnValue;
-  return (returnValue);
+  DType  dtype = this->instanceOf()->attribute(name).type();
+  DValue dvalue = this->__serializer->deserialize(rstreamString, dtype.getReturnType()); // ==>  streamString >> dvalue;
+
+  return dvalue;
+
 }
 
 DValue RPCObject::call(std::string const& name)
@@ -115,9 +114,10 @@ DValue RPCObject::call(std::string const& name)
   streamString.write(returnValueBuffer.c_str(), returnValueBuffer.size()); 
   streamString.write("\x00", 1); // heheheheheoooo c pas tjrs des string ! 
 
-  DValue returnValue(this->instanceOf()->attribute(name).type().newReturnValue());
-  streamString >> returnValue;
-  return (returnValue);
+  DType  dtype = this->instanceOf()->attribute(name).type();
+  DValue dvalue = this->__serializer->deserialize(streamString, dtype.getReturnType()); // ==>  streamString >> dvalue;
+
+  return dvalue;
 }
 
 void RPCObject::wait(void)
@@ -129,20 +129,5 @@ DObject* RPCObject::clone() const
 {
   return (new RPCObject(*this)); //XXX 
 }
-
-//DValue RPCObject::getValue(size_t index) const
-//{
-  //return (this->__realObject->getValue(index));
-//}
-
-//void RPCObject::setValue(size_t idx, DValue const &v)
-//{
-  //this->__realObject->setValue(idx, v);
-//}
-
-//DValue RPCObject::call(size_t index, DValue const &v)
-//{
-  //return (this->__realObject->call(index, v));
-//}
 
  }

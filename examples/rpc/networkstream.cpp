@@ -29,9 +29,9 @@ int32_t NetworkStream::write(std::string const& str) const
   return str.size();
 }
 
-int32_t NetworkStream::write(uint64_t const& id) const
+int32_t NetworkStream::write(uint64_t id) const
 {
-  this->write((void*)id, sizeof(id));
+  return (this->write((void*)&id, sizeof(id)));
 }
 
 int32_t NetworkStream::write(void* buff, int32_t size) const 
@@ -53,9 +53,9 @@ int32_t NetworkStream::read(std::string & readValue)
   return readValue.size();
 }
 
-int32_t NetworkStream::read(uint64_t const& id)
+int32_t NetworkStream::read(uint64_t* id)
 {
-  this->read((void*)id, sizeof(id));
+  return (this->read((void*)id, sizeof(id)));
 }
 
 int32_t NetworkStream::read(void* buff, int32_t size)

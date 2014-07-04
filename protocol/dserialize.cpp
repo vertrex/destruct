@@ -98,16 +98,16 @@ DStruct* DSerializeBinary::deserialize(DStream& input)
   return (dstruct); 
 }
 
-bool DSerializeBinary::serialize(DStream& output, DValue value, DType type)
+bool DSerializeBinary::serialize(DStream& output, DValue value, DType::Type_t type)
 {
   output << value;
 
   return (false);
 }
 
-DValue DSerializeBinary::deserialize(DStream& input, DType dtype)
+DValue DSerializeBinary::deserialize(DStream& input, DType::Type_t dtype)
 {
-  DValue value(dtype.newValue());
+  DValue value(DType(dtype).newValue());
   input >> value;
 
   return (value);
@@ -225,12 +225,12 @@ bool DSerializeXML::serialize(DStream& output, DObject& dobject, int depth)
   return (true);
 }
 
-bool DSerializeXML::serialize(DStream& output, DValue value, DType type)
+bool DSerializeXML::serialize(DStream& output, DValue value, DType::Type_t type)
 {
   return (false);
 }
 
-DValue DSerializeXML::deserialize(DStream& input, DType type)
+DValue DSerializeXML::deserialize(DStream& input, DType::Type_t type)
 {
   DValue value;
   return value;
@@ -326,12 +326,12 @@ bool DSerializeText::serialize(DStream& output, DObject& dobject, int depth)
 }
 
 
-bool DSerializeText::serialize(DStream& output, DValue value, DType type)
+bool DSerializeText::serialize(DStream& output, DValue value, DType::Type_t type)
 {
   return (false);
 }
 
-DValue DSerializeText::deserialize(DStream& input, DType type)
+DValue DSerializeText::deserialize(DStream& input, DType::Type_t type)
 {
   DValue value;
   return value;
@@ -430,12 +430,12 @@ bool DSerializeRaw::deserialize(DStream& input, DObject& dobject)
   return (true);
 }
 
-bool DSerializeRaw::serialize(DStream& output, DValue value, DType type)
+bool DSerializeRaw::serialize(DStream& output, DValue value, DType::Type_t type)
 {
   return (false);
 }
 
-DValue DSerializeRaw::deserialize(DStream& input, DType type)
+DValue DSerializeRaw::deserialize(DStream& input, DType::Type_t type)
 {
   DValue value;
   return value;

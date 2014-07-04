@@ -48,14 +48,12 @@ public:
 
   DStreamBase& serialize(DStreamBase& os) const
   {
-    std::cout << "unserialize default implem " << std::endl;
     os.write((char *)&this->__val, sizeof(this->__val));
     return (os);
   }
 
   DStreamBase& unserialize(DStreamBase& is)
   {
-    std::cout << "serialize default implem " << std::endl;
     is.read((char *)&this->__val, sizeof(this->__val));
     return (is);
   }

@@ -17,7 +17,9 @@ public:
  //parent? 
 /*
  *  DStruct declaration
- */ 
+ */
+  ~File() {};
+ 
   static size_t ownAttributeCount()
   {
     return (3);
@@ -27,6 +29,7 @@ public:
   {
     static DAttribute  attributes[] = 
     {
+//XXX add id 
       DAttribute(DType::DInt64Type,"size"), 
       DAttribute(DType::DUnicodeStringType, "name"),
       DAttribute(DType::DUnicodeStringType, "path", DType::DNoneType),
@@ -77,6 +80,7 @@ public:
   {
     static DAttribute  attributes[] = 
     {
+//XXX add id 
       DAttribute(DType::DUnicodeStringType, "name"),
       DAttribute(DType::DUnicodeStringType, "path", DType::DNoneType),
       DAttribute(DType::DObjectType, "children"), 

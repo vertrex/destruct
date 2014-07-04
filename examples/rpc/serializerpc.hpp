@@ -3,18 +3,17 @@
 
 #include "protocol/dserialize.hpp"
 #include "networkstream.hpp"
+#include "server.hpp"
 
 namespace Destruct
 {
 //class DeserialzieRPC //implem separer ? 
 
 //class SerializeRPC // imeplem sperare ? finnalement plus logique ? 
-
-
 class DSerializeRPC : public DSerialize
 {
 public:
-  DSerializeRPC(NetworkStream networkStream);//OBjectManager 
+  DSerializeRPC(NetworkStream networkStream, ObjectManager & objects);//OBjectManager 
   const std::string name(void); 
   DSerializeRPC*   create(void);
 
@@ -28,10 +27,11 @@ public:
   bool serialize(DStream& output, const std::string& str);
   bool deserialize(DStream& input, std::string& str);
 
-  bool serialize(DStream& output, DValue value, DType type);
-  DValue deserialize(DStream& input, DType type);
+  bool serialize(DStream& output, DValue value, DType::Type_t type);
+  DValue deserialize(DStream& input, DType::Type_t type);
 private:
   NetworkStream __networkStream;
+  ObjectManager & __objects;
 //objectManager get ...  
  
 //serialization buffer ? non c la stream mais la meme que la stream de comm ?

@@ -23,15 +23,14 @@ public:
   {
   }
 
+  virtual ~DPointerBase()
+  {
+  }
+
   //virtual void default(CPPClass* obj) access base method if overwriten  
   //{
   // 
   //}
-
-  virtual ~DPointerBase() 
-  {
-  };
-
 protected:
   DPointerBase() 
   {
@@ -46,6 +45,10 @@ class DMemberPointer : public DPointerBase<CPPClass>
 {
 public:
   DMemberPointer( RealReturnType CPPClass::* member )  : __member(member)
+  {
+  }
+
+  virtual ~DMemberPointer() 
   {
   }
 
@@ -216,7 +219,7 @@ public:
   {
   }
 
-  ~DPointer()
+  virtual ~DPointer()
   {
     delete __pointerBase;
   }

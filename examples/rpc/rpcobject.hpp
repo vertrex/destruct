@@ -8,7 +8,7 @@
 #include "protocol/dmutablestruct.hpp"
 
 #include "networkstream.hpp"
-
+#include "server.hpp"
 //using namespace Destruct;
 
 //sert pas vraiment a grd chose en faite autant faire un DSerializeRaw(&struct, stream) register(struct, name)
@@ -20,7 +20,7 @@ class DSerialize;
 class RPCObject : public DDynamicObject
 {
 public:
-  RPCObject(NetworkStream stream, uint64_t id, DStruct* dstruct); //et on passe la struct plus simple 
+  RPCObject(NetworkStream stream, uint64_t id, DStruct* dstruct, ObjectManager & objects); //et on passe la struct plus simple 
   RPCObject(DStruct* dstruct, DValue const& args);
   RPCObject(RPCObject const & rhs);
   ~RPCObject();

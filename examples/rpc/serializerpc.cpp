@@ -10,7 +10,7 @@
 namespace Destruct
 {
 
-DSerializeRPC::DSerializeRPC(NetworkStream stream) : __networkStream(stream)
+DSerializeRPC::DSerializeRPC(NetworkStream stream, ObjectManager & objects) : __networkStream(stream), __objects(objects)
 {
 }
 
@@ -21,7 +21,7 @@ const std::string DSerializeRPC::name(void)
 
 DSerializeRPC*   DSerializeRPC::create(void)
 {
-  return (new DSerializeRPC(this->__networkStream));
+  return (new DSerializeRPC(this->__networkStream, this->__objects));
 }
 
 //throw rather than many check // ? use ./open read rather than slow stream?
@@ -95,9 +95,9 @@ DStruct* DSerializeRPC::deserialize(DStream& input)
   return (dstruct); 
 }
 
-bool DSerializeRPC::serialize(DStream& output, DValue value, DType type)
+bool DSerializeRPC::serialize(DStream& output, DValue value, DType::Type_t type)
 {
-  if (type.getType() == DType::DObjectType)
+  if (type == DType::DObjectType)
   {
     DObject* dobject = value.get<DObject*>();
     this->serialize(output, *dobject);
@@ -111,39 +111,35 @@ bool DSerializeRPC::serialize(DStream& output, DValue value, DType type)
 bool DSerializeRPC::serialize(DStream& output, DObject&  dobject)
 {
   DValue v = RealValue<DUnicodeString>(dobject.instanceOf()->name());
-//  objectManager->get(); ...
-
-//XXX HAHAH c la merde :) 
-
-//  DUInt64 id = dobject.getValue("id").get<DUInt64>(); //XXX XXX XXX XXX send it :) 
-//  DUInt64 id = dobject.call("id").get<DUInt64>(); //XXX XXX XXX XXX send it :) 
-//  this->server()->getObject(id); ...
+  DUInt64 id = this->__objects.registerObject(&dobject);
+  DValue rid = RealValue<DUInt64>(id);
 
   output << v;
-
+  output << rid;
+ 
   return (true);
 }
 
-DValue DSerializeRPC::deserialize(DStream& input, DType dtype)
+DValue DSerializeRPC::deserialize(DStream& input, DType::Type_t type)
 {
-  if (dtype.getType() == DType::DObjectType)
+  if (type == DType::DObjectType)
   {
     DValue rstring = RealValue<DUnicodeString>("");        
+ 
+    DValue id = RealValue<DUInt64>();
     input >>  rstring; //input >> objectName; //not implemented for string !
+    input >> id;
     std::string objectName = rstring.get<DUnicodeString>();
-
 
     DStruct* dstruct = Destruct::Destruct::instance().find(objectName);
     if (dstruct == NULL)
     {
-      std::cout << "Can't deserialize object not find in base must get itstruct name :  " << objectName << std::endl;
+      std::cout << "Can't deserialize object not find in base must get struct named :  " << objectName << std::endl;
       return RealValue<DObject*>(DNone);
     } 
-    //XXX XXX XXX XXX READ ID HERE TO GET THE RIGHT OBJECT
-
-    return RealValue<DObject*>(new RPCObject(this->__networkStream, 0, dstruct)); //serialize/dserialize uri too //XXX fix me please
+    return RealValue<DObject*>(new RPCObject(this->__networkStream, id.get<DUInt64>(), dstruct, this->__objects));
   }
-  DValue value(dtype.newValue());
+  DValue value(DType(type).newValue());
   input >> value;
 
   return (value);
