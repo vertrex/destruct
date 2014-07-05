@@ -27,6 +27,7 @@ DSerializeRPC*   DSerializeRPC::create(void)
 //throw rather than many check // ? use ./open read rather than slow stream?
 bool DSerializeRPC::serialize(DStream& output, DStruct& dstruct)
 {
+        //std::cout << "SERIALIZE 1 " << std::endl;
   if (this->serialize(output, dstruct.name()) == false)
     return (false);
 
@@ -57,46 +58,49 @@ bool DSerializeRPC::serialize(DStream& output, DStruct& dstruct)
   return (true);
 }
 
-DStruct* DSerializeRPC::deserialize(DStream& input)
+DStruct* DSerializeRPC::deserialize(DStream& input) //UNUSED
 { 
-  std::string name;
-  size_t attributeCount;
-  DStruct* dstruct = NULL; 
+  //std::cout << "SERIALIZE 2 " << std::endl;
+  //std::string name;
+  //size_t attributeCount;
+  //DStruct* dstruct = NULL; 
 
-  if (this->deserialize(input, name) == false)
-    return (NULL);
-  if (input.read((char*)&attributeCount, sizeof(size_t)).fail())
-    return (NULL);
+  //if (this->deserialize(input, name) == false)
+    //return (NULL);
+  //if (input.read((char*)&attributeCount, sizeof(size_t)).fail())
+    //return (NULL);
  
-  if ((dstruct = new DStruct(0, name, DSimpleObject::newObject)) == NULL) //XXX parent etc !! SimpleObject ?
-    return (NULL);
-  for (size_t i = 0; i < attributeCount; i++) 
-  {
-     DType::Type_t type;
-     std::string   name;
+  //if ((dstruct = new DStruct(0, name, DSimpleObject::newObject)) == NULL) //XXX parent etc !! SimpleObject ?
+    //return (NULL);
+  //for (size_t i = 0; i < attributeCount; i++) 
+  //{
+     //DType::Type_t type;
+     //std::string   name;
 
-     if (this->deserialize(input, name) == false)
-       return (NULL);
-     if (input.read((char*)&type, sizeof(type)).fail())
-       return (NULL); //strange error checking !
-     if (type == DType::DMethodType)
-     {
-       DType::Type_t argumentType;
-       DType::Type_t returnType;
-       if (input.read((char*)&argumentType, sizeof(type)).fail())
-         return (NULL); //s
-       if (input.read((char*)&returnType, sizeof(type)).fail())
-         return (NULL); //s
-       dstruct->addAttribute(DAttribute(returnType, name, argumentType, type));
-     }
-     else
-       dstruct->addAttribute(DAttribute(type, name));
-  }
-  return (dstruct); 
+     //if (this->deserialize(input, name) == false)
+       //return (NULL);
+     //if (input.read((char*)&type, sizeof(type)).fail())
+       //return (NULL); //strange error checking !
+     //if (type == DType::DMethodType)
+     //{
+       //DType::Type_t argumentType;
+       //DType::Type_t returnType;
+       //if (input.read((char*)&argumentType, sizeof(type)).fail())
+         //return (NULL); //s
+       //if (input.read((char*)&returnType, sizeof(type)).fail())
+         //return (NULL); //s
+       //dstruct->addAttribute(DAttribute(returnType, name, argumentType, type));
+     //}
+     //else
+       //dstruct->addAttribute(DAttribute(type, name));
+  //}
+  //return (dstruct);
+  return (NULL); 
 }
 
 bool DSerializeRPC::serialize(DStream& output, DValue value, DType::Type_t type)
 {
+        //std::cout << "SERIALIZE 3 " << std::endl;
   if (type == DType::DObjectType)
   {
     DObject* dobject = value.get<DObject*>();
@@ -110,6 +114,7 @@ bool DSerializeRPC::serialize(DStream& output, DValue value, DType::Type_t type)
 
 bool DSerializeRPC::serialize(DStream& output, DObject&  dobject)
 {
+        //std::cout << "SERIALIZE 4 " << std::endl;
   DValue v = RealValue<DUnicodeString>(dobject.instanceOf()->name());
   DUInt64 id = this->__objects.registerObject(&dobject);
   DValue rid = RealValue<DUInt64>(id);
@@ -122,6 +127,7 @@ bool DSerializeRPC::serialize(DStream& output, DObject&  dobject)
 
 DValue DSerializeRPC::deserialize(DStream& input, DType::Type_t type)
 {
+        //std::cout << "SERIALIZE 5 " << std::endl;
   if (type == DType::DObjectType)
   {
     DValue rstring = RealValue<DUnicodeString>("");        
@@ -145,15 +151,17 @@ DValue DSerializeRPC::deserialize(DStream& input, DType::Type_t type)
   return (value);
 }
 
-bool DSerializeRPC::deserialize(DStream& input, DObject& dobject) //XXX must return a DOBject can't construct it before !
+bool DSerializeRPC::deserialize(DStream& input, DObject& dobject) //UNUSED //XXX must return a DOBject can't construct it before !
 {
+  //std::cout << "SERIALIZE 6 " << std::endl;
   return (false);
 }
 
-//king of specialization for string type 
 
+//kind of specialization for string type 
 bool DSerializeRPC::serialize(DStream& output, const std::string& str)
 {
+        //std::cout << "SERIALIZE 7 " << std::endl;
  size_t ssize = str.size();
   
   if (output.write((char*)&ssize, sizeof(ssize)).fail())
@@ -164,21 +172,22 @@ bool DSerializeRPC::serialize(DStream& output, const std::string& str)
   return (true);
 }
 
-bool DSerializeRPC::deserialize(DStream& input, std::string& str)
+bool DSerializeRPC::deserialize(DStream& input, std::string& str)//UNUSED
 {
-  size_t ssize;
-  if (input.read((char*)&ssize, sizeof(size_t)).fail())
-    return (false);
+  //std::cout << "SERIALIZE 8 " << std::endl;
+  //size_t ssize;
+  //if (input.read((char*)&ssize, sizeof(size_t)).fail())
+    //return (false);
 
-  char* buff = new char[ssize];
+  //char* buff = new char[ssize];
 
-  if (buff == NULL)
-    return (false);
-  if (input.read(buff, ssize).fail())
-    return (false);
+  //if (buff == NULL)
+    //return (false);
+  //if (input.read(buff, ssize).fail())
+    //return (false);
 
-  str = std::string(buff, ssize);
-  delete[] buff;  
+  //str = std::string(buff, ssize);
+  //delete[] buff;  
 
   return (true);
 }

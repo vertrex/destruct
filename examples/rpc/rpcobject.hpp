@@ -41,6 +41,7 @@ private:
   uint64_t      __id;
   NetworkStream __stream;
   DSerialize*   __serializer;
+  DStreamString  __streamString;
   //DRPCSerializer __serializer;
 };
 }

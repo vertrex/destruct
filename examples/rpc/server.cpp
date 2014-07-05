@@ -221,7 +221,7 @@ void            Server::serve(void)
   }
 }
 
-RPCServer::RPCServer(NetworkStream networkStream, ObjectManager & objectManager) : __networkStream(networkStream), __objectManager(objectManager)
+RPCServer::RPCServer(NetworkStream networkStream, ObjectManager & objectManager) : __networkStream(networkStream), __objectManager(objectManager), __streamString(DStreamString(Destruct::Destruct::instance().find("DStreamString"), RealValue<DObject*>(DNone)))
 {
 
 }
@@ -232,17 +232,13 @@ void    RPCServer::getValue(DObject* object)
   this->__networkStream.read(name);
   Destruct::DValue value = object->getValue(name);
 
-  Destruct::Destruct& destruct = Destruct::Destruct::instance();
-  DStruct* streamStringStruct = destruct.find("DStreamString"); //makeNew ou cast new object !! XXX
-  DStreamString streamString(streamStringStruct, RealValue<DObject*>(DNone));
-
   DType type = object->instanceOf()->attribute(name).type();
 
   DSerialize* binarySerializer = new DSerializeRPC(this->__networkStream, this->__objectManager);
-  binarySerializer->serialize(streamString, value, type.getType());
+  binarySerializer->serialize(this->__streamString, value, type.getType());
 
-  std::string buffValue = streamString.str();
-  this->__networkStream.write(buffValue); //XXX \0 ? send size then ..
+  this->__networkStream.write(this->__streamString.str()); //XXX \0 ? send size then ..
+  this->__streamString.clear();
 }
 
 void    RPCServer::setValue(DObject* object)
@@ -251,16 +247,12 @@ void    RPCServer::setValue(DObject* object)
   this->__networkStream.read(name);
   this->__networkStream.read(args);
 
-  Destruct::Destruct& destruct = Destruct::Destruct::instance();
-  DStruct* streamStringStruct = destruct.find("DStreamString"); //makeNew ou cast new object !! XXX
-  DStreamString streamString(streamStringStruct, RealValue<DObject*>(DNone));
-
-  streamString.write(args.c_str(), args.size());
-
+  this->__streamString.write(args.c_str(), args.size());
   Destruct::DValue value = object->getValue(name);  //to type it at construction //better call attributes(find).type.newValue()
-  streamString >> value;
+  this->__streamString >> value;
 
   object->setValue(name, value);
+  this->__streamString.clear();
 }
 
 void    RPCServer::call(DObject* object)
@@ -270,26 +262,24 @@ void    RPCServer::call(DObject* object)
   this->__networkStream.read(sargs);
 
 /* get arg value hugly not compatible with obj must use serializer*/
-  Destruct::Destruct& destruct = Destruct::Destruct::instance();
-  DStruct* streamStringStruct = destruct.find("DStreamString"); //makeNew ou cast new object !! XXX
-  DStreamString streamString(streamStringStruct, RealValue<DObject*>(DNone));
-  streamString.write(sargs.c_str(), sargs.size());
+  this->__streamString.write(sargs.c_str(), sargs.size());
 
 //XXX 
   Destruct::DValue args(DType(object->instanceOf()->attribute(name).type().getArgumentType()).newValue());
-  streamString >> args;
+  this->__streamString >> args;
 
 /* call func with args */
   Destruct::DValue value = object->call(name, args); 
 
 /* send return value */
-  DStreamString rstreamString(streamStringStruct, RealValue<DObject*>(DNone));
+  this->__streamString.clear();
   DType type = object->instanceOf()->attribute(name).type();
   DSerialize* binarySerializer = new DSerializeRPC(this->__networkStream, this->__objectManager);
-  binarySerializer->serialize(rstreamString, value, type.getReturnType());
+  binarySerializer->serialize(this->__streamString, value, type.getReturnType());
 
-  std::string buffValue = rstreamString.str();
+  std::string buffValue = this->__streamString.str();
   this->__networkStream.write(buffValue); //XXX \0 ? send size then ..
+  this->__streamString.clear();
 }
 
 void    RPCServer::call0(DObject* object)
@@ -299,16 +289,13 @@ void    RPCServer::call0(DObject* object)
 
   Destruct::DValue value = object->call(name); 
   
-  Destruct::Destruct& destruct = Destruct::Destruct::instance();
-  DStruct* streamStringStruct = destruct.find("DStreamString"); //makeNew ou cast new object !! XXX
-  DStreamString streamString(streamStringStruct, RealValue<DObject*>(DNone));
-
   DType type = object->instanceOf()->attribute(name).type();
   DSerialize* binarySerializer = new DSerializeRPC(this->__networkStream, this->__objectManager);
-  binarySerializer->serialize(streamString, value, type.getReturnType());
+  binarySerializer->serialize(this->__streamString, value, type.getReturnType());
 
-  std::string buffValue = streamString.str();
+  std::string buffValue = this->__streamString.str();
   this->__networkStream.write(buffValue); //XXX \0 ? send size then ..
+  this->__streamString.clear();
 }
 
 ObjectManager::ObjectManager() : __currentID(0)

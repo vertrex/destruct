@@ -30,8 +30,9 @@ public:
   void                  call(Destruct::DObject* object);
   void                  call0(Destruct::DObject* object);
 private:
-  Destruct::NetworkStream         __networkStream;
+  Destruct::NetworkStream    __networkStream;
   ObjectManager &            __objectManager;
+  Destruct::DStreamString    __streamString;
 };
 
 

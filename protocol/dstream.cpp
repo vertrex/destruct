@@ -201,4 +201,9 @@ const std::string DStreamString::str(void) const //seek etc ?
   return (this->__stream.str());
 }
 
+void DStreamString::clear(void) 
+{
+  this->__stream.str("");;
+}
+
 }

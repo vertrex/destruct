@@ -12,19 +12,19 @@ namespace Destruct {
 /**
  *  RPCObject Proxy object that handle transparent remote communication and let you use your object as a local object
  */
-RPCObject::RPCObject(NetworkStream stream, uint64_t id, DStruct* dstruct, ObjectManager & objects) : DDynamicObject(dstruct, RealValue<DObject*>(DNone)), __id(id), __stream(stream), __serializer(new DSerializeRPC(stream, objects)) //args
+RPCObject::RPCObject(NetworkStream stream, uint64_t id, DStruct* dstruct, ObjectManager & objects) : DDynamicObject(dstruct, RealValue<DObject*>(DNone)), __id(id), __stream(stream), __serializer(new DSerializeRPC(stream, objects)), __streamString(DStreamString(Destruct::instance().find("DStreamString"), RealValue<DObject*>(DNone))) //args
 {
   //serialize DStruct & create member ? 
   //DStream = args.getValue("Stream"); //XXX else throw !
   this->init(this);
 }
 
-RPCObject::RPCObject(DStruct* dstruct, DValue const& args) : DDynamicObject(dstruct, args), __stream(0, RealValue<DInt64>(0)) //XXX fix me stream as DOBject
+RPCObject::RPCObject(DStruct* dstruct, DValue const& args) : DDynamicObject(dstruct, args), __stream(0, RealValue<DInt64>(0)), __streamString(DStreamString(Destruct::instance().find("DStreamString"), RealValue<DObject*>(DNone))) //XXX fix me stream as DOBject
 {
   this->init(this);
 }
 
-RPCObject::RPCObject(RPCObject const & rhs) : DDynamicObject(rhs), __stream(rhs.__stream)
+RPCObject::RPCObject(RPCObject const & rhs) : DDynamicObject(rhs), __stream(rhs.__stream),  __streamString(DStreamString(Destruct::instance().find("DStreamString"), RealValue<DObject*>(DNone))) 
 {
   this->copy(this, rhs);
 }
@@ -47,14 +47,14 @@ DValue RPCObject::getValue(std::string const& name) const
   std::string valueBuffer;
   ((NetworkStream)this->__stream).read(valueBuffer);
 
-  DStruct* dstruct =  Destruct::instance().find("DStreamString"); //Virer moi cet merde :)
-  DStreamString streamString = DStreamString(dstruct, RealValue<DObject*>(DNone));
+  DStreamString& streamString = const_cast<DStreamString &>(this->__streamString);
   streamString.write(valueBuffer.c_str(), valueBuffer.size());
   streamString.write("\x00", 1);
 
   DType  dtype = this->instanceOf()->attribute(name).type();
   DValue dvalue = this->__serializer->deserialize(streamString, dtype.getType());
 
+  streamString.clear(); //important
   return dvalue;
 }
 
@@ -64,11 +64,10 @@ void RPCObject::setValue(std::string const& name, DValue const &v)
   this->__stream.write(this->__id);
   this->__stream.write(name);
 
-  DStruct* dstruct =  Destruct::instance().find("DStreamString") ;
-  DStreamString streamString = DStreamString(dstruct, RealValue<DObject*>(DNone));
-  streamString << (DValue&)v; ///XXX fix me with deserializer please ? for object etc.. ?
+  this->__streamString << (DValue&)v; ///XXX fix me with deserializer please ? for object etc.. ?
 
-  this->__stream.write(streamString.str());
+  this->__stream.write(this->__streamString.str());
+  this->__streamString.clear();
 }
                                         
 DValue RPCObject::call(std::string const& name, DValue const &v)//XXX UNTESTED
@@ -78,25 +77,23 @@ DValue RPCObject::call(std::string const& name, DValue const &v)//XXX UNTESTED
   this->__stream.write(name);
 
   /* Send argument (object is not compatible) */
-  DStruct* dstruct =  Destruct::instance().find("DStreamString") ;
-  DStreamString streamString = DStreamString(dstruct, RealValue<DObject*>(DNone));
-  streamString << (DValue&)v; ///XXX fix me with deserializer please ? for object etc.. ?
+  this->__streamString << (DValue&)v; ///XXX fix me with deserializer please ? for object etc.. ?
 
-  this->__stream.write(streamString.str());
+  this->__stream.write(this->__streamString.str());
 
+  this->__streamString.clear(); 
   /* get return value */
   std::string returnValueBuffer;
   ((NetworkStream)this->__stream).read(returnValueBuffer);
 
-  DStreamString rstreamString = DStreamString(dstruct, RealValue<DObject*>(DNone));
-  rstreamString.write(returnValueBuffer.c_str(), returnValueBuffer.size()); 
-  rstreamString.write("\x00", 1); // heheheheheoooo c pas tjrs des string ! 
+  this->__streamString.write(returnValueBuffer.c_str(), returnValueBuffer.size()); 
+  this->__streamString.write("\x00", 1); // heheheheheoooo c pas tjrs des string ! 
 
   DType  dtype = this->instanceOf()->attribute(name).type();
-  DValue dvalue = this->__serializer->deserialize(rstreamString, dtype.getReturnType()); // ==>  streamString >> dvalue;
+  DValue dvalue = this->__serializer->deserialize(this->__streamString, dtype.getReturnType()); // ==>  streamString >> dvalue;
+  this->__streamString.clear(); //important 
 
-  return dvalue;
-
+  return (dvalue);
 }
 
 DValue RPCObject::call(std::string const& name)
@@ -108,14 +105,12 @@ DValue RPCObject::call(std::string const& name)
   std::string returnValueBuffer;
   ((NetworkStream)this->__stream).read(returnValueBuffer);
 
-  DStruct* dstruct =  Destruct::instance().find("DStreamString") ;
-  DStreamString streamString = DStreamString(dstruct, RealValue<DObject*>(DNone));
-  streamString.write(returnValueBuffer.c_str(), returnValueBuffer.size()); 
-  streamString.write("\x00", 1); // heheheheheoooo c pas tjrs des string ! 
+  this->__streamString.write(returnValueBuffer.c_str(), returnValueBuffer.size()); 
+  this->__streamString.write("\x00", 1); // heheheheheoooo c pas tjrs des string ! 
 
   DType  dtype = this->instanceOf()->attribute(name).type();
-  DValue dvalue = this->__serializer->deserialize(streamString, dtype.getReturnType()); // ==>  streamString >> dvalue;
-
+  DValue dvalue = this->__serializer->deserialize(this->__streamString, dtype.getReturnType()); // ==>  streamString >> dvalue;
+  this->__streamString.clear();
   return dvalue;
 }
 

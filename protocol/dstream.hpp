@@ -117,10 +117,10 @@ public:
   DStreamString(DStruct* dstruct, DValue const &args);
   DStreamString(const DStreamString& copy);
   ~DStreamString();
-  DStream& read(char*  buff, uint32_t size);
-  DStream& write(const char* buff, uint32_t size);
+  DStream&          read(char*  buff, uint32_t size);
+  DStream&          write(const char* buff, uint32_t size);
   const std::string str(void) const;
-
+  void              clear(void);    
   //DStream& operator>>(std::string& val); 
   //DStream& operator<<(std::string val);
   //virtual DInt64 write(DValue const& args);

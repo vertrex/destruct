@@ -100,8 +100,6 @@ bool    Client::print(DObject* dobject) const
   if (!dobject)
     return (false);
 
-  DObject& object = *dobject;
- 
   Destruct::DSerializers::to("Text")->serialize(*outStream, *dobject);
   return (true);
 }
