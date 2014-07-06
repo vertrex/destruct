@@ -150,11 +150,17 @@ DObject* DVector<DObject*, DType::DObjectType >::serializeText(DValue const& arg
   DInt32 depth = arguments->getValue("depth").get<DInt32>();
 
   *output << "list : {" <<  std::string(2*depth, ' ') << std::endl;
-  DUInt64 size = static_cast<DFunctionObject*>(this->_size)->call().get<DUInt64>();
+
+  //DUInt64 size = static_cast<DFunctionObject*>(this->_size)->call().get<DUInt64>();
+  DUInt64 size = this->call("size").get<DUInt64>(); // static_cast<DFunctionObject*>(this->_size)->call().get<DUInt64>();
+  std::cout << "size " << size << std::endl;
   for (DUInt64 idx = 0; idx < size ; idx++)
+  {
+    std::cout << "foring " << std::endl;
     DSerializers::to("Text")->serialize(*output, *this->__vector[idx]);
+  }
   *output << std::string(2*depth, ' ')  << "}" << std::endl;
-      
+
   return RealValue<DObject*>(DNone);
 }
 

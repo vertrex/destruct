@@ -17,7 +17,7 @@ public:
                         Server(); 
   void                  initFS(void);
   void                  serve(void);
-  void                  showFS(void);
+  void                  showRoot(void);
   void                  unknown(Destruct::NetworkStream stream);
 private:
   ObjectManager         __objectManager;

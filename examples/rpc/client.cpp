@@ -81,7 +81,7 @@ void    Client::start(void)
 
   }
 
-  //this->__print(remote); ///XXX XXX XXX RPC OBJECT DOESN'T IMPLEMENT FUNCTION BY ID
+  this->__print(remote);
   std::cout << "done !" << std::endl;
 }
 

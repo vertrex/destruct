@@ -12,7 +12,7 @@ namespace Destruct {
 /**
  *  RPCObject Proxy object that handle transparent remote communication and let you use your object as a local object
  */
-RPCObject::RPCObject(NetworkStream stream, uint64_t id, DStruct* dstruct, ObjectManager & objects) : DDynamicObject(dstruct, RealValue<DObject*>(DNone)), __id(id), __networkStream(stream), __serializer(new DSerializeRPC(stream, objects))
+RPCObject::RPCObject(NetworkStream stream, uint64_t id, DStruct* dstruct, ObjectManager & objects) : DDynamicObject(dstruct, RealValue<DObject*>(DNone)), __id(id), __networkStream(stream), __serializer(new DSerializeRPC(stream, objects)), __object(dstruct->newObject())
 {
   this->init(this);
 }
@@ -62,10 +62,13 @@ void RPCObject::setValue(std::string const& name, DValue const &v)
                                         
 DValue RPCObject::call(std::string const& name, DValue const &v)
 {
+  DType  dtype = this->instanceOf()->attribute(name).type();
+  if (name == "serializeText")
+    return (this->__object->call(name, v));
+
   this->__networkStream.write(std::string("call"));
   this->__networkStream.write(this->__id);
   this->__networkStream.write(name);
-  DType  dtype = this->instanceOf()->attribute(name).type();
 
   /* Send argument (object is not compatible) */
   this->__serializer->serialize(this->__networkStream, v, dtype.getArgumentType());
@@ -88,15 +91,13 @@ DValue RPCObject::call(std::string const& name)
   return (dvalue);
 }
 
-//XXX XXX XX
 DValue RPCObject::getValue(size_t index) const
 {
   DAttribute attribute = this->instanceOf()->attribute(index);
-  //XXX error call getValue on method ...
  
   if (attribute.type().getType() != DType::DMethodType)
-    return this->getValue(attribute.name());
-  return RealValue<DObject*>(DNone);
+    return (this->getValue(attribute.name()));
+  return (RealValue<DObject*>(DNone));
 }
 
 void RPCObject::setValue(size_t index, DValue const &value)
@@ -108,12 +109,12 @@ void RPCObject::setValue(size_t index, DValue const &value)
 DValue RPCObject::call(size_t index, DValue const &value)
 {
   std::string name = this->instanceOf()->attribute(index).name();
-  return (this->call(name, value));  //use call 0 if None ?
+  return (this->call(name, value));  //use call 0 ? 
 }
 
 DObject* RPCObject::clone() const
 {
-  return (new RPCObject(*this)); //XXX 
+  return (new RPCObject(*this));
 }
 
 }

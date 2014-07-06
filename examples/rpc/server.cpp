@@ -107,17 +107,16 @@ void            Server::serve(void)
   NetworkStream stream = NetworkStream(NULL, RealValue<DInt32>(this->__connectionSocket));
   RPCServer rpcServer(stream, this->__objectManager);
   this->initFS();
-  this->showFS();
+  this->showRoot();
 
   while (true)
   {
-  uint64_t id = 0;
-    std::cout << "Wait for message..." << std::endl;
+    uint64_t id = 0;
     std::string msg;
     stream.read(msg);
 
     if (msg == "show") 
-      this->showFS();
+      this->showRoot();
     else if (msg == "findDStruct")
     {
       rpcServer.findDStruct();
@@ -147,21 +146,16 @@ void            Server::serve(void)
       rpcServer.call0(currentObject);
     }
     else
-    { 
-      std::cout << "unknown command " << std::endl;
       this->unknown(stream);
-    }
   }
 }
 
-void            Server::showFS(void)
+void            Server::showRoot(void)
 {
-  std::cout << "Remote exec -> Execute 'show' on server : done" << std::endl;
   Destruct::Destruct& destruct = Destruct::Destruct::instance();
-  
   DStruct* streamStruct = destruct.find("DStreamCout");
 
-  DStream* stream = new  DStream(streamStruct);  
+  DStream* stream = new DStream(streamStruct); 
   if (stream == NULL)
     std::cout << "Can't find stream to output fs tree" << std::endl;
 
