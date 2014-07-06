@@ -25,6 +25,10 @@ public:
   {
   }
 
+  RealValue(DValue value) : __val(value.get<PlainType>())
+  {
+  }
+
   RealValue()
   {
   }

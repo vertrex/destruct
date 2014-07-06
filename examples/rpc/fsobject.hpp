@@ -8,17 +8,15 @@ using namespace Destruct;
 class File : public DCppObject<File>
 {
 public:
-  File(DStruct* dstruct, Destruct::DValue const& args);
-  DUnicodeString        path(Destruct::DValue const& args);
-
-  RealValue<DUInt64 >           size;
+                                File(DStruct* dstruct, Destruct::DValue const& args);
+                                ~File();
   RealValue<DUnicodeString >    name;
+  RealValue<DUInt64 >           size;
   RealValue<DFunctionObject* >  _path;
- 
-/*
- *  DStruct declaration
- */
-  ~File() {};
+  DUnicodeString                path(Destruct::DValue const& args);
+  /*
+   *  DStruct declaration
+   */
  
   static size_t ownAttributeCount()
   {
@@ -61,15 +59,15 @@ public:
 class Directory : public DCppObject<Directory>
 {
 public:
-  Directory(DStruct* dstruct, Destruct::DValue const& args);
-  DUnicodeString        path(Destruct::DValue const& args);
-
+                                Directory(DStruct* dstruct, Destruct::DValue const& args);
   RealValue<DUnicodeString >    name;
-  RealValue<DFunctionObject* >  _path;
   RealValue<DObject* >          children;
-/*
- *  DStruct declaration
- */ 
+  RealValue<DFunctionObject* >  _path;
+  DUnicodeString                path(Destruct::DValue const& args);
+
+  /*
+   *  DStruct declaration
+   */ 
   static size_t ownAttributeCount()
   {
     return (3);

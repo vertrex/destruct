@@ -57,21 +57,6 @@ void            Server::__listen(void)
   std::cout << "Connection accepted" << std::endl;
 }
 
-int32_t         Server::_receive(void* buff, int32_t size) 
-{
-  return (recv(this->__connectionSocket, buff, size, 0));
-}
-
-int32_t         Server::_send(void* buff, int32_t size) const
-{
-  return (send(this->__connectionSocket, buff, size, 0));
-}
-
-NetworkStream   Server::stream(void)
-{
-  return (NetworkStream(NULL, RealValue<DInt32>(this->__connectionSocket))); //XXX
-}
-
 /**
   Create Fake FS :
 
@@ -116,31 +101,11 @@ void            Server::initFS(void)
   d1children->call("push", RealValue<DObject*>(file3));
 }
 
-void            Server::showFS(void)
-{
-  std::cout << "Remote exec -> Execute 'show' on server : done" << std::endl;
-  Destruct::Destruct& destruct = Destruct::Destruct::instance();
-  
-  DStruct* streamStruct = destruct.find("DStreamCout");
-
-  DStream* stream = new  DStream(streamStruct);  
-  if (stream == NULL)
-    std::cout << "Can't find stream to output fs tree" << std::endl;
-
-  Destruct::DSerializers::to("Text")->serialize(*stream, *this->__objectManager.object(0));
-}
-
-void            Server::unknown(NetworkStream stream)
-{
-  std::cout << "Receive unknown command" << std::endl;
-  stream.write("Unknown command");
-}
-
 void            Server::serve(void)
 {
   DObject* currentObject = RealValue<DObject*>(DNone);
-  NetworkStream stream = this->stream();
-  RPCServer rpcServer(this->stream(), this->__objectManager);
+  NetworkStream stream = NetworkStream(NULL, RealValue<DInt32>(this->__connectionSocket));
+  RPCServer rpcServer(stream, this->__objectManager);
   this->initFS();
   this->showFS();
 
@@ -189,94 +154,22 @@ void            Server::serve(void)
   }
 }
 
-/* 
- *  RPCServer
- */
-RPCServer::RPCServer(NetworkStream networkStream, ObjectManager & objectManager) : __networkStream(networkStream), __objectManager(objectManager), __serializer(new DSerializeRPC(networkStream, objectManager))
+void            Server::showFS(void)
 {
-}
-
-void    RPCServer::findDStruct(void)
-{
-  std::string name;
-  this->__networkStream.read(name);
-
+  std::cout << "Remote exec -> Execute 'show' on server : done" << std::endl;
   Destruct::Destruct& destruct = Destruct::Destruct::instance();
-  DStruct* dstruct = destruct.find(name);
-  if (!dstruct)
-   throw std::string("DStruct not found");
-
-  this->__serializer->serialize(this->__networkStream, *dstruct);
-}
-
-void    RPCServer::setValue(DObject* object)
-{
-  std::string name;
-  this->__networkStream.read(name);
-
-  Destruct::DValue value = this->__serializer->deserialize(this->__networkStream, object->instanceOf()->attribute(name).type().getType());
-
-  object->setValue(name, value);
-}
-
-void    RPCServer::getValue(DObject* object)
-{
-  std::string name;
-  this->__networkStream.read(name);
-
-  Destruct::DValue value = object->getValue(name);
-
-  DType type = object->instanceOf()->attribute(name).type();
-  this->__serializer->serialize(this->__networkStream, value, type.getType());
-}
-
-void    RPCServer::call(DObject* object)
-{
-  std::string name;
-  this->__networkStream.read(name);
-
-  Destruct::DValue args = this->__serializer->deserialize(this->__networkStream, object->instanceOf()->attribute(name).type().getArgumentType());
-
-  Destruct::DValue value = object->call(name, args); 
-
-  DType type = object->instanceOf()->attribute(name).type();
-  this->__serializer->serialize(this->__networkStream, value, type.getReturnType());
-}
-
-void    RPCServer::call0(DObject* object)
-{
-  std::string name;
-  this->__networkStream.read(name);
-
-  Destruct::DValue value = object->call(name); 
   
-  DType type = object->instanceOf()->attribute(name).type();
-  this->__serializer->serialize(this->__networkStream, value, type.getReturnType());
+  DStruct* streamStruct = destruct.find("DStreamCout");
+
+  DStream* stream = new  DStream(streamStruct);  
+  if (stream == NULL)
+    std::cout << "Can't find stream to output fs tree" << std::endl;
+
+  Destruct::DSerializers::to("Text")->serialize(*stream, *this->__objectManager.object(0));
 }
 
-ObjectManager::ObjectManager() : __currentID(0)
+void            Server::unknown(NetworkStream stream)
 {
+  std::cout << "Receive unknown command" << std::endl;
+  stream.write("Unknown command");
 }
-
-uint64_t        ObjectManager::registerObject(DObject* object)
-{
-  std::map<uint64_t, DObject*>::const_iterator i= this->__objectsID.begin();
-  for (; i != this->__objectsID.end(); ++i)
-    if (i->second == object)
-      return i->first;
-
-  uint64_t id = this->__currentID;
-  this->__objectsID[id] = object;
-  this->__currentID++;
-  return (id);
-}
-
-DObject*        ObjectManager::object(uint64_t id) const
-{
-  std::map<uint64_t, DObject*>::const_iterator object = this->__objectsID.find(id);
-  if (object != this->__objectsID.end())
-    return (object->second);
-  return RealValue<DObject*>(DNone); 
-}
-
-

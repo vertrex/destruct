@@ -1,5 +1,4 @@
-#include<sys/socket.h>    //socket
-#include<arpa/inet.h> //inet_addr
+#include<arpa/inet.h>
 
 #include "networkstream.hpp"
 
@@ -45,7 +44,7 @@ int32_t NetworkStream::read(std::string & readValue)
   if (this->read(&size, sizeof(size)) != sizeof(size))
     throw std::string("NetworkStream::read can't get size");
   uint8_t*  value = new uint8_t[size + 1];
-  this->read(value, size); //test return value
+  this->read(value, size);
   value[size] = 0;
   readValue = std::string((char*)value, size);
   delete value;
@@ -62,7 +61,6 @@ int32_t NetworkStream::read(void* buff, int32_t size)
 {
   return(recv(this->__socket, buff, size, 0));
 }
-
 
 void NetworkStream::__close(void)
 {
@@ -81,41 +79,12 @@ DStream& NetworkStream::operator>>(DStreamString& output)
   if (this->read(&size, sizeof(size)) != sizeof(size))
     throw std::string("NetworkStream::read can't get size");
   uint8_t*  value = new uint8_t[size + 1];
-  this->read(value, size); //test return value
+  this->read(value, size);
   value[size] = 0;
   output.write((char*)value, size); 
   delete value;
 
   return (*this);
 }
-
-
-/* write */
-//DStream& NetworkStream::operator<<(std::string val) 
-//{
-  //std::cout << "network stream called " << std::endl;
-  ////this->__fstream << val;
-  //return (*this);
-//}
-  
-//DStream& NetworkStream::operator<<(char val)
-//{
-  //std::cout << "char network stream called " << std::endl;
-  ////this->__fstream << val;
-  //return (*this);
-//}
-
-//DStream& NetworkStream::operator<<(DValue val)
-//{
-  //std::cout << "DValue network stream called " << std::endl;
-
-  //std::cout << "DValue network stream ret" << std::endl;
-  
-
-  ////this->__fstream << val;
-  //return (*this);
-//}
-
-
 
 }

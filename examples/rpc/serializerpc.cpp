@@ -3,10 +3,11 @@
 #include "dsimpleobject.hpp"
 #include "destruct.hpp"
 #include "rpcobject.hpp"
+#include "rpcserver.hpp"
+
 /*
  *   DSerializeRPC 
  */
-
 namespace Destruct
 {
 
@@ -14,14 +15,14 @@ DSerializeRPC::DSerializeRPC(NetworkStream stream, ObjectManager & objects) : __
 {
 }
 
-const std::string DSerializeRPC::name(void)
-{
-  return ("RPC");
-}
-
 DSerializeRPC*   DSerializeRPC::create(void)
 {
   return (new DSerializeRPC(this->__networkStream, this->__objects));
+}
+
+const std::string DSerializeRPC::name(void)
+{
+  return ("RPC");
 }
 
 /*

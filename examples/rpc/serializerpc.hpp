@@ -12,21 +12,19 @@ class DSerializeRPC : public DSerialize
 {
 public:
   DSerializeRPC(NetworkStream networkStream, ObjectManager & objects);
-  const std::string name(void); 
-  DSerializeRPC*   create(void);
+  DSerializeRPC*        create(void);
 
-  bool serialize(DStream& output, DStruct& dstruct); 
-  bool serialize(DStream& output, DValue value, DType::Type_t type);
-  bool serialize(DStream& output, DObject& dobject); 
-
-
-  DStruct* deserialize(DStream& input);
-  DValue deserialize(DStream& input, DType::Type_t type);
-  bool deserialize(DStream& input, DObject& dobject);
+  const std::string     name(void); 
+  bool                  serialize(DStream& output, DStruct& dstruct); 
+  bool                  serialize(DStream& output, DValue value, DType::Type_t type);
+  bool                  serialize(DStream& output, DObject& dobject); 
+  DStruct*              deserialize(DStream& input);
+  DValue                deserialize(DStream& input, DType::Type_t type);
+  bool                  deserialize(DStream& input, DObject& dobject);
 private:
-  NetworkStream __networkStream;
-  ObjectManager & __objects;
-  DStreamString  __streamString;
+  NetworkStream         __networkStream;
+  ObjectManager&        __objects;
+  DStreamString         __streamString;
 };
 
 }

@@ -9,9 +9,6 @@
 
 #include "networkstream.hpp"
 #include "server.hpp"
-//using namespace Destruct;
-
-//sert pas vraiment a grd chose en faite autant faire un DSerializeRaw(&struct, stream) register(struct, name)
 
 namespace Destruct {
 
