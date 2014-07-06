@@ -40,8 +40,6 @@ bool DSerializeBinary::serialize(DStream& output, DStruct& dstruct)
   {
     if (this->serialize(output, (*i).name()) == false)
       return (false);
-   
-//un peu bizarre avec les fonctions car comment on c combien on doit deserializer ...
  
     DType::Type_t type = (*i).type().getType();
     if (output.write((char*)&type, sizeof(type)).fail())
@@ -185,8 +183,7 @@ bool DSerializeXML::serialize(DStream& output, DObject& dobject, int depth)
 
   try 
   { 
-    //if dobject.getValue("serialize") : //si non va ralentir et cree  un obj pour rien
-
+    //if dobject.getValue("serialize") :
     DMutableObject* arguments = static_cast<DMutableObject*>(Destruct::instance().find("DMutable")->newObject());
     arguments->setValueAttribute(DType::DObjectType, "stream", RealValue<DObject*>(&output));
     arguments->setValueAttribute(DType::DUnicodeStringType, "type", RealValue<DUnicodeString>("XML"));
@@ -214,7 +211,7 @@ bool DSerializeXML::serialize(DStream& output, DObject& dobject, int depth)
     }
     //else if(i->type().getType() == DType::DMethodType)
     //{
-      //const std::string tag = i->type().returnName() + " " + i->type().name() + "(" + i->type().argumentName() + ") *"; //test pour voir... can't get value so affiche le type ?  ou juste DMethod* ?  plutot utile ds dserialize DStruct ?
+      //const std::string tag = i->type().returnName() + " " + i->type().name() + "(" + i->type().argumentName() + ") *"; 
       //XMLTag(output, i->name(), tag, depth);
     //}
     else    
@@ -284,10 +281,6 @@ bool DSerializeText::serialize(DStream& output, DObject& dobject, int depth)
   output << std::string(2*depth, ' ') << dstruct->name() << std::endl;
   output << std::string(2*depth++, ' ') <<  "{" << std::endl;
 
-  //2 choix if object have method serialize
-  //        if object have method iterator 
-  // probleme comment savoir coment serializer :) 
-
   for (DStruct::DAttributeIterator i = dstruct->attributeBegin(); i != dstruct->attributeEnd(); ++i, ++x)
   {
     if (i->type().getType() == DType::DObjectType)
@@ -305,9 +298,6 @@ bool DSerializeText::serialize(DStream& output, DObject& dobject, int depth)
 
    if (i->name() == "serializeText")
    {
-     //passer depth en parametre 
-//     DArgument argument.add
-//std::cout << "get DMJUTABLE" << std::endl;
      DMutableObject* arguments = static_cast<DMutableObject*>(Destruct::Destruct::instance().generate("DMutable"));
 
      if (arguments == NULL)

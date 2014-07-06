@@ -14,7 +14,7 @@ public:
   RealValue<DUInt64 >           size;
   RealValue<DUnicodeString >    name;
   RealValue<DFunctionObject* >  _path;
- //parent? 
+ 
 /*
  *  DStruct declaration
  */
@@ -29,7 +29,6 @@ public:
   {
     static DAttribute  attributes[] = 
     {
-//XXX add id 
       DAttribute(DType::DInt64Type,"size"), 
       DAttribute(DType::DUnicodeStringType, "name"),
       DAttribute(DType::DUnicodeStringType, "path", DType::DNoneType),
@@ -80,7 +79,6 @@ public:
   {
     static DAttribute  attributes[] = 
     {
-//XXX add id 
       DAttribute(DType::DUnicodeStringType, "name"),
       DAttribute(DType::DUnicodeStringType, "path", DType::DNoneType),
       DAttribute(DType::DObjectType, "children"), 

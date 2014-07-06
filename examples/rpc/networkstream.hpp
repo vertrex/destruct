@@ -15,7 +15,6 @@ class DValue;
 class NetworkStream : public DStream
 {
 public:
-//  NetworkStream(int socket);
   NetworkStream(DStruct* dstruct, DValue const& args);
   ~NetworkStream();
   int32_t read(void* buff, int32_t size);
@@ -24,8 +23,11 @@ public:
   int32_t write(void* buff, int32_t size) const ;
   int32_t write(std::string const& str) const; 
   int32_t write(uint64_t id) const;
-//write DValue
-//Read dvalue
+  //DStream& operator<<(std::string val); 
+  //DStream& operator<<(char val);
+  //DStream& operator<<(DValue val);
+  DStream& operator<<(DStreamString& input);
+  DStream& operator>>(DStreamString& output);
 private:
   void __close(void);
   int32_t __socket; //XXX int64_t ?? for fd

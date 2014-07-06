@@ -12,6 +12,8 @@
 
 #include "protocol/dserialize.hpp" 
 
+#include "serializerpc.hpp"
+
 Client::Client(std::string const& addr, uint32_t port)
 {
   this->__connect(addr, port);
@@ -46,26 +48,17 @@ void    Client::__connect(std::string const& addr, uint32_t port)
 
 Destruct::DStruct* Client::remoteFind(const std::string name)
 {
-  DStruct *dstruct = NULL; 
   NetworkStream stream = this->stream();
 
-  std::string structBuff;
   stream.write("findDStruct");
   stream.write(name);
-  stream.read(structBuff);  
-
-  Destruct::Destruct& destruct = Destruct::Destruct::instance();
-  DStruct*  streamStringStruct = destruct.find("DStreamString");
-  DStreamString* streamString = new DStreamString(streamStringStruct, RealValue<DObject*>(DNone));
-
-  streamString->write(structBuff.c_str(), structBuff.size());
-
-  DSerialize* binarySerializer = DSerializers::to("Binary");
-  dstruct = binarySerializer->deserialize(*streamString);// use buff then send to compact data
+  DSerializeRPC* rpcSerializer = new DSerializeRPC(stream, this->__objectManager);
+  DStruct* dstruct = rpcSerializer->deserialize(stream);
 
   if (dstruct)
   {
     std::cout << "[OK] client get struct " << name << " : " << std::endl;
+    Destruct::Destruct& destruct = Destruct::Destruct::instance();
     destruct.registerDStruct(dstruct);
     this->print(dstruct); 
   } 
@@ -145,11 +138,22 @@ void    Client::start(void)
 
   std::cout << "Iterating on child " << std::endl;
   DUInt64 size = remoteChild->call("size").get<DUInt64>();
+  //for (int x = 0; x < 100; ++x)
+  //{
+    //Destruct::DObject* child = remoteChild->call("get", RealValue<DUInt64>(0)).get<DObject*>();
+    //std::cout <<  "child " << x << " is of type : " <<  child->instanceOf()->name() << std::endl;
+  //}
   for (DUInt64 i = 0; i < size; ++i)
   { 
     Destruct::DObject* child = remoteChild->call("get", RealValue<DUInt64>(i)).get<DObject*>();
-    std::cout <<  "child is of type : " <<  child->instanceOf()->name() << std::endl;
+    std::cout <<  "child(" << i << ") : " 
+              << "'" << child->getValue("name").get<DUnicodeString>() << "'"
+              << " is of type : " <<  child->instanceOf()->name() 
+              << std::endl;
+
   }
-  std::cout << "done " << std::endl;
+
+ 
   //this->print(remote); ///XXX XXX XXX RPC OBJECT DOESN'T IMPLEMENT FUNCTION BY ID( pos in list of attribute ONLY NAME (String) CODE IT NOW TO MAKE IT WORK AND IT WILL BE CRRRRAZY
+  std::cout << "done !" << std::endl;
 }

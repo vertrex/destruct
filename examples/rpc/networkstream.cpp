@@ -68,4 +68,54 @@ void NetworkStream::__close(void)
 {
 }
 
+DStream& NetworkStream::operator<<(DStreamString& input)
+{
+  this->write(input.str());
+  input.clear();
+  return (*this);
+}
+
+DStream& NetworkStream::operator>>(DStreamString& output)
+{
+  uint64_t size = 0;
+  if (this->read(&size, sizeof(size)) != sizeof(size))
+    throw std::string("NetworkStream::read can't get size");
+  uint8_t*  value = new uint8_t[size + 1];
+  this->read(value, size); //test return value
+  value[size] = 0;
+  output.write((char*)value, size); 
+  delete value;
+
+  return (*this);
+}
+
+
+/* write */
+//DStream& NetworkStream::operator<<(std::string val) 
+//{
+  //std::cout << "network stream called " << std::endl;
+  ////this->__fstream << val;
+  //return (*this);
+//}
+  
+//DStream& NetworkStream::operator<<(char val)
+//{
+  //std::cout << "char network stream called " << std::endl;
+  ////this->__fstream << val;
+  //return (*this);
+//}
+
+//DStream& NetworkStream::operator<<(DValue val)
+//{
+  //std::cout << "DValue network stream called " << std::endl;
+
+  //std::cout << "DValue network stream ret" << std::endl;
+  
+
+  ////this->__fstream << val;
+  //return (*this);
+//}
+
+
+
 }

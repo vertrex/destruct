@@ -68,7 +68,19 @@ DInt64 DStream::write(DValue const& args)
   return (0);
 }
 
+DStream& DStream::operator<<(DStream& input)
+{
+        //this->__fstream << input;
+  return (*this);
+}
+
 /* read */
+DStream& DStream::operator>>(DStream& output)
+{
+        //this->__fstream >> output;
+  return (*this);
+}
+
 DStream& DStream::operator>>(std::string& val) 
 {
   this->__fstream >> val;
