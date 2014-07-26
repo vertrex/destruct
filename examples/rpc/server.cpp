@@ -31,7 +31,7 @@ void            Server::__bind(void)
 {
   this->__listenSocket = socket(AF_INET , SOCK_STREAM, 0);
   int on = 1;
-  setsockopt(this->__listenSocket, SOL_SOCKET, SO_REUSEADDR, (const char *) &on, sizeof(on));
+  setsockopt(this->__listenSocket, SOL_SOCKET, SO_REUSEADDR, (const char *)&on, sizeof(on));
   if (this->__listenSocket == -1)
     throw std::string("Could not create socket");
      
@@ -174,12 +174,12 @@ void            Server::serve(void)
 
   RPCServer rpcServer(this->stream(), this->__objectManager);
 
+  uint64_t id = 0;
+  NetworkStream stream = this->stream();
   while (true)
   {
-  uint64_t id = 0;
     std::cout << "Wait for message..." << std::endl;
     std::string msg;
-    NetworkStream stream = this->stream();
     stream.read(msg);
 //readObject ID !
 
@@ -335,5 +335,3 @@ DObject*        ObjectManager::object(uint64_t id) const
     return (object->second);
   return RealValue<DObject*>(DNone); 
 }
-
-

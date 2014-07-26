@@ -147,10 +147,13 @@ void    Client::start(void)
 
   std::cout << "Iterating on child " << std::endl;
   DUInt64 size = remoteChild->call("size").get<DUInt64>();
-  for (DUInt64 i = 0; i < size; ++i)
+  //for (DUInt64 i = 0; i < size; ++i)
+  for (DUInt64 i = 0; i < 100; ++i)
   { 
-    Destruct::DObject* child = remoteChild->call("get", RealValue<DUInt64>(i)).get<DObject*>();
-    std::cout <<  "child is of type : " <<  child->instanceOf()->name() << std::endl;
+    //this->stream().write("prout");
+    //Destruct::DObject* child = remoteChild->call("get", RealValue<DUInt64>(i)).get<DObject*>();
+    Destruct::DObject* child = remoteChild->call("get", RealValue<DUInt64>(1)).get<DObject*>();
+    //std::cout <<  "child is of type : " <<  child->instanceOf()->name() << std::endl;
   }
   std::cout << "done " << std::endl;
   //this->print(remote); ///XXX XXX XXX RPC OBJECT DOESN'T IMPLEMENT FUNCTION BY ID( pos in list of attribute ONLY NAME (String) CODE IT NOW TO MAKE IT WORK AND IT WILL BE CRRRRAZY
