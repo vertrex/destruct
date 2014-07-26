@@ -68,7 +68,19 @@ DInt64 DStream::write(DValue const& args)
   return (0);
 }
 
+DStream& DStream::operator<<(DStream& input)
+{
+        //this->__fstream << input;
+  return (*this);
+}
+
 /* read */
+DStream& DStream::operator>>(DStream& output)
+{
+        //this->__fstream >> output;
+  return (*this);
+}
+
 DStream& DStream::operator>>(std::string& val) 
 {
   this->__fstream >> val;
@@ -199,6 +211,11 @@ DStream& DStreamString::write(const char* buff, uint32_t size)
 const std::string DStreamString::str(void) const //seek etc ?
 {
   return (this->__stream.str());
+}
+
+void DStreamString::clear(void) 
+{
+  this->__stream.str("");;
 }
 
 }

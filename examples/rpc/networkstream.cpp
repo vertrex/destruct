@@ -1,5 +1,4 @@
-#include<sys/socket.h>    //socket
-#include<arpa/inet.h> //inet_addr
+#include<arpa/inet.h>
 
 #include "networkstream.hpp"
 
@@ -45,7 +44,11 @@ int32_t NetworkStream::read(std::string & readValue)
   if (recv(this->__socket, &size, sizeof(size), 0) != sizeof(size))
     throw std::string("NetworkStream::read can't get size");
   uint8_t*  value = new uint8_t[size + 1];
+<<<<<<< HEAD
   recv(this->__socket, value, size, 0); //test return value
+=======
+  this->read(value, size);
+>>>>>>> cac48dd671cf02d033e95a3c11ba308fe69e3f23
   value[size] = 0;
   readValue = std::string((char*)value, size);
   delete value;
@@ -63,9 +66,29 @@ int32_t NetworkStream::read(void* buff, int32_t size)
   return(recv(this->__socket, buff, size, 0));
 }
 
-
 void NetworkStream::__close(void)
 {
+}
+
+DStream& NetworkStream::operator<<(DStreamString& input)
+{
+  this->write(input.str());
+  input.clear();
+  return (*this);
+}
+
+DStream& NetworkStream::operator>>(DStreamString& output)
+{
+  uint64_t size = 0;
+  if (this->read(&size, sizeof(size)) != sizeof(size))
+    throw std::string("NetworkStream::read can't get size");
+  uint8_t*  value = new uint8_t[size + 1];
+  this->read(value, size);
+  value[size] = 0;
+  output.write((char*)value, size); 
+  delete value;
+
+  return (*this);
 }
 
 }

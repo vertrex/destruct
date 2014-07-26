@@ -1,6 +1,10 @@
 #include "fsobject.hpp"
 #include "destruct.hpp"
 
+/*
+ * Directory
+ */
+
 File::File(DStruct* dstruct, Destruct::DValue const& args) : DCppObject<File>(dstruct, args)
 {
   this->init();
@@ -8,10 +12,18 @@ File::File(DStruct* dstruct, Destruct::DValue const& args) : DCppObject<File>(ds
   this->name = "unknown";
 }
 
-DUnicodeString        File::path(Destruct::DValue const& args)
+File::~File()
+{
+}
+
+DUnicodeString  File::path(Destruct::DValue const& args)
 {
   return DUnicodeString("/home/destruct/");
 }
+
+/*
+ *  Directory
+ */
 
 Directory::Directory(DStruct* dstruct, Destruct::DValue const& args) : DCppObject<Directory>(dstruct, args)
 {

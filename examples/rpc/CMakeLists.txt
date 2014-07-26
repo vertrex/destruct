@@ -21,7 +21,8 @@ networkstream.cpp
 server.cpp
 client.cpp
 rpc.cpp
-serializerpc.cpp)
+serializerpc.cpp
+rpcserver.cpp)
 
 add_executable(rpc ${rpc_files})
 target_link_libraries(rpc destruct)

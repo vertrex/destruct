@@ -16,7 +16,8 @@ namespace Destruct
  *  Basic stream object used for serialization test
  *      - Could be enhanced / replaced by file, buffer (data), socket protocol object for reflectivy
  */
-
+//XXX this is dstream file interface other dont use __fstream
+//DStreamFile 
 class DStream : public DStreamBase,  public DCppObject<DStream> //DStreamFile deriver d'une DStream sans membre private
 {
 public:
@@ -38,6 +39,10 @@ public:
   DStream(DStruct* dstruct, DValue const& args);
   DStream(const DStream& copy);
   virtual ~DStream();
+  
+  virtual DStream& operator>>(DStream& output);
+  virtual DStream& operator<<(DStream& input);
+
   virtual DStream& operator>>(std::string& val); 
   virtual DStream& operator<<(std::string val);
   virtual DStream& operator<<(char val);
@@ -117,20 +122,17 @@ public:
   DStreamString(DStruct* dstruct, DValue const &args);
   DStreamString(const DStreamString& copy);
   ~DStreamString();
-  DStream& read(char*  buff, uint32_t size);
-  DStream& write(const char* buff, uint32_t size);
+  DStream&          read(char*  buff, uint32_t size);
+  DStream&          write(const char* buff, uint32_t size);
   const std::string str(void) const;
-
+  void              clear(void);    
   //DStream& operator>>(std::string& val); 
   //DStream& operator<<(std::string val);
   //virtual DInt64 write(DValue const& args);
   //virtual DInt64 read(DValue const& args);
 private:
-  //std::iostream  __buffStream;  
   std::stringstream   __stream; 
 };
-
-//static DStreamCout cout; //this is a strange implem as << and >> are implem for cout ( cin & cout implem)
 
 }
 
