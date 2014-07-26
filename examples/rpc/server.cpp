@@ -110,14 +110,9 @@ void            Server::serve(void)
   this->showRoot();
 
   uint64_t id = 0;
-  NetworkStream stream = this->stream();
   while (true)
   {
-<<<<<<< HEAD
     std::cout << "Wait for message..." << std::endl;
-=======
-    uint64_t id = 0;
->>>>>>> cac48dd671cf02d033e95a3c11ba308fe69e3f23
     std::string msg;
     stream.read(msg);
 

@@ -12,19 +12,19 @@ namespace Destruct {
 /**
  *  RPCObject Proxy object that handle transparent remote communication and let you use your object as a local object
  */
-RPCObject::RPCObject(NetworkStream stream, uint64_t id, DStruct* dstruct, ObjectManager & objects) : DDynamicObject(dstruct, RealValue<DObject*>(DNone)), __id(id), __networkStream(stream), __serializer(new DSerializeRPC(stream, objects)), __object(dstruct->newObject())
+RPCObject::RPCObject(NetworkStream stream, uint64_t id, DStruct* dstruct, ObjectManager & objects) : DObject(*dstruct->newObject()), __id(id), __networkStream(stream), __serializer(new DSerializeRPC(stream, objects)), __object(dstruct->newObject())
 {
-  this->init(this);
+        //this->init(this);
 }
 
-RPCObject::RPCObject(DStruct* dstruct, DValue const& args) : DDynamicObject(dstruct, args), __networkStream(0, RealValue<DInt64>(0))
+RPCObject::RPCObject(DStruct* dstruct, DValue const& args) : DObject(dstruct, args), __networkStream(0, RealValue<DInt64>(0))
 {
-  this->init(this);
+        //this->init(this);
 }
 
-RPCObject::RPCObject(RPCObject const & rhs) : DDynamicObject(rhs), __networkStream(rhs.__networkStream)
+RPCObject::RPCObject(RPCObject const & rhs) : DObject(rhs), __networkStream(rhs.__networkStream)
 {
-  this->copy(this, rhs);
+        //this->copy(this, rhs);
 }
 
 RPCObject::~RPCObject()
@@ -60,18 +60,23 @@ void RPCObject::setValue(std::string const& name, DValue const &v)
   this->__serializer->serialize(this->__networkStream, v, this->instanceOf()->attribute(name).type().getType());
 }
                                         
-DValue RPCObject::call(std::string const& name, DValue const &v)
+DValue RPCObject::call(std::string const& name, DValue const &args)
 {
   DType  dtype = this->instanceOf()->attribute(name).type();
   if (name == "serializeText")
-    return (this->__object->call(name, v));
+//     return DObject::call(name, args);
+  {
+    BaseValue *b = DObject::getBaseValue(this->__object, this->instanceOf()->findAttribute(name));
+    DValue v = b->getFinal().get<DFunctionObject* >()->call(args); 
+    return RealValue<DObject*>(DNone);
+  }
 
   this->__networkStream.write(std::string("call"));
   this->__networkStream.write(this->__id);
   this->__networkStream.write(name);
 
   /* Send argument (object is not compatible) */
-  this->__serializer->serialize(this->__networkStream, v, dtype.getArgumentType());
+  this->__serializer->serialize(this->__networkStream, args, dtype.getArgumentType());
  
   /* get return value */
   DValue dvalue = this->__serializer->deserialize(this->__networkStream, dtype.getReturnType());
@@ -115,6 +120,19 @@ DValue RPCObject::call(size_t index, DValue const &value)
 DObject* RPCObject::clone() const
 {
   return (new RPCObject(*this));
+}  
+
+BaseValue* RPCObject::getBaseValue(size_t index)
+{
+  std::cout << "get base value " << std::endl;
+  
 }
+
+
+BaseValue const* RPCObject::getBaseValue(size_t index) const
+{
+  std::cout << "get base value " << std::endl;
+}
+
 
 }

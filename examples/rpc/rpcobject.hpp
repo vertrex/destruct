@@ -14,7 +14,7 @@ namespace Destruct {
 
 class DSerialize;
 
-class RPCObject : public DDynamicObject
+class RPCObject : public DObject
 {
 public:
   RPCObject(NetworkStream stream, uint64_t id, DStruct* dstruct, ObjectManager & objects);
@@ -34,6 +34,10 @@ public:
   DValue getValue(size_t index) const;
   void setValue(size_t idx, DValue const &);
   DValue call(size_t index, DValue const &);
+
+  BaseValue* getBaseValue(size_t index);
+  BaseValue const* getBaseValue(size_t index) const;
+
 private:
   uint64_t       __id;
   NetworkStream  __networkStream;

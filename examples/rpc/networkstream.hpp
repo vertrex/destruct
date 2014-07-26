@@ -28,6 +28,9 @@ public:
 private:
   void    __close(void);
   int32_t __socket;
+
+  int8_t* __readBuffer;
+//  int8_t* __writeBuffer
 };
 
 }
