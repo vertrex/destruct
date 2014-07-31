@@ -14,9 +14,6 @@ DStream::DStream(DStruct* dstruct, DValue const& args) : DCppObject<DStream>(dst
   DInt8 _mode = dargs->getValue("input").get<DInt8>();
   DUnicodeString filePath = dargs->getValue("filePath").get<DUnicodeString>();
 
-  std::cout << "opening stream " << std::endl;
-  _mode = 0;
-  filePath = "output";
   if (_mode == 0)
     this->__fstream.open(filePath.c_str(), std::iostream::out | std::iostream::binary | std::iostream::trunc);
   else
@@ -35,7 +32,6 @@ DStream::~DStream()
 /* write */
 DStream& DStream::operator<<(std::string val) 
 {
-  std::cout << val;
   this->__fstream << val;
   return (*this);
 }
@@ -48,7 +44,6 @@ DStream& DStream::operator<<(char val)
 
 DStream& DStream::operator<<(StandardEndLine func)
 {
-  std::cout << std::endl;
   func(this->__fstream);
   return (*this);
 }
@@ -71,6 +66,7 @@ DInt64 DStream::write(DValue const& args)
 DStream& DStream::operator<<(DStream& input)
 {
         //this->__fstream << input;
+  std::cout << "DStream: Not implemented " << std::endl;
   return (*this);
 }
 
@@ -78,6 +74,7 @@ DStream& DStream::operator<<(DStream& input)
 DStream& DStream::operator>>(DStream& output)
 {
         //this->__fstream >> output;
+  std::cout << "DStream: Not implemented " << std::endl;
   return (*this);
 }
 
@@ -96,7 +93,7 @@ DStream& DStream::read(char*  buff, uint32_t size)
 DInt64 DStream::read(DValue const& args)
 {
 //XXX get args.buff, args.size  ...
-
+  std::cout << "DStream: Not implemented " << std::endl;
   return (0);
 }
 

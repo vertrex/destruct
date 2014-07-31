@@ -12,14 +12,12 @@
 # Author(s):
 #  Solal Jacob <sja@digital-forensic.org>
 
-add_subdirectory(dtest)
-add_subdirectory(rpc)
-add_subdirectory(db)
+include_directories("../../")
 
-include_directories("../")
-set (test_files
-test.cpp
+set (db_files
+db.cpp
+#session.cpp
 )
 
-add_executable(test ${test_files})
-target_link_libraries(test destruct destruct_test)
+add_executable(db ${db_files})
+target_link_libraries(db destruct)

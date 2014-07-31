@@ -107,6 +107,7 @@ public:
 
   DStreamBase& serialize(DStreamBase& os) const
   {
+    //write Size then string best place here or deserializer / encoder ? 
     os.write((char *)this->c_str(), this->size()); // pascal string ? 00
     os.write("\x00", 1); //\x00\x00 in unicode 16 ? 
     return (os);
@@ -114,6 +115,7 @@ public:
 
   DStreamBase& unserialize(DStreamBase& is)
   {
+     //read size then string ? best place here or in deserializer encoder ?
     //XXX this is a pure implem so we will look for \x00 PascalString could be better for binary but maybe not for raw 
     char c = '\xff';
     std::string buffer;

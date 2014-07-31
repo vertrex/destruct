@@ -74,7 +74,8 @@ public:
   {
     //getserializationType ou serializeXML method serializeText method de toute c dynamique donc si on c serialized un type on peut call la method qu il faut
     // c une naming convetion
-    DStream* output = static_cast<DStream*>(args.get<DObject*>());
+    //DStream* output = static_cast<DStream*>(args.get<DObject*>());
+    DStream* output = static_cast<DStream*>(args.get<DObject*>()->getValue("stream").get<DObject*>());
 
     *output << "list : {" << std::endl;
     DUInt64 size = static_cast<DFunctionObject*>(this->_size)->call().get<DUInt64>();

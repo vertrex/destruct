@@ -28,21 +28,23 @@ Protocol::Protocol(Destruct* destruct)
 
 void Protocol::__registerStruct(Destruct* destruct)
 {
-  destruct->registerDStruct(static_cast<DStruct*>(new DMutableStruct(NULL,"DMutable", DMutableObject::newObject)));
+  destruct->registerDStruct(static_cast<DStruct*>(new DMutableStruct(NULL, "DMutable", DMutableObject::newObject)));
   destruct->registerDStruct(makeNewDMutable<DIterator >("DIterator"));
 
-  destruct->registerDStruct(makeNewDCpp<DVectorInt32 >("DVectorInt32")); //DInt32 please  //CppStruct ?
-  destruct->registerDStruct(makeNewDCpp<DVectorInt64 >("DVectorInt64")); //virer le <>
+  destruct->registerDStruct(makeNewDCpp<DVectorInt32 >("DVectorInt32"));
+  destruct->registerDStruct(makeNewDCpp<DVectorInt64 >("DVectorInt64"));
   destruct->registerDStruct(makeNewDCpp<DVectorString >("DVectorString"));
-  destruct->registerDStruct(makeNewDCpp<DVectorObject >("DVectorObject")); //virer le <> et * ! 
+  destruct->registerDStruct(makeNewDCpp<DVectorObject >("DVectorObject"));
 
   destruct->registerDStruct(makeNewDCpp<DMap<DUnicodeString, DType::DUnicodeStringType,  DUnicodeString, DType::DUnicodeStringType > >("DMapString"));
   destruct->registerDStruct(makeNewDCpp<DMap<DObject* , DType::DObjectType,  DObject* , DType::DObjectType> >("DMapObject"));
   //destruct->registerDStruct(makeNewDMutable<DMapIterator >("DMapIterator"));
   
-  destruct->registerDStruct(makeNewDCpp<DStream >("DStream")); //virer le <> et * ! 
-  destruct->registerDStruct(makeNewDCpp<DStreamCout >("DStreamCout")); //virer le <> et * ! 
-  destruct->registerDStruct(makeNewDCpp<DStreamString >("DStreamString")); //virer le <> et * ! 
+  destruct->registerDStruct(makeNewDCpp<DStream >("DStream"));
+  destruct->registerDStruct(makeNewDCpp<DStreamCout >("DStreamCout"));
+  destruct->registerDStruct(makeNewDCpp<DStreamString >("DStreamString"));
+
+  //destruct->registerDStruct(makeNewDCpp<DSerializeXML>("DSerializeBinary"));
 }
 
 }

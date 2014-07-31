@@ -58,6 +58,107 @@ bool DSerializeBinary::serialize(DStream& output, DStruct& dstruct)
   return (true);
 }
 
+bool DSerializeBinary::serialize(DStream& output, DValue value, DType::Type_t type) //XXX type is not needed here 
+{
+  if (type == DType::DObjectType)
+    this->serialize(output, *(value.get<DObject*>())); 
+  //else if (type == DType::DMethodType)
+  //continue ;
+  //else (type == DType::DNoneType)
+  //continue; //XXX
+  //else (type == DType::DUnknownType
+  //continue;
+  else
+    output << value; 
+
+  return (true);
+}
+                                                //const ref or pointer and const func ? 
+bool DSerializeBinary::serialize(DStream& output, DObject&  dobject)
+{
+  DStruct const* dstruct = dobject.instanceOf(); 
+
+  //output << DType::DObjectType; //push type  to tell it's an object ??
+  this->serialize(output, dstruct->name()); //XXX pour retrouver la struct ? 
+
+  /*
+   *  We follow special serialization and iterable method first 
+   */
+
+  //XXX      IF OBJECT IS ITERABLE
+  //XXX      OR IF OBJECT HAVE A SERIALIZE BINARY METHOD !
+  int32_t index = dstruct->findAttribute("iterator");
+  if (index != -1)                      //XXX XXX XXX SAME FOR MAP ? DOES IT SUFFICE FOR KEY & VALUE DOES I RETURN SAME OBJ?
+  {
+    DObject* iterator = dobject.call("iterator").get<DObject*>();
+    DType::Type_t   returnType = dstruct->attribute("get").type().getReturnType();
+    DValue count = dobject.call("size");   
+    output << count; 
+ 
+    for ( ; iterator->call("isDone").get<DInt8>() != true; iterator->call("nextItem"))
+    {
+       DValue value = iterator->call("currentItem");
+       if (returnType == DType::DObjectType)
+       {
+         DObject* subDObject = value.get<DObject*>();
+         if (subDObject != NULL)
+         {
+           this->serialize(output, *subDObject);
+           subDObject->destroy();
+         }
+       }
+       else
+         output << value;
+    }
+    return (true);
+  }
+  
+  for (DStruct::DAttributeIterator attribute = dstruct->attributeBegin(); attribute != dstruct->attributeEnd(); ++attribute)
+  {
+    DType::Type_t type = attribute->type().getType();
+    if (type == DType::DObjectType)
+    {
+      DObject* subDObject = dobject.getValue((*attribute).name()).get<DObject*>();
+
+      if (subDObject != NULL)
+      {
+        this->serialize(output, *subDObject); //XXX ? like that ?
+        subDObject->destroy();
+      }
+    }
+    else if (type == DType::DNoneType)
+    {
+      std::cout << "DSerializeBinary::serialize(object) DNoneType Not implemented yet" << std::endl;
+    }
+    else if (type == DType::DMethodType)
+      continue;
+    else if (type == DType::DUnknownType)
+      continue;
+    else
+    {
+      DValue value = dobject.getValue(attribute->name());
+      output << value;
+    }    
+  }
+
+  return (true);
+}
+//king of specialization for string type 
+
+bool DSerializeBinary::serialize(DStream& output, const std::string& str)
+{
+ size_t ssize = str.size();
+  //utilisase 8 bytes pour une size ca fait bcp ... 
+  if (output.write((char*)&ssize, sizeof(ssize)).fail())
+    return (false);
+  if (output.write(str.c_str(), ssize).fail())
+    return (false);
+
+  return (true);
+}
+
+
+//Deserialization 
 DStruct* DSerializeBinary::deserialize(DStream& input)
 { 
   std::string name;
@@ -96,42 +197,72 @@ DStruct* DSerializeBinary::deserialize(DStream& input)
   return (dstruct); 
 }
 
-bool DSerializeBinary::serialize(DStream& output, DValue value, DType::Type_t type)
-{
-  output << value;
-
-  return (false);
-}
-
 DValue DSerializeBinary::deserialize(DStream& input, DType::Type_t dtype)
 {
+  if (dtype == DType::DObjectType)
+  {
+    Destruct& destruct = Destruct::instance(); //mettre ds this car la ca va etre lent. 
+    DUnicodeString structName;
+    this->deserialize(input, structName);
+
+    DStruct* dstruct = destruct.find(structName);
+    if (dstruct == NULL)
+      throw std::string("Can't find struct : " + structName + " in destruct database.");
+   
+    DObject* dobject = dstruct->newObject();
+    this->deserialize(input, *dobject);
+ 
+    return (RealValue<DObject*>(dobject));
+  }
+  
   DValue value(DType(dtype).newValue());
   input >> value;
 
   return (value);
 }
 
-
-bool DSerializeBinary::serialize(DStream& output, DObject&  dobject)
+bool DSerializeBinary::deserialize(DStream& input, DObject& dobject) //not implemtenable by ref ...
 {
-  return (true);
-}
+  DStruct const* dstruct = dobject.instanceOf();
 
-bool DSerializeBinary::deserialize(DStream& input, DObject& dobject)
-{
-  return (false);
-}
-
-//king of specialization for string type 
-
-bool DSerializeBinary::serialize(DStream& output, const std::string& str)
-{
- size_t ssize = str.size();
+  int32_t index = dstruct->findAttribute("iterator");
+  if (index != -1)
+  {
+    DType::Type_t   returnType = dstruct->attribute("get").type().getReturnType();
   
-  if (output.write((char*)&ssize, sizeof(ssize)).fail())
-    return (false);
-  if (output.write(str.c_str(), ssize).fail())
-    return (false);
+    DValue vcount(RealValue<DUInt64>(0)); 
+    input >> vcount; 
+    DUInt64 count = vcount.get<DUInt64>();
+
+    for (DUInt64 index = 0; index != count; index++) 
+    {
+       DValue value = this->deserialize(input, returnType); 
+       dobject.call("push", value);
+    }
+    return (true);
+  }
+
+  for (DStruct::DAttributeIterator attribute = dstruct->attributeBegin(); attribute != dstruct->attributeEnd(); ++attribute)
+  {
+    DType::Type_t type = attribute->type().getType();
+    if (type == DType::DObjectType)
+    {
+      DValue value = this->deserialize(input, DType::DObjectType);
+      dobject.setValue((*attribute).name(), value);
+    }
+    else if (type == DType::DNoneType)
+      std::cout << "deserializaing NoneType not implem " << attribute->name() << std::endl;
+    else if (type == DType::DMethodType)
+      continue;
+    else if (type == DType::DUnknownType)
+      continue;
+    else
+    { 
+      DValue value(attribute->type().newValue());
+      input >> value;
+      dobject.setValue((*attribute).name(), value); 
+    }    
+  }
 
   return (true);
 }
@@ -278,15 +409,15 @@ bool DSerializeText::serialize(DStream& output, DObject& dobject, int depth)
   int x = 0;
   DStruct const* dstruct = dobject.instanceOf();
 
-  output << std::string(2*depth, ' ') << dstruct->name() << std::endl;
-  output << std::string(2*depth++, ' ') <<  "{" << std::endl;
+  output << std::string(2 * depth, ' ') << dstruct->name() << std::endl;
+  output << std::string(2 * depth++, ' ') <<  "{" << std::endl;
 
   for (DStruct::DAttributeIterator i = dstruct->attributeBegin(); i != dstruct->attributeEnd(); ++i, ++x)
   {
     if (i->type().getType() == DType::DObjectType)
     {
       DObject* subDObject = dobject.getValue(x).get<DObject*>();
-      output << std::string(2*depth, ' ') << i->type().name() << " " << i->name() << " = " <<  std::endl;
+      output << std::string(2 * depth, ' ') << i->type().name() << " " << i->name() << " = " <<  std::endl;
       if (subDObject != NULL)
       {
         this->serialize(output, *subDObject, depth + 1);
@@ -294,7 +425,7 @@ bool DSerializeText::serialize(DStream& output, DObject& dobject, int depth)
       }
     }
     else
-      output << std::string(2*depth, ' ') << i->type().name() << " " << i->name() << " = " << dobject.getValue(x).asUnicodeString() << ";" << std::endl;
+      output << std::string(2 * depth, ' ') << i->type().name() << " " << i->name() << " = " << dobject.getValue(x).asUnicodeString() << ";" << std::endl;
 
    if (i->name() == "serializeText")
    {
@@ -311,7 +442,7 @@ bool DSerializeText::serialize(DStream& output, DObject& dobject, int depth)
    }
   }
  
-  output << std::string(2*depth - 2, ' ') << "};" << std::endl;
+  output << std::string(2 * depth - 2, ' ') << "};" << std::endl;
   return (true);
 }
 
