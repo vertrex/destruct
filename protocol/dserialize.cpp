@@ -127,9 +127,7 @@ bool DSerializeBinary::serialize(DStream& output, DObject&  dobject)
       }
     }
     else if (type == DType::DNoneType)
-    {
       std::cout << "DSerializeBinary::serialize(object) DNoneType Not implemented yet" << std::endl;
-    }
     else if (type == DType::DMethodType)
       continue;
     else if (type == DType::DUnknownType)

@@ -16,7 +16,7 @@ include_directories("../../")
 
 set (db_files
 db.cpp
-#session.cpp
+session.cpp
 )
 
 add_executable(db ${db_files})

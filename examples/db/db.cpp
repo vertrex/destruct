@@ -5,12 +5,12 @@
 #include "dtype.hpp"
 #include "drealvalue.hpp"
 #include "dsimpleobject.hpp"
-#include "ddynamicobject.hpp"
-#include "protocol/dstream.hpp"
-#include "protocol/dmutableobject.hpp"
-#include "protocol/dserialize.hpp"
 
-DB::DB() : __destruct(Destruct::Destruct::instance())
+#include "protocol/dstream.hpp"
+#include "protocol/dserialize.hpp"
+#include "protocol/dmutableobject.hpp"
+
+DB::DB() : __destruct(Destruct::Destruct::instance()), __session(NULL)
 {
   Destruct::DType::init();
   this->declare();
@@ -21,11 +21,10 @@ DB::~DB()
   Destruct::DType::clean();
 }
 
-Destruct::DObject*    DB::fakeDB(void)
+Destruct::DObject*  DB::populateSession(void)
 {
-  //DObject* processusArguments = Destruct::Destruct::instance().generate("")
-  Destruct::DObject* db = this->__destruct.generate("DVectorObject"); 
-
+  this->__session = static_cast<Session*>(this->__destruct.generate("Session"));
+  this->__session->modules = this->__destruct.generate("DVectorObject"); 
   /* local */
   Destruct::DObject* local = this->__destruct.generate("LocalArguments"); 
 
@@ -37,7 +36,7 @@ Destruct::DObject*    DB::fakeDB(void)
   moduleArguments->setValue("moduleName", Destruct::RealValue<Destruct::DUnicodeString>("local"));
   moduleArguments->setValue("arguments", Destruct::RealValue<Destruct::DObject*>(local));
 
-  db->call("push", Destruct::RealValue<Destruct::DObject*>(moduleArguments));
+  ((DObject*)this->__session->modules)->call("push", Destruct::RealValue<Destruct::DObject*>(moduleArguments));
 
   /* partitions */
   Destruct::DObject* partition = this->__destruct.generate("PartitionArguments");
@@ -47,14 +46,16 @@ Destruct::DObject*    DB::fakeDB(void)
   moduleArguments->setValue("moduleName", Destruct::RealValue<Destruct::DUnicodeString>("partition"));
   moduleArguments->setValue("arguments", Destruct::RealValue<Destruct::DObject*>(partition));
 
-  db->call("push", Destruct::RealValue<Destruct::DObject*>(moduleArguments));
+  ((DObject*)this->__session->modules)->call("push", Destruct::RealValue<Destruct::DObject*>(moduleArguments));
 
-  return (db);
+  return (this->__session);
 }
 
-
-void    DB::declare(void)
+void            DB::declare(void)
 {
+  Destruct::DStruct*  session = makeNewDCpp<Session>("Session");
+  this->__destruct.registerDStruct(session);
+
   Destruct::DStruct*  argumentStruct = new Destruct::DStruct(0, "ModuleArguments", Destruct::DSimpleObject::newObject);
   argumentStruct->addAttribute(Destruct::DAttribute(Destruct::DType::DUnicodeStringType, "moduleName"));
   argumentStruct->addAttribute(Destruct::DAttribute(Destruct::DType::DObjectType, "arguments"));// DList<DObject*>()
@@ -69,33 +70,18 @@ void    DB::declare(void)
   this->__destruct.registerDStruct(partitionArgumentsStruct); 
 }
 
-void    DB::save(Destruct::DUnicodeString const& filePath)
+void            DB::show(Destruct::DObject* object) const
 {
-  Destruct::DObject* db = this->fakeDB();
-
-  Destruct::DMutableObject* arg = static_cast<Destruct::DMutableObject*>(this->__destruct.generate("DMutable"));
-  arg->setValueAttribute(Destruct::DType::DUnicodeStringType, "filePath", Destruct::RealValue<Destruct::DUnicodeString>(filePath)); 
-  arg->setValueAttribute(Destruct::DType::DInt8Type, "input",  Destruct::RealValue<DInt8>(Destruct::DStream::Output));
-
-  Destruct::DStream* dstream = static_cast<Destruct::DStream*>(this->__destruct.generate("DStream", Destruct::RealValue<Destruct::DObject*>(arg)));
-  Destruct::DSerialize* serializer = Destruct::DSerializers::to("Binary");
-
-  std::cout << "Showing database " << std::endl;
-  this->show(db); 
-
-  std::cout << "Saving database to file " << filePath << std::endl; 
-  serializer->serialize(*dstream, *db);
-  std::cout << "Saved " << filePath << std::endl; 
-
-  delete dstream;
+  Destruct::DStream* cout = static_cast<Destruct::DStream*>(this->__destruct.generate("DStreamCout"));
+  Destruct::DSerializers::to("Text")->serialize(*cout, *object);
 }
 
-void    DB::load(Destruct::DUnicodeString const& filePath) const
+void            DB::load(Destruct::DValue const& filePath)
 {
-  std::cout << "Loading database from file " << filePath << std::endl;
+  std::cout << "Loading database from file " << filePath.asUnicodeString() << std::endl;
 
   Destruct::DMutableObject* arg = static_cast<Destruct::DMutableObject*>(this->__destruct.generate("DMutable"));
-  arg->setValueAttribute(Destruct::DType::DUnicodeStringType, "filePath", Destruct::RealValue<Destruct::DUnicodeString>(filePath)); 
+  arg->setValueAttribute(Destruct::DType::DUnicodeStringType, "filePath", filePath); 
   arg->setValueAttribute(Destruct::DType::DInt8Type, "input",  Destruct::RealValue<DInt8>(Destruct::DStream::Input));
 
   Destruct::DStream* dstream = static_cast<Destruct::DStream*>(this->__destruct.generate("DStream", Destruct::RealValue<Destruct::DObject*>(arg)));
@@ -103,28 +89,34 @@ void    DB::load(Destruct::DUnicodeString const& filePath) const
 
   Destruct::DValue value = serializer->deserialize(*dstream, Destruct::DType::DObjectType);
   std::cout << "Loaded ! found first object : " << value.asUnicodeString() << std::endl; 
-  std::cout << "Showing database " << std::endl;
-  this->show(value.get<Destruct::DObject*>());
+
+  this->__session = static_cast<Session*>(value.get<DObject*>());
 
   delete dstream;
 }
 
-void    DB::show(Destruct::DObject* object) const
+Session*        DB::session(void)
 {
-  Destruct::DStream* cout = static_cast<Destruct::DStream*>(this->__destruct.generate("DStreamCout"));
-  Destruct::DSerializers::to("Text")->serialize(*cout, *object);
+  return (this->__session);
 }
 
-int main(int argc, char** argv)
+int     main(int argc, char** argv)
 {
   DB    db;
  
   try 
   {
     if (argc > 1 && std::string(argv[1]) == std::string("-l"))
-      db.load("db.sav");
+    {
+      db.load(RealValue<DUnicodeString>("db.sav"));
+      db.show(db.session());
+    }
     else if (argc > 1 && std::string(argv[1]) == std::string("-s"))
-      db.save("db.sav");
+    {
+      db.populateSession();
+      db.show(db.session());
+      db.session()->save(RealValue<DUnicodeString>("db.sav"));
+    }
     else
     {
       std::cout << "Load database : -l" << std::endl
