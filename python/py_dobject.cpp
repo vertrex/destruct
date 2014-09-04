@@ -27,10 +27,8 @@ Destruct::DValue PyDObject::toDValue(PyObject* value)
 {
   if (PyObject_TypeCheck(value, PyDObject::pyType))
   {
-    Destruct::DObject* v =  ((DPyObject*)value)->pimpl;
-    v->addRef();
+    Destruct::DObject* v = ((DPyObject*)value)->pimpl;
     return Destruct::RealValue<Destruct::DObject* >(v);
-//    return Destruct::RealValue<Destruct::DObject* >(((DPyObject*)value)->pimpl);
   }
   if (value == Py_None)
     return Destruct::RealValue<Destruct::DObject* >(Destruct::DNone); 
@@ -48,7 +46,6 @@ PyObject*     PyDObject::asDValue(Destruct::DValue const& v)
   PyDObject::DPyObject*  dobjectObject = (PyDObject::DPyObject*)_PyObject_New(PyDObject::pyType);
   dobjectObject->pimpl = value;
 
-  printf("asDValue\n");
   return ((PyObject*)dobjectObject);
 }
 
@@ -60,11 +57,9 @@ PyObject*     PyDObject::asPyObject(PyObject* self, int32_t attributeIndex)
     Py_RETURN_NONE;
    
   Py_INCREF(pyType);
-  value->addRef();
   PyDObject::DPyObject*  dobjectObject = (PyDObject::DPyObject*)_PyObject_New(PyDObject::pyType);
-  dobjectObject->pimpl = value;
+  dobjectObject->pimpl = value; //don't addref because .get<> already add a Ref
 
-  printf("asPyObject\n");
   return ((PyObject*)dobjectObject);
 }
 
@@ -404,7 +399,8 @@ PyObject* PyDObject::_iter(PyDObject::DPyObject* self)
       return ((PyObject*)self);
     }
     Destruct::DObject* iterator = self->pimpl->call("iterator").get<Destruct::DObject*>();
-
+    iterator->destroy(); //destroy get<ref> but have an other one add by call()
+  
     PyDObject::DPyObject*  dobjectObject = (PyDObject::DPyObject*)_PyObject_New(PyDObject::pyType);
     dobjectObject->pimpl = iterator;
 
@@ -517,7 +513,7 @@ int  PyDObject::_setmap(DPyObject* self, PyObject* _key, PyObject* _value)
 {
   if (_key == NULL)
   {
-    std::cout << "del item not implemented" << std::endl; //XXX
+    std::cout << "_setmap del item not implemented" << std::endl; //XXX
     return (0);
   }
   else

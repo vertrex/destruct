@@ -192,10 +192,9 @@ inline DValue  DVector<DObject*, DType::DObjectType>::get(DValue const& args)
     DUInt64 index = args.get<DUInt64>();
     if (index >= this->__vector.size())
       throw DException("DContainer::get bad index\n");
-
     DObject* object = this->__vector[index];
     object->addRef();
-    return (RealValue<DObject*>(object)); //add ref 
+    return (RealValue<DObject*>(object));
   }
 }
 #endif

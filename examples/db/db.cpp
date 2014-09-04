@@ -197,6 +197,14 @@ void DB::testRefcount(void)
     res->destroy();
     res->destroy(); 
   }
+  std::cout << "test : DObject* testObjRV(RealValue<DObject*> object)" << std::endl;
+  {
+    DObject* object = this->__destruct.generate(testObjectName);
+    this->testObjRV(object);
+    std::cout << "ret " << object->refCount() << std::endl;
+    object->destroy();
+  }
+
 
   std::cout << "========END TEST FUNC ===================="<< std::endl;
 }
@@ -239,7 +247,7 @@ DObject*              DB::testObjRV(RealValue<DObject*> object)
 Destruct::DObject*  DB::populateSession(void)
 {
         //this->testRefcount();
-
+        //return NULL;
   //std::cout << "--------- push "<< std::endl;
 
   //Destruct::DObject* object4 = this->__destruct.generate("DVectorObject");
