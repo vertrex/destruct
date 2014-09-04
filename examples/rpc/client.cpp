@@ -129,7 +129,7 @@ bool    Client::__print(DObject* dobject) const
   if (!dobject)
     return (false);
 
-  Destruct::DSerializers::to("Text")->serialize(*outStream, *dobject);
+  Destruct::DSerializers::to("Text")->serialize(*outStream, dobject);
   return (true);
 }
 

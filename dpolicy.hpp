@@ -3,6 +3,9 @@
 
 #include <stdint.h>
 
+#include <iostream>
+#include <string>
+
 template< class Derived >
 class RefcountPolicy 
 {
@@ -27,10 +30,12 @@ public:
   }
 
   virtual void  destroy()
-  { 
+  {
     this->__refCount--;
     if (this->__refCount <= 0)
+    {
       delete static_cast<Derived*>(this);
+    }
   }
 
 private:

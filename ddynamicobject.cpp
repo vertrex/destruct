@@ -1,5 +1,6 @@
 #include "dstruct.hpp"
-#include "drealvalue.hpp"
+#include "dfunction.hpp"
+//#include "drealvalue.hpp"
 #include "dvalue.hpp"
 #include "dobject.hpp"
 #include "ddynamicobject.hpp"
@@ -28,6 +29,8 @@ DDynamicObject::~DDynamicObject()
 
 DValue DDynamicObject::getValue(size_t idx) const
 {
+//  if (idx > this->__values.size)
+ //throw DExceptions
   return (this->__values[idx]->getFinal());
 }
 

@@ -290,7 +290,7 @@ Destruct::DValue PythonBaseModule::pyObjectToDValue(PyObject* object)
   return (Destruct::RealValue<Destruct::DObject*>(Destruct::DNone));
 }
 
-PyObject* PythonBaseModule::dvalueAsPyObject(Destruct::DValue value)
+PyObject* PythonBaseModule::dvalueAsPyObject(Destruct::DValue const& value)
 {
   size_t typeId = 0;
 

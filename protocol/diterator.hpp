@@ -22,9 +22,8 @@ public:
   {
     this->init(); //must be constructed to init 
 
-    DObject* ocontainer = args.get<DObject*>();
-
-    this->container = ocontainer;
+    DObject* ocontainer = args.get<DObject*>(); //ref added dion;t destriy ut
+    this->container = ocontainer; //ref already added
     DAttribute attr = ocontainer->instanceOf()->attribute("get"); //
     this->__struct->replaceAttribute(5, DAttribute(attr.type().getReturnType(), "currentItem", DType::DNoneType));
     this->index = 0;
@@ -35,8 +34,12 @@ public:
     this->init();
   }
 
-  RealValue<DUInt64>          index; //signed en python
-  RealValue<DObject*>         container; //setContainer pour update le type ?
+  ~DIterator()
+  {
+  }
+
+  RealValue<DUInt64>          index;
+  RealValue<DObject*>         container;
   RealValue<DFunctionObject*> _next;
   RealValue<DFunctionObject*> _first;
   RealValue<DFunctionObject*> _isDone;

@@ -26,13 +26,18 @@ PyMappingMethods* PyDObjectT::pyMappingMethods = NULL;
 Destruct::DValue PyDObject::toDValue(PyObject* value) 
 {
   if (PyObject_TypeCheck(value, PyDObject::pyType))
-    return Destruct::RealValue<Destruct::DObject* >(((DPyObject*)value)->pimpl);
+  {
+    Destruct::DObject* v =  ((DPyObject*)value)->pimpl;
+    v->addRef();
+    return Destruct::RealValue<Destruct::DObject* >(v);
+//    return Destruct::RealValue<Destruct::DObject* >(((DPyObject*)value)->pimpl);
+  }
   if (value == Py_None)
     return Destruct::RealValue<Destruct::DObject* >(Destruct::DNone); 
   throw Destruct::DException("Can't cast to DObject*");
 }
 
-PyObject*     PyDObject::asDValue(Destruct::DValue v)
+PyObject*     PyDObject::asDValue(Destruct::DValue const& v)
 {
   Destruct::DObject*     value = v.get<Destruct::DObject*>();
 
@@ -43,6 +48,7 @@ PyObject*     PyDObject::asDValue(Destruct::DValue v)
   PyDObject::DPyObject*  dobjectObject = (PyDObject::DPyObject*)_PyObject_New(PyDObject::pyType);
   dobjectObject->pimpl = value;
 
+  printf("asDValue\n");
   return ((PyObject*)dobjectObject);
 }
 
@@ -54,9 +60,11 @@ PyObject*     PyDObject::asPyObject(PyObject* self, int32_t attributeIndex)
     Py_RETURN_NONE;
    
   Py_INCREF(pyType);
+  value->addRef();
   PyDObject::DPyObject*  dobjectObject = (PyDObject::DPyObject*)_PyObject_New(PyDObject::pyType);
   dobjectObject->pimpl = value;
 
+  printf("asPyObject\n");
   return ((PyObject*)dobjectObject);
 }
 
@@ -134,7 +142,7 @@ PyObject* PyDObject::getValue(PyDObject::DPyObject* self, PyObject* attributeObj
 
   if (attributeIndex == -1 || attributeIndex >= (int32_t)self->pimpl->instanceOf()->attributeCount())
   {
-    std::string errorString = "destruct.DObject." + self->pimpl->instanceOf()->name() +  " instance as no attribute '" + attributeName + "'";
+    std::string errorString = "destruct.DObject." + self->pimpl->instanceOf()->name() +  " instance has no attribute '" + attributeName + "'";
     PyErr_SetString(PyExc_AttributeError, errorString.c_str()); 
     return (0);
   }
@@ -182,7 +190,7 @@ PyObject* PyDObject::setValue(PyDObject::DPyObject* self, const char* attributeN
   int32_t attributeIndex = self->pimpl->instanceOf()->findAttribute(std::string(attributeName));
   if (attributeIndex == -1 || attributeIndex >= (int32_t)self->pimpl->instanceOf()->attributeCount())
   {
-    std::string errorString = "destruct.DObject." + self->pimpl->instanceOf()->name() +  " instance as no attribute '" + attributeName + "'";
+    std::string errorString = "destruct.DObject." + self->pimpl->instanceOf()->name() +  " instance has no attribute '" + attributeName + "'";
     PyErr_SetString(PyExc_AttributeError, errorString.c_str()); 
     return (0);
   }
@@ -194,7 +202,7 @@ PyObject*  PyDObject::setValue(PyDObject::DPyObject* self, int32_t attributeInde
 {
   if (attributeIndex == -1 || attributeIndex >= (int32_t)self->pimpl->instanceOf()->attributeCount())
   {
-    std::string errorString = "destruct.DObject." + self->pimpl->instanceOf()->name() +  " instance as no attribute at index '"; 
+    std::string errorString = "destruct.DObject." + self->pimpl->instanceOf()->name() +  " instance has no attribute at index '"; 
     errorString += attributeIndex; 
     errorString += std::string("'");
     PyErr_SetString(PyExc_AttributeError, errorString.c_str()); 

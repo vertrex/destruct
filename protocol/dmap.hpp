@@ -18,11 +18,13 @@ class DMap : public DContainer, public DCppObject<DMap<KeyType, KeyTypeId, Value
 public:
   DMap(DStruct* dstruct, DValue const& args) : DCppObject<DMap<KeyType, KeyTypeId, ValueType, ValueTypeId> >(dstruct, args)
   {
+    this->init();
   };
 
 
   DMap(const DMapType& copy) : DCppObject<DMap<KeyType, KeyTypeId, ValueType, ValueTypeId> >(copy),  __map(copy.__map) 
   {
+    this->init();
   }
 
   DValue  get(DValue const& args)

@@ -28,7 +28,7 @@ Destruct::DValue PyDMethodObject::toDValue(PyObject* value)
  * Only used by py_dmethodobject Call 
  * Should implemented for method returing method but it's not implemented in Destruct now
 */
-PyObject*     PyDMethodObject::asDValue(Destruct::DValue v)
+PyObject*     PyDMethodObject::asDValue(Destruct::DValue const& v)
 {
   Py_RETURN_NONE;
 }
@@ -37,7 +37,7 @@ PyObject*     PyDMethodObject::asPyObject(PyObject* _self, int32_t attributeInde
 {
   PyDObject::DPyObject* self = (PyDObject::DPyObject*)_self;
   Destruct::DFunctionObject* value = self->pimpl->getValue(attributeIndex).get<Destruct::DFunctionObject*>();
-  
+ 
   if (value == NULL)
     Py_RETURN_NONE;
 // get ici type et sauvegarde le pointeur suffit au lieu de index + dobject (dobject qui est deja le this de l objet non ? en + ) 
@@ -109,7 +109,7 @@ PyObject* PyDMethodObject::call(PyObject* _self, PyObject* args)
     Destruct::DValue result;
     if (argumentTypeId == Destruct::DType::DObjectType && argumentObject == NULL)
     {
-            //Py_BEGIN_ALLOW_THREADS
+      //Py_BEGIN_ALLOW_THREADS
       result = self->pimpl->call(Destruct::RealValue<Destruct::DObject*>(Destruct::DNone));
       //Py_END_ALLOW_THREADS
         
@@ -117,6 +117,7 @@ PyObject* PyDMethodObject::call(PyObject* _self, PyObject* args)
       //return (DValueDispatchTable[returnTypeId]->asDValue(self->pimpl->call(Destruct::RealValue<Destruct::DObject*>(Destruct::DNone))));
     }
     //Py_BEGIN_ALLOW_THREADS
+    
     result = self->pimpl->call(DValueDispatchTable[argumentTypeId]->toDValue(argumentObject));
     //Py_END_ALLOW_THREADS
    

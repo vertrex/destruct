@@ -125,13 +125,14 @@ DObject* RPCObject::clone() const
 BaseValue* RPCObject::getBaseValue(size_t index)
 {
   std::cout << "get base value " << std::endl;
-  
+  return (NULL);  
 }
 
 
 BaseValue const* RPCObject::getBaseValue(size_t index) const
 {
   std::cout << "get base value " << std::endl;
+  return (NULL);
 }
 
 

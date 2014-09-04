@@ -4,13 +4,13 @@
 #include <string>
 
 #include "dobject.hpp"
+#include "dfunction.hpp"
 #include "dunicodestring.hpp"
 #include "protocol/dstreambase.hpp"
 
 namespace Destruct
 {
 
-class DObject;
 //class DValue;
 
 //spliter les base value ds un autre fichier 
@@ -24,9 +24,8 @@ class DObject;
 class BaseValue
 {
 public:
-  virtual ~BaseValue() {};
   virtual BaseValue* clone(DObject *) const = 0;
-  
+  virtual ~BaseValue() {};
   virtual DValue getFinal() const = 0;
   virtual void set(DValue const & v) = 0;
 protected:
@@ -58,7 +57,6 @@ protected:
 
 /*! \brief provide copy and plain type conversion operator
  */
-
 template <typename PlainType> 
 class TypedValue : public FinalValue
 {
@@ -80,7 +78,6 @@ protected:
  * through final value converter
  * it use a template class to specialize the get method 
  */
-
 class DValue
 {
 public:
@@ -105,11 +102,9 @@ public:
       return PlainType();
   }
 
+  //operator std::string();
   friend DStreamBase& operator<<(DStreamBase& os, DValue& value);
   friend DStreamBase& operator>>(DStreamBase& is, DValue& value);
-
-  
-
   //std::ostream& serialize (std::ostream& os) const;
   DUnicodeString asUnicodeString() const;
 private:
@@ -127,14 +122,28 @@ inline DObject* DValue::get<DObject* >() const
     TypedValue<DObject* > const &tv = dynamic_cast<TypedValue<DObject* > const &>(*this->__value);
     DObject* dobject = tv;
     if (dobject)
-    {
-      dobject->addRef();
-    }
+      dobject->addRef(); //add ref for getter so he doesn't have do to it but must call destroy
     return (dobject);
   }
   else
    return (NULL); // ret DNone !
 }
+
+template <>
+inline DFunctionObject* DValue::get<DFunctionObject* >() const
+{
+  if (this->__value)
+  {
+    TypedValue<DFunctionObject* > const &tv = dynamic_cast<TypedValue<DFunctionObject* > const &>(*this->__value);
+    DFunctionObject* dobject = tv;
+    if (dobject)
+      dobject->addRef(); //add ref for getter so he doesn't have do to it but must call destroy
+    return (dobject);
+  }
+  else
+   return (NULL); // ret DNone !
+}
+
 
 }
 #endif

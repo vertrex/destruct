@@ -43,7 +43,7 @@ bool DSerializeRPC::serialize(DStream& networkStream, DValue value, DType::Type_
   if (type == DType::DObjectType)
   {
     DObject* dobject = value.get<DObject*>();
-    this->serialize(this->__networkStream, *dobject);
+    this->serialize(this->__networkStream, dobject);
   }
   else
   {
@@ -56,10 +56,10 @@ bool DSerializeRPC::serialize(DStream& networkStream, DValue value, DType::Type_
   return (true);
 }
 
-bool DSerializeRPC::serialize(DStream& networkStream, DObject&  dobject) 
+bool DSerializeRPC::serialize(DStream& networkStream, DObject*  dobject) 
 {
-  RealValue<DUnicodeString> objectName(dobject.instanceOf()->name());
-  RealValue<DUInt64> id(this->__objects.registerObject(&dobject));
+  RealValue<DUnicodeString> objectName(dobject->instanceOf()->name());
+  RealValue<DUInt64> id(this->__objects.registerObject(dobject));
 
   objectName.serialize(this->__streamString);
   id.serialize(this->__streamString);
@@ -107,8 +107,8 @@ DValue DSerializeRPC::deserialize(DStream& networkStream, DType::Type_t type)
   return (value);
 }
 
-bool DSerializeRPC::deserialize(DStream& input, DObject& dobject) //UNUSED //XXX must return a DOBject can't construct it before !
+bool DSerializeRPC::deserialize(DStream& input, DObject* dobject) //UNUSED //XXX must return a DOBject can't construct it before !
 {
-
+ return (false);
 }
 }

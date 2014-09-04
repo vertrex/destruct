@@ -31,7 +31,7 @@ public:
   static const std::string   pyErrorAsString(void);
 
   static Destruct::DValue    pyObjectToDValue(PyObject* object);
-  static PyObject*           dvalueAsPyObject(Destruct::DValue value);
+  static PyObject*           dvalueAsPyObject(Destruct::DValue const& value);
   //static const std::string   pyErrorAsString(void);
 
   static int pyTracebackInternalAsString(PyTracebackObject* tb, std::string& errorMessage, long limit);
@@ -99,7 +99,7 @@ public:
   static PyMethodDef         baseTypePyMethods[2];
 
   virtual PyObject*         asPyObject(PyObject* self, int32_t attributeIndex) = 0;
-  virtual PyObject*         asDValue(Destruct::DValue value) = 0;
+  virtual PyObject*         asDValue(Destruct::DValue const& value) = 0;
   virtual PyObject*         typeObject(void) = 0 ;
   virtual Destruct::DValue  toDValue(PyObject* value) = 0;
 };

@@ -5,6 +5,9 @@
 #include "dpolicy.hpp"
 #include "dstruct.hpp"
 
+#include <iostream>
+#include <string>
+
 namespace Destruct
 {
 class DValue;
@@ -15,19 +18,19 @@ class DObject : public RefcountPolicy<DObject>
 public:
   friend class RefcountPolicy<DObject>;
  
-  DObject(DStruct * dstructDef, DValue const& args); //XXX pour la deserialization DObject.deserialize9) mais si non en static
+  DObject(DStruct * dstructDef, DValue const& args); //static dstructDef ? 
 
   DStruct * instanceOf() const;
   virtual DObject* clone() const = 0;
-  virtual DValue getValue(size_t index) const = 0;               //set data member
-  virtual void setValue(size_t idx, DValue const &) = 0;         //set 
+  virtual DValue getValue(size_t index) const = 0;
+  virtual void setValue(size_t idx, DValue const &) = 0;
   virtual DValue call(size_t index, DValue const &)  = 0;
 
-  virtual DValue getValue(std::string const& name) const;        //set data member
+  virtual DValue getValue(std::string const& name) const;
   virtual void setValue(std::string const& name, DValue const &);
-                                        
+
   virtual DValue call(std::string const& name, DValue const &);
-  virtual DValue call(std::string const& name); //XXX implem
+  virtual DValue call(std::string const& name);
 protected:
   DObject(const DObject& rhs) : __dstructDef(rhs.__dstructDef) 
   {
@@ -38,12 +41,10 @@ protected:
   static  BaseValue const* getBaseValue(DObject const*, size_t idx);
   virtual ~DObject()
   {
-    //delete __dstructDef; -> struct could be registred
   }
 private:
   DStruct * const __dstructDef;
 };
-
 
 }
 

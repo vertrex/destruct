@@ -41,7 +41,7 @@ public:
   PyObject*           typeObject();
   
   Destruct::DValue toDValue(PyObject* value); 
-  PyObject*     asDValue(Destruct::DValue v);
+  PyObject*     asDValue(Destruct::DValue const& v);
   PyObject*     asPyObject(PyObject* self, int32_t attributeIndex);
 };
 

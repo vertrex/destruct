@@ -1,3 +1,6 @@
+#ifndef __DESTRUCT_MUTABLEOBJECT_HPP
+#define __DESTRUCT_MUTABLEOBJECT_HPP
+
 #include "ddynamicobject.hpp"
 
 class DMutableStruct;
@@ -27,3 +30,5 @@ public:
 };
 
 }
+
+#endif

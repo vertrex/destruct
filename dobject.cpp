@@ -2,8 +2,8 @@
 #include "dstruct.hpp"
 #include "dvalue.hpp"
 #include "dnullobject.hpp"
-#include "drealvalue.hpp"
 #include "dexception.hpp"
+#include "drealvalue.hpp"
 
 namespace Destruct
 {
@@ -58,4 +58,3 @@ BaseValue const* DObject::getBaseValue(DObject const* dobject, size_t index)
 }
 
 }
-

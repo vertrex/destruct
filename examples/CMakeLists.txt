@@ -15,6 +15,7 @@
 add_subdirectory(dtest)
 add_subdirectory(rpc)
 add_subdirectory(db)
+#add_subdirectory(refcount)
 
 include_directories("../")
 set (test_files

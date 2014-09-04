@@ -18,8 +18,8 @@ class DSerialize
 {
 public:
   virtual const std::string  name(void) = 0;
-  virtual bool serialize(DStream& output, DObject&  dobject)  = 0;
-  virtual bool deserialize(DStream& output, DObject& dobject) = 0;
+  virtual bool serialize(DStream& output, DObject*  dobject)  = 0;
+  virtual bool deserialize(DStream& output, DObject* dobject) = 0;
   
   virtual bool serialize(DStream& output, DStruct& dstruct) = 0;
   virtual DStruct* deserialize(DStream& output) = 0;
@@ -27,6 +27,7 @@ public:
   virtual DValue deserialize(DStream& input, DType::Type_t type) = 0; //inplky type is in descriptor/databuff
 
   virtual DSerialize* create(void) = 0;
+
   virtual ~DSerialize() {};
 };
 
@@ -43,8 +44,8 @@ public:
   const std::string name(void);
   DSerializeBinary*   create(void);
 
-  bool serialize(DStream& output, DObject& dobject); 
-  bool deserialize(DStream& input, DObject& dobject);
+  bool serialize(DStream& output, DObject* dobject); 
+  bool deserialize(DStream& input, DObject* dobject);
 
   bool serialize(DStream& output, DStruct& dstruct); 
   DStruct* deserialize(DStream& input);
@@ -66,9 +67,9 @@ public:
 
   const std::string name(void);
   DSerializeText*   create(void);
-  bool serialize(DStream& output, DObject& dobject); 
-  bool serialize(DStream& output, DObject& dobject, int depth);
-  bool deserialize(DStream& input, DObject& dobject);
+  bool serialize(DStream& output, DObject* dobject); 
+  bool serialize(DStream& output, DObject* dobject, int depth);
+  bool deserialize(DStream& input, DObject* dobject);
   bool serialize(DStream& output, DValue value, DType::Type_t type);
   DValue deserialize(DStream& input, DType::Type_t type);
 
@@ -90,8 +91,8 @@ public:
   const std::string name(void);
   DSerializeRaw*   create(void);
 
-  bool serialize(DStream& output, DObject& dobject); 
-  bool deserialize(DStream& input, DObject& dobject);
+  bool serialize(DStream& output, DObject* dobject); 
+  bool deserialize(DStream& input, DObject* dobject);
 
   bool serialize(DStream& output, DStruct& dstruct); 
   DStruct* deserialize(DStream& output); 
@@ -110,16 +111,18 @@ public :
 
   DSerializeXML(DStruct* dstruct, DValue const& args) : DCppObject<DSerializeXML>(dstruct, args)
   {
+    this->init();
   }
   DSerializeXML(const DSerializeXML& copy) : DCppObject<DSerializeXML>(copy) 
   {
+    this->init();
   }
 
   const std::string name(void);
   DSerializeXML*   create(void);
-  bool serialize(DStream& output, DObject& dobject); 
-  bool serialize(DStream& output, DObject& dobject, int depth);
-  bool deserialize(DStream&input, DObject& dobject);
+  bool serialize(DStream& output, DObject* dobject); 
+  bool serialize(DStream& output, DObject* dobject, int depth);
+  bool deserialize(DStream&input, DObject* dobject);
   bool serialize(DStream& output, DValue value, DType::Type_t type);
   DValue deserialize(DStream& input, DType::Type_t type);
 

@@ -4,6 +4,7 @@ namespace Destruct
 {
 DStream::DStream(DStruct* dstruct) : DCppObject<DStream>(dstruct, RealValue<DObject*>(DNone))
 {
+  this->init();
 }
 
 DStream::DStream(DStruct* dstruct, DValue const& args) : DCppObject<DStream>(dstruct, args)
@@ -22,6 +23,7 @@ DStream::DStream(DStruct* dstruct, DValue const& args) : DCppObject<DStream>(dst
 
 DStream::DStream(const DStream& copy) : DCppObject<DStream>(copy) 
 {
+  this->init();
 }
 
 DStream::~DStream()

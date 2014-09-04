@@ -3,11 +3,14 @@
 
 /*
  *  This is a protocol object iterator
- *  the protocol need im plem of some function 
+ *  the protocol need to implem some function 
  *  next(), first(), isDone()  
  */ 
 
+#include "protocol/dmutableobject.hpp"
+
 class DObject;
+
 
 namespace Destruct
 {
@@ -58,9 +61,17 @@ public:
     return (0);
   }
 
-  DValue                      currentItem(void) 
+  RealValue<KeyType>   currentItem(void)  //XXX try to return Key & Value in object item
   {
-    return RealValue<ValueType>(this->it->first);
+    //DMutableObject* item = static_cast<DMutableObject*>(Destruct::instance().find("DMutable")->newObject());
+    //
+    //item->setValueAttribute(KeyTypeId, "key", RealValue<KeyType>(this->it->first));
+    //item->setValueAttribute(ValueTypeId, "value", RealValue<ValueType>(this->it->second));
+    // 
+    //item->addRef();
+    //std::cout << "Return item " << std::endl;
+    //return item;
+    return this->it->first;
   }
 
 /*
