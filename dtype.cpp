@@ -101,7 +101,7 @@ void            DType::init(void)
   __prototypes[DUInt64Type] = new RealValue<DUInt64>(0);
  
   __prototypes[DUnicodeStringType] = new RealValue<DUnicodeString>("");
-  __prototypes[DObjectType] = new RealValue<DObject* >(0); //DNone ? XXX
+  __prototypes[DObjectType] = new RealValue<DObject* >(DNone); //DNone ? XXX
   __prototypes[DMethodType] = new RealValue<DFunctionObject* >(0); //DMethodObject ?  None funcobject?
   __prototypes[DNoneType] = new RealValue<DObject* >(DNone);
 //dunknown type ? 

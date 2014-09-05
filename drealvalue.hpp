@@ -6,7 +6,7 @@
 #include <iostream>
 
 #include "dvalue.hpp"
-//#include "dnullobject.hpp"
+#include "dnullobject.hpp"
 #include "dfunction.hpp"
 #include "protocol/dstreambase.hpp"
 
@@ -165,7 +165,7 @@ public:
  * DObject specialization
  */
 template <>
-inline RealValue<DObject* >::RealValue() : __val(0) 
+inline RealValue<DObject* >::RealValue() : __val(DNone) 
 {
 }
 

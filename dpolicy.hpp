@@ -24,11 +24,6 @@ public:
     this->__refCount++;  
   }
 
-  void    delRef()
-  {
-    this->__refCount--;
-  }
-
   virtual void  destroy()
   {
     this->__refCount--;
@@ -36,6 +31,12 @@ public:
     {
       delete static_cast<Derived*>(this);
     }
+  }
+
+//protected:
+  void    delRef()
+  {
+    this->__refCount--;
   }
 
 private:
