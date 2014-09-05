@@ -31,6 +31,7 @@ public:
 
   virtual DValue call(std::string const& name, DValue const &);
   virtual DValue call(std::string const& name);
+
 protected:
   DObject(const DObject& rhs) : __dstructDef(rhs.__dstructDef) 
   {

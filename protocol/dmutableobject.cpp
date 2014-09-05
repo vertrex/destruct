@@ -24,12 +24,10 @@ DMutableObject::DMutableObject(DMutableObject const & rhs) : DDynamicObject(rhs)
   this->copy(this, rhs);
 }
 
-//~DMutableObject 
-// delete this->instanceOf() -> car new a chaque fois !
-//DMutableObject::~DMutableObject()
-        //{
-  //delete this->instanceOf() !
-  //}
+DMutableObject::~DMutableObject(void)
+{
+  delete this->instanceOf();
+}
 
 DObject* DMutableObject::newObject(DMutableStruct* myClass, DValue const& args)
 {

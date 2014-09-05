@@ -28,9 +28,7 @@ public:
   {
     this->__refCount--;
     if (this->__refCount <= 0)
-    {
       delete static_cast<Derived*>(this);
-    }
   }
 
 //protected:
@@ -42,5 +40,6 @@ public:
 private:
   volatile int32_t  __refCount;
 };
+
 
 #endif 

@@ -26,7 +26,7 @@ public:
 
   static DObject* newObject(DMutableStruct* dstruct, DValue const& args)
   {
-    return (new CppClass(args));
+    return (new CppClass(dstruct, args));
   }
 
 protected:

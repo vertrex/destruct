@@ -14,7 +14,7 @@ public:
   DMutableObject(const DUnicodeString& name, DValue const& args); 
   DMutableObject(DMutableStruct* dstructDef, DValue const& args); 
   DMutableObject(DMutableObject const &);
-  //~DMutableObject();
+  ~DMutableObject();
 
   using DObject::getValue;
   using DObject::setValue;
