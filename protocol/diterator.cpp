@@ -31,6 +31,8 @@ DInt8        DIterator::isDone(void)
     if (this->index < count.get<DUInt64>())
       return (0);
   }
+  else
+    throw DException("DIterator::isDone have no container to iterate on.");
 
   return (1);
 }

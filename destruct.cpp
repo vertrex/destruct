@@ -17,8 +17,10 @@ Destruct::Destruct()
 Destruct::~Destruct()
 {
 //XXX FIX BECAUSE SOME struct are registred twice 
- //for (size_t idx = 0; idx != this->__structures.size(); ++idx)
-   //delete this->__structures[idx];
+//std::vector<DStruct* >::const_iterator dstruct = this->__structures.begin();
+ //for (; dstruct != this->__structures.end(); ++dstruct)
+ //delete (*dstruct);
+ this->__structures.clear();
 }
 
 Destruct&     Destruct::instance()

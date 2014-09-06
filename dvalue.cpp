@@ -30,6 +30,10 @@ FinalValue& FinalValue::operator=(FinalValue const &rhs)
   return (*this);
 }
 
+
+/**
+ * DValue
+ */
 DValue::DValue(FinalValue const& fv) : __value(fv.clone())
 {
 }

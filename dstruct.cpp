@@ -3,6 +3,7 @@
 #include "destruct.hpp"
 #include "dexception.hpp"
 #include "drealvalue.hpp"
+#include "dnullobject.hpp"
 
 namespace Destruct
 {

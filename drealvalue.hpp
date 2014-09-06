@@ -33,6 +33,10 @@ public:
   {
   }
 
+  RealValue(RealValue const & rhs) : __val(rhs.__val)
+  {
+  }
+
   ~RealValue()
   {
   }
@@ -71,6 +75,7 @@ public:
   {
     this->__val = v.get<PlainType>();
   }
+
 protected:
   PlainType __val;
 };
@@ -107,13 +112,29 @@ public:
 
   DStreamBase& serialize(DStreamBase& os) const
   {
-    os.write((char *)this->c_str(), this->size()); // pascal string ? 00
-    os.write("\x00", 1); //\x00\x00 in unicode 16 ? 
+    DUInt32 size = this->size();
+    os.write((char*)&size, sizeof(size));
+    os.write(this->c_str(), this->size());
+
+    //write Size then string best place here or deserializer / encoder ? 
+    //os.write((char *)this->c_str(), this->size()); // pascal string ? 00
+    //os.write("\x00", 1); //\x00\x00 in unicode 16 ? 
+    //return (os);
     return (os);
   }
 
   DStreamBase& unserialize(DStreamBase& is)
   {
+    DUInt32 size; 
+    is.read((char*)&size, sizeof(size));
+    char* data = new char[size + 1];
+    is.read(data, size);
+    data[size] = 0;
+    *this = std::string(data);
+    delete[] data;
+    return (is);
+    /*
+     //read size then string ? best place here or in deserializer encoder ?
     //XXX this is a pure implem so we will look for \x00 PascalString could be better for binary but maybe not for raw 
     char c = '\xff';
     std::string buffer;
@@ -126,7 +147,7 @@ public:
     }
 
     *this = buffer;
-    return (is);
+    return (is); */
   }
 
   operator std::string() const
@@ -144,48 +165,39 @@ public:
  * DObject specialization
  */
 template <>
-inline DUnicodeString RealValue<DObject* >::asUnicodeString() const
-{
-  if (this->__val->instanceOf())
-    return (this->__val->instanceOf()->name() + " *");
-  else 
-    return std::string("DObject::asUnicodeString() can't get Instance of object !\n");
-}
-
-template <>
-inline RealValue<DObject* >::RealValue() : __val(0) 
+inline RealValue<DObject* >::RealValue() : __val(DNone) 
 {
 }
 
 template <>
 inline RealValue<DObject* >::RealValue(DObject* val) : __val(val)
 {
-  if (this->__val)
-    this->__val->addRef();
+  if (val)
+    val->addRef();
 }
 
 template <>
-inline FinalValue* RealValue<DObject* >::clone() const
+inline RealValue<DObject*>::RealValue(DValue value) : __val(value.get<DObject*>())
 {
-    if (this->__val)
-      this->__val->addRef();
-    return (new RealValue(*this));
 }
-
-template <>
-inline RealValue<DObject* >::~RealValue<DObject* >()
-{
-  if (this->__val)
-    this->__val->destroy();
-}
-
 
 template <>
 inline RealValue<DObject* >::operator DObject*() const
 {
+  return (this->__val);
+}
+
+template <>
+inline RealValue<DObject*>::RealValue(RealValue<DObject*> const & rhs) :  __val(rhs) //XXX __val(rhs.__val) ...
+{
   if (this->__val)
     this->__val->addRef();
-  return (this->__val);
+} 
+
+template <>
+inline FinalValue* RealValue<DObject* >::clone() const
+{
+  return  (new RealValue(*this));
 }
 
 template <>
@@ -196,14 +208,29 @@ inline void RealValue<DObject* >::set(DValue const& v)
   this->__val = v.get<DObject *>();
 }
 
+template <>
+inline RealValue<DObject* >::~RealValue<DObject* >()
+{
+  if (this->__val)
+    this->__val->destroy();
+}
+
+template <>
+inline DUnicodeString RealValue<DObject* >::asUnicodeString() const
+{
+  if (this->__val->instanceOf())
+    return (this->__val->instanceOf()->name() + " *");
+  else 
+    return std::string("DObject::asUnicodeString() can't get Instance of object !\n");
+}
+
 /*
- * DMethodObject specialization
+ * DFunctionObject specialization
  */
 
 template <>
-inline DUnicodeString RealValue<DFunctionObject* >::asUnicodeString() const
+inline RealValue<DFunctionObject* >::RealValue() : __val(0) //XXX init a 0 ? call(0) ? throw ? 
 {
-  return ("DFunctionObject"); //throw ?
 }
 
 template <>
@@ -214,32 +241,22 @@ inline RealValue<DFunctionObject* >::RealValue(DFunctionObject* val) : __val(val
 }
 
 template <>
-inline RealValue<DFunctionObject* >::RealValue() : __val(0) //XXX init a 0 ? call(0) ? throw ? 
+inline RealValue<DFunctionObject* >::operator DFunctionObject*() const
 {
+  return (this->__val);
 }
+
+template <>
+inline RealValue<DFunctionObject*>::RealValue(RealValue<DFunctionObject*> const & rhs) :  __val(rhs)
+{
+  if (this->__val)
+    this->__val->addRef();
+} 
 
 template <>
 inline FinalValue* RealValue<DFunctionObject* >::clone() const
 {
-  if (this->__val)
-    this->__val->addRef();
   return (new RealValue(*this));
-}
-
-template <>
-inline RealValue<DFunctionObject* >::~RealValue<DFunctionObject* >()
-{
-  if (this->__val)
-    this->__val->destroy();
-}
-
-
-template <>
-inline RealValue<DFunctionObject* >::operator DFunctionObject*() const
-{
-  if (this->__val)
-    this->__val->addRef();
-  return (this->__val);
 }
 
 template <>
@@ -250,11 +267,24 @@ inline void RealValue<DFunctionObject* >::set(DValue const& v)
   this->__val = v.get<DFunctionObject *>();
 }
 
+template <>
+inline RealValue<DFunctionObject* >::~RealValue<DFunctionObject* >()
+{
+  if (this->__val)
+  {
+    this->__val->destroy();
+  }
+}
+
+template <>
+inline DUnicodeString RealValue<DFunctionObject* >::asUnicodeString() const
+{
+  return ("DFunctionObject"); //throw ?
+}
 
 /*
  *  DUInt8 specialization (or asUnicodeString see him as char, 'c')
  */
-
 template <>
 inline DUnicodeString RealValue<DUInt8 >::asUnicodeString() const
 {

@@ -14,6 +14,8 @@ public:
 
   static DObject*   newObject(DStruct *, DValue const& args);
   virtual DObject*  clone() const;
+protected:
+  virtual ~DSimpleObject();
 };
 
 }

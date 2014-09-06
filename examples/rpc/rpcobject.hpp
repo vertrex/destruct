@@ -20,7 +20,6 @@ public:
   RPCObject(NetworkStream& stream, uint64_t id, DStruct* dstruct, ObjectManager & objects);
   RPCObject(DStruct* dstruct, DValue const& args);
   RPCObject(RPCObject const & rhs);
-  ~RPCObject();
 
   static DObject* newObject(DStruct* dstruct, DValue const& args);
   DObject* clone() const;
@@ -38,6 +37,8 @@ public:
   BaseValue* getBaseValue(size_t index);
   BaseValue const* getBaseValue(size_t index) const;
 
+protected:
+  ~RPCObject();
 private:
   uint64_t       __id;
   NetworkStream  __networkStream;

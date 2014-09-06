@@ -132,7 +132,6 @@ BaseValue* RPCObject::getBaseValue(size_t index)
 BaseValue const* RPCObject::getBaseValue(size_t index) const
 {
   std::cout << "get base value " << std::endl;
-  return (NULL); //XXX 
 }
 
 

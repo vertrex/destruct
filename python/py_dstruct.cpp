@@ -67,7 +67,7 @@ PyObject* PyDStruct::attribute(PyDStruct::DPyObject* self, PyObject* args, PyObj
 {
   size_t index;
 
-  if (!PyArg_ParseTuple(args, "i", &index))
+  if (!PyArg_ParseTuple(args, "l", &index))
     return (0);
 
   if (index >= self->pimpl->attributeCount())
@@ -148,6 +148,7 @@ int PyDStruct::_init(PyDStructT::DPyObject* self, PyObject* args, PyObject* kwds
    }
    else if (PyArg_ParseTuple(args, "Os", &baseObject, &name))
    {
+     PyErr_Clear(); //First ParseTuple fail so set an error
      if (baseObject && PyObject_TypeCheck(baseObject, PyDStruct::pyType))
      {
        Py_INCREF(baseObject);

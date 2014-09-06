@@ -6,7 +6,10 @@ namespace Destruct
 
 DMutableStruct::DMutableStruct(DStruct const * base, const DUnicodeString & name, CreateMutableObjectFunction objectFunction) : DStruct(base, name, NULL), __createObject(objectFunction)
 {
+}
 
+DMutableStruct::~DMutableStruct()
+{
 }
 
 DObject* DMutableStruct::newObject(DValue const& args) //for mutable non const so ++definitionFIx=false ?

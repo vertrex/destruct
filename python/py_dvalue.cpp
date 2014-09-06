@@ -33,7 +33,7 @@ Destruct::DValue PyDInt8::toDValue(PyObject* value)
   throw Destruct::DException("Can't cast to DInt8");
 }
 
-PyObject*     PyDInt8::asDValue(Destruct::DValue v)
+PyObject*     PyDInt8::asDValue(Destruct::DValue const& v)
 {
   DInt8 value = v.get<DInt8>();
 #if FAST_CONVERSION
@@ -84,7 +84,7 @@ Destruct::DValue PyDInt16::toDValue(PyObject* value)
   throw Destruct::DException("Can't cast to DInt16");
 }
 
-PyObject*     PyDInt16::asDValue(Destruct::DValue v)
+PyObject*     PyDInt16::asDValue(Destruct::DValue const& v)
 {
   DInt16 value = v.get<DInt16>();
 #if FAST_CONVERSION
@@ -135,7 +135,7 @@ Destruct::DValue PyDInt32::toDValue(PyObject* value)
   throw Destruct::DException("Can't cast to DInt32");
 }
 
-PyObject*        PyDInt32::asDValue(Destruct::DValue v)
+PyObject*        PyDInt32::asDValue(Destruct::DValue const& v)
 {
   DInt32 value = v.get<DInt32>();
 #if FAST_CONVERSION
@@ -186,7 +186,7 @@ Destruct::DValue PyDInt64::toDValue(PyObject* value)
   throw Destruct::DException("Can't cast to DInt64");
 }
 
-PyObject*     PyDInt64::asDValue(Destruct::DValue v)
+PyObject*     PyDInt64::asDValue(Destruct::DValue const& v)
 {
   DInt64 value = v.get<DInt64>();
 #if FAST_CONVERSION
@@ -237,7 +237,7 @@ Destruct::DValue PyDUInt8::toDValue(PyObject* value)
   throw Destruct::DException("Can't cast to DUInt8");
 }
 
-PyObject*     PyDUInt8::asDValue(Destruct::DValue v)
+PyObject*     PyDUInt8::asDValue(Destruct::DValue const& v)
 {
   DUInt8 value = v.get<DUInt8>();
 #if FAST_CONVERSION
@@ -288,7 +288,7 @@ Destruct::DValue PyDUInt16::toDValue(PyObject* value)
   throw Destruct::DException("Can't cast to DUInt16");
 }
 
-PyObject*     PyDUInt16::asDValue(Destruct::DValue v)
+PyObject*     PyDUInt16::asDValue(Destruct::DValue const& v)
 {
   DUInt16 value = v.get<DUInt16>();
 #if FAST_CONVERSION
@@ -339,7 +339,7 @@ Destruct::DValue PyDUInt32::toDValue(PyObject* value)
   throw Destruct::DException("Can't cast to DUInt32");
 }
 
-PyObject*     PyDUInt32::asDValue(Destruct::DValue v)
+PyObject*     PyDUInt32::asDValue(Destruct::DValue const& v)
 {
   DUInt32 value = v.get<DUInt32>();
 #if FAST_CONVERSION
@@ -390,7 +390,7 @@ Destruct::DValue PyDUInt64::toDValue(PyObject* value)
   throw Destruct::DException("Can't cast to DUInt64");
 }
 
-PyObject*     PyDUInt64::asDValue(Destruct::DValue v)
+PyObject*     PyDUInt64::asDValue(Destruct::DValue const& v)
 {
   DUInt64 value = v.get<DUInt64>();
 #if FAST_CONVERSION
@@ -441,7 +441,7 @@ Destruct::DValue PyDUnicodeString::toDValue(PyObject* value)
   throw Destruct::DException("Can't cast to DUnicodeString");
 }
 
-PyObject*     PyDUnicodeString::asDValue(Destruct::DValue v)
+PyObject*     PyDUnicodeString::asDValue(Destruct::DValue const& v)
 {
   Destruct::DUnicodeString value = v.get<Destruct::DUnicodeString>();
 #if FAST_CONVERSION

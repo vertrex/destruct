@@ -12,7 +12,7 @@ Destruct::DValue PyDNullObject::toDValue(PyObject* value)
   throw Destruct::DException("Can't cast to DNone");
 }
 
-PyObject*     PyDNullObject::asDValue(Destruct::DValue v)
+PyObject*     PyDNullObject::asDValue(Destruct::DValue const& v)
 {
   Py_RETURN_NONE;
 }

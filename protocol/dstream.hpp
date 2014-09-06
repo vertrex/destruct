@@ -6,10 +6,9 @@
 #include <fstream>
 #include <sstream>
 
-#include "dcppobject.hpp" //XXX peut pas etre include drealvalue car dmethodobject a bespin de realvalue et ca fait de l inclusion en boucle ?
+#include "dcppobject.hpp"
 #include "protocol/dstreambase.hpp"
 
-class DValue;
 namespace Destruct
 {
 /*
@@ -38,7 +37,6 @@ public:
   typedef CoutType& (*StandardEndLine)(CoutType&);
   DStream(DStruct* dstruct, DValue const& args);
   DStream(const DStream& copy);
-  virtual ~DStream();
   
   virtual DStream& operator>>(DStream& output);
   virtual DStream& operator<<(DStream& input);
@@ -50,7 +48,8 @@ public:
   virtual DStream& read(char*  buff, uint32_t size);
   virtual DStream& write(const char* buff, uint32_t size);
   virtual bool fail(void);
-protected:
+  //protected:
+  virtual ~DStream();
  // DStream(DStruct* dstruct);
 private:
   std::fstream  __fstream; //if not fd !
@@ -106,7 +105,6 @@ class DStreamCout : public DStream //Base
 public:
   DStreamCout(DStruct* dstruct, DValue const &args);
   DStreamCout(const DStreamCout& copy);
-  ~DStreamCout();
   DStream& operator>>(std::string& val);
   DStream& operator<<(std::string val);
   DStream& operator<<(char val);
@@ -114,6 +112,8 @@ public:
   DStream& read(char*  buff, uint32_t size);
   DStream& write(const char* buff, uint32_t size);
   bool fail(void);
+protected:
+  ~DStreamCout();
 };
 
 class DStreamString : public DStream //Base
@@ -121,7 +121,6 @@ class DStreamString : public DStream //Base
 public:
   DStreamString(DStruct* dstruct, DValue const &args);
   DStreamString(const DStreamString& copy);
-  ~DStreamString();
   DStream&          read(char*  buff, uint32_t size);
   DStream&          write(const char* buff, uint32_t size);
   const std::string str(void) const;
@@ -130,6 +129,8 @@ public:
   //DStream& operator<<(std::string val);
   //virtual DInt64 write(DValue const& args);
   //virtual DInt64 read(DValue const& args);
+  //protected:
+  ~DStreamString();
 private:
   std::stringstream   __stream; 
 };

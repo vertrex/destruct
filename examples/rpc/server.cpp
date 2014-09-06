@@ -160,5 +160,5 @@ void            Server::showRoot(void)
   if (stream == NULL)
     std::cout << "Can't find stream to output fs tree" << std::endl;
 
-  Destruct::DSerializers::to("Text")->serialize(*stream, *this->__objectManager.object(0));
+  Destruct::DSerializers::to("Text")->serialize(*stream, this->__objectManager.object(0));
 }

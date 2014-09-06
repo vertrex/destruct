@@ -6,11 +6,11 @@
 #include "dvalue.hpp"
 #include "drealvalue.hpp"
 #include "dexception.hpp"
+#include "dnullobject.hpp"
 
 /*
  *  This is an abstract interface class to implement different CPP member oointer function object
  */
-
 namespace Destruct
 {
 
@@ -34,7 +34,6 @@ private:
  *  This implement the interface of DMethodObjectBase 
  *  DMethodObjectTyped specialization : ReturnType CPPClass(Argument)
  */
-
 template<typename RealReturnType, typename CPPClass, typename ArgumentType>
 class DMethodObjectTyped : public DMethodObjectBase
 {
@@ -51,7 +50,6 @@ private:
   CPPClass* __self;
   RealReturnType (CPPClass::* __member) (ArgumentType);
 };
-
 
 template<typename CPPClass, typename ArgumentType>
 class DMethodObjectTyped<DValue, CPPClass, ArgumentType> : public DMethodObjectBase
@@ -73,7 +71,6 @@ private:
 /*
  * DMethodObjectTyped specialization : void CPPClass(Argument)
  */
-
 template<typename CPPClass, typename ArgumentType>
 class DMethodObjectTyped<void, CPPClass, ArgumentType> : public DMethodObjectBase
 {
@@ -95,7 +92,6 @@ private:
 /*
  * DMethodObjectTyped specialization : returnType CPPClass(void)
  */
-
 template<typename RealReturnType, typename CPPClass>
 class DMethodObjectTyped<RealReturnType, CPPClass, void > : public DMethodObjectBase
 {
@@ -137,7 +133,6 @@ private:
 /*
  * DMethodObjectTyped specialization : void CPPClass(void)
  */
-
 template<typename CPPClass>
 class DMethodObjectTyped<void, CPPClass, void > : public DMethodObjectBase
 {
@@ -161,7 +156,6 @@ private:
 /*
  *  DMethodObject handler 
  */
-
 class DMethodObject : public DFunctionObject
 {
 public:

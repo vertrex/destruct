@@ -31,7 +31,7 @@ public:
 //CONSTRUCTOR SANS NEW 
 //FUNCTION RENVOIE SELF DNONE ETC>...
   Destruct::DValue toDValue(PyObject* value); 
-  PyObject*     asDValue(Destruct::DValue v);
+  PyObject*     asDValue(Destruct::DValue const& v);
   PyObject*     asPyObject(PyObject* self, int32_t attributeIndex);
 };
 

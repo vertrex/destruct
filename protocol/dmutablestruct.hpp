@@ -17,6 +17,7 @@ public:
   {
   }
   DMutableStruct(DStruct const* base, const DUnicodeString& name, CreateMutableObjectFunction objectFunction);
+  ~DMutableStruct();
 
   DObject* newObject(DValue const& args);
   void     addAttribute(const DAttribute& attribute);

@@ -3,6 +3,7 @@
 
 #include "dtype.hpp"
 #include "drealvalue.hpp"
+#include "dnullobject.hpp"
 
 namespace Destruct
 {
@@ -10,7 +11,6 @@ namespace Destruct
 class DString;
 class DObject;
 class DFunctionObject;
-class DNullObject;
 class DNone;
 
 const std::string DType::__typeName[] = 
@@ -101,8 +101,8 @@ void            DType::init(void)
   __prototypes[DUInt64Type] = new RealValue<DUInt64>(0);
  
   __prototypes[DUnicodeStringType] = new RealValue<DUnicodeString>("");
-  __prototypes[DObjectType] = new RealValue<DObject* >(0);
-  __prototypes[DMethodType] = new RealValue<DFunctionObject* >(0); //DMethodObject ? 
+  __prototypes[DObjectType] = new RealValue<DObject* >(DNone); //DNone ? XXX
+  __prototypes[DMethodType] = new RealValue<DFunctionObject* >(0); //DMethodObject ?  None funcobject?
   __prototypes[DNoneType] = new RealValue<DObject* >(DNone);
 //dunknown type ? 
 }

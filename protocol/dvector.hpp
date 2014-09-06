@@ -10,15 +10,13 @@ namespace Destruct
 {
 
 template <typename VectorType, DType::Type_t  VectorTypeId>
-class DVector : public DContainer, public DCppObject<DVector<VectorType, VectorTypeId> > //herite en DStruct plutot ?
+class DVector : public DContainer, public DCppObject<DVector<VectorType, VectorTypeId> >
 {
   typedef DVector<VectorType, VectorTypeId> DVectorType;
 public:
-//XXX prendre container en argument ? DStruct* dstruct, DValue args) comme ca ca fait un constructeur 
-// par contre faut que new object prenne une value donc modifier destruct / dstruct et tous les dobjects
   DVector(DStruct* dstruct, DValue const& args) : DCppObject<DVector<VectorType, VectorTypeId> >(dstruct, args)
   {
-    this->init(); //XXX if not init par lui meme mais par dcppobject push sera pas init on dirait qu il init une copie des object qui sont DCOntainer comme si il herite aussi de DContainer ??
+    this->init();
   };
 
   DVector(const DVectorType& copy) : DCppObject<DVector<VectorType, VectorTypeId> >(copy), __vector(copy.__vector) 
@@ -28,6 +26,7 @@ public:
 
   ~DVector()
   {
+    this->__vector.clear();
   }
 
   DUInt64  push(DValue const& args) 
@@ -55,7 +54,9 @@ public:
     DObject*     argumentsObject = args.get<DObject*>();
     DInt64       index = argumentsObject->getValue("index").get<DUInt64>();
     VectorType   item = argumentsObject->getValue("value").get<VectorType>();
-     
+
+    argumentsObject->destroy();
+
     if (index >= (DInt64)this->__vector.size()) 
      throw DException("setItem : Index error");    
 
@@ -74,7 +75,8 @@ public:
   {
     //getserializationType ou serializeXML method serializeText method de toute c dynamique donc si on c serialized un type on peut call la method qu il faut
     // c une naming convetion
-    DStream* output = static_cast<DStream*>(args.get<DObject*>());
+    //DStream* output = static_cast<DStream*>(args.get<DObject*>());
+    DStream* output = static_cast<DStream*>(args.get<DObject*>()->getValue("stream").get<DObject*>());
 
     *output << "list : {" << std::endl;
     DUInt64 size = static_cast<DFunctionObject*>(this->_size)->call().get<DUInt64>();
@@ -138,11 +140,15 @@ public:
     return (memberBegin() + ownAttributeCount());
   } 
 private:
-  std::vector<VectorType>   __vector; //XXX sont on stock des dvalue le type doit suffir pour mette n importe koi et etre generic 
+  std::vector<VectorType>   __vector; //XXX DValue / RealValue<VectorType> ? (refcount) 
 };
-//template specialization pour les DObject* si la template est dobject il faut call le serialize des object 
+
+
+/**
+ *  DObject template specialization
+ */
 template<>
-DObject* DVector<DObject*, DType::DObjectType >::serializeText(DValue const& args)
+inline DObject* DVector<DObject*, DType::DObjectType >::serializeText(DValue const& args)
 {
   DObject* arguments = args.get<DObject*>();
   DObject* stream = arguments->getValue("stream").get<DObject*>();
@@ -151,18 +157,44 @@ DObject* DVector<DObject*, DType::DObjectType >::serializeText(DValue const& arg
 
   *output << "list : {" <<  std::string(2*depth, ' ') << std::endl;
 
-  //DUInt64 size = static_cast<DFunctionObject*>(this->_size)->call().get<DUInt64>();
-  DUInt64 size = this->call("size").get<DUInt64>(); // static_cast<DFunctionObject*>(this->_size)->call().get<DUInt64>();
-  std::cout << "size " << size << std::endl;
+  DUInt64 size = this->call("size").get<DUInt64>();
   for (DUInt64 idx = 0; idx < size ; idx++)
   {
-    std::cout << "foring " << std::endl;
-    DSerializers::to("Text")->serialize(*output, *this->__vector[idx]);
+    DSerializers::to("Text")->serialize(*output, this->__vector[idx]);
   }
   *output << std::string(2*depth, ' ')  << "}" << std::endl;
 
   return RealValue<DObject*>(DNone);
 }
 
+template<>
+inline DVector<DObject*, DType::DObjectType >::~DVector()
+{
+ std::vector<DObject* >::iterator object = this->__vector.begin();
+ for (; object != this->__vector.end(); ++object)
+ {
+   (*object)->destroy();  //remove added by caller of 'push'
+ }
+ this->__vector.clear(); //?
+}
+
+template<>
+inline DUInt64 DVector<DObject*, DType::DObjectType >::push(DValue const& args)
+{
+  DObject* object = args.get<DObject*>();// add 1 ref :) 
+  this->__vector.push_back(object);
+  return (this->__vector.size() - 1);
+}
+  
+template<> 
+inline DValue  DVector<DObject*, DType::DObjectType>::get(DValue const& args)
+  {
+    DUInt64 index = args.get<DUInt64>();
+    if (index >= this->__vector.size())
+      throw DException("DContainer::get bad index\n");
+    DObject* object = this->__vector[index];
+    object->addRef();
+    return (RealValue<DObject*>(object));
+  }
 }
 #endif

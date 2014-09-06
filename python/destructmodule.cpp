@@ -277,20 +277,20 @@ Destruct::DValue PythonBaseModule::pyObjectToDValue(PyObject* object)
   //if (typeId != -1)
      //return Destruct::DValue(DValueDispatchTable[typeId]->toDValue(object)); -de check mais 1 call en plus possibilite de faire mieux avec unarg static ? objectTypeId.type ?
     //XXX a utiliser pour forcer le type int8, int16, ... car pas gerer la !      
- 
-  if (PyLong_Check(object) || PyInt_Check(object))
-    return (Destruct::RealValue<DInt64>(PyLong_AsLong(object)));
-  if (PyString_Check(object)) 
-    return Destruct::RealValue<Destruct::DUnicodeString>(std::string(PyString_AsString(object)));
-  if (PyObject_TypeCheck(object, PyDMethodObject::pyType))
-    return Destruct::RealValue<Destruct::DFunctionObject*>(((PyDMethodObject::DPyObject*)object)->pimpl);
+
   if (PyObject_TypeCheck(object, PyDObject::pyType))
     return Destruct::RealValue<Destruct::DObject* >(((PyDObject::DPyObject*)object)->pimpl);
+  else if (PyLong_Check(object) || PyInt_Check(object))
+    return (Destruct::RealValue<DInt64>(PyLong_AsLong(object)));
+  else if (PyString_Check(object)) 
+    return Destruct::RealValue<Destruct::DUnicodeString>(std::string(PyString_AsString(object)));
+  else if (PyObject_TypeCheck(object, PyDMethodObject::pyType))
+    return Destruct::RealValue<Destruct::DFunctionObject*>(((PyDMethodObject::DPyObject*)object)->pimpl);
 
   return (Destruct::RealValue<Destruct::DObject*>(Destruct::DNone));
 }
 
-PyObject* PythonBaseModule::dvalueAsPyObject(Destruct::DValue value)
+PyObject* PythonBaseModule::dvalueAsPyObject(Destruct::DValue const& value)
 {
   size_t typeId = 0;
 
@@ -298,7 +298,6 @@ PyObject* PythonBaseModule::dvalueAsPyObject(Destruct::DValue value)
   {
     try
     {
-        //lent il faut avoir un truc qui le fait en dur ? if type(long) ou type ...
       return DValueDispatchTable[typeId]->asDValue(value);
       break;
     }

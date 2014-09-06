@@ -7,7 +7,6 @@ namespace Destruct
 /*
  *   This is the base class to inherit from to create a functin/callable object
  */
-
 class DFunctionObject : public RefcountPolicy<DFunctionObject>
 {
 public:

@@ -19,9 +19,14 @@ public:
   {
   }
 
+  ~DCppMutable()
+  {
+    delete this->__struct;
+  }
+
   static DObject* newObject(DMutableStruct* dstruct, DValue const& args)
   {
-    return (new CppClass(args));
+    return (new CppClass(dstruct, args));
   }
 
 protected:

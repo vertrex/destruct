@@ -17,10 +17,12 @@ public:
   const std::string     name(void); 
   bool                  serialize(DStream& output, DStruct& dstruct); 
   bool                  serialize(DStream& output, DValue value, DType::Type_t type);
-  bool                  serialize(DStream& output, DObject& dobject); 
+  bool                  serialize(DStream& output, DObject* dobject); 
   DStruct*              deserialize(DStream& input);
   DValue                deserialize(DStream& input, DType::Type_t type);
-  bool                  deserialize(DStream& input, DObject& dobject);
+  bool                  deserialize(DStream& input, DObject* dobject);
+protected:
+  virtual               ~DSerializeRPC() {};
 private:
   NetworkStream        __networkStream;
   ObjectManager&        __objects;

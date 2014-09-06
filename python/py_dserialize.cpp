@@ -44,12 +44,13 @@ PyObject* PyDSerialize::serialize(PyDSerialize::DPyObject* self, PyObject* args,
   if (PyObject_TypeCheck(object, PyDStruct::pyType))
     result = self->pimpl->serialize(*dstream, *((PyDStruct::DPyObject*)object)->pimpl);
   else if (PyObject_TypeCheck(object, PyDObject::pyType))
-    result = self->pimpl->serialize(*dstream, *((PyDObject::DPyObject*)object)->pimpl);
+    result = self->pimpl->serialize(*dstream, ((PyDObject::DPyObject*)object)->pimpl);
 
-  if (result)
-    Py_RETURN_TRUE;
-  else
-    Py_RETURN_FALSE;
+  return (PyBool_FromLong(result));
+  //if (result)
+  //Py_RETURN_TRUE;
+  //else
+  //Py_RETURN_FALSE;
 }
 
 PyObject* PyDSerialize::deserialize(PyDSerialize::DPyObject* self, PyObject* args, PyObject* kwds)
@@ -80,12 +81,13 @@ PyObject* PyDSerialize::deserialize(PyDSerialize::DPyObject* self, PyObject* arg
 
   if (PyObject_TypeCheck(object, PyDObject::pyType))
   {
-    bool result = self->pimpl->deserialize(*(dstream), *((PyDObject::DPyObject*)object)->pimpl);
+    bool result = self->pimpl->deserialize(*(dstream), ((PyDObject::DPyObject*)object)->pimpl);
 
-    if (result)
-      Py_RETURN_TRUE;
-    else
-      Py_RETURN_FALSE;
+    return (PyBool_FromLong(result));
+    //if (result)
+    // Py_RETURN_TRUE;
+    //else
+    //Py_RETURN_FALSE;
   } 
 
   PyErr_SetString(PyExc_TypeError, "must be dstream, and dobject or none.");

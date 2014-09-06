@@ -26,13 +26,16 @@ PyMappingMethods* PyDObjectT::pyMappingMethods = NULL;
 Destruct::DValue PyDObject::toDValue(PyObject* value) 
 {
   if (PyObject_TypeCheck(value, PyDObject::pyType))
-    return Destruct::RealValue<Destruct::DObject* >(((DPyObject*)value)->pimpl);
+  {
+    Destruct::DObject* v = ((DPyObject*)value)->pimpl;
+    return Destruct::RealValue<Destruct::DObject* >(v);
+  }
   if (value == Py_None)
     return Destruct::RealValue<Destruct::DObject* >(Destruct::DNone); 
   throw Destruct::DException("Can't cast to DObject*");
 }
 
-PyObject*     PyDObject::asDValue(Destruct::DValue v)
+PyObject*     PyDObject::asDValue(Destruct::DValue const& v)
 {
   Destruct::DObject*     value = v.get<Destruct::DObject*>();
 
@@ -55,7 +58,7 @@ PyObject*     PyDObject::asPyObject(PyObject* self, int32_t attributeIndex)
    
   Py_INCREF(pyType);
   PyDObject::DPyObject*  dobjectObject = (PyDObject::DPyObject*)_PyObject_New(PyDObject::pyType);
-  dobjectObject->pimpl = value;
+  dobjectObject->pimpl = value; //don't addref because .get<> already add a Ref
 
   return ((PyObject*)dobjectObject);
 }
@@ -134,7 +137,7 @@ PyObject* PyDObject::getValue(PyDObject::DPyObject* self, PyObject* attributeObj
 
   if (attributeIndex == -1 || attributeIndex >= (int32_t)self->pimpl->instanceOf()->attributeCount())
   {
-    std::string errorString = "destruct.DObject." + self->pimpl->instanceOf()->name() +  " instance as no attribute '" + attributeName + "'";
+    std::string errorString = "destruct.DObject." + self->pimpl->instanceOf()->name() +  " instance has no attribute '" + attributeName + "'";
     PyErr_SetString(PyExc_AttributeError, errorString.c_str()); 
     return (0);
   }
@@ -182,7 +185,7 @@ PyObject* PyDObject::setValue(PyDObject::DPyObject* self, const char* attributeN
   int32_t attributeIndex = self->pimpl->instanceOf()->findAttribute(std::string(attributeName));
   if (attributeIndex == -1 || attributeIndex >= (int32_t)self->pimpl->instanceOf()->attributeCount())
   {
-    std::string errorString = "destruct.DObject." + self->pimpl->instanceOf()->name() +  " instance as no attribute '" + attributeName + "'";
+    std::string errorString = "destruct.DObject." + self->pimpl->instanceOf()->name() +  " instance has no attribute '" + attributeName + "'";
     PyErr_SetString(PyExc_AttributeError, errorString.c_str()); 
     return (0);
   }
@@ -194,7 +197,7 @@ PyObject*  PyDObject::setValue(PyDObject::DPyObject* self, int32_t attributeInde
 {
   if (attributeIndex == -1 || attributeIndex >= (int32_t)self->pimpl->instanceOf()->attributeCount())
   {
-    std::string errorString = "destruct.DObject." + self->pimpl->instanceOf()->name() +  " instance as no attribute at index '"; 
+    std::string errorString = "destruct.DObject." + self->pimpl->instanceOf()->name() +  " instance has no attribute at index '"; 
     errorString += attributeIndex; 
     errorString += std::string("'");
     PyErr_SetString(PyExc_AttributeError, errorString.c_str()); 
@@ -396,7 +399,8 @@ PyObject* PyDObject::_iter(PyDObject::DPyObject* self)
       return ((PyObject*)self);
     }
     Destruct::DObject* iterator = self->pimpl->call("iterator").get<Destruct::DObject*>();
-
+    iterator->destroy(); //destroy get<ref> but have an other one add by call()
+  
     PyDObject::DPyObject*  dobjectObject = (PyDObject::DPyObject*)_PyObject_New(PyDObject::pyType);
     dobjectObject->pimpl = iterator;
 
@@ -509,7 +513,7 @@ int  PyDObject::_setmap(DPyObject* self, PyObject* _key, PyObject* _value)
 {
   if (_key == NULL)
   {
-    std::cout << "del item not implemented" << std::endl; //XXX
+    std::cout << "_setmap del item not implemented" << std::endl; //XXX
     return (0);
   }
   else
