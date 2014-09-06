@@ -11,7 +11,7 @@
 namespace Destruct
 {
 
-DSerializeRPC::DSerializeRPC(NetworkStream stream, ObjectManager & objects) : __networkStream(stream), __objects(objects), __streamString(DStreamString(Destruct::instance().find("DStreamString"), RealValue<DObject*>(DNone)))
+DSerializeRPC::DSerializeRPC(NetworkStream& stream, ObjectManager & objects) : __networkStream(stream), __objects(objects), __streamString(DStreamString(Destruct::instance().find("DStreamString"), RealValue<DObject*>(DNone)))
 {
 }
 

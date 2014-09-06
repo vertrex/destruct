@@ -2,6 +2,7 @@
 #define __RPC_SERVER__
 
 #include <map>
+#include <string>
 #include "dobject.hpp"
 #include "networkstream.hpp"
 #include "protocol/dserialize.hpp"
@@ -26,6 +27,8 @@ public:
   void                          setValue(Destruct::DObject* object);
   void                          call(Destruct::DObject* object);
   void                          call0(Destruct::DObject* object);
+  void                          unknown(const std::string& cmd);
+  Destruct::NetworkStream&                 networkStream(void);
 private:
   Destruct::NetworkStream       __networkStream;
   Destruct::DSerialize*         __serializer;

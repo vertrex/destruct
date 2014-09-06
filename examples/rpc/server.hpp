@@ -18,7 +18,6 @@ public:
   void                  initFS(void);
   void                  serve(void);
   void                  showRoot(void);
-  void                  unknown(Destruct::NetworkStream stream);
 private:
   ObjectManager         __objectManager;
   int                   __listenSocket;

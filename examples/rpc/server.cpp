@@ -114,8 +114,8 @@ void            Server::serve(void)
   {
     std::cout << "Wait for message..." << std::endl;
     std::string msg;
-    stream.read(msg);
-
+    rpcServer.networkStream().read(msg);
+  //   stream.read(msg);
     if (msg == "show") 
       this->showRoot();
     else if (msg == "findDStruct")
@@ -147,7 +147,7 @@ void            Server::serve(void)
       rpcServer.call0(currentObject);
     }
     else
-      this->unknown(stream);
+      rpcServer.unknown(msg);
   }
 }
 
@@ -161,10 +161,4 @@ void            Server::showRoot(void)
     std::cout << "Can't find stream to output fs tree" << std::endl;
 
   Destruct::DSerializers::to("Text")->serialize(*stream, *this->__objectManager.object(0));
-}
-
-void            Server::unknown(NetworkStream stream)
-{
-  std::cout << "Receive unknown command" << std::endl;
-  stream.write("Unknown command");
 }

@@ -41,6 +41,23 @@ void    Client::__close(void)
 void    Client::start(void)
 {
   NetworkStream networkStream(NULL, RealValue<DInt32>(this->__connectionSocket));
+
+  if (0 == 0)
+  {
+  for (uint64_t z = 0; z < 100; z++)
+  {
+          //networkStream.write("test");
+          //std::string toto;
+          //networkStream.read(toto);
+          //std::cout << toto << std::endl;
+     std::cout << "Iteration " <<  z << std::endl;
+     Destruct::DStruct* fileSS = this->__remoteFind(networkStream, "File"); 
+     if (!fileSS)
+      throw std::string("Directory struct not found");
+
+  }
+  return ; }
+
   Destruct::DStruct* fileS = this->__remoteFind(networkStream, "File"); 
   if (!fileS)
     throw std::string("Directory struct not found");
@@ -58,7 +75,7 @@ void    Client::start(void)
  
   std::cout << "root name : " << remote->getValue("name").get<DUnicodeString>() << std::endl;
 
-  std::cout << "Set remove value to 'rename-by-remote'" << std::endl;
+  std::cout << "Set remote value to 'rename-by-remote'" << std::endl;
   remote->setValue("name", RealValue<DUnicodeString>("rename-by-remote"));
 
   std::cout << "Root name after setValue('name') : " << remote->getValue("name").get<DUnicodeString>() << std::endl;
@@ -70,15 +87,18 @@ void    Client::start(void)
   DObject* remoteChild = remote->getValue("children").get<DObject*>();
   std::cout << "Iterating on child " << std::endl;
   DUInt64 size = remoteChild->call("size").get<DUInt64>();
-  
+ 
+   
   for (DUInt64 i = 0; i < size; ++i)
   { 
+    for (DUInt64 x = 0; x < 100; ++x) {
     Destruct::DObject* child = remoteChild->call("get", RealValue<DUInt64>(i)).get<DObject*>();
     std::cout <<  "child(" << i << ") : " 
               << "'" << child->getValue("name").get<DUnicodeString>() << "'"
               << " is of type : " <<  child->instanceOf()->name() 
               << std::endl;
 
+     } break;
   }
 
   this->__print(remote);
@@ -87,19 +107,25 @@ void    Client::start(void)
 
 Destruct::DStruct* Client::__remoteFind(NetworkStream& stream, const std::string name)
 {
-  stream.write("findDStruct");
+  std::cout << "Client::_remoteFind(stream, " << name << ")" << std::endl;
+  stream.write("findDStruct" );
   stream.write(name);
+
+  std::cout << "Client::_remoteFind new DSerializeRPC" << std::endl;
+                                  ///XXX passer stream par ref pour eviter la copy
   DSerializeRPC* rpcSerializer = new DSerializeRPC(stream, this->__objectManager);
+  std::cout << "Client::_remoteFind rpcSerializer->deserialize "<< std::endl;
   DStruct* dstruct = rpcSerializer->deserialize(stream);
 
   if (dstruct)
   {
     Destruct::Destruct& destruct = Destruct::Destruct::instance();
     destruct.registerDStruct(dstruct);
-    this->__print(dstruct); 
+    //this->__print(dstruct); 
   } 
   else
     std::cout << "Struct " << name << " is NULL can't show content " << std::endl;
+  std::cout << "Client::_remoteFind return Struct " << std::endl;
   return (dstruct);
 }
 

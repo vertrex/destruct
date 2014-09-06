@@ -17,7 +17,7 @@ class DSerialize;
 class RPCObject : public DObject
 {
 public:
-  RPCObject(NetworkStream stream, uint64_t id, DStruct* dstruct, ObjectManager & objects);
+  RPCObject(NetworkStream& stream, uint64_t id, DStruct* dstruct, ObjectManager & objects);
   RPCObject(DStruct* dstruct, DValue const& args);
   RPCObject(RPCObject const & rhs);
   ~RPCObject();

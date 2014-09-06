@@ -15,13 +15,15 @@ RPCServer::RPCServer(NetworkStream networkStream, ObjectManager & objectManager)
 void    RPCServer::findDStruct(void)
 {
   std::string name;
+//  std::cout << "RPCServer::findDStruct read name of struct " << std::endl;
   this->__networkStream.read(name);
-
+//  std::cout << "RPCServer get  struct to find :  " << name << std::endl;
   Destruct::Destruct& destruct = Destruct::Destruct::instance();
   DStruct* dstruct = destruct.find(name);
   if (!dstruct)
    throw std::string("DStruct not found");
 
+  std::cout << " serializing networkStream for struct " << name << std::endl;
   this->__serializer->serialize(this->__networkStream, *dstruct);
 }
 
@@ -70,6 +72,16 @@ void    RPCServer::call0(DObject* object)
   this->__serializer->serialize(this->__networkStream, value, type.getReturnType());
 }
 
+void    RPCServer::unknown(const std::string& cmd)
+{
+  std::cout << "Receive unknown command : " << cmd << std::endl;
+  this->__networkStream.write("Unknown command : " + cmd);
+}
+
+NetworkStream&    RPCServer::networkStream(void)
+{
+  return (this->__networkStream);
+}
 /*
  *  ObjectManager
  */

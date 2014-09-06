@@ -12,7 +12,7 @@ namespace Destruct {
 /**
  *  RPCObject Proxy object that handle transparent remote communication and let you use your object as a local object
  */
-RPCObject::RPCObject(NetworkStream stream, uint64_t id, DStruct* dstruct, ObjectManager & objects) : DObject(*dstruct->newObject()), __id(id), __networkStream(stream), __serializer(new DSerializeRPC(stream, objects)), __object(dstruct->newObject())
+RPCObject::RPCObject(NetworkStream& stream, uint64_t id, DStruct* dstruct, ObjectManager & objects) : DObject(*dstruct->newObject()), __id(id), __networkStream(stream), __serializer(new DSerializeRPC(stream, objects)), __object(dstruct->newObject())
 {
         //this->init(this);
 }
@@ -125,13 +125,14 @@ DObject* RPCObject::clone() const
 BaseValue* RPCObject::getBaseValue(size_t index)
 {
   std::cout << "get base value " << std::endl;
-  
+  return (NULL); //XXX  
 }
 
 
 BaseValue const* RPCObject::getBaseValue(size_t index) const
 {
   std::cout << "get base value " << std::endl;
+  return (NULL); //XXX 
 }
 
 
