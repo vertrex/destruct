@@ -29,7 +29,7 @@ public:
   static PyObject*    setValueObject(DPyObject* self, PyObject* args, PyObject* kwds);
   static PyObject*    setValue(DPyObject* self, const char* attributeName, PyObject* valueObject);
   static PyObject*    setValue(DPyObject* self, int32_t attributeIndex, PyObject* valueObject);
-/* XXX XXX iterator test implem  heriter de dobject pour pas check a chaque fois et faire un ObjectIterable ? */ 
+
   static PyObject*    _iter(DPyObject* self);
   static PyObject*    _iternext(DPyObject* self);
   static Py_ssize_t   _length(DPyObject* self);
@@ -40,9 +40,9 @@ public:
 
   PyObject*           typeObject();
   
-  Destruct::DValue toDValue(PyObject* value); 
-  PyObject*     asDValue(Destruct::DValue const& v);
-  PyObject*     asPyObject(PyObject* self, int32_t attributeIndex);
+  Destruct::DValue    toDValue(PyObject* value); 
+  PyObject*           asDValue(Destruct::DValue const& v);
+  PyObject*           asPyObject(PyObject* self, int32_t attributeIndex);
 };
 
 #endif
