@@ -1,6 +1,7 @@
 #ifndef DSTRUCT_CPP_OBJECT_HPP_
 #define DSTRUCT_CPP_OBJECT_HPP_
 
+#include "destruct.hpp"
 #include "protocol/dcpppointer.hpp"
 
 namespace Destruct
@@ -105,6 +106,14 @@ DStruct*  makeNewDCpp(DUnicodeString const& name)
 {
   return (new DStruct(NULL, name, DCppObject<CppClass>::newObject, CppClass::ownAttributeBegin(), CppClass::ownAttributeEnd()));
 }
+
+template <typename CppClass>
+inline 
+void  registerDCpp(DUnicodeString const& name)
+{
+  Destruct::instance().registerDStruct(new DStruct(NULL, name, DCppObject<CppClass>::newObject, CppClass::ownAttributeBegin(), CppClass::ownAttributeEnd()));
+}
+
 
 }
 #endif

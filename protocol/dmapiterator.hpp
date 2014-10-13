@@ -61,9 +61,9 @@ public:
     return (0);
   }
 
-  RealValue<KeyType>   currentItem(void)  //XXX try to return Key & Value in object item
+  DValue                        currentItem(void)
   {
-    //DMutableObject* item = static_cast<DMutableObject*>(Destruct::instance().find("DMutable")->newObject());
+          //DMutableObject* item = static_cast<DMutableObject*>(Destruct::instance().find("DMutable")->newObject());
     //
     //item->setValueAttribute(KeyTypeId, "key", RealValue<KeyType>(this->it->first));
     //item->setValueAttribute(ValueTypeId, "value", RealValue<ValueType>(this->it->second));
@@ -71,7 +71,7 @@ public:
     //item->addRef();
     //std::cout << "Return item " << std::endl;
     //return item;
-    return this->it->first;
+    return RealValue<KeyType>(this->it->first);
   }
 
 /*
@@ -91,7 +91,8 @@ public:
        DAttribute(DType::DNoneType, "nextItem", DType::DNoneType), 
        DAttribute(DType::DNoneType, "first", DType::DNoneType),
        DAttribute(DType::DInt8Type, "isDone", DType::DNoneType),
-       DAttribute(ValueTypeId, "currentItem",  DType::DNoneType),
+       //DAttribute(ValueTypeId, "currentItem",  DType::DNoneType),
+       DAttribute(KeyTypeId, "currentItem",  DType::DNoneType),
      };
      return (attributes);
   }

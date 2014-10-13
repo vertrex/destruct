@@ -8,6 +8,64 @@
 namespace Destruct
 {
 
+template <typename KeyType, DType::Type_t KeyTypeId,
+          typename ValueType, DType::Type_t ValueTypeId>
+class   DMapItem : public DCppObject<DMapItem<KeyType, KeyTypeId, ValueType, ValueTypeId> >
+{
+  typedef DMapItem<KeyType, KeyTypeId, ValueType, ValueTypeId> DMapItemType;
+public:
+  DMapItem(DStruct* dstruct, DValue const& args) : DCppObject<DMapItemType>(dstruct, args)
+  {
+   //this->init();
+  }
+  DMapItem(const DMapItem& copy) : DCppObject<DMapItemType >(copy), key(copy.key), value(copy.value)
+  {
+    //thius->init();
+  }
+
+  ~DMapItem()
+  {
+    delete this->instanceOf();
+  }
+
+  RealValue<KeyType>       key;
+  RealValue<ValueType>     value;
+  static size_t ownAttributeCount()
+  {
+    return (2);
+  }
+
+  static DAttribute* ownAttributeBegin()
+  {
+    static DAttribute  attributes[] = 
+    {
+      DAttribute(KeyTypeId, "index"), 
+      DAttribute(ValueTypeId,"value"),
+    };
+    return (attributes);
+  }
+
+  static DPointer<DMapItemType>* memberBegin()
+  {
+    static DPointer<DMapItemType> memberPointer[] = 
+    {
+      DPointer<DMapItemType>(&DMapItemType::key),
+      DPointer<DMapItemType>(&DMapItemType::value),
+    };
+    return (memberPointer);
+  }
+
+  static DAttribute* ownAttributeEnd()
+  {
+    return (ownAttributeBegin() + ownAttributeCount());
+  }
+
+  static DPointer<DMapItemType >*  memberEnd()
+  {
+    return (memberBegin() + ownAttributeCount());
+  } 
+};
+
 template <typename KeyType, DType::Type_t  KeyTypeId,
           typename ValueType, DType::Type_t  ValueTypeId>
 class DMap : public DContainer, public DCppObject<DMap<KeyType, KeyTypeId, ValueType, ValueTypeId> >
@@ -20,7 +78,6 @@ public:
   {
     this->init();
   };
-
 
   DMap(const DMapType& copy) : DCppObject<DMap<KeyType, KeyTypeId, ValueType, ValueTypeId> >(copy),  __map(copy.__map) 
   {
@@ -60,7 +117,7 @@ public:
     DStruct* dstruct = makeNewDCpp<DMapIterator<KeyType, KeyTypeId, ValueType,  ValueTypeId > >("DMapIterator");
     DObject* iterator = dstruct->newObject(RealValue<DObject*>(this));
    
-    DMapIterator<KeyType, KeyTypeId, ValueType, KeyTypeId>* diterator = static_cast<DMapIterator<KeyType, KeyTypeId, ValueType, ValueTypeId> *>(iterator);
+    DMapIterator<KeyType, KeyTypeId, ValueType, ValueTypeId>* diterator = static_cast<DMapIterator<KeyType, KeyTypeId, ValueType, ValueTypeId> *>(iterator);
 
     diterator->begin = this->__map.begin();
     diterator->end = this->__map.end();
@@ -68,12 +125,20 @@ public:
 
     return (iterator);
   }
+
+  DObject* newItem(void)
+  {
+//    return (new DMapItem<a,b,c,d>(const dstruct, DNone);
+
+    return (makeNewDCpp<DMapItem<KeyType, KeyTypeId, ValueType, ValueTypeId> >("DMapItem")->newObject());
+  }
+
 /*
  *  DStruct declaration
  */ 
   static size_t ownAttributeCount()
   {
-    return (4);
+    return (5);
   }
 
   static DAttribute* ownAttributeBegin()
@@ -84,6 +149,7 @@ public:
       DAttribute(DType::DUInt64Type,"size", DType::DNoneType),
       DAttribute(DType::DNoneType, "setItem", DType::DObjectType),
       DAttribute(DType::DObjectType, "iterator", DType::DNoneType),
+      DAttribute(DType::DObjectType, "newItem", DType::DNoneType),
     };
     return (attributes);
   }
@@ -96,6 +162,7 @@ public:
       DPointer<DMapType>(&DMapType::_size, &DMapType::size),
       DPointer<DMapType>(&DMapType::_setItem, &DMapType::setItem),
       DPointer<DMapType>(&DMapType::_iterator, &DMapType::iterator),
+      DPointer<DMapType>(&DMapType::__newItem, &DMapType::newItem),
     };
     return (memberPointer);
   }
@@ -110,6 +177,7 @@ public:
     return (memberBegin() + ownAttributeCount());
   } 
 private:
+  RealValue<DFunctionObject*>    __newItem;
   std::map<KeyType, ValueType>   __map; //XXX stocker des ref value si on veut que ca soit ref count ... les objet tous ca ... 
 };
 

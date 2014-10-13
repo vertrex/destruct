@@ -8,12 +8,12 @@ using namespace Destruct;
 class File : public DCppObject<File>
 {
 public:
-                                File(DStruct* dstruct, Destruct::DValue const& args);
+                                File(DStruct* dstruct, DValue const& args);
                                 ~File();
   RealValue<DUnicodeString >    name;
   RealValue<DUInt64 >           size;
   RealValue<DFunctionObject* >  _path;
-  DUnicodeString                path(Destruct::DValue const& args);
+  DUnicodeString                path(DValue const& args);
   /*
    *  DStruct declaration
    */
@@ -59,11 +59,11 @@ public:
 class Directory : public DCppObject<Directory>
 {
 public:
-                                Directory(DStruct* dstruct, Destruct::DValue const& args);
+                                Directory(DStruct* dstruct, DValue const& args);
   RealValue<DUnicodeString >    name;
   RealValue<DObject* >          children;
   RealValue<DFunctionObject* >  _path;
-  DUnicodeString                path(Destruct::DValue const& args);
+  DUnicodeString                path(DValue const& args);
 
   /*
    *  DStruct declaration

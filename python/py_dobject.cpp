@@ -555,7 +555,6 @@ PyObject* PyDObject::_map(PyDObject::DPyObject* self, register PyObject* _key)
 
     Destruct::DValue key = DValueDispatchTable[keyType]->toDValue(_key);
     Destruct::DValue value = self->pimpl->call("get", key);
-
     return (DValueDispatchTable[valueType]->asDValue(value)); 
   }
 //doit rnevoyer typerror de python quand c une type error

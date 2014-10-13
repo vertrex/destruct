@@ -49,6 +49,7 @@ public:
   {
   }
 
+
   RealValue<DUInt64>          index;
   RealValue<DObject*>         container;
   RealValue<DFunctionObject*> _next;

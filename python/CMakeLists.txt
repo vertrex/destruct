@@ -34,4 +34,4 @@ target_link_libraries(_destruct destruct python2.7)
 
 include_directories("../")
 
-add_subdirectory(examples)
+#add_subdirectory(examples)

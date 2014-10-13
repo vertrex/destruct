@@ -242,7 +242,9 @@ def iterateMap(m):
    s = 0
    print 'will iteratte on ', len(m)
    for k in m:
-      s += 1
+      print k
+      #print m[k] 
+      #s += 1
       #l[k] = m[k]
    print 'have iterate on ' + str(s)
 
@@ -261,10 +263,9 @@ def pymapobject():
   mo = PyMapObject()
   mo[mss] = mss
   mo[mo] = mo
-
+  
   for i in mo:
     print i, mo[i]
-  
     for x in mo[i]:
       print x, mo[i][x]
 

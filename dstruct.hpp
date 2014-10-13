@@ -25,8 +25,8 @@ public:
   template<typename Iterator> 
   DStruct(DStruct const* baseClass, const DUnicodeString& name, CreateObjectFunction createObjectFunction, Iterator attributeBegin, Iterator attributeEnd) : __ownAttributes(attributeBegin, attributeEnd), __baseClass(baseClass) ,  __name(name),  __createObject(createObjectFunction), __definitionFix(false), __defaultObject(0)
   {
-     this->__baseInit();
-     this->__effectiveAttributes.insert(this->__effectiveAttributes.end(), this->__ownAttributes.begin(), this->__ownAttributes.end());
+    this->__baseInit();
+    this->__effectiveAttributes.insert(this->__effectiveAttributes.end(), this->__ownAttributes.begin(), this->__ownAttributes.end());
   }
 
 

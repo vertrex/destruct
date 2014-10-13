@@ -14,7 +14,7 @@ namespace Destruct
 class DStruct;
 class DStream;
 
-class DSerialize 
+class DSerialize  //public DCppObject ! doit pouvoir se passer as soit meme qunad call serializeText / serialzieRaw etc... pour pouvoir appeller la method de base sans recreer un dserializer;  
 {
 public:
   virtual const std::string  name(void) = 0;

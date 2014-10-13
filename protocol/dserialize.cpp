@@ -269,10 +269,7 @@ bool DSerializeBinary::deserialize(DStream& input, DObject* dobject) //not imple
       //dobject->setValue((*attribute).name(), value);
       DObject* subObject = this->deserialize(input, DType::DObjectType).get<DObject*>();
       
-      //std::cout << dobject->instanceOf()->name() << "->setValue(" << (*attribute).name() << "," << subObject->instanceOf()->name() <<  ")" << std::endl;
-      //std::cout << "Set " << subObject->instanceOf()->name() << " ref count " << subObject->refCount() << std::endl;
       dobject->setValue((*attribute).name(), RealValue<DObject*>(subObject));
-      //std::cout << "After set" << subObject->instanceOf()->name() << " ref count " << subObject->refCount() << std::endl;
       subObject->destroy(); //ref return by deserialize
       subObject->destroy(); //ref returned by get<>
     }
@@ -440,7 +437,7 @@ bool DSerializeText::serialize(DStream& output, DObject* dobject, int depth)
   int x = 0;
   DStruct const* dstruct = dobject->instanceOf();
 
-  output << std::string(2 * depth, ' ') << dstruct->name() << std::endl;
+  //output << std::string(2 * depth, ' ') << dstruct->name() << std::endl;
   output << std::string(2 * depth++, ' ') <<  "{" << std::endl;
 
   for (DStruct::DAttributeIterator i = dstruct->attributeBegin(); i != dstruct->attributeEnd(); ++i, ++x)
@@ -448,15 +445,17 @@ bool DSerializeText::serialize(DStream& output, DObject* dobject, int depth)
     if (i->type().getType() == DType::DObjectType)
     {
       DObject* subDObject = dobject->getValue(x).get<DObject*>();
-      output << std::string(2 * depth, ' ') << i->type().name() << " " << i->name() << " = " <<  std::endl;
       if (subDObject != NULL)
       {
+        output << std::string(2 * depth, ' ') << subDObject->instanceOf()->name() << " " << i->name() << " = " <<  std::endl;
         this->serialize(output, subDObject, depth + 1);
         subDObject->destroy();
       }
     }
-    else
+    else 
+    {
       output << std::string(2 * depth, ' ') << i->type().name() << " " << i->name() << " = " << dobject->getValue(x).asUnicodeString() << ";" << std::endl;
+    }
 
    if (i->name() == "serializeText")
    {
@@ -559,18 +558,31 @@ bool DSerializeRaw::deserialize(DStream& input, DObject* dobject)
   int x = 0;
   DStruct const* dstruct = dobject->instanceOf(); 
 
+  int32_t index = dobject->instanceOf()->findAttribute("deserializeRaw");
+  if (index != -1)
+    return (dobject->call(index, (RealValue<DObject*>(&input))).get<DUInt8>());
+
   for (DStruct::DAttributeIterator i = dstruct->attributeBegin(); i != dstruct->attributeEnd(); ++i, ++x)
   {
-    if (i->type().getType() == DType::DObjectType)
+    DType::Type_t type = i->type().getType(); 
+    if (type == DType::DObjectType)
     {
+      //set object before ?
       DObject* subDObject = dobject->getValue(x).get<DObject*>();
 
       if (subDObject != NULL)
       {
         this->deserialize(input, subDObject);
         subDObject->destroy();
+        subDObject->destroy();
       }
     }
+    else if (type == DType::DNoneType)
+      continue;
+    else if (type == DType::DMethodType)
+      continue;
+    else if (type == DType::DUnknownType)
+      continue;
     else
     {
       DValue value = dobject->getValue(x);
