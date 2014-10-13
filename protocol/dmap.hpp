@@ -74,14 +74,23 @@ class DMap : public DContainer, public DCppObject<DMap<KeyType, KeyTypeId, Value
   typedef typename MapType::iterator                       iteratorType;
   typedef DMap<KeyType, KeyTypeId, ValueType, ValueTypeId> DMapType;
 public:
+
   DMap(DStruct* dstruct, DValue const& args) : DCppObject<DMap<KeyType, KeyTypeId, ValueType, ValueTypeId> >(dstruct, args)
   {
     this->init();
+    //std::string name = "DMapItem" + DType(KeyTypeId).name() + DType(ValueTypeId).name(); // for deserializaion ?
+    this->__itemStruct = makeNewDCpp<DMapItem<KeyType, KeyTypeId, ValueType, ValueTypeId> >("DMapItem");
   };
 
   DMap(const DMapType& copy) : DCppObject<DMap<KeyType, KeyTypeId, ValueType, ValueTypeId> >(copy),  __map(copy.__map) 
   {
     this->init();
+    this->__itemStruct = makeNewDCpp<DMapItem<KeyType, KeyTypeId, ValueType, ValueTypeId> >("DMapItem");
+  }
+
+  ~DMap()
+  {
+    delete this->__itemStruct;
   }
 
   DValue  get(DValue const& args)
@@ -104,7 +113,7 @@ public:
   DObject*    setItem(DValue const& args)
   {
     DObject*  argumentsObject = args.get<DObject*>();
-    KeyType   key = argumentsObject->getValue("index").get<KeyType>();
+    KeyType   key = argumentsObject->getValue("key").get<KeyType>(); //XXX KEY KEY 
     ValueType value = argumentsObject->getValue("value").get<ValueType>();
 
     this->__map[key] = value;
@@ -129,13 +138,13 @@ public:
   DObject* newItem(void)
   {
 //    return (new DMapItem<a,b,c,d>(const dstruct, DNone);
-
-    return (makeNewDCpp<DMapItem<KeyType, KeyTypeId, ValueType, ValueTypeId> >("DMapItem")->newObject());
+    return this->__itemStruct->newObject(); //newItem(key, value) ???
   }
 
-/*
- *  DStruct declaration
- */ 
+  /*
+   *  DStruct declaration
+   */ 
+>>>>>>> e97570450d96013b902561d583b8c5fe5d070d11
   static size_t ownAttributeCount()
   {
     return (5);
@@ -177,6 +186,7 @@ public:
     return (memberBegin() + ownAttributeCount());
   } 
 private:
+  DStruct*                       __itemStruct;
   RealValue<DFunctionObject*>    __newItem;
   std::map<KeyType, ValueType>   __map; //XXX stocker des ref value si on veut que ca soit ref count ... les objet tous ca ... 
 };

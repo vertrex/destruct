@@ -19,7 +19,7 @@ DInt8        DIterator::isDone(void)
   if (this->container) // !DNone ? 
   {
     DValue count;
-    DContainer* dcontainer = dynamic_cast<DContainer*>((DObject*)this->container);
+    DContainer* dcontainer = dynamic_cast<DContainer*>((DObject*)this->container); //XXX optim faire une fosi au debut ? 
     if (dcontainer)
     {
       DFunctionObject* size = dcontainer->_size;  

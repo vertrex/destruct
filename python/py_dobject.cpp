@@ -520,6 +520,7 @@ int  PyDObject::_setmap(DPyObject* self, PyObject* _key, PyObject* _value)
   {
     try 
     {
+// pour les vecteur
       Destruct::DMutableObject* argument = static_cast<Destruct::DMutableObject*>(Destruct::Destruct::instance().generate("DMutable"));
   
       Destruct::DType  getType = self->pimpl->instanceOf()->attribute("get").type();
@@ -534,6 +535,23 @@ int  PyDObject::_setmap(DPyObject* self, PyObject* _key, PyObject* _value)
 
       self->pimpl->call("setItem", Destruct::RealValue<Destruct::DObject*>(argument));
       argument->destroy(); //seem to be not enough other must havbe forget to call destroy 
+/*
+pour les map set key& value(
+      Destruct::DObject* item = self->pimpl->call("newItem").get<Destruct::DObject*>();
+      Destruct::DStruct* itemStruct = item->instanceOf();
+        
+      Destruct::DType::Type_t keyType = itemStruct->attribute("key").type().getType();
+      Destruct::DType::Type_t valueType = itemStruct->attribute("value").type().getType();
+
+      Destruct::DValue key = DValueDispatchTable[keyType]->toDValue(_key);
+      Destruct::DValue value = DValueDispatchTable[valueType]->toDValue(_value);
+
+      item->setValue("key", key);
+      item->setValue("value", value);
+
+      self->pimpl->call("setItem", Destruct::RealValue<Destruct::DObject*>(item));
+      item->destroy(); //
+*/
     }
     catch (Destruct::DException const& exception)
     {
