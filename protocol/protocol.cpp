@@ -49,7 +49,8 @@ void Protocol::__registerStruct(Destruct* destruct)
   destruct->registerDStruct(makeNewDCpp<DVectorObject >("DVectorObject"));
 
   destruct->registerDStruct(makeNewDCpp<DMap<DUnicodeString, DType::DUnicodeStringType,  DUnicodeString, DType::DUnicodeStringType > >("DMapString"));
-  destruct->registerDStruct(makeNewDCpp<DMap<DObject* , DType::DObjectType,  DObject* , DType::DObjectType> >("DMapObject"));
+  destruct->registerDStruct(makeNewDCpp<DMap<DObject*, DType::DObjectType,  DObject*, DType::DObjectType> >("DMapObject"));
+  destruct->registerDStruct(makeNewDCpp<DMap<DUInt64,  DType::DUInt64Type,  DObject*, DType::DObjectType> >("DMapUInt64Object"));
   //destruct->registerDStruct(makeNewDMutable<DMapIterator >("DMapIterator"));
   
   destruct->registerDStruct(makeNewDCpp<DStream >("DStream"));

@@ -1,11 +1,12 @@
-#include "fsobject.hpp"
 #include "destruct.hpp"
-
+#include "fsobject.hpp"
 /*
  * Directory
  */
 
-File::File(DStruct* dstruct, Destruct::DValue const& args) : DCppObject<File>(dstruct, args)
+using namespace Destruct;
+
+File::File(DStruct* dstruct, DValue const& args) : DCppObject<File>(dstruct, args)
 {
   this->init();
   this->size = 0;
@@ -16,7 +17,7 @@ File::~File()
 {
 }
 
-DUnicodeString  File::path(Destruct::DValue const& args)
+DUnicodeString  File::path(DValue const& args)
 {
   return DUnicodeString("/home/destruct/");
 }
@@ -25,7 +26,7 @@ DUnicodeString  File::path(Destruct::DValue const& args)
  *  Directory
  */
 
-Directory::Directory(DStruct* dstruct, Destruct::DValue const& args) : DCppObject<Directory>(dstruct, args)
+Directory::Directory(DStruct* dstruct, DValue const& args) : DCppObject<Directory>(dstruct, args)
 {
   this->init();
   this->name = "unknown-directory";
@@ -33,7 +34,7 @@ Directory::Directory(DStruct* dstruct, Destruct::DValue const& args) : DCppObjec
   this->children = vectorStruct->newObject();
 }
 
-DUnicodeString        Directory::path(Destruct::DValue const& args)
+DUnicodeString        Directory::path(DValue const& args)
 {
   return DUnicodeString("/home/destruct/");
 }

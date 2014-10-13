@@ -9,11 +9,66 @@
 
 #include "protocol/dmutableobject.hpp"
 
-class DObject;
-
-
 namespace Destruct
 {
+class DObject;
+
+template <typename KeyType, DType::Type_t KeyTypeId,
+          typename ValueType, DType::Type_t ValueTypeId>
+class   DMapItem : public DCppObject<DMapItem<KeyType, KeyTypeId, ValueType, ValueTypeId> >
+{
+  typedef DMapItem<KeyType, KeyTypeId, ValueType, ValueTypeId> DMapItemType;
+public:
+  DMapItem(DStruct* dstruct, DValue const& args) : DCppObject<DMapItemType>(dstruct, args)
+  {
+   //this->init();
+  }
+  DMapItem(const DMapItem& copy) : DCppObject<DMapItemType >(copy), key(copy.key), value(copy.value)
+  {
+    //thius->init();
+  }
+
+  //~DMapItem() //create struct elswhere
+  //{
+  //}
+
+  RealValue<KeyType>       key;
+  RealValue<ValueType>     value;
+  static size_t ownAttributeCount()
+  {
+    return (2);
+  }
+
+  static DAttribute* ownAttributeBegin()
+  {
+    static DAttribute  attributes[] = 
+    {
+      DAttribute(KeyTypeId, "key"), 
+      DAttribute(ValueTypeId,"value"),
+    };
+    return (attributes);
+  }
+
+  static DPointer<DMapItemType>* memberBegin()
+  {
+    static DPointer<DMapItemType> memberPointer[] = 
+    {
+      DPointer<DMapItemType>(&DMapItemType::key),
+      DPointer<DMapItemType>(&DMapItemType::value),
+    };
+    return (memberPointer);
+  }
+
+  static DAttribute* ownAttributeEnd()
+  {
+    return (ownAttributeBegin() + ownAttributeCount());
+  }
+
+  static DPointer<DMapItemType >*  memberEnd()
+  {
+    return (memberBegin() + ownAttributeCount());
+  } 
+};
 
 template< typename KeyType, DType::Type_t KeyTypeId,
           typename ValueType, DType::Type_t ValueTypeId>
@@ -23,25 +78,24 @@ class DMapIterator : public DCppObject<DMapIterator<KeyType, KeyTypeId, ValueTyp
   typedef typename MapType::iterator            IteratorType;
   typedef DMapIterator<KeyType, KeyTypeId, ValueType, ValueTypeId > DMapIteratorType;
 public:
+  IteratorType                begin, end, it;
+
   DMapIterator(DStruct* dstruct, DValue const& args) : DCppObject<DMapIteratorType >(dstruct, args), index(0), container(NULL) //DObject None ? 
   {
     this->init(); //must be constructed to init 
+    this->__itemStruct = makeNewDCpp<DMapItem<KeyType, KeyTypeId, ValueType, ValueTypeId> >("DMapItem");
   }
 
   DMapIterator(const DMapIterator& copy) : DCppObject<DMapIteratorType >(copy), index(0), container(NULL)
   {
     this->init();
+    this->__itemStruct = makeNewDCpp<DMapItem<KeyType, KeyTypeId, ValueType, ValueTypeId> >("DMapItem");
   }
 
-  IteratorType                begin;
-  IteratorType                end;
-  IteratorType                it;
-  RealValue<DUInt64>          index; //signed en python
-  RealValue<DObject*>         container; //setContainer pour update le type ?
-  RealValue<DFunctionObject*> nextObject;
-  RealValue<DFunctionObject*> firstObject;
-  RealValue<DFunctionObject*> isDoneObject;
-  RealValue<DFunctionObject*> currentItemObject;
+  ~DMapIterator()
+  {
+    delete this->__itemStruct;
+  }
 
   void                        next(void)
   {
@@ -61,22 +115,26 @@ public:
     return (0);
   }
 
-  RealValue<KeyType>   currentItem(void)  //XXX try to return Key & Value in object item
+  DValue                        currentItem(void)
   {
-    //DMutableObject* item = static_cast<DMutableObject*>(Destruct::instance().find("DMutable")->newObject());
-    //
-    //item->setValueAttribute(KeyTypeId, "key", RealValue<KeyType>(this->it->first));
-    //item->setValueAttribute(ValueTypeId, "value", RealValue<ValueType>(this->it->second));
-    // 
-    //item->addRef();
-    //std::cout << "Return item " << std::endl;
+    DObject* item = this->__itemStruct->newObject();
+    item->setValue("key", RealValue<KeyType>(this->it->first));
+    item->setValue("value", RealValue<ValueType>(this->it->second));
+
+    return (RealValue<DObject*>(item));
     //return item;
-    return this->it->first;
+    //return RealValue<KeyType>(this->it->first);
   }
+private:
+  RealValue<DUInt64>          index; //signed en python XXX sert a rien c pour les iterator de vector ca ./.non ? 
+  RealValue<DObject*>         container; //setContainer pour update le type ?
+  RealValue<DFunctionObject*> nextObject, firstObject, isDoneObject, currentItemObject;
+  DStruct*                    __itemStruct;
 
 /*
  * DStruct declaration
  */
+public:
   static size_t         ownAttributeCount()
   {
     return (6);
@@ -87,11 +145,12 @@ public:
      static DAttribute  attributes[] = 
      {
        DAttribute(DType::DObjectType, "container"),
-       DAttribute(DType::DUInt64Type, "index"),
+       DAttribute(DType::DUInt64Type, "index"), // ??? ca sert a quoi, current key??
        DAttribute(DType::DNoneType, "nextItem", DType::DNoneType), 
        DAttribute(DType::DNoneType, "first", DType::DNoneType),
        DAttribute(DType::DInt8Type, "isDone", DType::DNoneType),
-       DAttribute(ValueTypeId, "currentItem",  DType::DNoneType),
+       //DAttribute(KeyTypeId, "currentItem",  DType::DNoneType),
+       DAttribute(DType::DObjectType, "currentItem",  DType::DNoneType),
      };
      return (attributes);
   }
