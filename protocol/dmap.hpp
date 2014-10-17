@@ -8,64 +8,6 @@
 namespace Destruct
 {
 
-template <typename KeyType, DType::Type_t KeyTypeId,
-          typename ValueType, DType::Type_t ValueTypeId>
-class   DMapItem : public DCppObject<DMapItem<KeyType, KeyTypeId, ValueType, ValueTypeId> >
-{
-  typedef DMapItem<KeyType, KeyTypeId, ValueType, ValueTypeId> DMapItemType;
-public:
-  DMapItem(DStruct* dstruct, DValue const& args) : DCppObject<DMapItemType>(dstruct, args)
-  {
-   //this->init();
-  }
-  DMapItem(const DMapItem& copy) : DCppObject<DMapItemType >(copy), key(copy.key), value(copy.value)
-  {
-    //thius->init();
-  }
-
-  ~DMapItem()
-  {
-    delete this->instanceOf();
-  }
-
-  RealValue<KeyType>       key;
-  RealValue<ValueType>     value;
-  static size_t ownAttributeCount()
-  {
-    return (2);
-  }
-
-  static DAttribute* ownAttributeBegin()
-  {
-    static DAttribute  attributes[] = 
-    {
-      DAttribute(KeyTypeId, "index"), 
-      DAttribute(ValueTypeId,"value"),
-    };
-    return (attributes);
-  }
-
-  static DPointer<DMapItemType>* memberBegin()
-  {
-    static DPointer<DMapItemType> memberPointer[] = 
-    {
-      DPointer<DMapItemType>(&DMapItemType::key),
-      DPointer<DMapItemType>(&DMapItemType::value),
-    };
-    return (memberPointer);
-  }
-
-  static DAttribute* ownAttributeEnd()
-  {
-    return (ownAttributeBegin() + ownAttributeCount());
-  }
-
-  static DPointer<DMapItemType >*  memberEnd()
-  {
-    return (memberBegin() + ownAttributeCount());
-  } 
-};
-
 template <typename KeyType, DType::Type_t  KeyTypeId,
           typename ValueType, DType::Type_t  ValueTypeId>
 class DMap : public DContainer, public DCppObject<DMap<KeyType, KeyTypeId, ValueType, ValueTypeId> >
@@ -144,7 +86,6 @@ public:
   /*
    *  DStruct declaration
    */ 
->>>>>>> e97570450d96013b902561d583b8c5fe5d070d11
   static size_t ownAttributeCount()
   {
     return (5);

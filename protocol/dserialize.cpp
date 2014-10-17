@@ -82,7 +82,7 @@ bool DSerializeBinary::serialize(DStream& output, DValue value, DType::Type_t ty
                                                 //const ref or pointer and const func ? 
 bool DSerializeBinary::serialize(DStream& output, DObject*  dobject)
 {
-  std::cout << "start serialization of " << dobject->instanceOf()->name() << std::endl;
+        //std::cout << "start serialization of " << dobject->instanceOf()->name() << std::endl;
   DStruct const* dstruct = dobject->instanceOf(); 
   if (dstruct == NULL)
     throw DException("DSerializeBinary::serialize(DStream& output, DObject* dobject) object instance is NULL");
@@ -96,26 +96,26 @@ bool DSerializeBinary::serialize(DStream& output, DObject*  dobject)
   int32_t index = dstruct->findAttribute("iterator");
   if (index != -1)                      //XXX XXX XXX SAME FOR MAP ? DOES IT SUFFICE FOR KEY & VALUE DOES I RETURN SAME OBJ?
   {
-    std::cout << "call iterator " << std::endl;
+    //std::cout << "call iterator " << std::endl;
     DObject* iterator = dobject->call("iterator").get<DObject*>();
-//    DType::Type_t   returnType = dstruct->attribute("get").type().getReturnType();
+    //DType::Type_t   returnType = dstruct->attribute("get").type().getReturnType();
     DType::Type_t   returnType = iterator->instanceOf()->attribute("currentItem").type().getReturnType();
 
     DValue count = dobject->call("size");   
     output << count; 
  
-    std::cout << "foring in iterator value " << std::endl;
+    //std::cout << "foring in iterator value " << std::endl;
     for ( ; iterator->call("isDone").get<DInt8>() != true; iterator->call("nextItem"))
     {
-      std::cout << "get currentitem " << std::endl; //map uint64_t, dobject (return type de get est bien DOBject mais serialize renvoie avec currentitem un uint64_t car il renvoie la clef :) donc peut etre get la vlue ds currentItem plutot pour cavoir ce que ca renvoie vraiment de toute les map vont renvoyer un tupple key,value comme ca pass besoin de changer la serialization ca va serializer cet object et hop finito (par contre cas special pour la deserialization ? mais faudra faire gaffe a cas string, string et que vector marche tjrsaussi
+       //std::cout << "get currentitem " << std::endl; //map uint64_t, dobject (return type de get est bien DOBject mais serialize renvoie avec currentitem un uint64_t car il renvoie la clef :) donc peut etre get la vlue ds currentItem plutot pour cavoir ce que ca renvoie vraiment de toute les map vont renvoyer un tupple key,value comme ca pass besoin de changer la serialization ca va serializer cet object et hop finito (par contre cas special pour la deserialization ? mais faudra faire gaffe a cas string, string et que vector marche tjrsaussi
        DValue value = iterator->call("currentItem");
        if (returnType == DType::DObjectType)
        {
-         std::cout << "get subobject" << std::endl;
+         //std::cout << "get subobject" << std::endl;
          DObject* subDObject = value.get<DObject*>();
          if (subDObject != NULL)
          {
-           std::cout << "serializing subobject" << std::endl;
+           //std::cout << "serializing subobject" << std::endl;
            this->serialize(output, subDObject);
            subDObject->destroy(); //one for the get
            subDObject->destroy(); //one for the object :) 
@@ -125,13 +125,13 @@ bool DSerializeBinary::serialize(DStream& output, DObject*  dobject)
        }
        else
        {
-         std::cout << "raw serialize" << std::endl;
+         //std::cout << "raw serialize" << std::endl;
          output << value;
        }
     }
     iterator->destroy(); //DETRUIT L' INSTANCE Cree par 'call'
     iterator->destroy(); //DETRUIT la ref retourner par 'get<DObject*>'
-    std::cout << dobject->instanceOf()->name() << " serialized" << std::endl;
+    //std::cout << dobject->instanceOf()->name() << " serialized" << std::endl;
     return (true);
   }
   
@@ -164,7 +164,7 @@ bool DSerializeBinary::serialize(DStream& output, DObject*  dobject)
     }    
   }
 
-  std::cout << dobject->instanceOf()->name() << " serialized" << std::endl;
+  //std::cout << dobject->instanceOf()->name() << " serialized" << std::endl;
   return (true);
 }
 //king of specialization for string type 
@@ -255,20 +255,20 @@ bool DSerializeBinary::deserialize(DStream& input, DObject* dobject) //not imple
   int32_t hasNewItem = dstruct->findAttribute("newItem");
   if (index != -1)
   {
-    std::cout << "DSerializing serializable iterator object " << dobject->instanceOf()->name() << std::endl;
+    //std::cout << "DSerializing serializable iterator object " << dobject->instanceOf()->name() << std::endl;
     DType::Type_t   returnType = dstruct->attribute("get").type().getReturnType();
   
     DValue vcount(RealValue<DUInt64>(0)); 
     input >> vcount; 
     DUInt64 count = vcount.get<DUInt64>();
-    std::cout << "DSerializing " << count  << " item " << std::endl;
+    //std::cout << "DSerializing " << count  << " item " << std::endl;
    
     if (hasNewItem != -1)
     {
-      std::cout << "HAS NEW ITEM " << std::endl;
+            //std::cout << "HAS NEW ITEM " << std::endl;
       for (DUInt64 index = 0; index < count; index++) 
       {
-         std::cout << "for map " << std::endl;
+         //std::cout << "for map " << std::endl;
          DUnicodeString structName;
          this->deserialize(input, structName);
         
@@ -276,7 +276,7 @@ bool DSerializeBinary::deserialize(DStream& input, DObject* dobject) //not imple
          //if object has newItem use newItem (for map ???) 
          this->deserialize(input, item);
          dobject->call("setItem", RealValue<DObject*>(item));
-         std::cout << "item refCount " << item->refCount() << std::endl;
+         //std::cout << "item refCount " << item->refCount() << std::endl;
          item->destroy();
          item->destroy();
       }
