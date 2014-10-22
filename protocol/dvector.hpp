@@ -71,35 +71,15 @@ public:
     return (iterator);
   }
 
-  DObject*  serializeText(DValue const& args) //dserializer ! 
-  {
-    //getserializationType ou serializeXML method serializeText method de toute c dynamique donc si on c serialized un type on peut call la method qu il faut
-    // c une naming convetion
-    //DStream* output = static_cast<DStream*>(args.get<DObject*>());
-    DStream* output = static_cast<DStream*>(args.get<DObject*>()->getValue("stream").get<DObject*>());
-
-    *output << "list : {" << std::endl;
-    DUInt64 size = static_cast<DFunctionObject*>(this->_size)->call().get<DUInt64>();
-    for (DUInt64 idx = 0; idx < size ; idx++) //cout < this->sizeObject()->call()->get<DUint>
-    {
-      //XXX devrait stocker des RealValue de toute ? plus logique mais prend plus de ram ?
-//      if this->__vector->type == object ?
-
-      *output << RealValue<VectorType>(this->__vector[idx]).asUnicodeString() << "," << std::endl; //curent item
-    }
-    *output << "}" << std::endl;
-      
-    return RealValue<DObject*>(DNone);
-  }
-
   RealValue<DFunctionObject* >  _serializeText;
   RealValue<DFunctionObject* >  _push;
-/*
- *  DStruct declaration
- */ 
+
+  /*
+   *  DStruct declaration
+   */ 
   static size_t ownAttributeCount()
   {
-    return (6);
+    return (5);
   }
 
   static DAttribute* ownAttributeBegin()
@@ -111,7 +91,6 @@ public:
       DAttribute(DType::DUInt64Type,"size", DType::DNoneType),
       DAttribute(DType::DNoneType, "setItem", DType::DObjectType),
       DAttribute(DType::DObjectType, "iterator", DType::DNoneType),
-      DAttribute(DType::DObjectType, "serializeText", DType::DObjectType),
     };
     return (attributes);
   }
@@ -125,7 +104,6 @@ public:
       DPointer<DVectorType>(&DVectorType::_size, &DVectorType::size),
       DPointer<DVectorType>(&DVectorType::_setItem, &DVectorType::setItem),
       DPointer<DVectorType>(&DVectorType::_iterator, &DVectorType::iterator),
-      DPointer<DVectorType>(&DVectorType::_serializeText, &DVectorType::serializeText),
     };
     return (memberPointer);
   }
@@ -147,26 +125,6 @@ private:
 /**
  *  DObject template specialization
  */
-template<>
-inline DObject* DVector<DObject*, DType::DObjectType >::serializeText(DValue const& args)
-{
-  DObject* arguments = args.get<DObject*>();
-  DObject* stream = arguments->getValue("stream").get<DObject*>();
-  DStream* output = static_cast<DStream*>(stream);
-  DInt32 depth = arguments->getValue("depth").get<DInt32>();
-
-  *output << "list : {" <<  std::string(2*depth, ' ') << std::endl;
-
-  DUInt64 size = this->call("size").get<DUInt64>();
-  for (DUInt64 idx = 0; idx < size ; idx++)
-  {
-    DSerializers::to("Text")->serialize(*output, this->__vector[idx]);
-  }
-  *output << std::string(2*depth, ' ')  << "}" << std::endl;
-
-  return RealValue<DObject*>(DNone);
-}
-
 template<>
 inline DVector<DObject*, DType::DObjectType >::~DVector()
 {
