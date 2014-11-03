@@ -18,7 +18,6 @@
 #include "regf.hpp"
 #include "registryopt.hpp"
 
-#include "vtime.hpp"
 #include "destruct.hpp"
 
 using namespace Destruct;

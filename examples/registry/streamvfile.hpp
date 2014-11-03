@@ -2,7 +2,6 @@
 #define __streamvfile_hpp__
 
 #include "registry_common.hpp"
-#include "vfile.hpp"
 
 using namespace Destruct;
 

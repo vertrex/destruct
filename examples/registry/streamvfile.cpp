@@ -25,7 +25,7 @@ StreamFile::~StreamFile()
 
 DStream& StreamFile::read(char*  buff, uint32_t size)
 {
-  ::read(this->__fd, buff, size);
+  int readed = ::read(this->__fd, buff, size);
   return (*this);
 }
 
