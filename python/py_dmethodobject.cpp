@@ -132,7 +132,7 @@ PyObject* PyDMethodObject::call(PyObject* _self, PyObject* args)
   catch (std::bad_cast exception) // C++ catch ? que d dexception ici car call une api ? mais derrirer call du cpp donc poura tjrs avoir un probleme a part un catch(...)
   {
           //Py_END_ALLOW_THREADS
-    std::string argumentString = "MethodObject must return a " + type.argumentName();
+    std::string argumentString = "MethodObject must return a " + type.returnName();
     PyErr_SetString(PyExc_TypeError, argumentString.c_str()); 
   }
   //Py_END_ALLOW_THREADS

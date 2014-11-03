@@ -2,28 +2,27 @@
 
 #include "serializerpc.hpp"
 #include "destruct.hpp"
-
+#include "rpcobject.hpp"
 using namespace Destruct;
 
 /* 
  *  RPCServer
  */
-RPCServer::RPCServer(NetworkStream networkStream, ObjectManager & objectManager) : __networkStream(networkStream), __serializer(new DSerializeRPC(networkStream, objectManager))
+RPCServer::RPCServer(NetworkStream networkStream, ObjectManager<DObject*>& objectManager, ObjectManager<ServerFunctionObject*>& functionObjectManager) : __networkStream(networkStream), __serializer(new DSerializeRPC(networkStream, objectManager, functionObjectManager))
 {
 }
 
 void    RPCServer::findDStruct(void)
 {
   std::string name;
-//  std::cout << "RPCServer::findDStruct read name of struct " << std::endl;
   this->__networkStream.read(name);
-//  std::cout << "RPCServer get  struct to find :  " << name << std::endl;
+
+  std::cout << "Send DStruct " << name << std::endl;
   Destruct::Destruct& destruct = Destruct::Destruct::instance();
   DStruct* dstruct = destruct.find(name);
   if (!dstruct)
    throw std::string("DStruct not found");
 
-  std::cout << " serializing networkStream for struct " << name << std::endl;
   this->__serializer->serialize(this->__networkStream, *dstruct);
 }
 
@@ -32,8 +31,10 @@ void    RPCServer::setValue(DObject* object)
   std::string name;
   this->__networkStream.read(name);
 
+
   Destruct::DValue value = this->__serializer->deserialize(this->__networkStream, object->instanceOf()->attribute(name).type().getType());
 
+  std::cout << object->instanceOf()->name() << ".setValue(\"" << name  <<  "\", " << value.asUnicodeString() << ")" << std::endl;
   object->setValue(name, value);
 }
 
@@ -41,11 +42,15 @@ void    RPCServer::getValue(DObject* object)
 {
   std::string name;
   this->__networkStream.read(name);
-
+  
   Destruct::DValue value = object->getValue(name);
+  std::cout << object->instanceOf()->name() << ".getValue(\"" << name << "\") => " << value.asUnicodeString() << std::endl;
 
   DType type = object->instanceOf()->attribute(name).type();
-  this->__serializer->serialize(this->__networkStream, value, type.getType());
+  if (type.getType() == DType::DMethodType)
+    this->__serializer->serialize(this->__networkStream, value.get<DFunctionObject*>(), type.getArgumentType(), type.getReturnType());
+  else
+    this->__serializer->serialize(this->__networkStream, value, type.getType());
 }
 
 void    RPCServer::call(DObject* object)
@@ -56,6 +61,7 @@ void    RPCServer::call(DObject* object)
   Destruct::DValue args = this->__serializer->deserialize(this->__networkStream, object->instanceOf()->attribute(name).type().getArgumentType());
 
   Destruct::DValue value = object->call(name, args); 
+  std::cout << object->instanceOf()->name() << ".call(\"" << name << "\", " << args.asUnicodeString() << ") => " << value.asUnicodeString() << std::endl;
 
   DType type = object->instanceOf()->attribute(name).type();
   this->__serializer->serialize(this->__networkStream, value, type.getReturnType());
@@ -67,9 +73,27 @@ void    RPCServer::call0(DObject* object)
   this->__networkStream.read(name);
 
   Destruct::DValue value = object->call(name); 
+  std::cout << object->instanceOf()->name() << ".call(\"" << name << "\") => " << value.asUnicodeString() << std::endl;
   
   DType type = object->instanceOf()->attribute(name).type();
   this->__serializer->serialize(this->__networkStream, value, type.getReturnType());
+}
+
+void    RPCServer::functionCall(ServerFunctionObject* object)
+{
+  Destruct::DValue args = this->__serializer->deserialize(this->__networkStream, object->argumentType());
+  Destruct::DValue value = object->functionObject()->call(args); 
+        
+  std::cout << "functionCall(" << args.asUnicodeString() << ") => " << value.asUnicodeString() << std::endl;
+  this->__serializer->serialize(this->__networkStream, value, object->returnType());
+}
+
+void    RPCServer::functionCall0(ServerFunctionObject* object)
+{
+  Destruct::DValue value = object->functionObject()->call(); 
+  std::cout << "functionCall() => " << value.asUnicodeString() << std::endl;
+         
+  this->__serializer->serialize(this->__networkStream, value, object->returnType());
 }
 
 void    RPCServer::unknown(const std::string& cmd)
@@ -82,29 +106,14 @@ NetworkStream&    RPCServer::networkStream(void)
 {
   return (this->__networkStream);
 }
-/*
- *  ObjectManager
+
+/**
+ * Object Manager specialization
  */
-ObjectManager::ObjectManager() : __currentID(0)
+template<>
+DObject* ObjectManager<DObject* >::object(uint64_t id) const
 {
-}
-
-uint64_t        ObjectManager::registerObject(DObject* object)
-{
-  std::map<uint64_t, DObject*>::const_iterator i= this->__objectsID.begin();
-  for (; i != this->__objectsID.end(); ++i)
-    if (i->second == object)
-      return i->first;
-
-  uint64_t id = this->__currentID;
-  this->__objectsID[id] = object;
-  this->__currentID++;
-  return (id);
-}
-
-DObject*        ObjectManager::object(uint64_t id) const
-{
-  std::map<uint64_t, DObject*>::const_iterator object = this->__objectsID.find(id);
+  std::map<uint64_t, DObject* >::const_iterator object = this->__objectsID.find(id);
   if (object != this->__objectsID.end())
     return (object->second);
   return RealValue<DObject*>(DNone); 

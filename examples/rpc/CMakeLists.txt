@@ -14,15 +14,20 @@
 
 include_directories("../../")
 
-set (rpc_files
+set (rpc_libfiles
 fsobject.cpp
 rpcobject.cpp
 networkstream.cpp
 server.cpp
 client.cpp
-rpc.cpp
+#rpc.cpp
 serializerpc.cpp
 rpcserver.cpp)
 
+add_library(destruct_rpc SHARED ${rpc_libfiles})
+
+set (rpc_files
+rpc.cpp)
+
 add_executable(rpc ${rpc_files})
-target_link_libraries(rpc destruct)
+target_link_libraries(rpc destruct destruct_rpc)

@@ -44,19 +44,19 @@ class Buffer
 public:
   Buffer() : __data(new char[4096]), __dataSize(0), __readed(0), __written(0)
   {
-    std::cout << "Buffer() " << std::endl;
+          //std::cout << "Buffer() " << std::endl;
   }
 
   Buffer(Buffer const& copy) : __data(new char[4096]), __dataSize(copy.__dataSize), __readed(copy.__readed), __written(copy.__written)
   {
-    std::cout << "Buffer(const& copy)" << std::endl;
+          //std::cout << "Buffer(const& copy)" << std::endl;
     memcpy(__data, copy.__data, copy.__dataSize);
      
   }
 
   ~Buffer()
   {
-    std::cout << "~Buffer delete" << std::endl;
+          //std::cout << "~Buffer delete" << std::endl;
     delete __data;
   }
 

@@ -38,25 +38,25 @@ void    Client::__close(void)
   //close(this->__connectionSocket);
 }
 
-void    Client::start(void)
+DObject* Client::start(void)
 {
   NetworkStream networkStream(NULL, RealValue<DInt32>(this->__connectionSocket));
 
-  if (0 == 0)
-  {
-  for (uint64_t z = 0; z < 100; z++)
-  {
-          //networkStream.write("test");
-          //std::string toto;
-          //networkStream.read(toto);
-          //std::cout << toto << std::endl;
-     std::cout << "Iteration " <<  z << std::endl;
-     Destruct::DStruct* fileSS = this->__remoteFind(networkStream, "File"); 
-     if (!fileSS)
-      throw std::string("Directory struct not found");
-
-  }
-  return ; }
+  //if (0 == 1)
+  //{
+  //for (uint64_t z = 0; z < 100; z++)
+  //{
+          ////networkStream.write("test");
+          ////std::string toto;
+          ////networkStream.read(toto);
+          ////std::cout << toto << std::endl;
+     //std::cout << "Iteration " <<  z << std::endl;
+     //Destruct::DStruct* fileSS = this->__remoteFind(networkStream, "File"); 
+     //if (!fileSS)
+      //throw std::string("Directory struct not found");
+     //std::cout << fileSS->name() << std::endl;
+  //}
+  //return ; }
 
   Destruct::DStruct* fileS = this->__remoteFind(networkStream, "File"); 
   if (!fileS)
@@ -66,12 +66,12 @@ void    Client::start(void)
   if (!directoryS)
     throw std::string("Directory struct not found");
 
-   Destruct::DStruct* vectorS = this->__remoteFind(networkStream, "DVectorObject"); 
+  Destruct::DStruct* vectorS = this->__remoteFind(networkStream, "DVectorObject"); 
   if (!vectorS)
     throw std::string("Directory struct not found");
 
   //0 is root server object
-  RPCObject* remote = new RPCObject(networkStream, 0, directoryS, this->__objectManager); 
+  RPCObject* remote = new RPCObject(networkStream, 0, directoryS, this->__objectManager, this->__functionObjectManager); 
  
   std::cout << "root name : " << remote->getValue("name").get<DUnicodeString>() << std::endl;
 
@@ -91,7 +91,7 @@ void    Client::start(void)
    
   for (DUInt64 i = 0; i < size; ++i)
   { 
-    for (DUInt64 x = 0; x < 100; ++x) {
+    for (DUInt64 x = 0; x < 10; ++x) {
     Destruct::DObject* child = remoteChild->call("get", RealValue<DUInt64>(i)).get<DObject*>();
     std::cout <<  "child(" << i << ") : " 
               << "'" << child->getValue("name").get<DUnicodeString>() << "'"
@@ -103,18 +103,19 @@ void    Client::start(void)
 
   this->__print(remote);
   std::cout << "done !" << std::endl;
+  return (remote);
 }
 
 Destruct::DStruct* Client::__remoteFind(NetworkStream& stream, const std::string name)
 {
-  std::cout << "Client::_remoteFind(stream, " << name << ")" << std::endl;
+        //std::cout << "Client::_remoteFind(stream, " << name << ")" << std::endl;
   stream.write("findDStruct" );
   stream.write(name);
 
-  std::cout << "Client::_remoteFind new DSerializeRPC" << std::endl;
+  //std::cout << "Client::_remoteFind new DSerializeRPC" << std::endl;
                                   ///XXX passer stream par ref pour eviter la copy
-  DSerializeRPC* rpcSerializer = new DSerializeRPC(stream, this->__objectManager);
-  std::cout << "Client::_remoteFind rpcSerializer->deserialize "<< std::endl;
+  DSerializeRPC* rpcSerializer = new DSerializeRPC(stream, this->__objectManager, this->__functionObjectManager);
+  //std::cout << "Client::_remoteFind rpcSerializer->deserialize "<< std::endl;
   DStruct* dstruct = rpcSerializer->deserialize(stream);
 
   if (dstruct)
@@ -125,7 +126,7 @@ Destruct::DStruct* Client::__remoteFind(NetworkStream& stream, const std::string
   } 
   else
     std::cout << "Struct " << name << " is NULL can't show content " << std::endl;
-  std::cout << "Client::_remoteFind return Struct " << std::endl;
+  //std::cout << "Client::_remoteFind return Struct " << std::endl;
   return (dstruct);
 }
 
@@ -159,3 +160,17 @@ bool    Client::__print(DObject* dobject) const
   return (true);
 }
 
+int32_t Client::connectionSocket(void) const
+{
+  return (this->__connectionSocket);
+}
+
+ObjectManager<DObject*>&  Client::objectManager(void)
+{
+  return (this->__objectManager);
+}
+
+ObjectManager<ServerFunctionObject*>&  Client::functionObjectManager(void)
+{
+  return (this->__functionObjectManager);
+}

@@ -1,27 +1,37 @@
 # DFF -- An Open Source Digital Forensics Framework
-# Copyright (C) 2009-2013 ArxSys
+# Copyright (C) 2011 ArxSys
+#
 # This program is free software, distributed under the terms of
 # the GNU General Public License Version 2. See the LICENSE file
 # at the top of the source tree.
-#  
+#
 # See http://www.digital-forensic.org for more information about this
 # project. Please do not directly contact any of the maintainers of
 # DFF for assistance; the project provides a web site, mailing lists
 # and IRC channels for your use.
-# 
+#
 # Author(s):
 #  Solal Jacob <sja@digital-forensic.org>
 
-add_subdirectory(dtest)
-add_subdirectory(rpc)
-add_subdirectory(db)
-add_subdirectory(refcount)
-add_subdirectory(registry)
+include_directories("../../")
+include_directories("../rpc")
 
-include_directories("../")
-set (test_files
-test.cpp
+set(registry_libfiles
+  registry.cpp
+  registryopt.cpp
+  regf.cpp
+  streamvfile.cpp
+  key.cpp
+  value.cpp
+  registryrpc.cpp
+  registryserver.cpp
+  registryclient.cpp
 )
 
-add_executable(test ${test_files})
-target_link_libraries(test destruct destruct_test)
+add_library(registry SHARED ${registry_libfiles})
+
+set(registry_files
+registryrpc.cpp)
+
+add_executable(registryrpc ${registry_files})
+target_link_libraries(registryrpc destruct destruct_rpc registry)

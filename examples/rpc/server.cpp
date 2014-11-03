@@ -64,7 +64,7 @@ void            Server::__listen(void)
        File2
        Directory1/File3 
 */
-void            Server::initFS(void)
+void            Server::initRoot(void)
 {
   DStruct* fileStruct = makeNewDCpp<File>("File");
   DStruct* directoryStruct = makeNewDCpp<Directory>("Directory");
@@ -105,17 +105,18 @@ void            Server::serve(void)
 {
   DObject* currentObject = RealValue<DObject*>(DNone);
   NetworkStream stream = NetworkStream(NULL, RealValue<DInt32>(this->__connectionSocket));
-  RPCServer rpcServer(stream, this->__objectManager);
-  this->initFS();
+  RPCServer rpcServer(stream, this->__objectManager, this->__functionObjectManager);
+  this->initRoot();
   this->showRoot();
 
   uint64_t id = 0;
   while (true)
   {
-    std::cout << "Wait for message..." << std::endl;
+    //std::cout << "Wait for message..." << std::endl;
     std::string msg;
     rpcServer.networkStream().read(msg);
   //   stream.read(msg);
+
     if (msg == "show") 
       this->showRoot();
     else if (msg == "findDStruct")
@@ -146,9 +147,31 @@ void            Server::serve(void)
       currentObject = this->__objectManager.object(id);
       rpcServer.call0(currentObject);
     }
+    else if(msg == "functionCall")
+    {
+      stream.read(&id);
+      ServerFunctionObject* functionObject = this->__functionObjectManager.object(id);
+      rpcServer.functionCall(functionObject);
+    }
+    else if(msg == "functionCall0")
+    {
+      stream.read(&id);
+      ServerFunctionObject* functionObject = this->__functionObjectManager.object(id);
+      rpcServer.functionCall0(functionObject);
+    }
     else
       rpcServer.unknown(msg);
   }
+}
+
+ObjectManager<DObject*>& Server::objectManager(void) 
+{
+  return (this->__objectManager);
+}
+
+ObjectManager<ServerFunctionObject*>& Server::functionObjectManager(void) 
+{
+  return (this->__functionObjectManager);
 }
 
 void            Server::showRoot(void)
@@ -162,3 +185,28 @@ void            Server::showRoot(void)
 
   Destruct::DSerializers::to("Text")->serialize(*stream, this->__objectManager.object(0));
 }
+
+/**
+ * ServerFunctionObject
+ */
+ServerFunctionObject::ServerFunctionObject(DFunctionObject* functionObject, DType::Type_t argumentType,
+ DType::Type_t returnType) : __functionObject(functionObject), __argumentType(argumentType), __returnType(returnType)
+{
+
+}
+
+DType::Type_t ServerFunctionObject::argumentType(void) const
+{
+  return (this->__argumentType);
+}
+
+DType::Type_t ServerFunctionObject::returnType(void) const
+{
+  return (this->__returnType);
+}
+
+DFunctionObject* ServerFunctionObject::functionObject(void) const
+{
+  return (this->__functionObject);
+}
+

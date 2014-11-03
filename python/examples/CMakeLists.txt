@@ -6,4 +6,5 @@ add_subdirectory(test)
 add_subdirectory(embedding)
 #add_subdirectory(swig)
 
+add_subdirectory(registry)
 

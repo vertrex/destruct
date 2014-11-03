@@ -12,7 +12,7 @@ namespace Destruct {
 /**
  *  RPCObject Proxy object that handle transparent remote communication and let you use your object as a local object
  */
-RPCObject::RPCObject(NetworkStream& stream, uint64_t id, DStruct* dstruct, ObjectManager & objects) : DObject(*dstruct->newObject()), __id(id), __networkStream(stream), __serializer(new DSerializeRPC(stream, objects)), __object(dstruct->newObject())
+RPCObject::RPCObject(NetworkStream& stream, uint64_t id, DStruct* dstruct, ObjectManager<DObject*>& objects, ObjectManager<ServerFunctionObject*>& functionObjects) : DObject(*dstruct->newObject()), __id(id), __networkStream(stream), __serializer(new DSerializeRPC(stream, objects, functionObjects)), __object(dstruct->newObject())
 {
         //this->init(this);
 }
@@ -42,9 +42,15 @@ DValue RPCObject::getValue(std::string const& name) const
   this->__networkStream.write(this->__id);
   this->__networkStream.write(name);
 
-  DType  dtype = this->instanceOf()->attribute(name).type();
-  
   NetworkStream& networkStream = const_cast<NetworkStream&>(this->__networkStream);
+  DType  dtype = this->instanceOf()->attribute(name).type();
+ 
+  if (dtype.getType() == DType::DMethodType)
+  {
+    DValue returnValue = this->__serializer->deserialize(networkStream, dtype.getArgumentType(), dtype.getReturnType());
+    return (returnValue);
+  } 
+
   DValue returnValue = this->__serializer->deserialize(networkStream, dtype.getType());
 
   return (returnValue);
@@ -99,10 +105,7 @@ DValue RPCObject::call(std::string const& name)
 DValue RPCObject::getValue(size_t index) const
 {
   DAttribute attribute = this->instanceOf()->attribute(index);
- 
-  if (attribute.type().getType() != DType::DMethodType)
-    return (this->getValue(attribute.name()));
-  return (RealValue<DObject*>(DNone));
+  return (this->getValue(attribute.name()));
 }
 
 void RPCObject::setValue(size_t index, DValue const &value)
@@ -132,7 +135,44 @@ BaseValue* RPCObject::getBaseValue(size_t index)
 BaseValue const* RPCObject::getBaseValue(size_t index) const
 {
   std::cout << "get base value " << std::endl;
+  return (NULL);
 }
 
+/**
+ *  RPCFunctionObject
+ */
+RPCFunctionObject::RPCFunctionObject(NetworkStream& stream, uint64_t id, ObjectManager<DObject*>& objects, ObjectManager<ServerFunctionObject*>& functionObjects, DType::Type_t argumentType, DType::Type_t returnType) : DFunctionObject(), __id(id), __networkStream(stream), __serializer(new DSerializeRPC(stream, objects, functionObjects)), __argumentType(argumentType), __returnType(returnType)
+{
+
+}
+
+RPCFunctionObject::~RPCFunctionObject()
+{
+//server delref // remove from manager
+}
+
+DValue RPCFunctionObject::call(DValue const& args) const
+{
+  if (args.asUnicodeString() == "None *") // XXX must be able to serialize None object 
+    return (this->call());
+
+  this->__networkStream.write(std::string("functionCall"));
+  this->__networkStream.write(this->__id);
+
+  /* Send argument (object is not compatible) */
+  this->__serializer->serialize(this->__networkStream, args, this->__argumentType);
+ 
+  /* get return value */
+  return (this->__serializer->deserialize(this->__networkStream, this->__returnType));
+}
+
+DValue RPCFunctionObject::call(void) const
+{
+  this->__networkStream.write(std::string("functionCall0"));
+  this->__networkStream.write(this->__id);
+
+  DValue value = this->__serializer->deserialize(this->__networkStream, this->__returnType);
+  return (value);
+}
 
 }

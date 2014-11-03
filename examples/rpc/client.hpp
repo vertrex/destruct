@@ -7,14 +7,20 @@
 #include "networkstream.hpp" 
 #include "rpcserver.hpp"
 
+
 using namespace Destruct;
+
+class ServerFunctionObject;
 
 class Client
 {
 public:
                         Client(std::string const& addr, uint32_t port);
                         ~Client();
-  void                  start(void);
+  virtual DObject*      start(void);
+  int32_t               connectionSocket(void) const;
+  ObjectManager<DObject*>&        objectManager(void);
+  ObjectManager<ServerFunctionObject*>&       functionObjectManager(void);
 private:
   bool                  __print(DStruct* dstruct) const;
   bool                  __print(DObject* dobject) const;
@@ -22,7 +28,8 @@ private:
   void                  __close(void);
   void                  __connect(std::string const& addr, uint32_t port);
   int32_t               __connectionSocket;
-  ObjectManager         __objectManager;
+  ObjectManager<DObject* > __objectManager;
+  ObjectManager<ServerFunctionObject*> __functionObjectManager;
 };
 
 #endif

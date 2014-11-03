@@ -14,10 +14,13 @@ namespace Destruct {
 
 class DSerialize;
 
+/**
+ * Client Object proxy 
+ */
 class RPCObject : public DObject
 {
 public:
-  RPCObject(NetworkStream& stream, uint64_t id, DStruct* dstruct, ObjectManager & objects);
+  RPCObject(NetworkStream& stream, uint64_t id, DStruct* dstruct, ObjectManager<DObject*>& objects, ObjectManager<ServerFunctionObject*>& functionObjects);
   RPCObject(DStruct* dstruct, DValue const& args);
   RPCObject(RPCObject const & rhs);
 
@@ -45,5 +48,25 @@ private:
   DSerialize*    __serializer;
   DObject*       __object;
 };
+
+/**
+ * Client FunctionObject proxy
+ */
+class RPCFunctionObject : public DFunctionObject
+{
+public:
+  RPCFunctionObject(NetworkStream& networkStream, uint64_t id, ObjectManager<DObject*>& objects, ObjectManager<ServerFunctionObject*>& functionObjects, DType::Type_t argumentType, DType::Type_t returnType);
+  ~RPCFunctionObject();
+
+  DValue call(void) const;
+  DValue call(DValue const& args) const;
+private:
+  uint64_t       __id;
+  NetworkStream&  __networkStream;
+  DSerialize*    __serializer;
+  DType::Type_t         __argumentType;
+  DType::Type_t         __returnType;
+};
+
 }
 #endif

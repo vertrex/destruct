@@ -58,6 +58,12 @@ bool DSerializeBinary::serialize(DStream& output, DStruct& dstruct)
   return (true);
 }
 
+bool DSerializeBinary::serialize(DStream& output, DFunctionObject* value, DType::Type_t argumentType, DType::Type_t returnType)
+{
+  DException("Not implemented");
+  return (false);
+}
+
 bool DSerializeBinary::serialize(DStream& output, DValue value, DType::Type_t type) //XXX type is not needed here 
 {
   throw std::string("UNUSED UNUSED UNUSED UNUSED Serialize(output, value, type)");
@@ -237,6 +243,11 @@ DValue DSerializeBinary::deserialize(DStream& input, DType::Type_t dtype)
   return (value);
 }
 
+DValue DSerializeBinary::deserialize(DStream& input, DType::Type_t argumentType, DType::Type_t returnType)
+{
+  throw DException("DMethod deserialization not implemented.");
+}
+
 bool DSerializeBinary::deserialize(DStream& input, DObject* dobject) //not implemtenable by ref ...
 {
   DStruct const* dstruct = dobject->instanceOf();
@@ -354,6 +365,12 @@ bool DSerializeXML::serialize(DStream& output, DObject* dobject)
   return (this->serialize(output, dobject, 1));
 }
  
+bool DSerializeXML::serialize(DStream& output, DFunctionObject* value, DType::Type_t argumentType, DType::Type_t returnType)
+{
+  DException("Not implemented");
+  return (false);
+}
+
 bool DSerializeXML::serialize(DStream& output, DObject* dobject, int depth)
 {
   int x = 0;
@@ -412,6 +429,11 @@ DValue DSerializeXML::deserialize(DStream& input, DType::Type_t type)
   return value;
 }
 
+DValue DSerializeXML::deserialize(DStream& input, DType::Type_t argumentType, DType::Type_t returnType)
+{
+  throw DException("DMethod deserialization not implemented.");
+}
+
 bool DSerializeXML::deserialize(DStream& input, DObject* dobject)
 {
   return (false);
@@ -457,6 +479,12 @@ bool DSerializeText::serialize(DStream& output, DObject*  dobject)
   return (result);
 }
  
+bool DSerializeText::serialize(DStream& output, DFunctionObject* value, DType::Type_t argumentType, DType::Type_t returnType)
+{
+  DException("Not implemented");
+  return (false);
+}
+
 bool DSerializeText::serialize(DStream& output, DObject* dobject, int depth)
 {
   int x = 0;
@@ -536,6 +564,11 @@ DValue DSerializeText::deserialize(DStream& input, DType::Type_t type)
   return value;
 }
 
+DValue DSerializeText::deserialize(DStream& input, DType::Type_t argumentType, DType::Type_t returnType)
+{
+  throw DException("DMethod deserialization not implemented.");
+}
+
 bool DSerializeText::deserialize(DStream& input, DObject* dobject)
 {
   return (false);
@@ -572,6 +605,12 @@ const std::string DSerializeRaw::name(void)
 DSerializeRaw*   DSerializeRaw::create(void)
 {
   return (new DSerializeRaw);
+}
+
+bool DSerializeRaw::serialize(DStream& output, DFunctionObject* value, DType::Type_t argumentType, DType::Type_t returnType)
+{
+  DException("Not implemented"); 
+  return (false);
 }
 
 bool DSerializeRaw::serialize(DStream& output, DObject*  dobject)
@@ -651,6 +690,11 @@ DValue DSerializeRaw::deserialize(DStream& input, DType::Type_t type)
 {
   DValue value;
   return value;
+}
+
+DValue DSerializeRaw::deserialize(DStream& input, DType::Type_t argumentType, DType::Type_t returnType)
+{
+  throw DException("DMethod deserialization not implemented.");
 }
 
 bool DSerializeRaw::serialize(DStream& output, DStruct& dstruct)
