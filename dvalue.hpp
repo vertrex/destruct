@@ -144,6 +144,5 @@ inline DFunctionObject* DValue::get<DFunctionObject* >() const
    return (NULL); // ret DNone !
 }
 
-
 }
 #endif

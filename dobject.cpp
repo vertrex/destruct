@@ -19,13 +19,18 @@ DStruct * DObject::instanceOf() const
 
 DValue DObject::getValue(DUnicodeString const& name) const
 {
-  size_t idx = instanceOf()->findAttribute(name); //check for not found ?
-  return this->getValue(idx);
+  int32_t index = instanceOf()->findAttribute(name); //check for not found ?
+  if (index == -1)
+    throw DException(this->instanceOf()->name() + " instance has no attribute " + name);
+
+  return this->getValue(index);
 }
 
 void DObject::setValue(DUnicodeString const& name, DValue const& v)
 {
-  size_t index = this->instanceOf()->findAttribute(name); //check not found
+  int32_t index = this->instanceOf()->findAttribute(name); //check not found
+  if (index == -1)
+    throw DException(this->instanceOf()->name() + " instance has no attribute " + name);
   this->setValue(index, v);
 }
 
@@ -34,7 +39,7 @@ DValue DObject::call(std::string const& name, DValue const& v) //const ? XXX  : 
   int32_t index = this->instanceOf()->findAttribute(name);
 
   if (index == -1)
-    throw DException(this->instanceOf()->name() + " instance as no attribute " + name); 
+    throw DException(this->instanceOf()->name() + " instance has no attribute " + name); 
   return (this->call(index, v));
 }
 
@@ -43,7 +48,7 @@ DValue DObject::call(std::string const& name) //const ? XXX  : throw
   int32_t index = this->instanceOf()->findAttribute(name);
 
   if (index == -1)
-    throw DException(this->instanceOf()->name() + " instance as no attribute " + name); 
+    throw DException(this->instanceOf()->name() + " instance has no attribute " + name); 
   return (this->call(index, RealValue<DObject*>(Destruct::DNone)));
 }
 
