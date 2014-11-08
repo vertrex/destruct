@@ -6,7 +6,7 @@ using namespace Destruct;
 /* 
  *  ServerObject
  */
-ServerObject::ServerObject(NetworkStream networkStream, ObjectManager<DObject*>& objectManager, ObjectManager<ServerFunctionObject*>& functionObjectManager) : __networkStream(networkStream), __serializer(new DSerializeRPC(networkStream, objectManager, functionObjectManager))
+ServerObject::ServerObject(NetworkStream networkStream, ObjectManager<DObject*>& objectManager, ObjectManager<ServerFunctionObject*>& functionObjectManager) : __networkStream(networkStream), __serializer(new DSerializeRPC(networkStream, objectManager, functionObjectManager)), __objectManager(objectManager), __functionObjectManager(functionObjectManager)
 {
 }
 
@@ -24,8 +24,11 @@ void    ServerObject::findDStruct(void)
   this->__serializer->serialize(this->__networkStream, *dstruct);
 }
 
-void    ServerObject::setValue(DObject* object)
+void    ServerObject::setValue(void)
 {
+  uint64_t id;
+  this->__networkStream.read(&id); 
+  DObject* object = this->__objectManager.object(id);
   std::string name;
   this->__networkStream.read(name);
 
@@ -36,8 +39,12 @@ void    ServerObject::setValue(DObject* object)
   object->setValue(name, value);
 }
 
-void    ServerObject::getValue(DObject* object)
+void    ServerObject::getValue(void)
 {
+  uint64_t id;
+  this->__networkStream.read(&id); 
+  DObject* object = this->__objectManager.object(id);
+
   std::string name;
   this->__networkStream.read(name);
   
@@ -51,8 +58,12 @@ void    ServerObject::getValue(DObject* object)
     this->__serializer->serialize(this->__networkStream, value, type.getType());
 }
 
-void    ServerObject::call(DObject* object)
+void    ServerObject::call(void)
 {
+  uint64_t id;
+  this->__networkStream.read(&id); 
+  DObject* object = this->__objectManager.object(id);
+
   std::string name;
   this->__networkStream.read(name);
 
@@ -65,8 +76,12 @@ void    ServerObject::call(DObject* object)
   this->__serializer->serialize(this->__networkStream, value, type.getReturnType());
 }
 
-void    ServerObject::call0(DObject* object)
+void    ServerObject::call0(void)
 {
+  uint64_t id;
+  this->__networkStream.read(&id); 
+  DObject* object = this->__objectManager.object(id);
+
   std::string name;
   this->__networkStream.read(name);
 
@@ -77,8 +92,12 @@ void    ServerObject::call0(DObject* object)
   this->__serializer->serialize(this->__networkStream, value, type.getReturnType());
 }
 
-void    ServerObject::functionCall(ServerFunctionObject* object)
+void    ServerObject::functionCall(void)
 {
+  uint64_t id;
+  this->__networkStream.read(&id); 
+  ServerFunctionObject* object = this->__functionObjectManager.object(id);
+
   Destruct::DValue args = this->__serializer->deserialize(this->__networkStream, object->argumentType());
   Destruct::DValue value = object->functionObject()->call(args); 
         
@@ -86,8 +105,12 @@ void    ServerObject::functionCall(ServerFunctionObject* object)
   this->__serializer->serialize(this->__networkStream, value, object->returnType());
 }
 
-void    ServerObject::functionCall0(ServerFunctionObject* object)
+void    ServerObject::functionCall0(void)
 {
+  uint64_t id;
+  this->__networkStream.read(&id); 
+  ServerFunctionObject* object = this->__functionObjectManager.object(id);
+
   Destruct::DValue value = object->functionObject()->call(); 
   std::cout << "functionCall() => " << value.asUnicodeString() << std::endl;
          

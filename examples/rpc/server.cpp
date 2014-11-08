@@ -93,13 +93,11 @@ void            Server::initRoot(void)
 
 void            Server::serve(void)
 {
-  DObject* currentObject = RealValue<DObject*>(DNone);
   NetworkStream stream = NetworkStream(NULL, RealValue<DInt32>(this->__connectionSocket));
   ServerObject serverObject(stream, this->__objectManager, this->__functionObjectManager);
   this->initRoot();
   this->showRoot();
 
-  uint64_t id = 0;
   while (true)
   {
     //std::cout << "Wait for message..." << std::endl;
@@ -121,39 +119,27 @@ void            Server::serve(void)
     }
     else if(msg == "setValue")
     {
-      stream.read(&id); 
-      currentObject = this->__objectManager.object(id);
-      serverObject.setValue(currentObject);
+      serverObject.setValue();
     }
     else if(msg == "getValue")
     {
-      stream.read(&id); 
-      currentObject = this->__objectManager.object(id);
-      serverObject.getValue(currentObject);
+      serverObject.getValue();
     }
     else if(msg == "call")
     {
-      stream.read(&id); 
-      currentObject = this->__objectManager.object(id);
-      serverObject.call(currentObject);
+      serverObject.call();
     }
     else if(msg == "call0")
     {
-      stream.read(&id);
-      currentObject = this->__objectManager.object(id);
-      serverObject.call0(currentObject);
+      serverObject.call0();
     }
     else if(msg == "functionCall")
     {
-      stream.read(&id);
-      ServerFunctionObject* functionObject = this->__functionObjectManager.object(id);
-      serverObject.functionCall(functionObject);
+     serverObject.functionCall();
     }
     else if(msg == "functionCall0")
     {
-      stream.read(&id);
-      ServerFunctionObject* functionObject = this->__functionObjectManager.object(id);
-      serverObject.functionCall0(functionObject);
+      serverObject.functionCall0();
     }
     else
       serverObject.unknown(msg);
