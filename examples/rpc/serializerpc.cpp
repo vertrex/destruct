@@ -1,9 +1,8 @@
 #include "serializerpc.hpp"
 #include "networkstream.hpp"
-#include "dsimpleobject.hpp"
-#include "destruct.hpp"
-#include "rpcobject.hpp"
-#include "rpcserver.hpp"
+#include "clientobject.hpp"
+#include "serverobject.hpp"
+#include "clientfunctionobject.hpp"
 
 /*
  *   DSerializeRPC 
@@ -116,7 +115,7 @@ DValue DSerializeRPC::deserialize(DStream& networkStream, DType::Type_t type)
       std::cout << "Can't deserialize object not find in base must get struct named :  " << objectName << std::endl;
       return RealValue<DObject*>(DNone);
     } 
-    return RealValue<DObject*>(new RPCObject(this->__networkStream, id, dstruct, this->__objects, this->__functionObjects));
+    return RealValue<DObject*>(new ClientObject(this->__networkStream, id, dstruct, this->__objects, this->__functionObjects));
   }
   //else if (type == DType::DMethodType) must not be called
 
@@ -134,7 +133,7 @@ DValue DSerializeRPC::deserialize(DStream& input, DType::Type_t argumentType, DT
   RealValue<DUInt64> id;
   id.unserialize(this->__streamString);
   
-  return (RealValue<DFunctionObject*>(new RPCFunctionObject(this->__networkStream, id, this->__objects, this->__functionObjects, argumentType, returnType)));
+  return (RealValue<DFunctionObject*>(new ClientFunctionObject(this->__networkStream, id, this->__objects, this->__functionObjects, argumentType, returnType)));
 }
 
 bool DSerializeRPC::deserialize(DStream& input, DObject* dobject) //UNUSED //XXX must return a DOBject can't construct it before !

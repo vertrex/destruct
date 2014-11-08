@@ -1,23 +1,13 @@
 #include <iostream>
-#include<stdio.h>
-#include<string.h>    //strlen
-#include<sys/socket.h>
-#include<arpa/inet.h> //inet_addr
-#include<unistd.h>    //write
+#include <stdio.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <unistd.h>
 
 #include "fsobject.hpp"
 #include "server.hpp"
-#include "networkstream.hpp"
-#include "rpcobject.hpp"
-#include "serializerpc.hpp"
-
-#include "destruct.hpp"
-#include "dvalue.hpp"
-#include "protocol/dstream.hpp"
-#include "protocol/dserialize.hpp"
-
-#include "dattribute.hpp"
-#include "dsimpleobject.hpp"
+#include "serverobject.hpp"
 
 using namespace Destruct;
 
@@ -105,7 +95,7 @@ void            Server::serve(void)
 {
   DObject* currentObject = RealValue<DObject*>(DNone);
   NetworkStream stream = NetworkStream(NULL, RealValue<DInt32>(this->__connectionSocket));
-  RPCServer rpcServer(stream, this->__objectManager, this->__functionObjectManager);
+  ServerObject serverObject(stream, this->__objectManager, this->__functionObjectManager);
   this->initRoot();
   this->showRoot();
 
@@ -114,53 +104,59 @@ void            Server::serve(void)
   {
     //std::cout << "Wait for message..." << std::endl;
     std::string msg;
-    rpcServer.networkStream().read(msg);
-  //   stream.read(msg);
+    serverObject.networkStream().read(msg);
+    //data = serverObject.networkStream().read() 
+    //std::string msg << data => call
+     // uint32_t id << data
+     // std::string name << data
+     // DValue args << data
+
+     //  call-> result >> server 
 
     if (msg == "show") 
       this->showRoot();
     else if (msg == "findDStruct")
     {
-      rpcServer.findDStruct();
+      serverObject.findDStruct();
     }
     else if(msg == "setValue")
     {
       stream.read(&id); 
       currentObject = this->__objectManager.object(id);
-      rpcServer.setValue(currentObject);
+      serverObject.setValue(currentObject);
     }
     else if(msg == "getValue")
     {
       stream.read(&id); 
       currentObject = this->__objectManager.object(id);
-      rpcServer.getValue(currentObject);
+      serverObject.getValue(currentObject);
     }
     else if(msg == "call")
     {
       stream.read(&id); 
       currentObject = this->__objectManager.object(id);
-      rpcServer.call(currentObject);
+      serverObject.call(currentObject);
     }
     else if(msg == "call0")
     {
       stream.read(&id);
       currentObject = this->__objectManager.object(id);
-      rpcServer.call0(currentObject);
+      serverObject.call0(currentObject);
     }
     else if(msg == "functionCall")
     {
       stream.read(&id);
       ServerFunctionObject* functionObject = this->__functionObjectManager.object(id);
-      rpcServer.functionCall(functionObject);
+      serverObject.functionCall(functionObject);
     }
     else if(msg == "functionCall0")
     {
       stream.read(&id);
       ServerFunctionObject* functionObject = this->__functionObjectManager.object(id);
-      rpcServer.functionCall0(functionObject);
+      serverObject.functionCall0(functionObject);
     }
     else
-      rpcServer.unknown(msg);
+      serverObject.unknown(msg);
   }
 }
 
@@ -185,28 +181,3 @@ void            Server::showRoot(void)
 
   Destruct::DSerializers::to("Text")->serialize(*stream, this->__objectManager.object(0));
 }
-
-/**
- * ServerFunctionObject
- */
-ServerFunctionObject::ServerFunctionObject(DFunctionObject* functionObject, DType::Type_t argumentType,
- DType::Type_t returnType) : __functionObject(functionObject), __argumentType(argumentType), __returnType(returnType)
-{
-
-}
-
-DType::Type_t ServerFunctionObject::argumentType(void) const
-{
-  return (this->__argumentType);
-}
-
-DType::Type_t ServerFunctionObject::returnType(void) const
-{
-  return (this->__returnType);
-}
-
-DFunctionObject* ServerFunctionObject::functionObject(void) const
-{
-  return (this->__functionObject);
-}
-

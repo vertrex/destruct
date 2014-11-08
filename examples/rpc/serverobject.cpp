@@ -1,18 +1,16 @@
-#include "rpcserver.hpp"
-
+#include "serverobject.hpp"
 #include "serializerpc.hpp"
-#include "destruct.hpp"
-#include "rpcobject.hpp"
+
 using namespace Destruct;
 
 /* 
- *  RPCServer
+ *  ServerObject
  */
-RPCServer::RPCServer(NetworkStream networkStream, ObjectManager<DObject*>& objectManager, ObjectManager<ServerFunctionObject*>& functionObjectManager) : __networkStream(networkStream), __serializer(new DSerializeRPC(networkStream, objectManager, functionObjectManager))
+ServerObject::ServerObject(NetworkStream networkStream, ObjectManager<DObject*>& objectManager, ObjectManager<ServerFunctionObject*>& functionObjectManager) : __networkStream(networkStream), __serializer(new DSerializeRPC(networkStream, objectManager, functionObjectManager))
 {
 }
 
-void    RPCServer::findDStruct(void)
+void    ServerObject::findDStruct(void)
 {
   std::string name;
   this->__networkStream.read(name);
@@ -26,7 +24,7 @@ void    RPCServer::findDStruct(void)
   this->__serializer->serialize(this->__networkStream, *dstruct);
 }
 
-void    RPCServer::setValue(DObject* object)
+void    ServerObject::setValue(DObject* object)
 {
   std::string name;
   this->__networkStream.read(name);
@@ -38,7 +36,7 @@ void    RPCServer::setValue(DObject* object)
   object->setValue(name, value);
 }
 
-void    RPCServer::getValue(DObject* object)
+void    ServerObject::getValue(DObject* object)
 {
   std::string name;
   this->__networkStream.read(name);
@@ -53,7 +51,7 @@ void    RPCServer::getValue(DObject* object)
     this->__serializer->serialize(this->__networkStream, value, type.getType());
 }
 
-void    RPCServer::call(DObject* object)
+void    ServerObject::call(DObject* object)
 {
   std::string name;
   this->__networkStream.read(name);
@@ -67,7 +65,7 @@ void    RPCServer::call(DObject* object)
   this->__serializer->serialize(this->__networkStream, value, type.getReturnType());
 }
 
-void    RPCServer::call0(DObject* object)
+void    ServerObject::call0(DObject* object)
 {
   std::string name;
   this->__networkStream.read(name);
@@ -79,7 +77,7 @@ void    RPCServer::call0(DObject* object)
   this->__serializer->serialize(this->__networkStream, value, type.getReturnType());
 }
 
-void    RPCServer::functionCall(ServerFunctionObject* object)
+void    ServerObject::functionCall(ServerFunctionObject* object)
 {
   Destruct::DValue args = this->__serializer->deserialize(this->__networkStream, object->argumentType());
   Destruct::DValue value = object->functionObject()->call(args); 
@@ -88,7 +86,7 @@ void    RPCServer::functionCall(ServerFunctionObject* object)
   this->__serializer->serialize(this->__networkStream, value, object->returnType());
 }
 
-void    RPCServer::functionCall0(ServerFunctionObject* object)
+void    ServerObject::functionCall0(ServerFunctionObject* object)
 {
   Destruct::DValue value = object->functionObject()->call(); 
   std::cout << "functionCall() => " << value.asUnicodeString() << std::endl;
@@ -96,25 +94,15 @@ void    RPCServer::functionCall0(ServerFunctionObject* object)
   this->__serializer->serialize(this->__networkStream, value, object->returnType());
 }
 
-void    RPCServer::unknown(const std::string& cmd)
+void    ServerObject::unknown(const std::string& cmd)
 {
   std::cout << "Receive unknown command : " << cmd << std::endl;
   this->__networkStream.write("Unknown command : " + cmd);
 }
 
-NetworkStream&    RPCServer::networkStream(void)
+NetworkStream&    ServerObject::networkStream(void)
 {
   return (this->__networkStream);
 }
 
-/**
- * Object Manager specialization
- */
-template<>
-DObject* ObjectManager<DObject* >::object(uint64_t id) const
-{
-  std::map<uint64_t, DObject* >::const_iterator object = this->__objectsID.find(id);
-  if (object != this->__objectsID.end())
-    return (object->second);
-  return RealValue<DObject*>(DNone); 
-}
+

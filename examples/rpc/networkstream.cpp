@@ -1,9 +1,9 @@
-#include<arpa/inet.h>
-
-#include "networkstream.hpp"
+#include <arpa/inet.h>
 #include <iostream>
 #include <sstream>
-#include <string.h> //memcpy 
+#include <string.h>
+
+#include "networkstream.hpp"
 
 namespace Destruct 
 {

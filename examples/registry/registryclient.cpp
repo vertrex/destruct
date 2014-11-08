@@ -1,5 +1,5 @@
 #include "registryclient.hpp"
-#include "rpcobject.hpp"
+#include "clientobject.hpp"
 
 RegistryClient::RegistryClient(std::string const& addr, uint32_t port) : Client(addr, port)
 {
@@ -14,7 +14,7 @@ DObject* RegistryClient::start(void)
   Destruct::Destruct& destruct = Destruct::Destruct::instance();
 
   DStruct* registryS = destruct.find("Registry");
-  RPCObject* root = new RPCObject(networkStream, 0, registryS, this->objectManager(), this->functionObjectManager()); 
+  ClientObject* root = new ClientObject(networkStream, 0, registryS, this->objectManager(), this->functionObjectManager()); 
 
   return (root);
 

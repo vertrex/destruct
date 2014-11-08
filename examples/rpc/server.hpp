@@ -1,29 +1,8 @@
 #ifndef __SERVER__
 #define __SERVER__
 
-#include <stdint.h>
-#include <map>
-
-#include "networkstream.hpp"
-#include "ddynamicobject.hpp"
-#include "protocol/dcppobject.hpp"
-#include "fsobject.hpp"
-#include "protocol/dserialize.hpp"
-#include "rpcserver.hpp"
-
-#include "dobject.hpp"
-class ServerFunctionObject
-{
-public:
-  ServerFunctionObject(DFunctionObject* functionObject, DType::Type_t argumentType, DType::Type_t returnType);
-  DType::Type_t argumentType(void) const;
-  DType::Type_t returnType(void) const;
-  DFunctionObject* functionObject(void) const;
-private:
-  DFunctionObject* __functionObject;
-  DType::Type_t __argumentType;
-  DType::Type_t __returnType;
-};
+#include "objectmanager.hpp"
+#include "serverfunctionobject.hpp"
 
 class Server
 {

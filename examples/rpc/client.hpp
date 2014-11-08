@@ -5,8 +5,7 @@
 #include <stdint.h>
 
 #include "networkstream.hpp" 
-#include "rpcserver.hpp"
-
+#include "objectmanager.hpp"
 
 using namespace Destruct;
 

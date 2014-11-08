@@ -1,10 +1,11 @@
 #ifndef __NETWORKSTREAM__
 #define __NETWORKSTREAM__
 
-#include "protocol/dstream.hpp"
 #include <sstream>
 #include <iostream>
-#include <string.h> //memcpy 
+#include <string.h>
+
+#include "protocol/dstream.hpp"
 
 namespace Destruct
 {

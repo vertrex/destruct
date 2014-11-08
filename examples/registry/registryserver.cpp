@@ -1,3 +1,4 @@
+#include "destruct.hpp"
 #include "registryserver.hpp"
 
 RegistryServer::RegistryServer()

@@ -4,7 +4,7 @@
 #include "destruct.hpp"
 
 #include "client.hpp"
-#include "rpcobject.hpp"
+#include "clientobject.hpp"
 #include "serializerpc.hpp"
 
 Client::Client(std::string const& addr, uint32_t port)
@@ -71,7 +71,7 @@ DObject* Client::start(void)
     throw std::string("Directory struct not found");
 
   //0 is root server object
-  RPCObject* remote = new RPCObject(networkStream, 0, directoryS, this->__objectManager, this->__functionObjectManager); 
+  ClientObject* remote = new ClientObject(networkStream, 0, directoryS, this->__objectManager, this->__functionObjectManager); 
  
   std::cout << "root name : " << remote->getValue("name").get<DUnicodeString>() << std::endl;
 

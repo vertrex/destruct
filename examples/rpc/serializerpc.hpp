@@ -3,7 +3,8 @@
 
 #include "protocol/dserialize.hpp"
 #include "networkstream.hpp"
-#include "server.hpp"
+#include "objectmanager.hpp"
+#include "serverfunctionobject.hpp"
 
 namespace Destruct
 {

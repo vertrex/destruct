@@ -2,7 +2,6 @@
 #define __RPC__
 
 #include <stdint.h>
-#include "dobject.hpp"
 
 class RPC
 {
