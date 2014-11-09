@@ -26,14 +26,13 @@ public:
   DValue                deserialize(DStream& input, DType::Type_t type);
   DValue                deserialize(DStream& input, DType::Type_t argumentType, DType::Type_t returnType);
   bool                  deserialize(DStream& input, DObject* dobject);
-  //bool                  deserialize(DStream& input, DFunctionObject* dfunctionObject);
 protected:
   virtual               ~DSerializeRPC() {};
 private:
-  NetworkStream              __networkStream;
-  ObjectManager<DObject*>&   __objects;
+  NetworkStream&                          __networkStream;
+  ObjectManager<DObject*>&                __objects;
   ObjectManager<ServerFunctionObject*>&   __functionObjects;
-  DStreamString              __streamString;
+  DStreamString                           __streamString;
 };
 
 }

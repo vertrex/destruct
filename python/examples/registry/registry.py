@@ -32,8 +32,18 @@ def showKeys(key):
      subKey = subKeysList.get(index)
      showKeys(subKey)
 
-registryRPC = RegistryRPC()
-registry = registryRPC.connect()
-regf = registry.open("/home/vertrex/dump/registry/system")
+if __name__ == "__main__":
+ if len(sys.argv) < 2:
+   print "./registry serverFilePath [server] [port]"
+ else:
+   registry = None
+   registryRPC = RegistryRPC()
+   if len(sys.argv) == 4:
+     registry = registryRPC.connect(sys.argv[2], int(sys.argv[3]))
+   elif len(sys.argv) == 3:
+     registry = registryRPC.connect(sys.argv[2], 0xdff)
+   else:
+     registry = registryRPC.connect("127.0.0.1", 0xdff)
+   regf = registry.open(sys.argv[1])
 
-showKeys(regf.key)
+   showKeys(regf.key)

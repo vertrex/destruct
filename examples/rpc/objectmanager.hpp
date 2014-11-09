@@ -1,6 +1,8 @@
 #ifndef __OBJECT_MANAGER_HPP__
 #define __OBJECT_MANAGER_HPP__ 
 
+#include "drealvalue.hpp"
+#include "dobject.hpp"
 #include <map>
 
 template<typename TypeName>
@@ -11,6 +13,15 @@ public:
   typedef typename std::map<uint64_t, TypeName >::const_iterator mapIterator;
   ObjectManager() : __currentID(0) 
   {
+  }
+
+  ~ObjectManager()
+  {
+    mapIterator object = this->__objectsID.begin();
+    for (; object != this->__objectsID.end(); ++object)
+    {
+      delete object->second;
+    }
   }
 
   uint64_t                     registerObject(TypeName object)
@@ -37,5 +48,25 @@ private:
   uint64_t              __currentID; 
   mapType               __objectsID;
 };
+
+template<>
+inline ObjectManager<Destruct::DObject* >::~ObjectManager<Destruct::DObject*>()
+{
+  mapIterator object = this->__objectsID.begin();
+  for (; object != this->__objectsID.end(); ++object)
+  {
+    object->second->destroy();
+  }
+}
+
+template<>
+inline Destruct::DObject* ObjectManager<Destruct::DObject* >::object(uint64_t id) const
+{
+  std::map<uint64_t, Destruct::DObject* >::const_iterator object = this->__objectsID.find(id);
+  if (object != this->__objectsID.end())
+    return (object->second);
+  return Destruct::RealValue<Destruct::DObject*>(Destruct::DNone); 
+}
+
 
 #endif

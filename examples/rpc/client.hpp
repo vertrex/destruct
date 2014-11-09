@@ -6,7 +6,7 @@
 
 #include "networkstream.hpp" 
 #include "objectmanager.hpp"
-
+#include "serializerpc.hpp"
 using namespace Destruct;
 
 class ServerFunctionObject;
@@ -14,21 +14,28 @@ class ServerFunctionObject;
 class Client
 {
 public:
-                        Client(std::string const& addr, uint32_t port);
-                        ~Client();
-  virtual DObject*      start(void);
-  int32_t               connectionSocket(void) const;
-  ObjectManager<DObject*>&        objectManager(void);
-  ObjectManager<ServerFunctionObject*>&       functionObjectManager(void);
+  Client(std::string const& addr, uint32_t port);
+  ~Client();
+
+  virtual DObject*                      start(void) = 0;
+
+  bool                                  print(DObject* dobject) const;
+  bool                                  print(DStruct* dstruct) const;
+  Destruct::DStruct*                    remoteFind(const std::string name);
+
+  int32_t                               connectionSocket(void) const;
+  NetworkStream*                        networkStream(void) const;
+  DSerialize*                           serializeRPC(void) const;
+  ObjectManager<DObject*>&              objectManager(void);
+  ObjectManager<ServerFunctionObject*>& functionObjectManager(void);
 private:
-  bool                  __print(DStruct* dstruct) const;
-  bool                  __print(DObject* dobject) const;
-  Destruct::DStruct*    __remoteFind(NetworkStream&, const std::string name);
-  void                  __close(void);
-  void                  __connect(std::string const& addr, uint32_t port);
-  int32_t               __connectionSocket;
-  ObjectManager<DObject* > __objectManager;
-  ObjectManager<ServerFunctionObject*> __functionObjectManager;
+  void                                  __connect(std::string const& addr, uint32_t port);
+  void                                  __close(void);
+  int32_t                               __connectionSocket;
+  NetworkStream*                        __networkStream;
+  DSerialize*                           __serializeRPC; 
+  ObjectManager<DObject* >              __objectManager;
+  ObjectManager<ServerFunctionObject*>  __functionObjectManager;
 };
 
 #endif

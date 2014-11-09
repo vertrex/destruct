@@ -9,12 +9,14 @@ RegistryClient::RegistryClient(std::string const& addr, uint32_t port) : Client(
 DObject* RegistryClient::start(void)
 {
   std::cout << "connect to host" << std::endl;
-  NetworkStream networkStream(NULL, RealValue<DInt32>(this->connectionSocket()));
+  this->__networkStream = new NetworkStream(NULL, RealValue<DInt32>(this->connectionSocket()));
 
   Destruct::Destruct& destruct = Destruct::Destruct::instance();
 
   DStruct* registryS = destruct.find("Registry");
-  ClientObject* root = new ClientObject(networkStream, 0, registryS, this->objectManager(), this->functionObjectManager()); 
+
+  DSerialize* serializer = new DSerializeRPC(*this->__networkStream, this->objectManager(), this->functionObjectManager());
+  ClientObject* root = new ClientObject(*this->__networkStream, serializer, 0, registryS); 
 
   return (root);
 

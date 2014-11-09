@@ -26,7 +26,16 @@ PyRegistryRPC::PyRegistryRPC()
 
 PyObject*    PyRegistryRPC::connect(PyRegistryRPC::DPyObject* self, PyObject* args, PyObject *kwds)
 {
-  Destruct::DObject* dobject = self->pimpl->connect();
+  const char* address;
+  uint32_t port;
+
+  if (!PyArg_ParseTuple(args, "SI", &address, &port))
+  {
+    PyErr_SetString(PyExc_TypeError, "must be string or integer, and a compatible DType or Python Object");
+    return (0);
+  }
+  std::cout << "connection on " << address << "  " << port << std::endl;
+  Destruct::DObject* dobject = self->pimpl->connect(address, port);
   PyDObject::DPyObject*  dobjectObject = (PyDObject::DPyObject*)_PyObject_New(PyDObject::pyType);
   dobjectObject->pimpl = dobject;
   Py_INCREF(dobjectObject);
@@ -36,7 +45,7 @@ PyObject*    PyRegistryRPC::connect(PyRegistryRPC::DPyObject* self, PyObject* ar
 
 PyMethodDef PyRegistryRPC::pyMethods[] = 
 {
-  {"connect", (PyCFunction)connect, METH_NOARGS, "Connect to server."},
+  {"connect", (PyCFunction)connect, METH_VARARGS, "Connect to server."},
   {NULL}
 };
 

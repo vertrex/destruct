@@ -5,19 +5,26 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 
-#include "fsobject.hpp"
 #include "server.hpp"
 #include "serverobject.hpp"
 
 using namespace Destruct;
 
-Server::Server()
+Server::Server(uint32_t port)
 {
-  this->__bind();
+  this->__bind(port);
   this->__listen();
+  this->__networkStream = new NetworkStream(NULL, RealValue<DInt32>(this->__connectionSocket));
+  this->__serializer = new DSerializeRPC(*this->__networkStream, this->__objectManager, this->__functionObjectManager);
 }
 
-void            Server::__bind(void)
+Server::~Server()
+{
+  delete this->__networkStream;
+  delete this->__serializer;
+}
+
+void            Server::__bind(int32_t port)
 {
   this->__listenSocket = socket(AF_INET , SOCK_STREAM, 0);
   int on = 1;
@@ -28,7 +35,7 @@ void            Server::__bind(void)
   sockaddr_in server;
   server.sin_family = AF_INET;
   server.sin_addr.s_addr = INADDR_ANY;
-  server.sin_port = htons(0xdff);
+  server.sin_port = htons(port);
   if(bind(this->__listenSocket,(sockaddr *)&server , sizeof(server)) < 0)
     throw std::string("bind failed. Error");
 }
@@ -47,54 +54,32 @@ void            Server::__listen(void)
   std::cout << "Connection accepted" << std::endl;
 }
 
-/**
-  Create Fake FS :
 
-  Root/File1
-       File2
-       Directory1/File3 
-*/
-void            Server::initRoot(void)
+void    Server::findDStruct(void)
 {
-  DStruct* fileStruct = makeNewDCpp<File>("File");
-  DStruct* directoryStruct = makeNewDCpp<Directory>("Directory");
-  Destruct::Destruct& dstruct = Destruct::Destruct::instance();
+  std::string name;
+  this->__networkStream->read(name);
 
-  dstruct.registerDStruct(fileStruct);
-  dstruct.registerDStruct(directoryStruct);
+  std::cout << "Send DStruct " << name << std::endl;
+  Destruct::Destruct& destruct = Destruct::Destruct::instance();
+  DStruct* dstruct = destruct.find(name);
+  if (!dstruct)
+   throw std::string("DStruct not found");
 
-  DObject* root = directoryStruct->newObject();
-  this->__objectManager.registerObject(root);
-  DObject* children =  root->getValue("children").get<DObject*>();
+  this->__serializer->serialize(*this->__networkStream, *dstruct);
+  this->__networkStream->flush();
+}
  
-  DObject* file1 = fileStruct->newObject();
-
-  file1->setValue("name", RealValue<DUnicodeString>("File1"));
-  children->call("push", RealValue<DObject*>(file1));
-
-  File* file2 = new File(fileStruct, RealValue<DObject*>(DNone)); 
-  file2->name = "File2"; 
-  children->call("push", RealValue<DObject*>(file2));
-
-  DObject* directory1 = directoryStruct->newObject();
-  children->call("push", RealValue<DObject*>(directory1));
-  DObject* d1children = directory1->getValue("children").get<DObject*>();
-/*  
-  Directory* directory1 = new Directory(directoryStruct, RealValue<DObject*>(DNone));
-  directory1->name = "Directory1";
-  DObject* d1children = directory1->children;
-  */
-
-  File* file3 = new File(fileStruct, RealValue<DObject*>(DNone));  
-  this->__objectManager.registerObject(file3);
-  file3->name = "File3"; 
-  d1children->call("push", RealValue<DObject*>(file3));
+void Server::unknown(const std::string& cmd)
+{
+  std::cout << "Receive unknown command : " << cmd << std::endl;
+  this->__networkStream->write("Unknown command : " + cmd);
+  this->__networkStream->flush();
 }
 
 void            Server::serve(void)
 {
-  NetworkStream stream = NetworkStream(NULL, RealValue<DInt32>(this->__connectionSocket));
-  ServerObject serverObject(stream, this->__objectManager, this->__functionObjectManager);
+  ServerObject serverObject(*this->__networkStream, this->__serializer, this->__objectManager, this->__functionObjectManager);
   this->initRoot();
   this->showRoot();
 
@@ -102,47 +87,26 @@ void            Server::serve(void)
   {
     //std::cout << "Wait for message..." << std::endl;
     std::string msg;
-    serverObject.networkStream().read(msg);
-    //data = serverObject.networkStream().read() 
-    //std::string msg << data => call
-     // uint32_t id << data
-     // std::string name << data
-     // DValue args << data
-
-     //  call-> result >> server 
+    this->__networkStream->read(msg);
 
     if (msg == "show") 
       this->showRoot();
     else if (msg == "findDStruct")
-    {
-      serverObject.findDStruct();
-    }
+      this->findDStruct();
     else if(msg == "setValue")
-    {
       serverObject.setValue();
-    }
     else if(msg == "getValue")
-    {
       serverObject.getValue();
-    }
     else if(msg == "call")
-    {
       serverObject.call();
-    }
     else if(msg == "call0")
-    {
       serverObject.call0();
-    }
     else if(msg == "functionCall")
-    {
-     serverObject.functionCall();
-    }
+      serverObject.functionCall();
     else if(msg == "functionCall0")
-    {
       serverObject.functionCall0();
-    }
     else
-      serverObject.unknown(msg);
+      this->unknown(msg);
   }
 }
 
@@ -166,4 +130,5 @@ void            Server::showRoot(void)
     std::cout << "Can't find stream to output fs tree" << std::endl;
 
   Destruct::DSerializers::to("Text")->serialize(*stream, this->__objectManager.object(0));
+  stream->destroy();
 }

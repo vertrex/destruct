@@ -36,7 +36,6 @@ bool DSerializeRPC::serialize(DStream& networkStream, DStruct& dstruct)
   return (true);
 }
 
-
 bool DSerializeRPC::serialize(DStream& networkStream, DValue value, DType::Type_t type)
 {
   if (type == DType::DObjectType)
@@ -47,8 +46,6 @@ bool DSerializeRPC::serialize(DStream& networkStream, DValue value, DType::Type_
   else if (type == DType::DMethodType)
   {
     DException("DFunctionType serialization not implemented");
-    //DFunctionObject* dfunctionObject = value.get<DFunctionObject*>();
-    //this->serialize(this->__networkStream, dfunctionObject); 
   }
   else
   {
@@ -64,7 +61,6 @@ bool DSerializeRPC::serialize(DStream& networkStream, DValue value, DType::Type_
 bool DSerializeRPC::serialize(DStream& networkStream, DFunctionObject* dfunctionObject, DType::Type_t argumentType, DType::Type_t returnType)
 {
   ServerFunctionObject* serverFunctionObject = new ServerFunctionObject(dfunctionObject, argumentType, returnType);
-
   RealValue<DUInt64> id(this->__functionObjects.registerObject(serverFunctionObject));
   
   id.serialize(this->__streamString);
@@ -81,7 +77,7 @@ bool DSerializeRPC::serialize(DStream& networkStream, DObject*  dobject)
   objectName.serialize(this->__streamString);
   id.serialize(this->__streamString);
   this->__networkStream << this->__streamString;
- 
+
   return (true);
 }
 
@@ -115,7 +111,7 @@ DValue DSerializeRPC::deserialize(DStream& networkStream, DType::Type_t type)
       std::cout << "Can't deserialize object not find in base must get struct named :  " << objectName << std::endl;
       return RealValue<DObject*>(DNone);
     } 
-    return RealValue<DObject*>(new ClientObject(this->__networkStream, id, dstruct, this->__objects, this->__functionObjects));
+    return RealValue<DObject*>(new ClientObject(this->__networkStream, this, id, dstruct));
   }
   //else if (type == DType::DMethodType) must not be called
 
@@ -133,7 +129,7 @@ DValue DSerializeRPC::deserialize(DStream& input, DType::Type_t argumentType, DT
   RealValue<DUInt64> id;
   id.unserialize(this->__streamString);
   
-  return (RealValue<DFunctionObject*>(new ClientFunctionObject(this->__networkStream, id, this->__objects, this->__functionObjects, argumentType, returnType)));
+  return (RealValue<DFunctionObject*>(new ClientFunctionObject(this->__networkStream, this, id, argumentType, returnType)));
 }
 
 bool DSerializeRPC::deserialize(DStream& input, DObject* dobject) //UNUSED //XXX must return a DOBject can't construct it before !

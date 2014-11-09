@@ -17,17 +17,17 @@ using namespace Destruct;
 class ClientFunctionObject : public DFunctionObject
 {
 public:
-  ClientFunctionObject(NetworkStream& networkStream, uint64_t id, ObjectManager<DObject*>& objects, ObjectManager<ServerFunctionObject*>& functionObjects, DType::Type_t argumentType, DType::Type_t returnType);
+  ClientFunctionObject(NetworkStream& networkStream, DSerialize* serializer, uint64_t id, DType::Type_t argumentType, DType::Type_t returnType);
   ~ClientFunctionObject();
 
-  DValue call(void) const;
-  DValue call(DValue const& args) const;
+  DValue        call(void) const;
+  DValue        call(DValue const& args) const;
 private:
   uint64_t       __id;
-  NetworkStream&  __networkStream;
+  NetworkStream& __networkStream;
   DSerialize*    __serializer;
-  DType::Type_t         __argumentType;
-  DType::Type_t         __returnType;
+  DType::Type_t  __argumentType;
+  DType::Type_t  __returnType;
 };
 
 #endif

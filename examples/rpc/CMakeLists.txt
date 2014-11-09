@@ -20,10 +20,8 @@ clientobject.cpp
 networkstream.cpp
 server.cpp
 client.cpp
-#rpc.cpp
 serializerpc.cpp
 serverobject.cpp
-objectmanager.cpp
 clientfunctionobject.cpp
 serverfunctionobject.cpp
 )

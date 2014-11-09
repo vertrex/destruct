@@ -54,7 +54,7 @@ Registry::~Registry()
 {
 }
 
-DValue Registry::open(DValue const& args) // deserializeRaw plutot comme ca on fait l objet directe depuis rpcregistry
+DValue Registry::open(DValue const& args)
 {
   Regf* regf = new Regf(this->__destruct.find("Regf"), RealValue<DObject*>(DNone));
   StreamFile* streamVFile = new StreamFile(this->__destruct.find("StreamFile"), args);

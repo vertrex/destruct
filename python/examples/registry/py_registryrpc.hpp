@@ -28,17 +28,11 @@ public:
     Destruct::DType::clean();
   }
 
-  DObject* connect(void)
+  DObject* connect(std::string const& address, uint32_t port)
   {
-    std::cout << "creating client" << std::endl;
-    RegistryClient client("127.0.0.1", 0xdff);
-    std::cout << "client start()" << std::endl;
+    RegistryClient client(address, port);
     return (client.start());
   }
-  //conect(DPyObject* self, PyObject* args, PyObject *kwds)
-  //{
-  //
-  //}
 };
 
 typedef PythonModule< class PyRegistryRPC, PyRegistryClient> PyRegistryRPCT;
@@ -49,10 +43,6 @@ public:
   static PyMethodDef  pyMethods[];
 
   static PyObject*    connect(DPyObject* self, PyObject* args, PyObject *kwds);
-  //static PyObject*    showAttribute(DPyObject* self, PyObject* args, PyObject *kwds);
-  //static PyObject*    showObjectAttribute(DPyObject* self, PyObject* args, PyObject *kwds);
-  //static PyObject*    setObjectValue(DPyObject* self, PyObject* args, PyObject *kwds);
-  //static PyObject*    getObjectValue(DPyObject* self, PyObject* args, PyObject *kwds);
 };
 
 

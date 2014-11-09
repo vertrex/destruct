@@ -14,6 +14,8 @@ public:
   virtual DObject*      start(void);
   void                  printKey(DObject* key);
   void                  printValue(DObject* key);
+private: 
+  NetworkStream*        __networkStream;
 };
 
 #endif
