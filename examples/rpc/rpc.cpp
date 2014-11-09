@@ -152,7 +152,7 @@ int main(int argc, char** argv)
       if (argc == 2)
         rpc.serve(0xdff);
       else
-        rpc.server(atoi(argv[2]));
+        rpc.serve(atoi(argv[2]));
     }
     else if (std::string(argv[1]) == std::string("-c"))
       rpc.connect("127.0.0.1", 0xdff);

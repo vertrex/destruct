@@ -26,15 +26,16 @@ PyRegistryRPC::PyRegistryRPC()
 
 PyObject*    PyRegistryRPC::connect(PyRegistryRPC::DPyObject* self, PyObject* args, PyObject *kwds)
 {
-  const char* address;
+  PyObject* addressObject;
   uint32_t port;
 
-  if (!PyArg_ParseTuple(args, "SI", &address, &port))
+  if (!PyArg_ParseTuple(args, "SI", &addressObject, &port))
   {
-    PyErr_SetString(PyExc_TypeError, "must be string or integer, and a compatible DType or Python Object");
+    PyErr_SetString(PyExc_TypeError, "must be string and integer");
     return (0);
   }
-  std::cout << "connection on " << address << "  " << port << std::endl;
+  const char* address = PyString_AsString(addressObject);
+  std::cout << "connection on " << std::string(address) << "  " << port << std::endl;
   Destruct::DObject* dobject = self->pimpl->connect(address, port);
   PyDObject::DPyObject*  dobjectObject = (PyDObject::DPyObject*)_PyObject_New(PyDObject::pyType);
   dobjectObject->pimpl = dobject;
