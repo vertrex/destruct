@@ -54,7 +54,7 @@ class KeyTreeView(QTreeWidget):
       self.addTopLevelItem(item)
       item.populateItemSubKeys()
 
-  def expand(self, keyItem):#if not already expended one time 
+  def expand(self, keyItem):
     for index in range(0, keyItem.childCount()):
       childItem = keyItem.child(index)
       childItem.populateItemSubKeys()
@@ -120,6 +120,7 @@ class MainWindow(QMainWindow):
     openAction = QAction("&Connect", self)
     openAction.triggered.connect(self.connection);
     self.menuBar().addAction(openAction)
+    self.registryRPC = RegistryRPC()
 
   def connection(self):
     connectionDialog = ConnectionDialog(self)
@@ -127,7 +128,6 @@ class MainWindow(QMainWindow):
     if not ok:
       return
 
-    self.registryRPC = RegistryRPC()
     registry = self.registryRPC.connect(str(connectionDialog.ipAddress.text()), connectionDialog.port.value())
     regf = registry.open(str(connectionDialog.filePath.text()))
     self.registryBrowserWidget = RegistryBrowserWidget(regf.key)
@@ -136,7 +136,6 @@ class MainWindow(QMainWindow):
     self.addDockWidget(Qt.TopDockWidgetArea, self.dockWidget)
 
 if __name__ == "__main__":
-  #else:
   app = QApplication(sys.argv)
   window = MainWindow()
   window.show()
