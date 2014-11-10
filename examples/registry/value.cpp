@@ -91,6 +91,7 @@ RegistryValue::RegistryValue(DStruct* dstruct, DValue const& args) : DCppObject<
  ((DObject*)this->data)->addRef();
 }
 
+
 RegistryValue::~RegistryValue(void)
 {
 }
@@ -104,6 +105,10 @@ DValue    RegistryValue::deserializeRaw(DValue const& arg)
   return (RealValue<DUInt8>(1));
 }
 
+DValue  RegistryValue::valueTypeName(void)
+{
+  return (RealValue<DUnicodeString>(RegistryValue::registryType(this->dataType)));
+}
 /**
  * RegistryValueData
  */

@@ -53,13 +53,15 @@ public:
           RegistryValue(DStruct* dstruct, DValue const& args);
           ~RegistryValue();
   DValue  deserializeRaw(DValue const& stream);
+  DValue  valueTypeName(void);
  
-  RealValue<DUInt8>          unknown;
-  RealValue<DUInt16>         signature, nameLength, named, unknown1, unknown2, valueType;
-  RealValue<DInt32>          size, dataOffset, dataLength, dataType;
-  RealValue<DObject*>        name, data;
+  RealValue<DUInt8>            unknown;
+  RealValue<DUInt16>           signature, nameLength, named, unknown1, unknown2, valueType;
+  RealValue<DInt32>            size, dataOffset, dataLength, dataType;
+  RealValue<DObject*>          name, data;
+  RealValue<DFunctionObject*>  _valueTypeName;
 
-  attributeCount(RegistryValue, 10)
+  attributeCount(RegistryValue, 11)
   attributeList(
                 attribute(DInt32, size)
                 attribute(DUInt16, signature)
@@ -71,6 +73,7 @@ public:
                 attribute(DUInt16, unknown1)
                 attribute(DObject, name)
                 attribute(DObject, data)
+                function(DUnicodeString, valueTypeName, DNone)
                 //function(DUInt8, deserializeRaw, DObject)
                )
 
@@ -85,6 +88,8 @@ public:
              member(RegistryValue, unknown1)
              member(RegistryValue, name)
              member(RegistryValue, data)
+             method(RegistryValue, valueTypeName)
+             //method(RegistryValue, deserializeRaw)
              //method(RegistryValue, deserializeRaw)
             )
 private:
