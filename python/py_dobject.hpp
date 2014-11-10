@@ -20,12 +20,14 @@ public:
   static int          _setattr(DPyObject* self, PyObject* name, PyObject *valueObject);
   static PyObject*    _repr(DPyObject* self);
   static int          _compare(DPyObject* self, DPyObject* other);
+  static PyObject*    _dir(DPyObject* self, PyObject* args, PyObject* kwds); //XXX
 
   static PyObject*    instanceOf(DPyObject* self);
   static PyObject*    getType(DPyObject* self, PyObject* args, PyObject* kwds);
 
   static PyObject*    getValue(DPyObject* self, PyObject* valueObject);
 
+ 
   static PyObject*    setValueObject(DPyObject* self, PyObject* args, PyObject* kwds);
   static PyObject*    setValue(DPyObject* self, const char* attributeName, PyObject* valueObject);
   static PyObject*    setValue(DPyObject* self, int32_t attributeIndex, PyObject* valueObject);

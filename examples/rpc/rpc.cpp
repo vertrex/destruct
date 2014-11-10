@@ -20,7 +20,7 @@ RPC::~RPC()
 void RPC::serve(uint32_t port)
 {
   TestServer  server(port);
-  server.serve();
+  server.daemonize();
 }
 
 void RPC::connect(std::string const& addr, uint32_t port)

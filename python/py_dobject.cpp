@@ -241,6 +241,7 @@ PyMethodDef PyDObject::pyMethods[] =
   {"getType",  (PyCFunction)getType, METH_CLASS, "Return self DType::type."},
   {"getValue", (PyCFunction)getValue, METH_O, "Get value for attribute (passed as index or string)."},
   {"setValue", (PyCFunction)setValueObject, METH_VARARGS, "Set attribute value."},
+  {"__dir__", (PyCFunction)_dir, METH_VARARGS, "Return object attributes"},
   { NULL }
 };
 
@@ -375,6 +376,173 @@ PyObject* PyDObject::_repr(PyDObject::DPyObject* self)
 int PyDObject::_compare(PyDObject::DPyObject* self, PyDObject::DPyObject* other)
 {
   return ((int)(self->pimpl - other->pimpl));
+}
+
+static int
+merge_list_attr(PyObject* dict, PyObject* obj, const char *attrname)
+{
+    PyObject *list;
+    int result = 0;
+
+    assert(PyDict_Check(dict));
+    assert(obj);
+    assert(attrname);
+
+    list = PyObject_GetAttrString(obj, attrname);
+    if (list == NULL)
+        PyErr_Clear();
+
+    else if (PyList_Check(list)) {
+        int i;
+        for (i = 0; i < PyList_GET_SIZE(list); ++i) {
+            PyObject *item = PyList_GET_ITEM(list, i);
+            if (PyString_Check(item)) {
+                result = PyDict_SetItem(dict, item, Py_None);
+                if (result < 0)
+                    break;
+            }
+        }
+        if (Py_Py3kWarningFlag &&
+            (strcmp(attrname, "__members__") == 0 ||
+             strcmp(attrname, "__methods__") == 0)) {
+            if (PyErr_WarnEx(PyExc_DeprecationWarning,
+                           "__members__ and __methods__ not "
+                           "supported in 3.x", 1) < 0) {
+                Py_XDECREF(list);
+                return -1;
+            }
+        }
+    }
+
+    Py_XDECREF(list);
+    return result;
+}
+
+static int
+merge_class_dict(PyObject* dict, PyObject* aclass)
+{
+    PyObject *classdict;
+    PyObject *bases;
+
+    assert(PyDict_Check(dict));
+    assert(aclass);
+
+    /* Merge in the type's dict (if any). */
+    classdict = PyObject_GetAttrString(aclass, "__dict__");
+    if (classdict == NULL)
+        PyErr_Clear();
+    else {
+        int status = PyDict_Update(dict, classdict);
+        Py_DECREF(classdict);
+        if (status < 0)
+            return -1;
+    }
+
+    /* Recursively merge in the base types' (if any) dicts. */
+    bases = PyObject_GetAttrString(aclass, "__bases__");
+    if (bases == NULL)
+        PyErr_Clear();
+    else {
+        /* We have no guarantee that bases is a real tuple */
+        Py_ssize_t i, n;
+        n = PySequence_Size(bases); /* This better be right */
+        if (n < 0)
+            PyErr_Clear();
+        else {
+            for (i = 0; i < n; i++) {
+                int status;
+                PyObject *base = PySequence_GetItem(bases, i);
+                if (base == NULL) {
+                    Py_DECREF(bases);
+                    return -1;
+                }
+                status = merge_class_dict(dict, base);
+                Py_DECREF(base);
+                if (status < 0) {
+                    Py_DECREF(bases);
+                    return -1;
+                }
+            }
+        }
+        Py_DECREF(bases);
+    }
+    return 0;
+}
+
+PyObject*  PyDObject::_dir(PyDObject::DPyObject* self, PyObject* args, PyObject *kwds )
+{
+    PyObject* obj = (PyObject*)self;
+    PyObject *result = NULL;
+    PyObject *dict = NULL;
+    PyObject *itsclass = NULL;
+
+    /* Get __dict__ (which may or may not be a real dict...) */
+    dict = PyObject_GetAttrString(obj, "__dict__");
+    if (dict == NULL) {
+        PyErr_Clear();
+        dict = PyDict_New();
+    }
+    else if (!PyDict_Check(dict)) {
+        Py_DECREF(dict);
+        dict = PyDict_New();
+    }
+    else {
+        /* Copy __dict__ to avoid mutating it. */
+        PyObject *temp = PyDict_Copy(dict);
+        Py_DECREF(dict);
+        dict = temp;
+    }
+
+    if (dict == NULL)
+    {
+       Py_XDECREF(itsclass);
+       Py_XDECREF(dict);
+       return result;
+    }
+
+    /* Merge in __members__ and __methods__ (if any).
+     * This is removed in Python 3000. */
+    if (merge_list_attr(dict, obj, "__members__") < 0)
+    {
+       Py_XDECREF(itsclass);
+       Py_XDECREF(dict);
+       return result;
+    }
+    if (merge_list_attr(dict, obj, "__methods__") < 0)
+    {
+       Py_XDECREF(itsclass);
+       Py_XDECREF(dict);
+       return result;
+    }
+
+    /* Merge in attrs reachable from its class. */
+    itsclass = PyObject_GetAttrString(obj, "__class__");
+    if (itsclass == NULL)
+        /* XXX(tomer): Perhaps fall back to obj->ob_type if no
+                       __class__ exists? */
+        PyErr_Clear();
+    else 
+    {
+      if (merge_class_dict(dict, itsclass) != 0)
+      {
+
+       Py_XDECREF(itsclass);
+       Py_XDECREF(dict);
+       return result;
+      }
+    }
+    result = PyDict_Keys(dict);
+
+    Destruct::DStruct* instance = self->pimpl->instanceOf();
+    for (size_t index = 0; index < instance->attributeCount(); ++index)
+    {
+      std::string name = instance->attribute(index).name(); 
+      PyList_Append(result, PyString_FromString(name.c_str()));
+    }
+    /* fall through */
+    Py_XDECREF(itsclass);
+    Py_XDECREF(dict);
+    return result;
 }
 
 PyObject* PyDObject::typeObject()

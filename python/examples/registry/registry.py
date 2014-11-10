@@ -32,6 +32,19 @@ def showKeys(key):
      subKey = subKeysList.get(index)
      showKeys(subKey)
 
+def findKey(key, path):
+  subKeysList = key.subkeys.list
+  valuesList = key.values.list
+  size = subKeysList.size()
+  valueSize = valuesList.size()
+  for index in range(0, size):
+     subKey = subKeysList.get(index)
+     if subKey.keyName.keyName == path:
+       return subKey.values.list
+       print 'found'
+  print "not found"
+ 
+
 if __name__ == "__main__":
  if len(sys.argv) < 2:
    print "./registry serverFilePath [server] [port]"
@@ -46,4 +59,11 @@ if __name__ == "__main__":
      registry = registryRPC.connect("127.0.0.1", 0xdff)
    regf = registry.open(sys.argv[1])
 
-   showKeys(regf.key)
+   print regf
+   print dir(regf)
+   showStruct(regf)
+   #values = findKey(regf.key, "MountedDevices")
+   #if values:
+     #for index in range(0, values.size()):
+        #print values.get(index).name.keyName
+   #showKeys(regf.key)

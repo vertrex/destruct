@@ -43,7 +43,7 @@ void RegistryRPC::local(const std::string filePath)
 void RegistryRPC::serve(uint32_t port)
 {
  RegistryServer  server(port);
- server.serve();
+ server.daemonize();
 }
 
 void RegistryRPC::connect(std::string const& filePath, std::string const& addr, uint32_t port)
@@ -83,9 +83,13 @@ int main(int argc, char** argv)
     else if (std::string(argv[1]) == std::string("-d"))
     {
       if (argc == 3)
+      {
         registryRPC.serve(atoi((argv[2])));
+      }
       else
+      {
         registryRPC.serve(0xdff);
+      }
     }
     else if (std::string(argv[1]) == std::string("-c"))
     {

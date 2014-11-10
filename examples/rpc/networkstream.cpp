@@ -2,6 +2,7 @@
 #include <iostream>
 #include <sstream>
 #include <string.h>
+#include <signal.h>
 
 #include "networkstream.hpp"
 
@@ -11,6 +12,7 @@ namespace Destruct
 NetworkStream::NetworkStream(DStruct* dstruct, DValue const& args) : DStream(dstruct)
 {
   this->__socket = args.get<DInt32>();
+  signal(SIGPIPE, SIG_IGN);
 }
 
 NetworkStream::NetworkStream(NetworkStream const& copy) : DStream(copy), __socket(copy.__socket)//, __readStream(copy.__readStream)
@@ -102,6 +104,8 @@ int32_t NetworkStream::flush(void)// const
     int32_t sent = ::send(this->__socket, (void*)(buff + totalSent), size - totalSent, 0);
     if (sent != -1)
       totalSent += sent;
+    else
+      throw DException("NetworkStream::send error"); //EPIPE error is handled by signal so return -1, check if EPIPE or not ...
   }
   this->__writeStream.seekp(0);
   this->__writeStream.seekg(0);
@@ -129,6 +133,8 @@ int32_t NetworkStream::__recv(void* buff, int32_t size)
       readed = (::recv(this->__socket, tmp, 4096, 0));
       if (readed != -1)
         this->__readStream.write(tmp, readed);
+      else
+        throw DException("NetworkStream::recv error");
     } while (readed == 4096 || readed == -1);
   }
 

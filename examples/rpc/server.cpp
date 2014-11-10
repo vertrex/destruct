@@ -10,12 +10,9 @@
 
 using namespace Destruct;
 
-Server::Server(uint32_t port)
+Server::Server(uint32_t port) : __networkStream(NULL), __serializer(NULL)
 {
   this->__bind(port);
-  this->__listen();
-  this->__networkStream = new NetworkStream(NULL, RealValue<DInt32>(this->__connectionSocket));
-  this->__serializer = new DSerializeRPC(*this->__networkStream, this->__objectManager, this->__functionObjectManager);
 }
 
 Server::~Server()
@@ -46,12 +43,17 @@ void            Server::__listen(void)
   struct sockaddr_in client;
  
   listen(this->__listenSocket , 3);
-  std::cout << "Waiting for incoming connections..." << std::endl;
+  std::cout << "Waiting for incoming connections ..." << std::endl;
   c = sizeof(sockaddr_in);
   this->__connectionSocket = accept(this->__listenSocket, (sockaddr *)&client, (socklen_t*)&c);
   if (this->__connectionSocket < 0)
     throw std::string("accept failed");
   std::cout << "Connection accepted" << std::endl;
+
+  delete this->__networkStream;
+  delete this->__serializer;
+  this->__networkStream = new NetworkStream(NULL, RealValue<DInt32>(this->__connectionSocket));
+  this->__serializer = new DSerializeRPC(*this->__networkStream, this->__objectManager, this->__functionObjectManager);
 }
 
 
@@ -77,10 +79,30 @@ void Server::unknown(const std::string& cmd)
   this->__networkStream->flush();
 }
 
+void            Server::daemonize(void)
+{
+  while (1)
+  {
+    try
+    {
+      this->serve();
+    }
+    catch (DException const& exception)
+    {
+      std::cout << "Server error " << exception.error() << std::endl << "Restarting server ... " << std::endl;
+    }
+    catch (...)
+    {
+      std::cout << "Server error : unknown " << std::endl << " Restarting server ... " << std::endl;
+    }
+  }
+}
+
 void            Server::serve(void)
 {
+  this->__listen();
   ServerObject serverObject(*this->__networkStream, this->__serializer, this->__objectManager, this->__functionObjectManager);
-  this->initRoot();
+  this->initRoot(); //again
   this->showRoot();
 
   while (true)

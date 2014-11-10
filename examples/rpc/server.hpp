@@ -16,6 +16,7 @@ public:
 
   virtual void                          initRoot(void) = 0;
   void                                  serve();
+  void                                  daemonize(void);
   void                                  showRoot(void);
   void                                  unknown(const std::string& cmd);
   void                                  findDStruct(void);
