@@ -18,27 +18,19 @@ def showKeys(key):
  subKeysList = key.subkeys.list
  valuesList = key.values.list
  size = subKeysList.size()
- valueSize = valuesList.size() 
 
- if valueSize:
-   print "\t\tValues(" + str(valueSize) + ") :"
-   for index in range(0, valueSize):
-     value = valuesList.get(index)
-     print value.name.keyName
+ print "\t\tValues(" + str(valuesList.size()) + ") :"
+ for value in valuesList:
+   print value.name.keyName
 
- if size:
-   print "\t\tSubkeys(" + str(size) + ") :"
-   for index in range(0, size):
-     subKey = subKeysList.get(index)
-     showKeys(subKey)
+ print "\t\tSubkeys(" + str(subKeysList.size()) + ") :"
+ for subKey in subKeysList:
+    showKeys(subKey)
 
 def findKey(key, path):
   subKeysList = key.subkeys.list
-  valuesList = key.values.list
   size = subKeysList.size()
-  valueSize = valuesList.size()
-  for index in range(0, size):
-     subKey = subKeysList.get(index)
+  for subKey in subKeysList:
      if subKey.keyName.keyName == path:
        return subKey.values.list
        print 'found'
@@ -58,9 +50,14 @@ if __name__ == "__main__":
    else:
      registry = registryRPC.connect("127.0.0.1", 0xdff)
    regf = registry.open(sys.argv[1])
+  
+   #subkeys =regf.key.subkeys.list
+   #for key in subkeys:
+        #print key.keyName.keyName
+        
+   #values = findKey(regf.key, "MountedDevices")
+   #if values:
+     #for value in values:
+        #print value.name.keyName
 
-   values = findKey(regf.key, "MountedDevices")
-   if values:
-     for index in range(0, values.size()):
-        print values.get(index).name.keyName
    showKeys(regf.key)

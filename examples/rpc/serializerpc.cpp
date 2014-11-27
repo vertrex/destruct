@@ -38,7 +38,9 @@ bool DSerializeRPC::serialize(DStream& networkStream, DStruct& dstruct)
 
 bool DSerializeRPC::serialize(DStream& networkStream, DValue value, DType::Type_t type)
 {
-  if (type == DType::DObjectType)
+  if (type == DType::DNoneType)
+    return (true);
+  else if (type == DType::DObjectType)
   {
     DObject* dobject = value.get<DObject*>();
     this->serialize(this->__networkStream, dobject);
@@ -95,30 +97,31 @@ DStruct* DSerializeRPC::deserialize(DStream& input)
 
 DValue DSerializeRPC::deserialize(DStream& networkStream, DType::Type_t type)
 {
-  this->__networkStream >> this->__streamString;
+  if (type == DType::DNoneType)
+    return (RealValue<DObject*>(DNone));
 
+  this->__networkStream >> this->__streamString;
   if (type == DType::DObjectType)
   {
     RealValue<DUnicodeString> objectName("");
     RealValue<DUInt64> id;
-   
+  
     objectName.unserialize(this->__streamString);
     id.unserialize(this->__streamString);
- 
+
     DStruct* dstruct = Destruct::Destruct::instance().find(objectName);
     if (dstruct == NULL)
     {
-      std::cout << "Can't deserialize object not find in base must get struct named :  " << objectName << std::endl;
+      std::cout << "DSerializeRPC Can't deserialize object not find in base must get struct named :  " << objectName << std::endl;
       return RealValue<DObject*>(DNone);
-    } 
+    }
+
     return RealValue<DObject*>(new ClientObject(this->__networkStream, this, id, dstruct));
   }
-  //else if (type == DType::DMethodType) must not be called
 
   DValue value(DType(type).newValue());
   this->__streamString >> value;
   this->__streamString.clear();
-
   return (value);
 }
 
@@ -132,7 +135,7 @@ DValue DSerializeRPC::deserialize(DStream& input, DType::Type_t argumentType, DT
   return (RealValue<DFunctionObject*>(new ClientFunctionObject(this->__networkStream, this, id, argumentType, returnType)));
 }
 
-bool DSerializeRPC::deserialize(DStream& input, DObject* dobject) //UNUSED //XXX must return a DOBject can't construct it before !
+bool DSerializeRPC::deserialize(DStream& input, DObject* dobject) //UNUSED //XXX must return a DObject can't construct it before !
 {
  return (false);
 }

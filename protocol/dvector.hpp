@@ -17,7 +17,7 @@ public:
   DVector(DStruct* dstruct, DValue const& args) : DCppObject<DVector<VectorType, VectorTypeId> >(dstruct, args)
   {
     this->init();
-  };
+  }
 
   DVector(const DVectorType& copy) : DCppObject<DVector<VectorType, VectorTypeId> >(copy), __vector(copy.__vector) 
   {
@@ -58,7 +58,7 @@ public:
     argumentsObject->destroy();
 
     if (index >= (DInt64)this->__vector.size()) 
-     throw DException("setItem : Index error");    
+      throw DException("setItem : Index error");    
 
     this->__vector[index] = item; 
  
@@ -67,8 +67,8 @@ public:
 
   DObject*  iterator(void)
   {
-    DObject* iterator = Destruct::instance().generate("DIterator", RealValue<DObject*>(this));
-    return (iterator);
+    std::string iteratorname = "DIterator" + std::string(DType(VectorTypeId).name());
+    return (Destruct::Destruct::instance().generate(iteratorname, RealValue<DObject*>(this)));
   }
 
   RealValue<DFunctionObject* >  _serializeText;

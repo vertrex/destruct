@@ -11,7 +11,7 @@ namespace Destruct {
 /**
  *  ClientObject Proxy object that handle transparent remote communication and let you use your object as a local object
  */
-ClientObject::ClientObject(NetworkStream& stream, DSerialize* serializer, uint64_t id, DStruct* dstruct) : DObject(*dstruct->newObject()), __id(id), __networkStream(stream), __serializer(serializer), __object(dstruct->newObject())
+ClientObject::ClientObject(NetworkStream& stream, DSerialize* serializer, uint64_t id, DStruct* dstruct) : DObject(dstruct, RealValue<DObject*>(DNone)), __id(id), __networkStream(stream), __serializer(serializer)
 {
   //this->init(this);
 }
@@ -70,12 +70,13 @@ void ClientObject::setValue(std::string const& name, DValue const &v)
 DValue ClientObject::call(std::string const& name, DValue const &args)
 {
   DType  dtype = this->instanceOf()->attribute(name).type();
-  if (name == "serializeText")
-  {
-    BaseValue *b = DObject::getBaseValue(this->__object, this->instanceOf()->findAttribute(name));
-    DValue v = b->getFinal().get<DFunctionObject* >()->call(args); 
-    return RealValue<DObject*>(DNone);
-  }
+  //if (name == "serializeText")
+  //{
+    //..  newObject()
+    //BaseValue *b = DObject::getBaseValue(this->__object, this->instanceOf()->findAttribute(name));
+    //DValue v = b->getFinal().get<DFunctionObject* >()->call(args); 
+    //return RealValue<DObject*>(DNone);
+  //}
 
   this->__networkStream.write(std::string("call"));
   this->__networkStream.write(this->__id);
@@ -129,7 +130,7 @@ DObject* ClientObject::clone() const
 BaseValue* ClientObject::getBaseValue(size_t index)
 {
   std::cout << "get base value " << std::endl;
-  return (NULL); //XXX  
+  return (NULL); 
 }
 
 

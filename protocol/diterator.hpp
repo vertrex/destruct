@@ -7,7 +7,9 @@
  *  next(), first(), isDone()  
  */ 
 
-#include "protocol/dcppmutable.hpp"
+//#include "protocol/dcppmutable.hpp"
+#include "protocol/dcppobject.hpp"
+#include "protocol/dcontainer.hpp"
 
 class DObject;
 class DValue; 
@@ -15,33 +17,18 @@ class DValue;
 namespace Destruct
 {
 
-class DIterator : public DCppMutable<DIterator>
+template <typename ValueType, DType::Type_t ValueTypeId >
+class DIterator : public  DCppObject<DIterator<ValueType, ValueTypeId> >// DCppMutable<DIterator>
 {
 public:
-  DIterator(DValue const& args) : DCppMutable(new DMutableStruct(NULL, "DIterator", DIterator::newObject, DIterator::ownAttributeBegin(), DIterator::ownAttributeEnd()), args), index(0), container(NULL) //DObject None ? 
+  DIterator(DStruct* dstruct, DValue const& args) : DCppObject<DIterator<ValueType, ValueTypeId> >(dstruct, args), index(0), container(args.get<DObject*>())
   {
     this->init(); //must be constructed to init 
-
-    DObject* ocontainer = args.get<DObject*>(); //ref added dion;t destriy ut
-    this->container = ocontainer; //ref already added
-    DAttribute attr = ocontainer->instanceOf()->attribute("get"); //
-    this->__struct->replaceAttribute(5, DAttribute(attr.type().getReturnType(), "currentItem", DType::DNoneType));
-    this->index = 0;
   }
 
-  DIterator(DMutableStruct* dstruct, DValue const& args) : DCppMutable(dstruct, args), index(0), container(NULL)
+  DIterator(const DIterator& copy) : DCppObject<DIterator<ValueType, ValueTypeId > >(copy), index(copy.index), container(copy.container)
   {
-    this->init(); //must be constructed to init 
-
-    DObject* ocontainer = args.get<DObject*>(); //ref added dion;t destriy ut
-    this->container = ocontainer; //ref already added
-    DAttribute attr = ocontainer->instanceOf()->attribute("get"); //
-    this->__struct->replaceAttribute(5, DAttribute(attr.type().getReturnType(), "currentItem", DType::DNoneType));
-    this->index = 0;
-  }
-
-  DIterator(const DIterator& copy) : DCppMutable(copy), index(0), container(NULL)
-  {
+    std::cout << "ITERATOR COPY" << std::endl;
     this->init();
   }
 
@@ -49,6 +36,53 @@ public:
   {
   }
 
+  void  next(void)
+  {
+    this->index = this->index + 1;
+  }
+
+  void  first(void)
+  {
+    this->index = 0;
+  }
+
+  DValue        isDone(void)
+  {
+    if (this->container) // !DNone ? 
+    {
+      DValue count;
+      DContainer* dcontainer = dynamic_cast<DContainer*>((DObject*)this->container);
+      if (dcontainer)
+      {
+        DFunctionObject* size = dcontainer->_size;  
+        count = size->call(RealValue<DObject*>(DNone));
+      }
+      else
+        count = ((DObject*)this->container)->call("size");
+
+      if (this->index < count.get<DUInt64>())
+        return (RealValue<DInt8>(0));
+    }
+    else
+      throw DException("DIterator::isDone have no container to iterate on.");
+    return (RealValue<DInt8>(1));
+  }
+
+  DValue currentItem(void)
+  {
+    if (this->container) // !DNone ?
+    {
+      DContainer* dcontainer = dynamic_cast<DContainer*>((DObject*)this->container);
+      if (dcontainer)
+      {
+        DFunctionObject* get = dcontainer->_get;
+        return (get->call(RealValue<DUInt64>(this->index)));
+      }
+      else
+        return (((DObject*)this->container)->call("get", RealValue<DUInt64>(this->index)));
+    }
+    throw DException("DIterator::currentItem container is not set.\n");
+  }
 
   RealValue<DUInt64>          index;
   RealValue<DObject*>         container;
@@ -57,14 +91,10 @@ public:
   RealValue<DFunctionObject*> _isDone;
   RealValue<DFunctionObject*> _currentItem;
 
-  void                        next(void);
-  void                        first(void);
-  DInt8                       isDone(void);
-  DValue                      currentItem(void);
 
-/*
- * DStruct declaration
- */
+  /*
+   * DStruct declaration
+   */
   static size_t         ownAttributeCount()
   {
     return (6);
@@ -79,7 +109,7 @@ public:
        DAttribute(DType::DNoneType, "nextItem", DType::DNoneType), 
        DAttribute(DType::DNoneType, "first", DType::DNoneType),
        DAttribute(DType::DInt8Type, "isDone", DType::DNoneType),
-       DAttribute(DType::DUnknownType, "currentItem",  DType::DNoneType),
+       DAttribute(ValueTypeId, "currentItem",  DType::DNoneType),
      };
      return (attributes);
   }

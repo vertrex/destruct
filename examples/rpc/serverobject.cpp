@@ -20,7 +20,6 @@ void    ServerObject::setValue(void)
   Destruct::DValue value = this->__serializer->deserialize(this->__networkStream, object->instanceOf()->attribute(name).type().getType());
 
   object->setValue(name, value);
-  //std::cout << object->instanceOf()->name() << ".setValue(\"" << name  <<  "\", " << value.asUnicodeString() << ")" << std::endl;
 }
 
 void    ServerObject::getValue(void)
@@ -38,7 +37,6 @@ void    ServerObject::getValue(void)
   else
     this->__serializer->serialize(this->__networkStream, value, type.getType());
   this->__networkStream.flush(); 
-  //std::cout << object->instanceOf()->name() << ".getValue(\"" << name << "\") => " << value.asUnicodeString() << std::endl;
 }
 
 void    ServerObject::call(void)
@@ -49,13 +47,11 @@ void    ServerObject::call(void)
   this->__networkStream.read(name);
 
   Destruct::DValue args = this->__serializer->deserialize(this->__networkStream, object->instanceOf()->attribute(name).type().getArgumentType());
-
   Destruct::DValue value = object->call(name, args); 
 
   DType type = object->instanceOf()->attribute(name).type();
   this->__serializer->serialize(this->__networkStream, value, type.getReturnType());
   this->__networkStream.flush(); 
-  //std::cout << object->instanceOf()->name() << ".call(\"" << name << "\", " << args.asUnicodeString() << ") => " << value.asUnicodeString() << std::endl;
 }
 
 void    ServerObject::call0(void)
@@ -70,7 +66,6 @@ void    ServerObject::call0(void)
   DType type = object->instanceOf()->attribute(name).type();
   this->__serializer->serialize(this->__networkStream, value, type.getReturnType());
   this->__networkStream.flush(); 
-  //std::cout << object->instanceOf()->name() << ".call(\"" << name << "\") => " << value.asUnicodeString() << std::endl;
 }
 
 void    ServerObject::functionCall(void)
@@ -83,23 +78,20 @@ void    ServerObject::functionCall(void)
         
   this->__serializer->serialize(this->__networkStream, value, object->returnType());
   this->__networkStream.flush(); 
-  //std::cout << "functionCall(" << args.asUnicodeString() << ") => " << value.asUnicodeString() << std::endl;
 }
 
 void    ServerObject::functionCall0(void)
 {
   this->__networkStream.read(&this->__id); 
   ServerFunctionObject* object = this->__functionObjectManager.object(this->__id);
+
   Destruct::DValue value = object->functionObject()->call(); 
          
   this->__serializer->serialize(this->__networkStream, value, object->returnType());
   this->__networkStream.flush(); 
-  //std::cout << "functionCall() => " << value.asUnicodeString() << std::endl;
 }
 
 NetworkStream&    ServerObject::networkStream(void)
 {
   return (this->__networkStream);
 }
-
-

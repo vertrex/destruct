@@ -42,7 +42,6 @@ private:
   uint64_t              __id;
   NetworkStream&        __networkStream;
   DSerialize*           __serializer;
-  DObject*              __object;
 };
 }
 #endif

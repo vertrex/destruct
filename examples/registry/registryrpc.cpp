@@ -54,8 +54,18 @@ void RegistryRPC::connect(std::string const& filePath, std::string const& addr, 
   DValue regfv = registry->call("open", RealValue<DUnicodeString>(filePath)); 
   DObject* regf = regfv.get<DObject*>();
   DObject* rootKey = regf->getValue("key").get<DObject*>();
+  //client.printKey(rootKey);
+  //return ;
 
-  client.printKey(rootKey);
+  DObject* subKeys = rootKey->getValue("subkeys").get<DObject*>();
+  DObject* subKeysList = subKeys->getValue("list").get<DObject*>();
+  DObject* iterator = subKeysList->call("iterator").get<DObject*>(); 
+  
+  for(; iterator->call("isDone").get<DInt8>() != 1; iterator->call("nextItem"))
+  {
+    DObject* subKey = iterator->call("currentItem").get<DObject*>();
+    std::cout << "subKey " << subKey->instanceOf()->name() << std::endl;
+  }
 }
 
 const std::string RegistryRPC::usage(void)

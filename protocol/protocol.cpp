@@ -26,6 +26,18 @@ typedef DVector<DUInt64,  DType::DUInt64Type>               DVectorUInt64;
 typedef DVector<DObject*, DType::DObjectType>               DVectorObject;
 typedef DVector<DUnicodeString, DType::DUnicodeStringType> DVectorString;
 
+typedef DIterator<DInt8,    DType::DInt8Type  >               DIteratorInt8;
+typedef DIterator<DUInt8,   DType::DUInt8Type >               DIteratorUInt8;
+typedef DIterator<DInt16,   DType::DInt16Type >               DIteratorInt16;
+typedef DIterator<DUInt16,  DType::DUInt16Type>               DIteratorUInt16;
+typedef DIterator<DInt32,   DType::DInt32Type >               DIteratorInt32;
+typedef DIterator<DUInt32,  DType::DUInt32Type>               DIteratorUInt32;
+typedef DIterator<DInt64,   DType::DInt64Type >               DIteratorInt64;
+typedef DIterator<DUInt64,  DType::DUInt64Type>               DIteratorUInt64;
+typedef DIterator<DObject*, DType::DObjectType>               DIteratorObject;
+typedef DIterator<DUnicodeString, DType::DUnicodeStringType> DIteratorString;
+
+
 Protocol::Protocol(Destruct* destruct)
 {
   this->__registerStruct(destruct);
@@ -34,7 +46,7 @@ Protocol::Protocol(Destruct* destruct)
 void Protocol::__registerStruct(Destruct* destruct)
 {
   destruct->registerDStruct(static_cast<DStruct*>(new DMutableStruct(NULL, "DMutable", DMutableObject::newObject)));
-  destruct->registerDStruct(makeNewDMutable<DIterator >("DIterator"));
+  //destruct->registerDStruct(makeNewDMutable<DIterator >("DIterator"));
 
   destruct->registerDStruct(makeNewDCpp<DVectorInt8 >("DVectorInt8"));
   destruct->registerDStruct(makeNewDCpp<DVectorUInt8 >("DVectorUInt8"));
@@ -48,6 +60,17 @@ void Protocol::__registerStruct(Destruct* destruct)
   destruct->registerDStruct(makeNewDCpp<DVectorString >("DVectorString"));
   destruct->registerDStruct(makeNewDCpp<DVectorObject >("DVectorObject"));
 
+  destruct->registerDStruct(makeNewDCpp<DIteratorInt8   >("DIteratorDInt8"));
+  destruct->registerDStruct(makeNewDCpp<DIteratorUInt8  >("DIteratorDUInt8"));
+  destruct->registerDStruct(makeNewDCpp<DIteratorInt16  >("DIteratorDInt16"));
+  destruct->registerDStruct(makeNewDCpp<DIteratorUInt16 >("DIteratorDUInt16"));
+  destruct->registerDStruct(makeNewDCpp<DIteratorInt32  >("DIteratorDInt32"));
+  destruct->registerDStruct(makeNewDCpp<DIteratorUInt32 >("DIteratorDUInt32"));
+  destruct->registerDStruct(makeNewDCpp<DIteratorInt64  >("DIteratorDInt64"));
+  destruct->registerDStruct(makeNewDCpp<DIteratorUInt64 >("DIteratorDUInt64"));
+  destruct->registerDStruct(makeNewDCpp<DIteratorString >("DIteratorDString"));
+  destruct->registerDStruct(makeNewDCpp<DIteratorObject >("DIteratorDObject"));
+
   destruct->registerDStruct(makeNewDCpp<DMap<DUnicodeString, DType::DUnicodeStringType,  DUnicodeString, DType::DUnicodeStringType > >("DMapString"));
   destruct->registerDStruct(makeNewDCpp<DMap<DObject*, DType::DObjectType,  DObject*, DType::DObjectType> >("DMapObject"));
   destruct->registerDStruct(makeNewDCpp<DMap<DUInt64,  DType::DUInt64Type,  DObject*, DType::DObjectType> >("DMapUInt64Object"));
@@ -56,7 +79,6 @@ void Protocol::__registerStruct(Destruct* destruct)
   destruct->registerDStruct(makeNewDCpp<DStream >("DStream"));
   destruct->registerDStruct(makeNewDCpp<DStreamCout >("DStreamCout"));
   destruct->registerDStruct(makeNewDCpp<DStreamString >("DStreamString"));
-
   //destruct->registerDStruct(makeNewDCpp<DSerializeXML>("DSerializeBinary"));
 }
 

@@ -134,7 +134,6 @@ dexception.cpp
 protocol/protocol.cpp
 protocol/dmutablestruct.cpp
 protocol/dmutableobject.cpp
-protocol/diterator.cpp
 protocol/dserialize.cpp
 protocol/dstream.cpp
 )

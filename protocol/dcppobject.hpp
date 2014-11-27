@@ -77,10 +77,19 @@ public:
   {
     DValue v = this->__members[idx].value(static_cast<CppClass* >(this));
     DFunctionObject* fo = v.get<DFunctionObject*>();
-    DValue res = fo->call(args);
-    fo->destroy();
-    return (res);
+
+    try 
+    {
+      DValue res = fo->call(args);
+      fo->destroy();
+      return (res);
+    }
+    catch (DException const& exception)
+    {
+      throw DException(this->instanceOf()->name() + "::" + this->instanceOf()->attribute(idx).name() + "("+ args.asUnicodeString() + ") Error : \n" + exception.error());
+    }
   }
+
 protected:
   virtual BaseValue* getBaseValue(size_t idx)
   {
