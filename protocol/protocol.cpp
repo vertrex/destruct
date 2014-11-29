@@ -74,9 +74,16 @@ void Protocol::__registerStruct(Destruct* destruct)
   destruct->registerDStruct(makeNewDCpp<DIteratorObject >("DIteratorDObject"));
 
   destruct->registerDStruct(makeNewDCpp<DMap<DUnicodeString, DType::DUnicodeStringType,  DUnicodeString, DType::DUnicodeStringType > >("DMapString"));
+  destruct->registerDStruct(makeNewDCpp<DMapIterator<DUnicodeString, DType::DUnicodeStringType,  DUnicodeString, DType::DUnicodeStringType > >("DMapIteratorDUnicodeStringDUnicodeString"));
+  destruct->registerDStruct(makeNewDCpp<DMapItem<DUnicodeString, DType::DUnicodeStringType,  DUnicodeString, DType::DUnicodeStringType > >("DMapItemDUnicodeStringDUnicodeString"));
+
   destruct->registerDStruct(makeNewDCpp<DMap<DObject*, DType::DObjectType,  DObject*, DType::DObjectType> >("DMapObject"));
+  destruct->registerDStruct(makeNewDCpp<DMapIterator<DObject*, DType::DObjectType,  DObject*, DType::DObjectType> >("DMapIteratorDObjectDObject"));
+  destruct->registerDStruct(makeNewDCpp<DMapItem<DObject*, DType::DObjectType,  DObject*, DType::DObjectType> >("DMapItemDObjectDObject"));
+
   destruct->registerDStruct(makeNewDCpp<DMap<DUInt64,  DType::DUInt64Type,  DObject*, DType::DObjectType> >("DMapUInt64Object"));
-  //destruct->registerDStruct(makeNewDMutable<DMapIterator >("DMapIterator"));
+  destruct->registerDStruct(makeNewDCpp<DMapIterator<DUInt64,  DType::DUInt64Type,  DObject*, DType::DObjectType> >("DMapIteratorDUInt64DObject"));
+  destruct->registerDStruct(makeNewDCpp<DMapItem<DUInt64,  DType::DUInt64Type,  DObject*, DType::DObjectType> >("DMapItemDUInt64DObject"));
   
   destruct->registerDStruct(makeNewDCpp<DStream >("DStream"));
   destruct->registerDStruct(makeNewDCpp<DStreamCout >("DStreamCout"));

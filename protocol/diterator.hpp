@@ -18,17 +18,16 @@ namespace Destruct
 {
 
 template <typename ValueType, DType::Type_t ValueTypeId >
-class DIterator : public  DCppObject<DIterator<ValueType, ValueTypeId> >// DCppMutable<DIterator>
+class DIterator : public  DCppObject<DIterator<ValueType, ValueTypeId> >
 {
 public:
   DIterator(DStruct* dstruct, DValue const& args) : DCppObject<DIterator<ValueType, ValueTypeId> >(dstruct, args), index(0), container(args.get<DObject*>())
   {
-    this->init(); //must be constructed to init 
+    this->init();
   }
 
   DIterator(const DIterator& copy) : DCppObject<DIterator<ValueType, ValueTypeId > >(copy), index(copy.index), container(copy.container)
   {
-    std::cout << "ITERATOR COPY" << std::endl;
     this->init();
   }
 
@@ -48,7 +47,7 @@ public:
 
   DValue        isDone(void)
   {
-    if (this->container) // !DNone ? 
+    if (this->container)
     {
       DValue count;
       DContainer* dcontainer = dynamic_cast<DContainer*>((DObject*)this->container);
@@ -70,7 +69,7 @@ public:
 
   DValue currentItem(void)
   {
-    if (this->container) // !DNone ?
+    if (this->container)
     {
       DContainer* dcontainer = dynamic_cast<DContainer*>((DObject*)this->container);
       if (dcontainer)
@@ -138,7 +137,6 @@ public:
     return (memberBegin() + ownAttributeCount()); 
   }
 };
-
 
 }
 

@@ -3,8 +3,6 @@
 
 #include <map>
 
-#include "dmapiterator.hpp"
-
 namespace Destruct
 {
 
@@ -20,14 +18,11 @@ public:
   DMap(DStruct* dstruct, DValue const& args) : DCppObject<DMap<KeyType, KeyTypeId, ValueType, ValueTypeId> >(dstruct, args)
   {
     this->init();
-    //std::string name = "DMapItem" + DType(KeyTypeId).name() + DType(ValueTypeId).name(); // for deserializaion ?
-    this->__itemStruct = makeNewDCpp<DMapItem<KeyType, KeyTypeId, ValueType, ValueTypeId> >("DMapItem");
   };
 
   DMap(const DMapType& copy) : DCppObject<DMap<KeyType, KeyTypeId, ValueType, ValueTypeId> >(copy),  __map(copy.__map) 
   {
     this->init();
-    this->__itemStruct = makeNewDCpp<DMapItem<KeyType, KeyTypeId, ValueType, ValueTypeId> >("DMapItem");
   }
 
   ~DMap()
@@ -35,7 +30,7 @@ public:
     delete this->__itemStruct;
   }
 
-  DValue  get(DValue const& args)
+  DValue      get(DValue const& args)
   {
     KeyType key = args.get<KeyType>();  
 
@@ -47,7 +42,7 @@ public:
     throw DException(error);
   }
 
-  DUInt64   size(void)
+  DUInt64     size(void)
   {
     return (this->__map.size());
   }
@@ -55,7 +50,7 @@ public:
   DObject*    setItem(DValue const& args)
   {
     DObject*  argumentsObject = args.get<DObject*>();
-    KeyType   key = argumentsObject->getValue("index").get<KeyType>(); //XXX KEY KEY 
+    KeyType   key = argumentsObject->getValue("index").get<KeyType>();
     ValueType value = argumentsObject->getValue("value").get<ValueType>();
 
     this->__map[key] = value;
@@ -65,22 +60,24 @@ public:
 
   DObject*    iterator(void)
   {
-    DStruct* dstruct = makeNewDCpp<DMapIterator<KeyType, KeyTypeId, ValueType,  ValueTypeId > >("DMapIterator");
-    DObject* iterator = dstruct->newObject(RealValue<DObject*>(this));
-   
-    DMapIterator<KeyType, KeyTypeId, ValueType, ValueTypeId>* diterator = static_cast<DMapIterator<KeyType, KeyTypeId, ValueType, ValueTypeId> *>(iterator);
-
-    diterator->begin = this->__map.begin();
-    diterator->end = this->__map.end();
-    diterator->first();
-
-    return (iterator);
+    std::string structName = "DMapIterator" + DType(KeyTypeId).name() + DType(ValueTypeId).name();
+    return (Destruct::Destruct::instance().generate(structName, RealValue<DObject*>(this)));
   }
 
-  DObject* newItem(void)
+  DObject*    newItem(void)
   {
-//    return (new DMapItem<a,b,c,d>(const dstruct, DNone);
-    return this->__itemStruct->newObject(); //newItem(key, value) ???
+    std::string structName = "DMapItem" + DType(KeyTypeId).name() + DType(ValueTypeId).name();
+    return (Destruct::Destruct::instance().generate(structName, RealValue<DObject*>(this)));
+  }
+
+  iteratorType begin(void)
+  {
+    return (this->__map.begin());
+  }
+
+  iteratorType end(void)
+  {
+    return (this->__map.end());
   }
 
   /*
@@ -129,7 +126,7 @@ public:
 private:
   DStruct*                       __itemStruct;
   RealValue<DFunctionObject*>    __newItem;
-  std::map<KeyType, ValueType>   __map; //XXX stocker des ref value si on veut que ca soit ref count ... les objet tous ca ... 
+  std::map<KeyType, ValueType>   __map;
 };
 
 }

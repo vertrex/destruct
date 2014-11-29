@@ -118,7 +118,7 @@ public:
     return (memberBegin() + ownAttributeCount());
   } 
 private:
-  std::vector<VectorType>   __vector; //XXX DValue / RealValue<VectorType> ? (refcount) 
+  std::vector<VectorType>   __vector;
 };
 
 
@@ -139,7 +139,7 @@ inline DVector<DObject*, DType::DObjectType >::~DVector()
 template<>
 inline DUInt64 DVector<DObject*, DType::DObjectType >::push(DValue const& args)
 {
-  DObject* object = args.get<DObject*>();// add 1 ref :) 
+  DObject* object = args.get<DObject*>();// add 1 ref
   this->__vector.push_back(object);
   return (this->__vector.size() - 1);
 }
