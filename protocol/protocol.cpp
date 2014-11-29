@@ -12,19 +12,21 @@
 #include "protocol/dmap.hpp"
 #include "protocol/dmapiterator.hpp"
 #include "protocol/dstream.hpp"
+#include "protocol/debugobject.hpp"
+#include "protocol/recursivedebugobject.hpp"
 
 namespace Destruct
 {
-typedef DVector<DInt8,    DType::DInt8Type  >               DVectorInt8;
-typedef DVector<DUInt8,   DType::DUInt8Type >               DVectorUInt8;
-typedef DVector<DInt16,   DType::DInt16Type >               DVectorInt16;
-typedef DVector<DUInt16,  DType::DUInt16Type>               DVectorUInt16;
-typedef DVector<DInt32,   DType::DInt32Type >               DVectorInt32;
-typedef DVector<DUInt32,  DType::DUInt32Type>               DVectorUInt32;
-typedef DVector<DInt64,   DType::DInt64Type >               DVectorInt64;
-typedef DVector<DUInt64,  DType::DUInt64Type>               DVectorUInt64;
-typedef DVector<DObject*, DType::DObjectType>               DVectorObject;
-typedef DVector<DUnicodeString, DType::DUnicodeStringType> DVectorString;
+typedef DVector<DInt8,    DType::DInt8Type  >                 DVectorInt8;
+typedef DVector<DUInt8,   DType::DUInt8Type >                 DVectorUInt8;
+typedef DVector<DInt16,   DType::DInt16Type >                 DVectorInt16;
+typedef DVector<DUInt16,  DType::DUInt16Type>                 DVectorUInt16;
+typedef DVector<DInt32,   DType::DInt32Type >                 DVectorInt32;
+typedef DVector<DUInt32,  DType::DUInt32Type>                 DVectorUInt32;
+typedef DVector<DInt64,   DType::DInt64Type >                 DVectorInt64;
+typedef DVector<DUInt64,  DType::DUInt64Type>                 DVectorUInt64;
+typedef DVector<DObject*, DType::DObjectType>                 DVectorObject;
+typedef DVector<DUnicodeString, DType::DUnicodeStringType>    DVectorString;
 
 typedef DIterator<DInt8,    DType::DInt8Type  >               DIteratorInt8;
 typedef DIterator<DUInt8,   DType::DUInt8Type >               DIteratorUInt8;
@@ -35,7 +37,7 @@ typedef DIterator<DUInt32,  DType::DUInt32Type>               DIteratorUInt32;
 typedef DIterator<DInt64,   DType::DInt64Type >               DIteratorInt64;
 typedef DIterator<DUInt64,  DType::DUInt64Type>               DIteratorUInt64;
 typedef DIterator<DObject*, DType::DObjectType>               DIteratorObject;
-typedef DIterator<DUnicodeString, DType::DUnicodeStringType> DIteratorString;
+typedef DIterator<DUnicodeString, DType::DUnicodeStringType>  DIteratorString;
 
 
 Protocol::Protocol(Destruct* destruct)
@@ -80,6 +82,9 @@ void Protocol::__registerStruct(Destruct* destruct)
   destruct->registerDStruct(makeNewDCpp<DStreamCout >("DStreamCout"));
   destruct->registerDStruct(makeNewDCpp<DStreamString >("DStreamString"));
   //destruct->registerDStruct(makeNewDCpp<DSerializeXML>("DSerializeBinary"));
+
+  destruct->registerDStruct(new DStruct(NULL, "DebugObject",  DebugObject::newObject));
+  destruct->registerDStruct(new DStruct(NULL, "RecursiveDebugObject",  RecursiveDebugObject::newObject));
 }
 
 }

@@ -9,7 +9,7 @@ from _destruct import *
 
 COUNT = 10
 #COUNT = 10**6
-COUNT = 10**3
+#COUNT = 10**3
 
 def timeFunc(func, args):
    a = time.time()
@@ -91,9 +91,13 @@ class PythonDVector(DObject):
   def size(self):
       return len(self.l)
 
-class PyReverseIterator(DObject):
-  def __init__(self, args):
-     DObject.__init__(self, "DIterator", args)
+class PyReverseIterator(DObject): #XXX test on map too 
+  def __init__(self, vector):
+     struct = vector.instanceOf()
+     index = struct.findAttribute("get")
+     attribute = struct.attribute(index)
+     print attribute
+     DObject.__init__(self, "DIterator" + DType(attribute.dtype().returnType()), vector)
 
   def currentItem(self):
     if self.index < self.container.size():
@@ -265,10 +269,11 @@ def pymapobject():
   mo[mo] = mo
   
   for i in mo:
-    print i, mo[i]
-    for x in mo[i]:
-      print x, mo[i][x]
-
+    print i.index, i.value
+    #print i, mo[i]
+    for x in i.value:
+      print x.index, x.value #rename index to key XXX 
+#
   print type(mo)
 
 def maperror():
@@ -295,7 +300,7 @@ dvectorstring()
 simplevectorstring()
 pythonvector()
 simplevectorint()
-reverseiterate()
+#reverseiterate()
 setvector()
 pushint()
 tryerror()
@@ -325,22 +330,22 @@ class DStreamArgument(DObject):
     self.filePath = filePath 
     self.input = input
 
-stream = PyDStream(DStreamArgument("pyfilearg", 1))
-vector = PySimpleDVectorString()
-for i in range(10000):
-  vector.push(str(i))
-
-print 'deserialization of map of ' +str(len(vector)) + ' item'
-
-serializer = DSerialize("XML")
-serializer.serialize(stream, vector)
-serializer.serialize(PyDStreamCout(), vector)
-#serializer = DSerialize("Text")
-
-#stream = PyDStream(DStreamArgument("deserialieztext", 1))
+#stream = PyDStream(DStreamArgument("pyfilearg", 1))
+#vector = PySimpleDVectorString()
+#for i in range(10000):
+  #vector.push(str(i))
+#
+#print 'deserialization of map of ' +str(len(vector)) + ' item'
+#
+#serializer = DSerialize("XML")
 #serializer.serialize(stream, vector)
-#serializer.serialize(PyDStream(), vector)
-
+#serializer.serialize(PyDStreamCout(), vector)
+##serializer = DSerialize("Text")
+#
+##stream = PyDStream(DStreamArgument("deserialieztext", 1))
+##serializer.serialize(stream, vector)
+##serializer.serialize(PyDStream(), vector)
+#
 def serialize(self):
   serializer = DSerialize("XML")
 
@@ -353,4 +358,4 @@ def serialize(self):
     print i
     serializer.serialize(stream, vector)
 
-timeFunc(serialize, None)
+#timeFunc(serialize, None)

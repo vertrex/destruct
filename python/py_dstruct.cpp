@@ -100,7 +100,20 @@ PyObject* PyDStruct::addAttribute(PyDStruct::DPyObject* self, PyObject* args, Py
 
 PyObject* PyDStruct::newObject(PyDStruct::DPyObject* self, PyObject* args, PyObject* kwds)
 {
-  Destruct::DObject*      dobject = self->pimpl->newObject();
+  Destruct::DObject* dobject = NULL;
+  PyObject* argsObject = NULL;
+
+  if (PyArg_ParseTuple(args, "O", &argsObject))
+  {
+    Destruct::DValue value = pyObjectToDValue(argsObject); //optimize -> add init in dstruct with description of arg or optimize passing to dvalue in python with table pythonobject->type dtype::type
+    dobject = self->pimpl->newObject(value);
+  }
+  else
+  {
+    PyErr_Clear();
+    dobject = self->pimpl->newObject(); 
+  }
+ 
   CHECK_ALLOC(dobject)
 
   PyDObject::DPyObject*   dobjectObject = (PyDObject::DPyObject*)_PyObject_New((PyTypeObject*)PyDObject::pyType);
@@ -116,7 +129,7 @@ PyMethodDef PyDStruct::pyMethods[] =
   {"findAttribute", (PyCFunction)findAttribute, METH_VARARGS, "Search an index of an DAttribute object."},
   {"attribute", (PyCFunction)attribute, METH_VARARGS, "Search and return an DAttribute object.Return None if not found"},
   {"addAttribute", (PyCFunction)addAttribute, METH_VARARGS, "Add an attribute to the struct."},
-  {"newObject", (PyCFunction)newObject, METH_VARARGS, "Return a DObject construct from this definition."},
+  {"newObject", (PyCFunction)newObject, METH_VARARGS, "Return a DObject from this definition."},
   {NULL}
 };
 

@@ -21,9 +21,9 @@ DSimpleObject::DSimpleObject(DSimpleObject const & rhs) : DDynamicObject(rhs)
   this->copy(this, rhs);
 }
 
-DObject* DSimpleObject::newObject(DStruct * myClass, DValue const& args)
+DObject* DSimpleObject::newObject(DStruct * dstruct, DValue const& args)
 {
-  return (new DSimpleObject(myClass, args));
+  return (new DSimpleObject(dstruct, args));
 }
 
 DObject* DSimpleObject::clone() const

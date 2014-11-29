@@ -43,7 +43,7 @@ public:
   {
     static DAttribute  attributes[] = 
     {
-      DAttribute(KeyTypeId, "key"), 
+      DAttribute(KeyTypeId, "index"), 
       DAttribute(ValueTypeId,"value"),
     };
     return (attributes);
@@ -118,7 +118,7 @@ public:
   DValue                        currentItem(void)
   {
     DObject* item = this->__itemStruct->newObject();
-    item->setValue("key", RealValue<KeyType>(this->it->first));
+    item->setValue("index", RealValue<KeyType>(this->it->first));
     item->setValue("value", RealValue<ValueType>(this->it->second));
 
     return (RealValue<DObject*>(item));

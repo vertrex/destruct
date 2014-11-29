@@ -19,6 +19,7 @@
 #include "regf.hpp"
 #include "key.hpp"
 #include "value.hpp"
+#include "protocol/debugobject.hpp"
 
 #include "streamvfile.hpp"
 
@@ -59,6 +60,8 @@ DValue Registry::open(DValue const& args)
   Regf* regf = new Regf(this->__destruct.find("Regf"), RealValue<DObject*>(DNone));
   StreamFile* streamVFile = new StreamFile(this->__destruct.find("StreamFile"), args);
 
+  
+
   DSerialize* serializer = DSerializers::to("Raw");
   serializer->deserialize(*streamVFile, regf);
 
@@ -67,10 +70,13 @@ DValue Registry::open(DValue const& args)
   else
     std::cout << "Registry file is invalid" << std::endl;
 
-  RegistryKey* key = new RegistryKey(this->__destruct.find("RegistryKey"), RealValue<DObject*>(DNone));
+  RegistryKey* rkey = new RegistryKey(this->__destruct.find("RegistryKey"), RealValue<DObject*>(DNone));
+  //DObject* key = this->__destruct.generate("RecursiveDebugObject", RealValue<DObject*>(rkey));
+  DObject* key = rkey;
+
   DInt64 x = 0x1000 + regf->keyrecord;
   streamVFile->seek(x);
-  serializer->deserialize(*streamVFile, key);
+  serializer->deserialize(*streamVFile, rkey);
   regf->key = key;
   delete serializer;
 

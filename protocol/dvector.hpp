@@ -58,7 +58,7 @@ public:
     argumentsObject->destroy();
 
     if (index >= (DInt64)this->__vector.size()) 
-      throw DException("setItem : Index error");    
+     throw DException("setItem : Index error");    
 
     this->__vector[index] = item; 
  

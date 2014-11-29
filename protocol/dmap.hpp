@@ -55,7 +55,7 @@ public:
   DObject*    setItem(DValue const& args)
   {
     DObject*  argumentsObject = args.get<DObject*>();
-    KeyType   key = argumentsObject->getValue("key").get<KeyType>(); //XXX KEY KEY 
+    KeyType   key = argumentsObject->getValue("index").get<KeyType>(); //XXX KEY KEY 
     ValueType value = argumentsObject->getValue("value").get<ValueType>();
 
     this->__map[key] = value;
