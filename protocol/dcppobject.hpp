@@ -123,6 +123,5 @@ void  registerDCpp(DUnicodeString const& name)
   Destruct::instance().registerDStruct(new DStruct(NULL, name, DCppObject<CppClass>::newObject, CppClass::ownAttributeBegin(), CppClass::ownAttributeEnd()));
 }
 
-
 }
 #endif

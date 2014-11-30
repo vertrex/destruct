@@ -248,7 +248,7 @@ void DestructTest::createFuncClass(void)
 
 DObject*        DestructTest::createIntVector(void)
 {
-  typedef DVector<DInt32, DType::DInt32Type> DVectorInt;
+        //typedef DVector<DInt32, DType::DInt32Type> DVectorInt;
 //XXX pas sur la stack pour python donc faut le delete !
 
 //DVectorInt* dvectori = new DVectorInt;
