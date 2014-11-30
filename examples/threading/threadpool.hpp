@@ -10,13 +10,56 @@
 
 using namespace Destruct;
 
-class Task
+template<typename ArgumentType, DType::Type_t ArgumentTypeId>
+class Task : public DCppObject<Task< ArgumentType, ArgumentTypeId> >
 {
 public:
-  Task(DFunctionObject* functionObject, DValue const& args);
-private:
-  DFunctionObject*      __functionObject;
-  DValue                __args;
+  Task(DStruct* dstruct, DValue const& args) : DCppObject<Task< ArgumentType, ArgumentTypeId> >(dstruct, args)
+  {
+    this->init();
+  }
+
+  RealValue<DFunctionObject* >     function;
+  RealValue<ArgumentType >         argument;
+
+  /**
+   *  DStruct declaration
+   */
+public:
+  static size_t ownAttributeCount()
+  {
+    return (2);
+  }
+
+  static DAttribute* ownAttributeBegin()
+  {
+    static DAttribute  attributes[] = 
+    {
+      DAttribute(DType::DUInt8Type,  "function"),
+      DAttribute(ArgumentTypeId,   "argument"),
+    };
+    return (attributes);
+  }
+
+  static DPointer<Task>* memberBegin()
+  {
+    static DPointer<Task> memberPointer[] = 
+    {
+      DPointer<Task>(&Task::function),
+      DPointer<Task>(&Task::argument),
+    };
+    return (memberPointer);
+  }
+
+  static DAttribute* ownAttributeEnd()
+  {
+    return (ownAttributeBegin() + ownAttributeCount());
+  }
+
+  static DPointer<Task>*  memberEnd()
+  {
+    return (memberBegin() + ownAttributeCount());
+  } 
 };
 
 class Queue : public DCppObject<Queue> 
@@ -37,7 +80,7 @@ public:
 protected:
   ~Queue();
 private:
-  std::queue<DFunctionObject* > __queue;
+  std::queue<DValue > __queue;
 
   /**
    *  DStruct declaration

@@ -15,12 +15,15 @@ void *Worker(void *dobject)
 
   while (1)
   {
-    DValue task = workQueue->dequeue(); //get
-  
-    DFunctionObject* function = task.get<DFunctionObject*>();
-    DValue result = function->call(RealValue<DUInt64>(1));
-    std::cout << task.asUnicodeString() 
-    << " => " << result.asUnicodeString() << std::endl; 
+    DValue object = workQueue->dequeue(); //get
+    DObject* task = object.get<DObject*>();
+
+    DFunctionObject* function = task->getValue("function").get<DFunctionObject*>();
+    DValue args = task->getValue("argument");
+
+    DValue result = function->call(args);
+    //std::cout << object.asUnicodeString() 
+    //<< " => " << result.asUnicodeString() << std::endl; 
     workQueue->deref();
   }
   std::cout << "worker exit " << std::endl;
@@ -112,9 +115,7 @@ void    Queue::enqueue(DValue const& args) //DFunctionObject*, DValue const& arg
 { 
   pthread_mutex_lock(&m_mutex);
   this->__itemCount++;
-  DFunctionObject* function = args.get<DFunctionObject*>();
-  function->addRef();
-  this->__queue.push(function);
+  this->__queue.push(args);
   pthread_cond_signal(&m_condv);
   pthread_mutex_unlock(&m_mutex);
 }
@@ -125,16 +126,16 @@ DValue  Queue::dequeue(void)
   while (this->__queue.empty()) 
     pthread_cond_wait(&m_condv, &m_mutex);
           
-  DFunctionObject* functionObject = this->__queue.front();
+  DValue object = this->__queue.front();
   this->__queue.pop();
   pthread_mutex_unlock(&m_mutex);
   
-  return (RealValue<DFunctionObject*>(functionObject));
+  return (object);
 }
 
 /**
  * Task
  */
-Task::Task(DFunctionObject* functionObject, DValue const& args) : __functionObject(functionObject), __args(args)
-{
-}
+//Task::Task(DFunctionObject* functionObject, DValue const& args) : __functionObject(functionObject), __args(args)
+//{
+//}

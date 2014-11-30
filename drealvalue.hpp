@@ -49,8 +49,8 @@ public:
   DUnicodeString asUnicodeString() const
   {
     std::ostringstream os;
-    os << std::hex << this->__val; //set as hex in option ? 
-    //os << this->__val;
+    //os << std::hex << this->__val; //set as hex in option ? 
+    os << this->__val;
     return (os.str());
   }
 
