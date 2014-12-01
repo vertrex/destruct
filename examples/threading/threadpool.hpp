@@ -10,33 +10,34 @@
 
 using namespace Destruct;
 
-template<typename ArgumentType, DType::Type_t ArgumentTypeId>
-class Task : public DCppObject<Task< ArgumentType, ArgumentTypeId> >
+template<typename ArgumentType, DType::Type_t ArgumentTypeId, typename ResultType, DType::Type_t ResultTypeId >
+class Task : public DCppObject<Task< ArgumentType, ArgumentTypeId, ResultType, ResultTypeId > >
 {
 public:
-  Task(DStruct* dstruct, DValue const& args) : DCppObject<Task< ArgumentType, ArgumentTypeId> >(dstruct, args)
+  Task(DStruct* dstruct, DValue const& args) : DCppObject<Task< ArgumentType, ArgumentTypeId, ResultType, ResultTypeId > >(dstruct, args)
   {
     this->init();
   }
 
   RealValue<DFunctionObject* >     function;
   RealValue<ArgumentType >         argument;
-
+  RealValue<ResultType >           result;
   /**
    *  DStruct declaration
    */
 public:
   static size_t ownAttributeCount()
   {
-    return (2);
+    return (3);
   }
 
   static DAttribute* ownAttributeBegin()
   {
     static DAttribute  attributes[] = 
     {
-      DAttribute(DType::DUInt8Type,  "function"),
+      DAttribute(DType::DMethodType,  "function"),
       DAttribute(ArgumentTypeId,   "argument"),
+      DAttribute(ResultTypeId,   "result"),
     };
     return (attributes);
   }
@@ -47,6 +48,7 @@ public:
     {
       DPointer<Task>(&Task::function),
       DPointer<Task>(&Task::argument),
+      DPointer<Task>(&Task::result),
     };
     return (memberPointer);
   }
@@ -71,16 +73,17 @@ public:
   void          enqueue(DValue const& args);
   DValue        dequeue(void);
   DValue        empty(void);
-  void          deref(void);
-  void          join(void);
+  void          addResult(DValue const& args);
+  DValue        join(void);
 
   uint64_t      __itemCount;
 
-  RealValue<DFunctionObject*> _enqueue, _dequeue, _empty, _deref, _join;
+  RealValue<DFunctionObject*> _enqueue, _dequeue, _empty, _addResult, _join;
 protected:
   ~Queue();
 private:
   std::queue<DValue > __queue;
+  std::queue<DValue > __result;
 
   /**
    *  DStruct declaration
@@ -98,8 +101,8 @@ public:
       DAttribute(DType::DUInt8Type,  "empty",   DType::DNoneType),
       DAttribute(DType::DNoneType,   "enqueue", DType::DObjectType),
       DAttribute(DType::DObjectType, "dequeue", DType::DNoneType),
-      DAttribute(DType::DNoneType, "deref", DType::DNoneType),
-      DAttribute(DType::DNoneType, "join", DType::DNoneType),
+      DAttribute(DType::DNoneType, "addResult", DType::DUnknownType),
+      DAttribute(DType::DObjectType, "join", DType::DNoneType),
     };
     return (attributes);
   }
@@ -111,7 +114,7 @@ public:
       DPointer<Queue>(&Queue::_empty,   &Queue::empty),
       DPointer<Queue>(&Queue::_enqueue, &Queue::enqueue),
       DPointer<Queue>(&Queue::_dequeue, &Queue::dequeue),
-      DPointer<Queue>(&Queue::_deref, &Queue::deref),
+      DPointer<Queue>(&Queue::_addResult, &Queue::addResult),
       DPointer<Queue>(&Queue::_join, &Queue::join),
     };
     return (memberPointer);
@@ -133,8 +136,9 @@ class ThreadPool
 public:
   ThreadPool(DUInt8 threadNumber);
   ~ThreadPool();
-  bool          addTask(DValue const& args);
-  void          join(void);
+  bool          addTask(DValue const& task);
+  DValue        join(void);
+  DValue        map(DValue const& task);
 private:
   DUInt8        __threadNumber;
   pthread_t*     __threads;

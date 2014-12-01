@@ -2,7 +2,7 @@
 
 #include "destruct.hpp"
 #include "threadpool.hpp"
-
+#include "protocol/dcppobject.hpp"
 
 /**
  * Worker
@@ -22,9 +22,11 @@ void *Worker(void *dobject)
     DValue args = task->getValue("argument");
 
     DValue result = function->call(args);
+    task->setValue("result", result);
+    workQueue->addResult(RealValue<DObject*>(task));
+
     //std::cout << object.asUnicodeString() 
     //<< " => " << result.asUnicodeString() << std::endl; 
-    workQueue->deref();
   }
   std::cout << "worker exit " << std::endl;
   pthread_exit(0);
@@ -57,9 +59,9 @@ ThreadPool::~ThreadPool()
   std::cout << "~ThreadPool()" << std::endl;
 }
 
-void ThreadPool::join(void)
+DValue ThreadPool::join(void)
 {
-  this->__taskQueue->call("join");
+  return (this->__taskQueue->call("join"));
 }
 
 
@@ -68,6 +70,27 @@ bool    ThreadPool::addTask(DValue const& args)
   this->__taskQueue->call("enqueue", args); 
 
   return (true);
+}
+
+DValue  ThreadPool::map(DValue const& arg)
+{
+  DObject* args = arg.get<DObject*>();
+  DValue function = args->getValue("function");
+  DObject* vector = args->getValue("argument").get<DObject*>();
+  DObject* iterator = vector->call("iterator").get<DObject*>();
+
+  std::cout << "mapping each tasks : " << vector->call("size").get<DUInt64>() << std::endl;
+  
+  for (; !iterator->call("isDone").get<DInt8>(); iterator->call("nextItem"))
+  {
+    //DObject* task = args->clone();
+    DObject* task = makeNewDCpp< Task<DUInt64, DType::DUInt64Type, DUInt64, DType::DUInt64Type > >("Task")->newObject();
+    task->setValue("function", function);
+    task->setValue("argument", iterator->call("currentItem"));
+    this->addTask(RealValue<DObject*>(task));
+  }
+
+  return (this->__taskQueue->call("join"));
 }
 
 /**
@@ -88,17 +111,30 @@ Queue::~Queue()
   pthread_cond_destroy(&m_condv);
 }
 
-void Queue::join(void)
+DValue  Queue::join(void)
 {
   while (this->__itemCount != 0)
     continue;
-   //pthread_cond_wait(&m_condv, &m_mutex);
+  //pthread_cond_wait(&m_condv, &m_mutex);
+
+  std::cout << "getting results " << std::endl;
+  pthread_mutex_lock(&m_mutex);
+  DObject* results = Destruct::Destruct::instance().generate("DVectorObject");
+  while (!this->__result.empty())
+  {
+    DValue result = this->__result.front();
+    results->call("push" , result);
+    this->__result.pop();
+  }
+  pthread_mutex_unlock(&m_mutex);
+  return RealValue<DObject*>(results);
 }
 
-void Queue::deref(void)
+void Queue::addResult(DValue const& task)
 {
   pthread_mutex_lock(&m_mutex);
   this->__itemCount--;
+  this->__result.push(task);
   pthread_mutex_unlock(&m_mutex);
 }
 
@@ -111,7 +147,7 @@ DValue  Queue::empty(void)
   return (RealValue<DUInt8>(size));
 }
 
-void    Queue::enqueue(DValue const& args) //DFunctionObject*, DValue const& args)
+void    Queue::enqueue(DValue const& args)
 { 
   pthread_mutex_lock(&m_mutex);
   this->__itemCount++;
@@ -132,10 +168,3 @@ DValue  Queue::dequeue(void)
   
   return (object);
 }
-
-/**
- * Task
- */
-//Task::Task(DFunctionObject* functionObject, DValue const& args) : __functionObject(functionObject), __args(args)
-//{
-//}
