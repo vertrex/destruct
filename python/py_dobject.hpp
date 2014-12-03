@@ -23,11 +23,12 @@ public:
   static PyObject*    _dir(DPyObject* self, PyObject* args, PyObject* kwds); //XXX
 
   static PyObject*    instanceOf(DPyObject* self);
+  //static PyObject*  clone(void); //XXX add it could be usefull
+
   static PyObject*    getType(DPyObject* self, PyObject* args, PyObject* kwds);
 
   static PyObject*    getValue(DPyObject* self, PyObject* valueObject);
 
- 
   static PyObject*    setValueObject(DPyObject* self, PyObject* args, PyObject* kwds);
   static PyObject*    setValue(DPyObject* self, const char* attributeName, PyObject* valueObject);
   static PyObject*    setValue(DPyObject* self, int32_t attributeIndex, PyObject* valueObject);

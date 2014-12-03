@@ -174,7 +174,6 @@ private:
 /*
  * DFunctionPointer specialization : void CPPClass(void)
 */
-
 template<typename CPPClass, typename RealReturnType>
 class DFunctionPointer<CPPClass, RealReturnType, void, void> : public DPointerBase<CPPClass>
 {
@@ -210,6 +209,8 @@ private:
 template<typename CPPClass>
 class DPointer
 {
+//add pointer to const method
+//add pointer to functin and const function
 public:
   template<typename RealCPPClass, typename ReturnType> 
   explicit DPointer(ReturnType RealCPPClass::* ptr) : __pointerBase(new DMemberPointer<CPPClass, ReturnType>(static_cast<ReturnType CPPClass::*>(ptr)))

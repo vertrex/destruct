@@ -36,7 +36,7 @@ public:
   {
   }
 
-  DCppObject(const DCppObject& copy) : DObject(copy)
+  DCppObject(const DCppObject& copy) : DObject(copy), __members(CppClass::memberBegin())
   {
   }
 

@@ -10,6 +10,9 @@
 
 using namespace Destruct;
 
+/**
+ * Task
+ */
 template<typename ArgumentType, DType::Type_t ArgumentTypeId, typename ResultType, DType::Type_t ResultTypeId >
 class Task : public DCppObject<Task< ArgumentType, ArgumentTypeId, ResultType, ResultTypeId > >
 {
@@ -17,6 +20,11 @@ public:
   Task(DStruct* dstruct, DValue const& args) : DCppObject<Task< ArgumentType, ArgumentTypeId, ResultType, ResultTypeId > >(dstruct, args)
   {
     this->init();
+  }
+
+  Task(const Task& copy) : DCppObject<Task<ArgumentType, ArgumentTypeId, ResultType, ResultTypeId > >(copy)
+  {
+    this->init(); 
   }
 
   RealValue<DFunctionObject* >     function;
@@ -36,8 +44,8 @@ public:
     static DAttribute  attributes[] = 
     {
       DAttribute(DType::DMethodType,  "function"),
-      DAttribute(ArgumentTypeId,   "argument"),
-      DAttribute(ResultTypeId,   "result"),
+      DAttribute(ArgumentTypeId,      "argument"),
+      DAttribute(ResultTypeId,        "result"),
     };
     return (attributes);
   }
@@ -64,26 +72,29 @@ public:
   } 
 };
 
+/**
+ * Queue 
+ */
 class Queue : public DCppObject<Queue> 
 {
 public: 
   Queue(DStruct* dstruct, DValue const& args);
-    pthread_mutex_t m_mutex;
-    pthread_cond_t  m_condv;
-  void          enqueue(DValue const& args);
-  DValue        dequeue(void);
-  DValue        empty(void);
-  void          addResult(DValue const& args);
-  DValue        join(void);
 
-  uint64_t      __itemCount;
+  void                        enqueue(DValue const& args);
+  DValue                      dequeue(void);
+  DValue                      empty(void);
+  void                        addResult(DValue const& args);
+  DValue                      join(void);
 
-  RealValue<DFunctionObject*> _enqueue, _dequeue, _empty, _addResult, _join;
 protected:
   ~Queue();
 private:
-  std::queue<DValue > __queue;
-  std::queue<DValue > __result;
+  uint64_t                    __itemCount; //semaphore or another mutexed queue
+  std::queue<DValue>          __queue;
+  std::queue<DValue>          __result;
+  pthread_mutex_t             __mutex;
+  pthread_cond_t              __conditionWait;
+  RealValue<DFunctionObject*> _enqueue, _dequeue, _empty, _addResult, _join;
 
   /**
    *  DStruct declaration
@@ -131,18 +142,64 @@ public:
   } 
 };
 
-class ThreadPool
+/* 
+ * WorkerPool
+ */
+class WorkerPool : public DCppObject<WorkerPool> 
 {
 public:
-  ThreadPool(DUInt8 threadNumber);
-  ~ThreadPool();
-  bool          addTask(DValue const& task);
-  DValue        join(void);
-  DValue        map(DValue const& task);
+  WorkerPool(DStruct* dstruct, DValue const& args);
+  ~WorkerPool();
+
+  bool                          addTask(DValue const& task);
+  DValue                        join(void);
+  DValue                        map(DValue const& task);
 private:
-  DUInt8        __threadNumber;
-  pthread_t*     __threads;
-  DObject*      __taskQueue;
+  DUInt8                        __threadNumber;
+  pthread_t*                    __threads;
+  DObject*                      __taskQueue;
+  RealValue<DFunctionObject*>   _addTask, _join, _map;
+
+  /**
+   *  DStruct declaration
+   */
+public:
+  static size_t ownAttributeCount()
+  {
+    return (3);
+  }
+
+  static DAttribute* ownAttributeBegin()
+  {
+    static DAttribute  attributes[] = 
+    {
+      DAttribute(DType::DUInt8Type,  "addTask",   DType::DObjectType),
+      DAttribute(DType::DObjectType, "join", DType::DNoneType),
+      DAttribute(DType::DObjectType, "map", DType::DObjectType),
+    };
+    return (attributes);
+  }
+
+  static DPointer<WorkerPool>* memberBegin()
+  {
+    static DPointer<WorkerPool> memberPointer[] = 
+    {
+      DPointer<WorkerPool>(&WorkerPool::_addTask, &WorkerPool::addTask),
+      DPointer<WorkerPool>(&WorkerPool::_join, &WorkerPool::join),
+      DPointer<WorkerPool>(&WorkerPool::_map, &WorkerPool::map),
+    };
+    return (memberPointer);
+  }
+
+  static DAttribute* ownAttributeEnd()
+  {
+    return (ownAttributeBegin() + ownAttributeCount());
+  }
+
+  static DPointer<WorkerPool>*  memberEnd()
+  {
+    return (memberBegin() + ownAttributeCount());
+  }
 };
 
 #endif

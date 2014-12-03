@@ -16,7 +16,8 @@
 include_directories("../../")
 
 set(threading_libfiles
-  threadpool.cpp
+  workerpool.cpp
+  threadsafeobject.cpp
 )
 
 add_library(dthreading SHARED ${threading_libfiles})
