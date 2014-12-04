@@ -6,7 +6,7 @@ sys.path.append('../../')
 sys.path.append('../')
 
 from _destruct import *
-from _examples import *
+from _workerpool import *
 
 COUNT = 10
 

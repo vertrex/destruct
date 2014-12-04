@@ -1,6 +1,6 @@
 #include "py_dstruct.hpp"
 #include "py_dobject.hpp"
-#include "py_examples.hpp"
+#include "py_workerpool.hpp"
 
 #include "protocol/dcppobject.hpp"
 #include "examples/threading/workerpool.hpp"
@@ -14,10 +14,10 @@ PyExamples::PyExamples()
   pyType = (PyTypeObject*)malloc(sizeof(basePyType));
   memcpy(pyType , &basePyType , sizeof(basePyType));
 
-  pyType->tp_name = "destruct.examples";
+  pyType->tp_name = "destruct.workerpool";
   pyType->tp_basicsize = sizeof(PyExamples::DPyObject);
   pyType->tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE;
-  pyType->tp_doc = "destruct.examples loader";
+  pyType->tp_doc = "destruct.workerpool loader";
   pyType->tp_methods = PyExamples::pyMethods;
   pyType->tp_methods = pyMethods;
   pyType->tp_init = (initproc)_init;
@@ -33,7 +33,7 @@ PyMethodDef PyExamples::pyMethods[] =
   {NULL}
 };
 
-PyMODINIT_FUNC init_examples(void)
+PyMODINIT_FUNC init_workerpool(void)
 {
   PyObject* module;
   //
@@ -45,8 +45,8 @@ PyMODINIT_FUNC init_examples(void)
 
   PyExamples::moduleInit();
   //
-  if ((module = Py_InitModule3("_examples", destruct_methods, "Load C++ examples")) == NULL)
+  if ((module = Py_InitModule3("_workerpool", destruct_methods, "Load C++ worker pool")) == NULL)
     return;    
   //
-  DESTRUCT_ADD_MODULE(PyExamples::pyType, "Examples")
+  DESTRUCT_ADD_MODULE(PyExamples::pyType, "WorkerPool")
 }

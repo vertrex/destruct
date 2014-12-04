@@ -7,5 +7,5 @@ add_subdirectory(embedding)
 #add_subdirectory(swig)
 
 add_subdirectory(registry)
-add_subdirectory(threading)
+add_subdirectory(workerpool)
 

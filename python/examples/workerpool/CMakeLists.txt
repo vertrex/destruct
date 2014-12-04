@@ -12,8 +12,8 @@
 # Author(s):
 #  Solal Jacob <sja@digital-forensic.org>
 
-set (python_threading_files
-  py_threading.cpp
+set (python_workerpool_files
+  py_workerpool.cpp
 )
 
 
@@ -21,7 +21,7 @@ include_directories("../")
 include_directories("../../")
 include_directories("../../../")
 
-add_library(_threading SHARED ${python_threading_files})
+add_library(_workerpool SHARED ${python_workerpool_files})
 
-set_target_properties(_threading PROPERTIES PREFIX "")
-target_link_libraries(_threading _destruct dthreading python2.7)
+set_target_properties(_workerpool PROPERTIES PREFIX "")
+target_link_libraries(_workerpool _destruct dthreading python2.7)
