@@ -16,8 +16,7 @@ void *Worker(void *dobject)
 
   while (1)
   {
-    //DValue object = workQueue->dequeue();
-    DValue object = workQueue->call("dequeue"); //dequeue();
+    DValue object = workQueue->call("dequeue");
     DObject* task = object.get<DObject*>();
 
     DFunctionObject* function = task->getValue("function").get<DFunctionObject*>();
@@ -25,13 +24,9 @@ void *Worker(void *dobject)
 
     DValue result = function->call(args);
     task->setValue("result", result);
-    //workQueue->addResult(RealValue<DObject*>(task));
-    workQueue->call("addResult", RealValue<DObject*>(task));
 
-    //std::cout << object.asUnicodeString() 
-    //<< " => " << result.asUnicodeString() << std::endl; 
+    workQueue->call("addResult", RealValue<DObject*>(task));
   }
-  std::cout << "worker exit " << std::endl;
   pthread_exit(0);
 }
 
@@ -45,11 +40,10 @@ WorkerPool::WorkerPool(DStruct* dstruct, DValue const& args) : DCppObject<Worker
 
   this->__threadNumber = args.get<DUInt8>();
   this->__taskQueue = makeNewDCpp<Queue>("Queue")->newObject();
-  //this->__taskQueue = makeNewDCpp<ThreadSafeObject>(RealValue<DObject*>(this->__taskQueue));
-  this->__taskQueue = (new DStruct(NULL, "ThreadSafeObject", ThreadSafeObject::newObject))->newObject(RealValue<DObject*>(this->__taskQueue)); 
-  std::cout << "task queue " << this->__taskQueue->instanceOf()->name() << std::endl;
 
-  this->__threads = new pthread_t[this->__threadNumber + 1]; //+1 ?
+  this->__taskQueue = (new DStruct(NULL, "ThreadSafeObject", ThreadSafeObject::newObject))->newObject(RealValue<DObject*>(this->__taskQueue)); 
+
+  this->__threads = new pthread_t[this->__threadNumber];
   for (int i = 0; i < this->__threadNumber ; ++i)
   {
     int result = pthread_create(&this->__threads[i], NULL, Worker, (void *)this->__taskQueue);
@@ -65,7 +59,6 @@ WorkerPool::WorkerPool(DStruct* dstruct, DValue const& args) : DCppObject<Worker
 
 WorkerPool::~WorkerPool()
 {
-  std::cout << "~WorkerPool()" << std::endl;
 }
 
 DValue WorkerPool::join(void)
@@ -88,8 +81,6 @@ DValue  WorkerPool::map(DValue const& arg)
   DObject* vector = args->getValue("argument").get<DObject*>();
   DObject* iterator = vector->call("iterator").get<DObject*>();
 
-  std::cout << "mapping each tasks : " << vector->call("size").get<DUInt64>() << std::endl;
-  
   for (; !iterator->call("isDone").get<DInt8>(); iterator->call("nextItem"))
   {
     //DObject* task = args->clone();
@@ -115,7 +106,6 @@ Queue::Queue(DStruct* dstruct, DValue const& args) : DCppObject<Queue>(dstruct, 
 
 Queue::~Queue()
 {
-  std::cout << "~Queue" << std::endl;
   pthread_mutex_destroy(&__mutex);
   pthread_cond_destroy(&__conditionWait);
 }
@@ -126,7 +116,6 @@ DValue  Queue::join(void)
     continue;
   //pthread_cond_wait(&__conditionWaitv, &__mutex);
 
-  std::cout << "getting results " << std::endl;
   pthread_mutex_lock(&__mutex);
   DObject* results = Destruct::Destruct::instance().generate("DVectorObject");
   while (!this->__result.empty())

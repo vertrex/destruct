@@ -66,7 +66,7 @@ BaseValue const * DDynamicObject::getBaseValue(size_t idx) const
 
 void DDynamicObject::init(DDynamicObject* self)
 {
-   DObject const * def = instanceOf()->defaultDObject();
+   DObject const * def = instanceOf()->defaultDObject();//XXX use it to set default value !
 
    if (def) // def is not necessarily a DDynamicObject!
    {

@@ -273,21 +273,26 @@ const std::string  PythonBaseModule::pyErrorAsString(void)
 //XXX optimized ? 
 Destruct::DValue PythonBaseModule::pyObjectToDValue(PyObject* object)
 {
-  //PyObject* objectTypeId = PyObject_CallMethod(object, (char *)"getType", NULL);
-  //if (typeId != -1)
-     //return Destruct::DValue(DValueDispatchTable[typeId]->toDValue(object)); -de check mais 1 call en plus possibilite de faire mieux avec unarg static ? objectTypeId.type ?
+  PyObject* objectTypeId = PyObject_CallMethod(object, (char *)"getType", NULL);
+  if (objectTypeId != NULL)
+  {
+    long typeId = PyLong_AsLong(objectTypeId);
+    if (typeId < Destruct::DType::DUnknownType)
+      return Destruct::DValue(DValueDispatchTable[typeId]->toDValue(object));// -de check mais 1 call en plus possibilite de faire mieux avec unarg static ? objectTypeId.type ?
+  }
     //XXX a utiliser pour forcer le type int8, int16, ... car pas gerer la !      
 //table:yDObject::pyType pyoject->type ? dynamic 
   if (PyObject_TypeCheck(object, PyDObject::pyType))
-   {  std::cout << "pyObjectTODValue return dobject " << std::endl;
-    return Destruct::RealValue<Destruct::DObject* >(((PyDObject::DPyObject*)object)->pimpl); }
+    return Destruct::RealValue<Destruct::DObject* >(((PyDObject::DPyObject*)object)->pimpl);
   else if (PyLong_Check(object) || PyInt_Check(object))
+  {
+    //std::cout << "Return default to DInt64 " << std::endl; //XXX
     return (Destruct::RealValue<DInt64>(PyLong_AsLong(object)));
+  }
   else if (PyString_Check(object)) 
     return Destruct::RealValue<Destruct::DUnicodeString>(std::string(PyString_AsString(object)));
   else if (PyObject_TypeCheck(object, PyDMethodObject::pyType))
     return Destruct::RealValue<Destruct::DFunctionObject*>(((PyDMethodObject::DPyObject*)object)->pimpl);
-std::cout << "pyobjectordvale return none " << std::endl;
   return (Destruct::RealValue<Destruct::DObject*>(Destruct::DNone));
 }
 

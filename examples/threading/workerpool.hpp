@@ -22,7 +22,7 @@ public:
     this->init();
   }
 
-  Task(const Task& copy) : DCppObject<Task<ArgumentType, ArgumentTypeId, ResultType, ResultTypeId > >(copy)
+  Task(const Task& copy) : DCppObject<Task<ArgumentType, ArgumentTypeId, ResultType, ResultTypeId > >(copy), function(copy.function), argument(copy.argument), result(copy.result)
   {
     this->init(); 
   }
@@ -30,10 +30,11 @@ public:
   RealValue<DFunctionObject* >     function;
   RealValue<ArgumentType >         argument;
   RealValue<ResultType >           result;
+
+public:
   /**
    *  DStruct declaration
    */
-public:
   static size_t ownAttributeCount()
   {
     return (3);
@@ -112,7 +113,7 @@ public:
       DAttribute(DType::DUInt8Type,  "empty",   DType::DNoneType),
       DAttribute(DType::DNoneType,   "enqueue", DType::DObjectType),
       DAttribute(DType::DObjectType, "dequeue", DType::DNoneType),
-      DAttribute(DType::DNoneType, "addResult", DType::DUnknownType),
+      DAttribute(DType::DNoneType, "addResult", DType::DUnknownType), //python looose
       DAttribute(DType::DObjectType, "join", DType::DNoneType),
     };
     return (attributes);
@@ -148,6 +149,18 @@ public:
 class WorkerPool : public DCppObject<WorkerPool> 
 {
 public:
+  static void Declare(void)
+  {
+    
+    DStruct* workerPool = makeNewDCpp<WorkerPool>("WorkerPool");
+    Destruct::Destruct::instance().registerDStruct(workerPool);
+    DStruct* task = makeNewDCpp<Task<DUInt64, DType::DUInt64Type, DUInt64, DType::DUInt64Type> >("Task"); //XXX mus derivate to other possible type 
+    Destruct::Destruct::instance().registerDStruct(task);
+  
+    DStruct* taskObject = makeNewDCpp<Task<DObject*, DType::DObjectType, DUInt64, DType::DUInt64Type > >("TaskObject");//mutable etc... ?
+    Destruct::Destruct::instance().registerDStruct(taskObject);
+  }
+
   WorkerPool(DStruct* dstruct, DValue const& args);
   ~WorkerPool();
 
@@ -173,7 +186,7 @@ public:
   {
     static DAttribute  attributes[] = 
     {
-      DAttribute(DType::DUInt8Type,  "addTask",   DType::DObjectType),
+      DAttribute(DType::DNoneType,  "addTask",   DType::DObjectType),
       DAttribute(DType::DObjectType, "join", DType::DNoneType),
       DAttribute(DType::DObjectType, "map", DType::DObjectType),
     };

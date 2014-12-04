@@ -20,10 +20,10 @@ public:
   static int          _setattr(DPyObject* self, PyObject* name, PyObject *valueObject);
   static PyObject*    _repr(DPyObject* self);
   static int          _compare(DPyObject* self, DPyObject* other);
-  static PyObject*    _dir(DPyObject* self, PyObject* args, PyObject* kwds); //XXX
+  static PyObject*    _dir(DPyObject* self, PyObject* args, PyObject* kwds);
 
   static PyObject*    instanceOf(DPyObject* self);
-  //static PyObject*  clone(void); //XXX add it could be usefull
+  static PyObject*    clone(DPyObject* self);
 
   static PyObject*    getType(DPyObject* self, PyObject* args, PyObject* kwds);
 

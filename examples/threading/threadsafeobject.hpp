@@ -59,7 +59,7 @@ protected:
   //addRef // delRef a locker ... ? a part si ds des func deja locker ?
   
 private:
-  DObject*          __dobject;
+  DObject*          __dobject; //RealValue (refcount)
   pthread_mutex_t   __mutex;
 };
 

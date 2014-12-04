@@ -36,12 +36,22 @@ public:
   {
   }
 
-  DCppObject(const DCppObject& copy) : DObject(copy), __members(CppClass::memberBegin())
+  DCppObject(DCppObject const& copy) : DObject(copy), __members(CppClass::memberBegin())
   {
+//    this->copy(this, copy); //must copy all attributes // or let's do it in CppClass constructor ?
+  }
+
+  void copy(DCppObject const& copy)
+  {
+    //for (size_t idx = 0; idx < CppClass::ownAttributeCount(); ++idx)
+    //{
+    //this->__members[idx].init(static_cast<CppClass*>(this));
+    //}
   }
 
   void  init(void) //Must be cal by inherited object constructor
   {
+    //use default object value and set it like in ddynamicobject ?
     for (size_t idx = 0; idx < CppClass::ownAttributeCount(); ++idx)
     {
       this->__members[idx].init(static_cast<CppClass*>(this));

@@ -113,6 +113,17 @@ PyObject* PyDObject::instanceOf(PyDObject::DPyObject* self)
   return ((PyObject*)dstructObject);
 }
 
+PyObject* PyDObject::clone(PyDObject::DPyObject* self)
+{
+  CHECK_PIMPL
+  Destruct::DObject* dobject = self->pimpl->clone();
+
+  PyDObject::DPyObject* pyDObject = (PyDObject::DPyObject*)_PyObject_New(PyDObject::pyType);
+  pyDObject->pimpl = (Destruct::DObject*)dobject;
+   
+  return ((PyObject*)pyDObject);
+}
+
 PyObject* PyDObject::getValue(PyDObject::DPyObject* self, PyObject* attributeObject)
 {
   int32_t     attributeIndex = 0;
@@ -217,8 +228,19 @@ PyObject*  PyDObject::setValue(PyDObject::DPyObject* self, int32_t attributeInde
     {
       if (PyCallable_Check(valueObject))
       {
-        Destruct::DFunctionObject* dpythonMethodObject = new DPythonMethodObject((PyObject*)self, valueObject, attributeIndex); //new donc doit XXX del si ecraser par un set value ou object detruit
-        self->pimpl->setValue(attributeIndex, Destruct::RealValue<Destruct::DFunctionObject* >(dpythonMethodObject));
+        //Special case get = vector.get  toto.setValue("func", get")
+        //->get : c++ -> PyDMethodObject 
+        //setValue PyDMethodObject -> DPythonMethodObject ! -> rewrapper une deuxieme fois en python must cast directly to c+
+        if (PyObject_TypeCheck(valueObject, PyDMethodObject::pyType))
+        {
+          PyDMethodObject::DPyObject* funcObject = (PyDMethodObject::DPyObject*)valueObject;
+          self->pimpl->setValue(attributeIndex, Destruct::RealValue<Destruct::DFunctionObject*>(funcObject->pimpl));
+        }
+        else
+        {
+          Destruct::DFunctionObject* dpythonMethodObject = new DPythonMethodObject((PyObject*)self, valueObject, attributeIndex); //new donc doit XXX del si ecraser par un set value ou object detruit
+          self->pimpl->setValue(attributeIndex, Destruct::RealValue<Destruct::DFunctionObject* >(dpythonMethodObject));
+        }
         Py_RETURN_NONE; 
       }
       PyErr_SetString(PyExc_TypeError, "setValue : object must be callable");
@@ -238,6 +260,7 @@ PyObject*  PyDObject::setValue(PyDObject::DPyObject* self, int32_t attributeInde
 PyMethodDef PyDObject::pyMethods[] = 
 {
   {"instanceOf", (PyCFunction)instanceOf, METH_NOARGS, "Return the DStruct definition who generate this object."},
+  {"clone", (PyCFunction)clone, METH_NOARGS, "Return a clone of this object."},
   {"getType",  (PyCFunction)getType, METH_CLASS, "Return self DType::type."},
   {"getValue", (PyCFunction)getValue, METH_O, "Get value for attribute (passed as index or string)."},
   {"setValue", (PyCFunction)setValueObject, METH_VARARGS, "Set attribute value."},
