@@ -66,8 +66,9 @@ private:
   RealReturnType CPPClass::* __member;
 };
 
+
 /*
- * DFunctionPointer specialization : returnType CPPClass(void)
+ * DFunctionPointer specialization : returnType CPPClass(ArgumentType)
 */
 template<typename CPPClass, typename RealReturnType, typename MReturnType, typename ArgumentType>
 class DFunctionPointer : public DPointerBase<CPPClass>
@@ -172,6 +173,43 @@ private:
 };
 
 /*
+ * DFunctionPointer specialization : returnType CPPClass(void)
+*/
+template<typename CPPClass, typename RealReturnType, typename MReturnType>
+class DConstFunctionPointer : public DPointerBase<CPPClass>
+{
+public:
+  DConstFunctionPointer(RealReturnType CPPClass::* member, MReturnType (CPPClass::* methodPtr)(void) const) : __member(member), __method(methodPtr)
+  {
+  }
+
+  ~DConstFunctionPointer()
+  {
+  }
+
+  void init(CPPClass* obj)
+  {
+    obj->*__member = new DMethodObject(obj, __method);
+  }
+
+  FinalValue& value(CPPClass* obj) const
+  {
+    return (obj->*__member);
+  }
+
+  FinalValue const& value(CPPClass const *obj) const
+  {
+    return (obj->*__member);
+  }
+
+private:
+  RealReturnType CPPClass::* __member;
+  MReturnType (CPPClass::* __method) (void) const;
+};
+
+
+
+/*
  * DFunctionPointer specialization : void CPPClass(void)
 */
 template<typename CPPClass, typename RealReturnType>
@@ -224,6 +262,11 @@ public:
 
   template<typename RealCPPClass, typename ReturnType, typename MReturnType> 
   explicit DPointer(ReturnType RealCPPClass::* ptr, MReturnType (CPPClass::* method)(void)) : __pointerBase(new DFunctionPointer<CPPClass, ReturnType, MReturnType, void>(static_cast<ReturnType CPPClass::*>(ptr), static_cast<MReturnType (CPPClass::*)(void) >(method)))
+  {
+  }
+
+  template<typename RealCPPClass, typename ReturnType, typename MReturnType> 
+  explicit DPointer(ReturnType RealCPPClass::* ptr, MReturnType (CPPClass::* method)(void) const) : __pointerBase(new DConstFunctionPointer<CPPClass, ReturnType, MReturnType>(static_cast<ReturnType CPPClass::*>(ptr), static_cast<MReturnType (CPPClass::*)(void) const >(method)))
   {
   }
 

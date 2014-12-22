@@ -130,6 +130,48 @@ private:
   DValue (CPPClass::* __member) (void);
 };
 
+/** 
+ *  const version
+ */
+template<typename RealReturnType, typename CPPClass>
+class DConstMethodObjectTyped : public DMethodObjectBase
+{
+public:
+  DConstMethodObjectTyped(CPPClass* self, RealReturnType (CPPClass::* member) (void) const) : __self(self), __member(member)
+  {
+  }
+ 
+  DValue call(const DValue& args)
+  {
+    if (args.get<DObject*>() != DNone)
+      throw DException("Non DNone argument passed to function(void)");
+    return RealValue<RealReturnType >((__self->*__member)());
+  }
+private:
+  CPPClass* __self;
+  RealReturnType (CPPClass::* __member) (void) const;
+};
+
+template<typename CPPClass>
+class DConstMethodObjectTyped<DValue, CPPClass> : public DMethodObjectBase
+{
+public:
+  DConstMethodObjectTyped(CPPClass* self, DValue (CPPClass::* member) (void) const) : __self(self), __member(member)
+  {
+  }
+ 
+  DValue call(const DValue& args)
+  {
+    if (args.get<DObject*>() != DNone)
+      throw DException("Non DNone argument passed to function(void)");
+    return  (__self->*__member)();
+  }
+private:
+  CPPClass* __self;
+  DValue (CPPClass::* __member) (void) const;
+};
+
+
 /*
  * DMethodObjectTyped specialization : void CPPClass(void)
  */
@@ -166,6 +208,11 @@ public:
 
   template<typename CPPClass , typename ReturnType> 
   explicit DMethodObject(CPPClass* self, ReturnType (CPPClass::* member)(void)) : __methodBase(new DMethodObjectTyped<ReturnType, CPPClass, void>(static_cast<CPPClass* >(self), static_cast<ReturnType (CPPClass::*)(void) >(member)))
+  {
+  }
+
+  template<typename CPPClass , typename ReturnType> 
+  explicit DMethodObject(CPPClass* self, ReturnType (CPPClass::* member)(void) const) : __methodBase(new DConstMethodObjectTyped<ReturnType, CPPClass>(static_cast<CPPClass* >(self), static_cast<ReturnType (CPPClass::*)(void) const >(member)))
   {
   }
 
