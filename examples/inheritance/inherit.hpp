@@ -83,18 +83,22 @@ public:
  
   RealValue<DUnicodeString>     text3;
   RealValue<DObject*>           object3;
-  RealValue<DFunctionObject*>   _showText;
+  RealValue<DFunctionObject*>   _changeA, _callA;
 
-  void   showText(void)
+  void   changeA(void)
   {
-    std::cout << this->getValue("text1").asUnicodeString() << std::endl;
-    this->setValue("text1", RealValue<DUnicodeString>("changed by showText"));
+    std::cout << "changeA(void) getValue text 1 : " <<  this->getValue("text1").asUnicodeString() << std::endl;
+    this->setValue("text1", RealValue<DUnicodeString>("changed by changeA"));
+  }
+
+  void callA(void)
+  {
     this->call("callable1");
   }
 
   static size_t ownAttributeCount()
   {
-    return (3);
+    return (4);
   }
 
   static DAttribute* ownAttributeBegin()
@@ -103,7 +107,8 @@ public:
     {
       DAttribute(DType::DUnicodeStringType, "text3"),
       DAttribute(DType::DObjectType, "object3"),
-      DAttribute(DType::DNoneType, "showText", DType::DNoneType),
+      DAttribute(DType::DNoneType, "changeA", DType::DNoneType),
+      DAttribute(DType::DNoneType, "callA", DType::DNoneType),
     };
 
     return (attributes);
@@ -118,13 +123,10 @@ public:
   {
     static DPointer<CppB> memberPointer[] =
     {
-      //DPointer<CppB>(&CppA::text1),
-     //DPointer<CppB>(&CppA::text2),
-      //DPointer<CppB>(&CppA::object1),
-      //DPointer<CppB>(&CppA::object2),
       DPointer<CppB>(&CppB::text3),
       DPointer<CppB>(&CppB::object3),
-      DPointer<CppB>(&CppB::_showText, &CppB::showText),
+      DPointer<CppB>(&CppB::_changeA, &CppB::changeA),
+      DPointer<CppB>(&CppB::_callA, &CppB::callA),
     };
 
     return (memberPointer);
@@ -135,6 +137,7 @@ public:
     return (memberBegin() + 3);
   }
 };
+
 /**
  * Main
  */

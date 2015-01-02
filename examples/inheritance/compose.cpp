@@ -47,12 +47,12 @@ Compose::~Compose()
 
 DObject*         Compose::newObject(DStruct* dstruct, DValue const& args)
 {
-  throw DException("Compose::newObject()");
+  return (new Compose(dstruct, args));
 }
 
 DObject*         Compose::clone() const
 {
-  throw DException("Compose::clone()");
+  throw DException("Compose::clone() not implemented");
 }
 
 DValue           Compose::getValue(size_t index) const
