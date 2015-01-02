@@ -8,7 +8,7 @@
 namespace Destruct
 {
 
-DDynamicObject::DDynamicObject(DStruct * class_, DValue const& args) : DObject(class_, args), __values(class_->attributeCount(), 0), __object(0)
+DDynamicObject::DDynamicObject(DStruct * dstruct, DValue const& args) : DObject(dstruct, args), __values(dstruct->attributeCount(), 0), __object(0)
 {
   // we can't initialize 'values' here, as 'this' is not a valid pointer
 }
@@ -18,6 +18,36 @@ DDynamicObject::DDynamicObject(DDynamicObject const & rhs) : DObject(rhs), __val
   // we can't initialize 'values' here, as 'this' is not a valid pointer
 }
 
+void DDynamicObject::init(DDynamicObject* self)
+{
+   DObject const * def = instanceOf()->defaultDObject();//XXX use it to set default value !
+
+   if (def) // def is not necessarily a DDynamicObject!
+   {
+     for (size_t idx = 0; idx != this->__values.size(); ++idx)
+     {
+        this->__values[idx] = DObject::getBaseValue(def, idx)->clone(self);
+     }
+   }
+   else
+   {
+     DStruct::DAttributeIterator a;
+     std::vector<BaseValue*>::iterator i = this->__values.begin();
+
+     for (a = instanceOf()->attributeBegin(); a != instanceOf()->attributeEnd(); ++a, ++i)
+     {
+       *i = a->type().newValue();
+     }
+  }
+}
+
+void DDynamicObject::copy(DDynamicObject * self, DDynamicObject const & rhs)
+{
+  for (size_t idx = 0; idx != this->__values.size(); ++idx)
+  {
+     this->__values[idx] = rhs.__values[idx]->clone(self);
+  }
+}
 DDynamicObject::~DDynamicObject()
 {
   for (size_t idx = 0; idx != this->__values.size(); ++idx)
@@ -44,16 +74,6 @@ DValue DDynamicObject::call(size_t idx, DValue const& v)
   return (this->__values[idx]->getFinal().get<DFunctionObject *>()->call(v));
 }
 
-DObject* DDynamicObject::privateObject() const
-{
-  return (this->__object);
-}
-
-void DDynamicObject::setPrivate(DObject * _privateObject)
-{
-  this->__object = _privateObject;
-}
-
 BaseValue * DDynamicObject::getBaseValue(size_t idx)
 {
   return (this->__values[idx]);
@@ -64,35 +84,14 @@ BaseValue const * DDynamicObject::getBaseValue(size_t idx) const
   return (this->__values[idx]);
 }
 
-void DDynamicObject::init(DDynamicObject* self)
-{
-   DObject const * def = instanceOf()->defaultDObject();//XXX use it to set default value !
+//DObject* DDynamicObject::privateObject() const
+//{
+  //return (this->__object);
+//}
 
-   if (def) // def is not necessarily a DDynamicObject!
-   {
-     for (size_t idx = 0; idx != this->__values.size(); ++idx)
-     {
-        this->__values[idx] = DObject::getBaseValue(def, idx)->clone(self);
-     }
-   }
-   else
-   {
-     DStruct::DAttributeIterator a;
-     ValueContainer::iterator i = this->__values.begin();
-
-     for (a = instanceOf()->attributeBegin(); a != instanceOf()->attributeEnd(); ++a, ++i)
-     {
-       *i = a->type().newValue();
-     }
-  }
-}
-
-void DDynamicObject::copy(DDynamicObject * self, DDynamicObject const & rhs)
-{
-  for (size_t idx = 0; idx != this->__values.size(); ++idx)
-  {
-     this->__values[idx] = rhs.__values[idx]->clone(self);
-  }
-}
+//void DDynamicObject::setPrivate(DObject * _privateObject)
+//{
+  //this->__object = _privateObject;
+//}
 
 }

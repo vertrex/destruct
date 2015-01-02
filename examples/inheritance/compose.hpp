@@ -11,6 +11,10 @@
 
 using namespace Destruct;
 
+
+//XXX directement ds DCPpObject ? 
+// pas possible ds object car virtual pure
+
 template<typename CppClass>
 class ComposableObject : public CppClass
 {
@@ -24,7 +28,8 @@ public:
 
   ComposableObject<CppClass>(DStruct* dstruct, DValue const& args) : CppClass(dstruct, args)
   {
-    this->inherited = args.get<DObject*>();
+    //this->object = 
+    this->inherited = args.get<DObject*>(); //lists d object si plusieurs inheritance ?
     this->init();
   }
 
@@ -137,6 +142,15 @@ public:
     attribute = second->attributeBegin();
     for (; attribute != second->attributeEnd(); ++attribute)
       this->addAttribute(*attribute);
+  }
+
+  template<typename Iterator>
+  DComposedStruct(DStruct const* base, const DUnicodeString& name, CreateObjectFunction objectFunction, Iterator attributeBegin, Iterator attributeEnd ) : DStruct(base, name, Compose::newObject, attributeBegin, attributeEnd)
+  {
+    this->__inherit.push_back(base);
+                                        //name ?? overwrite DStruct(name) ?
+    DStruct* second = new DStruct(NULL, name, objectFunction, attributeBegin, attributeEnd);
+    this->__inherit.push_back(second);
   }
 
   std::vector<DStruct const*> inherit(void)

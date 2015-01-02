@@ -22,8 +22,8 @@ public :
   virtual DValue           call(size_t idx, DValue const&); //this is juste an helper function
   //virtual void           replaceValue(size_t idx, BaseValue const& );
   //void                   replaceValue(DUnicodeString const& name, BaseValue const&);
-  DObject*                 privateObject() const;
-  void                     setPrivate(DObject* );
+  //DObject*               privateObject() const;
+  //void                   setPrivate(DObject* );
 
 protected:
   virtual BaseValue*       getBaseValue(size_t index);
@@ -31,11 +31,10 @@ protected:
   void                     init(DDynamicObject* self);
   void                     copy(DDynamicObject* self, DDynamicObject const& rhs);
 
-  typedef std::vector<BaseValue*  > ValueContainer;
-  ValueContainer  __values;
+  std::vector<BaseValue*>  __values;
 private:
-  DDynamicObject& operator=(DDynamicObject const &);
-  DObject*        __object;
+  DDynamicObject&          operator=(DDynamicObject const &);
+  DObject*                 __object;
 };
 
 }

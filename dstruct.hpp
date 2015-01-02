@@ -35,8 +35,12 @@ public:
 
   virtual void          addAttribute(const DAttribute&);
   DUnicodeString        name() const;
+  DStruct const * const base() const
+  {
+    return (this->__baseClass);
+  }
 
-  //DObject*              newObject() const;
+  //DObject*             newObject() const;
   DObject*              newObject(); 
   virtual DObject*      newObject(DValue const& args); //for mutable
  

@@ -16,7 +16,14 @@ Compose::Compose(DComposedStruct* composedStruct, DValue const& args) : DObject(
     if (dstruct != dstructs.begin())
       msg += ", ";
     msg += (*dstruct)->name();
-    this->__objects.push_back(((DStruct*)*dstruct)->newObject(RealValue<DObject*>(this)));//set later ? 
+    //XXX if composable object si non on devrait pas passer this ca peut s attendre a autre chose !
+
+    DObject* object = ((DStruct*)*dstruct)->newObject(RealValue<DObject*>(this));
+  
+//if inherited 
+//object->setValue("compose", RealValue<DObject*>(this));
+
+    this->__objects.push_back(object);//set later ? 
     //if set later can get a list of object then to object->setValue("inheritance", this);
   }
   msg += ">";

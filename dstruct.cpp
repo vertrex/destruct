@@ -13,6 +13,16 @@ DStruct::DStruct(DStruct const * base, const DUnicodeString & name, CreateObject
   this->__baseInit();
 }
 
+void DStruct::__baseInit()
+{
+  if (this->__baseClass)
+  {
+     this->__baseClass->__definitionFix = true;
+     std::copy(this->__baseClass->attributeBegin(), this->__baseClass->attributeEnd(), 
+               std::back_inserter<DAttributeContainer>(this->__effectiveAttributes));
+  }
+}
+
 DStruct::~DStruct()
 {
   //should remove from Destruct if exist !
@@ -23,7 +33,12 @@ DUnicodeString  DStruct::name() const
 {
   return (this->__name);
 }
-//XXX declare destructor to avoir destruction of attribute because some attribute are static and could be used twice 
+//XXX declare destructor to avoid destruction of attribute because some attribute are static and could be used twice 
+
+//DStruct const * const  DStruct::base() const;
+//{
+//return (this->__baseClass);
+//}
 
 DObject* DStruct::newObject()
 {
@@ -100,14 +115,5 @@ int32_t DStruct::findAttribute(std::string const& name) const
   return (-1);
 }
 
-void DStruct::__baseInit()
-{
-  if (this->__baseClass)
-  {
-     this->__baseClass->__definitionFix = true;
-     std::copy(this->__baseClass->attributeBegin(), this->__baseClass->attributeEnd(), 
-               std::back_inserter<DAttributeContainer>(this->__effectiveAttributes));
-  }
-}
 
 }

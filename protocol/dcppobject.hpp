@@ -15,19 +15,9 @@ namespace Destruct
  *  
  */
 template<typename CppClass>
-class DCppObject : public DObject
+class DCppObject : public DObject// XXX inherit DDynamicObject XXX XXX XXX ZZZ plus simple que recoder ici
 {
 public:
-  //XXX new dstruct will be created each time and not destroyed !
-  //DCppObject(const std::string name) : DObject(&DStruct(NULL, name, DCppObject::newObject, CppClass::ownAttributeBegin(), CppClass::ownAttributeEnd()), RealValue<DObject*>(DNone)), __members(CppClass::memberBegin()) //auto-registering class
-  //{
-  //}
-
-   ////new dstruct will be created each time and not destroyed ! 
-  //DCppObject(const std::string name, DValue const& args) : DObject(&DStruct(NULL, name, DCppObject::newObject, CppClass::ownAttributeBegin(), CppClass::ownAttributeEnd()), args), __members(CppClass::memberBegin()) //auto-registering class
-  //{
-  //}
-
   DCppObject(DStruct* dstruct) : DObject(dstruct, RealValue<DObject*>(DNone)), __members(CppClass::memberBegin())
   {
   }
@@ -51,10 +41,22 @@ public:
 
   void  init(void) //Must be cal by inherited object constructor
   {
-    //use default object value and set it like in ddynamicobject ?
+    //use default object value and set it like in ddynamicobject 
+    std::vector<BaseValue*> baseValue;
+    if (this->baseObject())
+    {
+      DObject* baseObject = this->baseObject();
+      const DStruct* base = this->base();
+   
+      int32_t attributeCount = base->attributeCount();
+      for (int32_t index = 0; index < attributeCount; ++index)
+        this->__baseValue.push_back(baseObject->getBaseValue(index));
+    }
+
     for (size_t idx = 0; idx < CppClass::ownAttributeCount(); ++idx)
     {
       this->__members[idx].init(static_cast<CppClass*>(this));
+      this->__baseValue.push_back(this->getBaseValue(idx));
     }
   }
 
@@ -74,18 +76,18 @@ public:
 
   virtual void   setValue(size_t idx, DValue const& v)
   {
-    BaseValue* p = &(this->__members[idx].value(static_cast<CppClass *>(this)));
+    BaseValue* p = this->__baseValue[idx];
     p->set(v);
   }
 
   virtual DValue getValue(size_t idx) const
   {
-    return (this->__members[idx].value(static_cast<const CppClass* >(this)));
+    return (this->__baseValue[idx]->getFinal());
   }
 
   virtual DValue call(size_t idx, DValue const & args)
   {
-    DValue v = this->__members[idx].value(static_cast<CppClass* >(this));
+    DValue v = this->__baseValue[idx]->getFinal();
     DFunctionObject* fo = v.get<DFunctionObject*>();
 
     try 
@@ -116,6 +118,7 @@ protected:
   };
 
   DPointer<CppClass>*       __members;
+  std::vector<BaseValue*>   __baseValue;
 };
 
 

@@ -150,7 +150,8 @@ public:
   void  declare(void);
   void  test(void);
   void  show(DObject* object) const;
-
+  void  show(DStruct* dstruct) const;
+  void  testComposition(DObject* object) const;
 private:
   Destruct::Destruct&   __destruct;
 };
