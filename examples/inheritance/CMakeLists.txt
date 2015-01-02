@@ -11,19 +11,13 @@
 # 
 # Author(s):
 #  Solal Jacob <sja@digital-forensic.org>
-include_directories("../")
 
-add_subdirectory(dtest)
-add_subdirectory(rpc)
-add_subdirectory(db)
-add_subdirectory(refcount)
-add_subdirectory(registry)
-add_subdirectory(threading)
-add_subdirectory(inheritance)
+include_directories("../../")
 
-set (test_files
-test.cpp
+set (inherit_files
+inherit.cpp
+compose.cpp
 )
 
-add_executable(test ${test_files})
-target_link_libraries(test destruct destruct_test)
+add_executable(inherit ${inherit_files})
+target_link_libraries(inherit destruct)
