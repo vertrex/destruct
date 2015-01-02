@@ -92,11 +92,12 @@ public:
   }
 };
 
+class DComposedStruct;
 
 class Compose : public DObject
 {
 public:
-  Compose(DStruct* dstruct, DValue const& args);
+  Compose(DComposedStruct* dstruct, DValue const& args);
   //Compose(Compose const&);
   //Compose(DObject*);
 
@@ -119,6 +120,31 @@ protected:
   BaseValue const*  getBaseValue(size_t index) const;
 private:
   std::vector<DObject*> __objects;
+};
+
+class DComposedStruct : public DStruct
+{
+public:
+  DComposedStruct(DStruct const* base, DStruct const* second, const DUnicodeString& name) : DStruct(NULL, name, Compose::newObject)
+  {
+    this->__inherit.push_back(base);
+    this->__inherit.push_back(second);
+ 
+    DStruct::DAttributeIterator attribute = base->attributeBegin();
+    for (; attribute != base->attributeEnd(); ++attribute)
+     this->addAttribute(*attribute); 
+  
+    attribute = second->attributeBegin();
+    for (; attribute != second->attributeEnd(); ++attribute)
+      this->addAttribute(*attribute);
+  }
+
+  std::vector<DStruct const*> inherit(void)
+  {
+    return (this->__inherit);
+  }
+private:
+  std::vector<DStruct const*> __inherit;
 };
 
 #endif

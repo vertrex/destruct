@@ -38,19 +38,14 @@ void  Inheritance::declare(void)
   simpleA->addAttribute(Destruct::DAttribute(DType::DObjectType, "object2"));
   this->__destruct.registerDStruct(simpleA);
 
-  //DStruct*  simpleB = new DStruct(simpleA, "SimpleB", DSimpleObject::newObject);
-  //simpleB->addAttribute(DAttribute(DType::DUnicodeStringType, "text2"));
-  //simpleB->addAttribute(DAttribute(DType::DObjectType, "object2"));
-  //simpleB->addAttribute(DAttribute(DType::DUnicodeStringType, "text"));
-  //this->__destruct.registerDStruct(simpleB);
+  DStruct*  simpleB = new DStruct(simpleA, "SimpleB", DSimpleObject::newObject);
+  simpleB->addAttribute(DAttribute(DType::DUnicodeStringType, "text3"));
+  simpleB->addAttribute(DAttribute(DType::DObjectType, "object3"));
+  this->__destruct.registerDStruct(simpleB);
 
-  //DStruct*  simpleC = new Destruct::DStruct(simpleB, "SimpleC", DSimpleObject::newObject);
-  //simpleC->addAttribute(DAttribute(DType::DUnicodeStringType, "text3"));
-  //simpleC->addAttribute(DAttribute(DType::DObjectType, "object3"));
-  //simpleC->addAttribute(DAttribute(DType::DUnicodeStringType, "text"));
-  //simpleC->addAttribute(DAttribute(DType::DObjectType, "object2"));
-  //this->__destruct.registerDStruct(simpleC);
-
+  /**
+   * Cpp Object
+   */
   DStruct* cppA = makeNewDCpp<CppA>("CppA");
   this->__destruct.registerDStruct(cppA);
 
@@ -58,84 +53,41 @@ void  Inheritance::declare(void)
   this->__destruct.registerDStruct(cppB);
 
   /**
-   *  Compose
+   *  Compose with DCppObject 
    */
-  DStruct* composableAStruct = new DStruct(NULL, "ComposeA", DCppObject<CppA>::newObject, CppA::ownAttributeBegin(), CppA::ownAttributeEnd());
+  //XXX utilise un composable par template  : probleme comment cree un composable depuis python                            
   DStruct* composableBStruct = new DStruct(NULL, "ComposeB", ComposableObject<CppB>::newObject, CppB::ownAttributeBegin(), CppB::ownAttributeEnd());
-  this->__destruct.registerDStruct(composableAStruct);
   this->__destruct.registerDStruct(composableBStruct);
 
-  DStruct* composeABStruct = new DStruct(NULL, "ComposedAB", Compose::newObject);
-  //cree un nouveau dstruct a partir des deux autres
-  DStruct::DAttributeIterator attribute = composableAStruct->attributeBegin();
-  for (; attribute != composableAStruct->attributeEnd(); ++attribute)
-    composeABStruct->addAttribute(*attribute); 
-  
-  attribute = composableBStruct->attributeBegin();
-  for (; attribute != composableBStruct->attributeEnd(); ++attribute)
-    composeABStruct->addAttribute(*attribute);
-  
+
+  DStruct* composeABStruct = new DComposedStruct(cppA, composableBStruct, "ComposedAB");
   this->__destruct.registerDStruct(composeABStruct);
 
   //Cmpose with simple object
 
-  DStruct* composeABCppSimple = new DStruct(NULL, "SimpleACppB", Compose::newObject);
-  attribute = simpleA->attributeBegin();
-  for (; attribute != simpleA->attributeEnd(); ++attribute)
-    composeABCppSimple->addAttribute(*attribute); 
-  
-  attribute = composableBStruct->attributeBegin();
-  for (; attribute != composableBStruct->attributeEnd(); ++attribute)
-    composeABCppSimple->addAttribute(*attribute);
-  
+  DStruct* composeABCppSimple = new DComposedStruct(simpleA, composableBStruct, "SimpleACppB");
   this->__destruct.registerDStruct(composeABCppSimple);
 
-
-  //DStruct* composeBStruct = new DStruct(NULL, "ComposedB", Compse::newObject);
-  //
 }
 
 void Inheritance::test(void)
 {
-  //std::cout << "==== Simple object B inherit simple object A ====" << std::endl;
+  std::cout << "==== Simple object B inherit simple object A ====" << std::endl;
   
-  //DObject* simpleA = this->__destruct.generate("SimpleA");
-  //DObject* simpleB = this->__destruct.generate("SimpleB");
+  DObject* simpleB = this->__destruct.generate("SimpleB");
 
-  //simpleB->setValue("text", RealValue<DUnicodeString>("Set in simpleB"));
-  //simpleB->setValue("text2", RealValue<DUnicodeString>("Set in simpleB"));
+  simpleB->setValue("text1", RealValue<DUnicodeString>("Set in simpleB"));
+  simpleB->setValue("text2", RealValue<DUnicodeString>("Set in simpleB"));
+  simpleB->setValue("text3", RealValue<DUnicodeString>("Set in simpleB"));
 
-  //this->show(simpleA);
-  //this->show(simpleB);
-
-  //std::cout << "==== Simple object C inherit simple object B ====" << std::endl;
-  
-  //DObject* simpleC = this->__destruct.generate("SimpleC");
-
-  //simpleC->setValue("text", RealValue<DUnicodeString>("Set in simpleC"));
-  //simpleC->setValue("text2", RealValue<DUnicodeString>("Set in simpleC"));
-  //simpleC->setValue("text3", RealValue<DUnicodeString>("Set in simpleC"));
-
-  //this->show(simpleC);
-
+  this->show(simpleB);
 
   std::cout << "==== ComposableObject ====" << std::endl;
 
-  //DStruct* composableAStruct = this->__destruct.find("ComposeA");
-  //DStruct* composableBStruct = this->__destruct.find("ComposeB");
-  //DObject* composableA = composableAStruct->newObject();
-  //DObject* composableB = composableBStruct->newObject();
-  //
-  //this->show(composableA);
-  //this->show(composableB);
-
-  DObject* structsName = this->__destruct.generate("DVectorString");
-  structsName->call("push", RealValue<DUnicodeString>("ComposeA"));
-  structsName->call("push", RealValue<DUnicodeString>("ComposeB"));
-
-  DObject* composition = this->__destruct.generate("ComposedAB", RealValue<DObject*>(structsName)); 
+  DObject* composition = this->__destruct.generate("ComposedAB"); 
 
   //test 
+  std::cout << "set value: " << std::endl;
   composition->setValue("text1", RealValue<DUnicodeString>("text 1"));
   composition->setValue("text3", RealValue<DUnicodeString>("text 3"));
   composition->setValue("text2", RealValue<DUnicodeString>("text 2"));
@@ -152,11 +104,7 @@ void Inheritance::test(void)
   
   std::cout << "==== ComposableObject Simple Cpp ====" << std::endl;
 
-  structsName = this->__destruct.generate("DVectorString");
-  structsName->call("push", RealValue<DUnicodeString>("SimpleA"));
-  structsName->call("push", RealValue<DUnicodeString>("ComposeB"));
-
-  composition = this->__destruct.generate("SimpleACppB", RealValue<DObject*>(structsName)); 
+  composition = this->__destruct.generate("SimpleACppB"); 
 
   //test 
   composition->setValue("text1", RealValue<DUnicodeString>("text 1"));

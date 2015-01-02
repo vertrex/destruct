@@ -134,7 +134,7 @@ public:
 
   static DPointer<CppB>* memberEnd()
   {
-    return (memberBegin() + 3);
+    return (memberBegin() + ownAttributeCount());
   }
 };
 

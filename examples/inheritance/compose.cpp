@@ -3,27 +3,25 @@
 /**
  * Compose
  */
-Compose::Compose(DStruct* dstruct, DValue const& args) : DObject(dstruct, args)
+Compose::Compose(DComposedStruct* composedStruct, DValue const& args) : DObject(composedStruct, args)
 {
   Destruct::Destruct& destruct = Destruct::Destruct::instance();
-  //std::string msg = "<";
 
-  DObject* structsName = args.get<DObject*>();
-  DUInt64  count = structsName->call("size").get<DUInt64>();
-
-  for (DUInt64 i = 0; i < count; ++i)
+  std::vector<DStruct const*> dstructs = composedStruct->inherit();
+  std::vector<DStruct const*>::iterator dstruct = dstructs.begin();
+  
+  std::string msg = "<";
+  for (; dstruct != dstructs.end(); ++dstruct)
   {
-    DUnicodeString structName = structsName->call("get", RealValue<DUInt64>(i)).get<DUnicodeString>();
-
-    DObject* object = destruct.generate(structName, RealValue<DObject*>(this));
-    this->__objects.push_back(object);
-
-    //msg += structName;
-    //msg += ",";
+    if (dstruct != dstructs.begin())
+      msg += ", ";
+    msg += (*dstruct)->name();
+    this->__objects.push_back(((DStruct*)*dstruct)->newObject(RealValue<DObject*>(this)));//set later ? 
+    //if set later can get a list of object then to object->setValue("inheritance", this);
   }
-  //msg += ">";
+  msg += ">";
 
-  //std::cout << "Compose " << msg << std::endl;
+  std::cout << "Compose" << msg << "()" << std::endl;
 }
 
 //Compose::Compose(Compose const& copy) : DObject(copy), __dobject(copy.__dobject)
@@ -47,7 +45,7 @@ Compose::~Compose()
 
 DObject*         Compose::newObject(DStruct* dstruct, DValue const& args)
 {
-  return (new Compose(dstruct, args));
+  return (new Compose((DComposedStruct*)dstruct, args));
 }
 
 DObject*         Compose::clone() const
