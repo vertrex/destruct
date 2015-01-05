@@ -26,7 +26,7 @@ void RPC::serve(uint32_t port)
 void RPC::connect(std::string const& addr, uint32_t port)
 {
   TestClient client(addr, port);
-  client.start();
+  client.start();//getRootObject()
 }
 
 
@@ -41,15 +41,15 @@ DObject* TestClient::start(void)
 {
   Destruct::DStruct* fileS = this->remoteFind("File"); 
   if (!fileS)
-    throw std::string("Directory struct not found");
+    throw DException("TestClient::start Directory struct not found");
 
   Destruct::DStruct* directoryS = this->remoteFind("Directory"); 
   if (!directoryS)
-    throw std::string("Directory struct not found");
+    throw DException("TestClient::start Directory struct not found");
 
   Destruct::DStruct* vectorS = this->remoteFind("DVectorObject"); 
   if (!vectorS)
-    throw std::string("Directory struct not found");
+    throw DException("TestClient::start Directory struct not found");
 
   //0 is root server object
   ClientObject* remote = new ClientObject(*this->networkStream(), this->serializeRPC(), 0, directoryS); 

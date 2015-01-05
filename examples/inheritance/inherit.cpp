@@ -12,13 +12,22 @@
 
 #include "compose.hpp"
 
+extern "C"
+{
+  void declare(void)
+  {
+    Inheritance::declare();
+  }
+}
+
+
 /**
  * Test launcher
  */
 Inheritance::Inheritance() : __destruct(Destruct::Destruct::instance())
 {
   DType::init();
-  this->declare();
+  Inheritance::declare();
 }
 
 Inheritance::~Inheritance()
@@ -31,23 +40,25 @@ void  Inheritance::declare(void)
   /**
    * Simple Object
    */
+  Destruct::Destruct&  destruct = Destruct::Destruct::instance();
+
   DStruct*  simpleA = new DStruct(0, "SimpleA", DSimpleObject::newObject);
   simpleA->addAttribute(Destruct::DAttribute(DType::DUnicodeStringType, "text1"));
   simpleA->addAttribute(Destruct::DAttribute(DType::DUnicodeStringType, "text2"));
   simpleA->addAttribute(Destruct::DAttribute(DType::DObjectType, "object1"));
   simpleA->addAttribute(Destruct::DAttribute(DType::DObjectType, "object2"));
-  this->__destruct.registerDStruct(simpleA);
+  destruct.registerDStruct(simpleA);
 
   DStruct*  simpleB = new DStruct(simpleA, "SimpleB", DSimpleObject::newObject);
   simpleB->addAttribute(DAttribute(DType::DUnicodeStringType, "text3"));
   simpleB->addAttribute(DAttribute(DType::DObjectType, "object3"));
-  this->__destruct.registerDStruct(simpleB);
+  destruct.registerDStruct(simpleB);
 
   /**
    * Cpp Object
    */
   DStruct* cppA = makeNewDCpp<CppA>("CppA");
-  this->__destruct.registerDStruct(cppA);
+  destruct.registerDStruct(cppA);
 
   /**
    *  Compose with DCppObject 
@@ -64,10 +75,10 @@ void  Inheritance::declare(void)
   //this->__destruct.registerDStruct(composeABCppSimple);
 
   DStruct* cppAcppB = new DStruct(cppA, "CppACppB", DCppObject<CppB>::newObject, CppB::ownAttributeBegin(), CppB::ownAttributeEnd());
-  this->__destruct.registerDStruct(cppAcppB);
+  destruct.registerDStruct(cppAcppB);
 
   DStruct* simpleAcppB = new DStruct(simpleA, "SimpleACppB", DCppObject<CppB>::newObject, CppB::ownAttributeBegin(), CppB::ownAttributeEnd());
-  this->__destruct.registerDStruct(simpleAcppB);
+  destruct.registerDStruct(simpleAcppB);
 }
 
 void Inheritance::test(void)
@@ -99,12 +110,11 @@ void Inheritance::test(void)
   composition = this->__destruct.generate("SimpleACppB");
  
   this->testComposition(composition);
-
-
 }
 
 void           Inheritance::testComposition(DObject* composition) const
 {
+  std::cout << "==== Test composition " << composition->instanceOf()->name() << " ====" << std::endl;
   std::cout << "set value: " << std::endl;
   composition->setValue("text1", RealValue<DUnicodeString>("text 1"));
   composition->setValue("text3", RealValue<DUnicodeString>("text 3"));
@@ -116,12 +126,19 @@ void           Inheritance::testComposition(DObject* composition) const
   std::cout << "Call changeA() " << std::endl;
   composition->call("changeA");
  
- //try
- //std::cout << "Call callA() " << std::endl;
- //composition->call("callA");
+  try
+  {
+    std::cout << "Call callA() " << std::endl;
+    composition->call("callA");
+    this->show(composition); 
+  }
+  catch (DException const& exception)
+  {
+    std::cout << "Test composition Error : " << exception.error() << std::endl;
+  }
   //std::cout << "Get non existent value" << std::endl;
   //composition->getValue("tintin");
-  this->show(composition); 
+  std::cout << "====  End ===" << std::endl;
 }
 
 void           Inheritance::show(DStruct* dstruct) const
@@ -143,22 +160,3 @@ void           Inheritance::show(DObject* object) const
   DSerializers::to("Text")->serialize(*cout, object);
 }
 
-int     main(int argc, char** argv)
-{
-  Inheritance ih;
- 
-  try 
-  {
-    ih.test();
-  }
-  catch (DException const& exception)
-  {
-    std::cout << "Error : " << std::endl << exception.error() << std::endl; 
-  }
-  catch (const std::string& error)
-  {
-     std::cout << "Error : " << std::endl << error << std::endl;
-  }
-
-  return (0);
-}

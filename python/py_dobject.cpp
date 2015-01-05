@@ -109,7 +109,7 @@ PyObject* PyDObject::instanceOf(PyDObject::DPyObject* self)
 
   PyDStruct::DPyObject* dstructObject = (PyDStruct::DPyObject*)_PyObject_New(PyDStruct::pyType);
   dstructObject->pimpl = (Destruct::DStruct*)dstruct;
-   
+  
   return ((PyObject*)dstructObject);
 }
 
@@ -131,6 +131,7 @@ PyObject* PyDObject::getValue(PyDObject::DPyObject* self, PyObject* attributeObj
 
 
   CHECK_PIMPL
+
   if (PyInt_Check(attributeObject))
   {
     attributeIndex = PyLong_AsLong(attributeObject);
@@ -170,6 +171,7 @@ PyObject* PyDObject::setValueObject(PyDObject::DPyObject* self, PyObject* args, 
   int32_t      attributeIndex = 0; 
   const char*  attributeName = NULL;
 
+
   if (!PyArg_ParseTuple(args, "OO", &attributeObject, &valueObject))
   {
     PyErr_SetString(PyExc_TypeError, "must be string or integer, and a compatible DType or Python Object");
@@ -188,6 +190,7 @@ PyObject* PyDObject::setValueObject(PyDObject::DPyObject* self, PyObject* args, 
     return (PyDObject::setValue(self, attributeName, valueObject));
   }
   PyErr_SetString(PyExc_TypeError, "must be string or integer, and a compatible DType or Python Object");
+
   return (0);
 }
 
@@ -197,7 +200,10 @@ PyObject* PyDObject::setValue(PyDObject::DPyObject* self, const char* attributeN
   if (attributeIndex == -1 || attributeIndex >= (int32_t)self->pimpl->instanceOf()->attributeCount())
   {
     std::string errorString = "destruct.DObject." + self->pimpl->instanceOf()->name() +  " instance has no attribute '" + attributeName + "'";
+
+    
     PyErr_SetString(PyExc_AttributeError, errorString.c_str()); 
+
     return (0);
   }
 
@@ -370,22 +376,31 @@ PyObject*    PyDObject::_getattr(PyDObject::DPyObject* self, PyObject* args)
 {
   PyObject* obj = PyDObject::getValue(self, args);
   if (obj != NULL)
+  {
     return (obj);
+  }
 
   PyErr_Clear();
-  return (PyObject_GenericGetAttr((PyObject*)self, args));
+  obj = PyObject_GenericGetAttr((PyObject*)self, args);
+
+  return (obj);
 }
 
 int  PyDObject::_setattr(PyDObject::DPyObject* self, PyObject* name, PyObject* valueObject)
 {
+
   const char* cname = PyString_AsString(name);
 
   PyObject* res = setValue(self, cname, valueObject);
   if (res == Py_None)
+  {
     return (0);
+  }
 
   PyErr_Clear();
-  return (PyObject_GenericSetAttr((PyObject*)self, name, valueObject));
+  int setAttrRes = PyObject_GenericSetAttr((PyObject*)self, name, valueObject);
+
+  return (setAttrRes);
 }
 
 PyObject* PyDObject::_repr(PyDObject::DPyObject* self)

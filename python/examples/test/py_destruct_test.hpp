@@ -12,7 +12,7 @@
   PyModule_AddObject(module, moduleName, (PyObject*)moduleType);
 
 
-typedef PythonModule< class PyTest, Destruct::DestructTest > PyTestT;
+typedef PythonModule< class PyTest, DestructTest > PyTestT;
 class PyTest : public PyTestT 
 {
 public:

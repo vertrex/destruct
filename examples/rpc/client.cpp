@@ -8,11 +8,45 @@
 #include "serializerpc.hpp"
 #include "networkstream.hpp"
 
-Client::Client(std::string const& addr, uint32_t port) : __networkStream(NULL), __serializeRPC(NULL)
+#include "dsimpleobject.hpp"
+#include "server.hpp"
+extern "C"
+{
+  void  declare(void)
+  {
+    Destruct::Destruct& destruct = Destruct::Destruct::instance();
+   
+    DStruct* dstruct = makeNewDCpp<Server>("Server"); 
+    destruct.registerDStruct(dstruct);
+    dstruct = makeNewDCpp<Client>("Client");
+    destruct.registerDStruct(dstruct);
+
+    dstruct = new DStruct(NULL, "ClientArgument", DSimpleObject::newObject);
+    dstruct->addAttribute(DAttribute(DType::DUInt32Type, "port"));
+    dstruct->addAttribute(DAttribute(DType::DUnicodeStringType, "address"));
+    destruct.registerDStruct(dstruct); 
+  }
+}
+
+
+Client::Client(std::string const& addr, uint32_t port) : DCppObject<Client>(NULL, RealValue<DObject*>(DNone)), __networkStream(NULL), __serializeRPC(NULL)
 {
   this->__connect(addr, port);
   this->__networkStream = new NetworkStream(NULL, RealValue<DInt32>(this->__connectionSocket));
   this->__serializeRPC = new DSerializeRPC(*this->__networkStream, this->__objectManager, this->__functionObjectManager);
+}
+
+Client::Client(DStruct* dstruct, DValue const& value) : DCppObject<Client>(dstruct, value), __networkStream(NULL), __serializeRPC(NULL)
+{
+  this->init();
+  DObject* args = value.get<DObject*>();
+
+  std::string addr = args->getValue("address").get<DUnicodeString>();
+  uint32_t port = args->getValue("port").get<DUInt32>();
+  this->__connect(addr, port);
+  this->__networkStream = new NetworkStream(NULL, RealValue<DInt32>(this->__connectionSocket));
+  this->__serializeRPC = new DSerializeRPC(*this->__networkStream, this->__objectManager, this->__functionObjectManager);
+ 
 }
 
 Client::~Client()
@@ -26,19 +60,38 @@ void    Client::__connect(std::string const& addr, uint32_t port)
 
   this->__connectionSocket = socket(AF_INET , SOCK_STREAM , 0);
   if (this->__connectionSocket == -1)
-    throw std::string("Could not create socket");
+    throw DException("Client::__connect Could not create socket");
      
   server.sin_addr.s_addr = inet_addr(addr.c_str());
   server.sin_family = AF_INET;
   server.sin_port = htons(port);
  
   if (connect(this->__connectionSocket, (sockaddr *)&server , sizeof(server)) < 0)
-    throw std::string("connect failed. Error");
+    throw DException("Client::__connect connect failed. Error");
 }
 
 void    Client::__close(void)
 {
   //close(this->__connectionSocket);
+}
+
+DObject*                Client::start(void)
+{
+  throw DException("Client::start Not implemented.");
+}
+
+DValue     Client::findObject(void) //getRoot
+{
+  this->__networkStream = new NetworkStream(NULL, RealValue<DInt32>(this->connectionSocket()));
+
+  Destruct::Destruct& destruct = Destruct::Destruct::instance();
+
+  DStruct* registryS = destruct.find("Registry");
+
+  DSerialize* serializer = new DSerializeRPC(*this->__networkStream, this->objectManager(), this->functionObjectManager());
+  ClientObject* root = new ClientObject(*this->__networkStream, serializer, 0, registryS); 
+
+  return (RealValue<DObject*>(root));
 }
 
 Destruct::DStruct* Client::remoteFind(const std::string name)

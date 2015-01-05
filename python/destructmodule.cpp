@@ -25,6 +25,8 @@ PyMODINIT_FUNC init_destruct(void)
 {
   PyObject* module;
 
+  PyEval_InitThreads();
+
   PyDestruct::moduleInit();
   PyDStruct::moduleInit();
   PyDAttribute::moduleInit();

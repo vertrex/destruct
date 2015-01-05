@@ -7,6 +7,7 @@
 #include "dsimpleobject.hpp"
 #include "drealvalue.hpp"
 #include "dunicodestring.hpp"
+#include "dobject.hpp"
 
 #include "destruct_test.hpp"
 
@@ -14,17 +15,41 @@
   if (this->__output)\
     std::cout << msg << std::endl;
 
-#include "protocol/diterator.hpp"
+//#include "protocol/diterator.hpp"
 #include "protocol/dvector.hpp"
 #include "protocol/dclassobject.hpp"
 #include "protocol/dserialize.hpp"
 #include "protocol/dstream.hpp"
 
-namespace Destruct
-{
+using namespace Destruct;
+
 
 DestructTest::DestructTest(bool output) : __output(output)
 {
+}
+
+DestructTest::~DestructTest()
+{
+  std::cout << "DestructTest::~DestructTest()" << std::endl;
+}
+
+std::vector<DStruct*> DestructTest::declare(void)
+{
+  std::cout << "declaring " << std::endl;
+  std::vector<DStruct*>  list;
+
+  DestructTest::createBaseClass(list);
+  DestructTest::createNtfsClass(list); 
+  DestructTest::createNestedClass(list);
+  DestructTest::createModifiableClass(list);
+  DestructTest::createFuncClass(list);
+
+  //XXX return namespace / module class 
+  //inheritable par ex pour close le module si on veux le unload et virer les struct du namesapce
+  // name
+  // dstruct list
+
+  return (list);
 }
 
 void DestructTest::run()
@@ -35,12 +60,7 @@ void DestructTest::run()
    * Create a class that inherit baseNode (NtfsNode)
    * Create a class that have an NtfsNode object as member  (Nested)
    */
-        //this->createDynamicClass(); 
-  this->createBaseClass();
-  this->createNtfsClass(); 
-  this->createNestedClass();
-  this->createModifiableClass();
-  this->createFuncClass();
+   //this->createDynamicClass(); 
 
   this->createNtfsBootSector();
   this->deserializeNtfsBootSector();
@@ -49,57 +69,53 @@ void DestructTest::run()
   this->readArchive();
 }
 
-void DestructTest::createModifiableClass(void)
-{
-// this class is not created with dobject so we can test if we can add method in python FIX =0
-  DStruct* base = new DStruct(0, "Modify", DSimpleObject::newObject);
-  
-  base->addAttribute(DAttribute(DType::DInt64Type, "Size"));
-  base->addAttribute(DAttribute(DType::DInt64Type, "Children count"));
-  base->addAttribute(DAttribute(DType::DInt64Type, "Offset"));
-  this->structRegistry()->registerDStruct(base);
-}
-
-void DestructTest::createBaseClass(void)
+void DestructTest::createBaseClass(std::vector<DStruct*>& list)
 {
   DStruct* base = new DStruct(0, "BaseNode", DSimpleObject::newObject);
-  this->structRegistry()->registerDStruct(base);
-  this->structRegistry()->find("BaseNode");
-  
+  Destruct::Destruct::instance().registerDStruct("Test", base);
+
+  base = new DStruct(0, "BaseNode2", DSimpleObject::newObject);
+  Destruct::Destruct::instance().registerDStruct("Test", base);
+
+  base = new DStruct(0, "BaseNode", DSimpleObject::newObject);
+  Destruct::Destruct::instance().registerDStruct("Test.parser", base);
+
+  base = new DStruct(0, "Test.parser.special.BaseNode2", DSimpleObject::newObject);
+  Destruct::Destruct::instance().registerDStruct("Test.parser.special", base);
+
   base->addAttribute(DAttribute(DType::DInt64Type, "Size"));
   base->addAttribute(DAttribute(DType::DInt64Type, "Children count"));
   base->addAttribute(DAttribute(DType::DInt64Type, "Offset"));
-
-  this->showAttribute(base);
+  list.push_back(base);
 }
 
-
-void DestructTest::createNtfsClass(void)
+void DestructTest::createNtfsClass(std::vector<DStruct*>& list)
 {
-  DStruct* base = this->structRegistry()->find("BaseNode");
-  if (base == NULL)
-  {
-    output("error retrieving basenode");
-    return;
-  }
+  //DStruct* base = this->structRegistry()->find("BaseNode");
+  //if (base == NULL)
+  //{
+    //output("error retrieving basenode");
+    //return;
+  //}
 
-  DStruct* ntfsNodeStruct = new DStruct(base, "NtfsNode", DSimpleObject::newObject);
-  this->structRegistry()->registerDStruct(ntfsNodeStruct);
+  //DStruct* ntfsNodeStruct = new DStruct(base, "NtfsNode", DSimpleObject::newObject);
+  ////this->structRegistry()->registerDStruct(ntfsNodeStruct);
+  //list.push_back(ntfsNodeStruct);
  
-  ntfsNodeStruct->addAttribute(DAttribute(DType::DInt64Type, "MBRStartOffset"));
+  //ntfsNodeStruct->addAttribute(DAttribute(DType::DInt64Type, "MBRStartOffset"));
  
-  this->showAttribute(ntfsNodeStruct);
+  //this->showAttribute(ntfsNodeStruct);
 
-  DObject* ts = ntfsNodeStruct->newObject();
+  //DObject* ts = ntfsNodeStruct->newObject();
 
-  ts->setValue("MBRStartOffset", RealValue<DInt64>(1024));
-  ts->setValue("Size", RealValue<DInt64>(20000));
-  this->showObjectAttribute(ts);
+  //ts->setValue("MBRStartOffset", RealValue<DInt64>(1024));
+  //ts->setValue("Size", RealValue<DInt64>(20000));
+  //this->showObjectAttribute(ts);
  
-  ts->destroy();
+  //ts->destroy();
 }
 
-void DestructTest::createNestedClass(void)
+void DestructTest::createNestedClass(std::vector<DStruct*>& list)
 {
   DStruct* nestedStructDef = new DStruct(NULL, "Nested", DSimpleObject::newObject);
 
@@ -107,39 +123,53 @@ void DestructTest::createNestedClass(void)
   nestedStructDef->addAttribute(DAttribute(DType::DObjectType, "ObjectNested"));
   nestedStructDef->addAttribute(DAttribute(DType::DUnicodeStringType, "NestedEnd"));
 
-  this->structRegistry()->registerDStruct(nestedStructDef);
+  //this->structRegistry()->registerDStruct(nestedStructDef);
+  list.push_back(nestedStructDef);
 
-  this->showAttribute(nestedStructDef);
+  //this->showAttribute(nestedStructDef);
 
-  try //ni,p car utilse null plus rpaide 
-  {
-    DStruct* ntfsBase = this->structRegistry()->find("NtfsNode");
-    if (ntfsBase == NULL)
-  //throw DException ici plutot que ds find  ? python le gera ds ca lib et en c++ c en mode fast 
-      return ;
-    DObject* nestedStruct = nestedStructDef->newObject();
+  //try //ni,p car utilse null plus rpaide 
+  //{
+    //DStruct* ntfsBase = this->structRegistry()->find("NtfsNode");
+    //if (ntfsBase == NULL)
+  ////throw DException ici plutot que ds find  ? python le gera ds ca lib et en c++ c en mode fast 
+      //return ;
+    //DObject* nestedStruct = nestedStructDef->newObject();
 
-    nestedStruct->setValue("NestedStart", RealValue<DInt64>(32));
-    // create nested object and add value
-     DObject* nb = ntfsBase->newObject();
-     nb->setValue("Size", RealValue<DInt64>(1));
+    //nestedStruct->setValue("NestedStart", RealValue<DInt64>(32));
+    //// create nested object and add value
+     //DObject* nb = ntfsBase->newObject();
+     //nb->setValue("Size", RealValue<DInt64>(1));
 
-     nestedStruct->setValue("ObjectNested", RealValue<DObject*>(nb));
-     nestedStruct->setValue("NestedEnd", RealValue<DUnicodeString>("My unicode string"));
+     //nestedStruct->setValue("ObjectNested", RealValue<DObject*>(nb));
+     //nestedStruct->setValue("NestedEnd", RealValue<DUnicodeString>("My unicode string"));
 
-     this->showObjectAttribute(nestedStruct);
+     //this->showObjectAttribute(nestedStruct);
 
-     nestedStruct->destroy();
-     nb->destroy();
+     //nestedStruct->destroy();
+     //nb->destroy();
 
-  } 
-  catch (DException exception)
-  {
-    std::cout << exception.error() << std::endl;
-  }
+  //} 
+  //catch (DException exception)
+  //{
+    //std::cout << exception.error() << std::endl;
+  //}
   
   //XXX throw error in find ? morre c++ / object style?)
 }
+
+void DestructTest::createModifiableClass(std::vector<DStruct*>& list)
+{
+// this class is not created with dobject so we can test if we can add method in python FIX =0
+  DStruct* base = new DStruct(0, "Modify", DSimpleObject::newObject);
+  
+  base->addAttribute(DAttribute(DType::DInt64Type, "Size"));
+  base->addAttribute(DAttribute(DType::DInt64Type, "Children count"));
+  base->addAttribute(DAttribute(DType::DInt64Type, "Offset"));
+  //this->structRegistry()->registerDStruct(base);
+  list.push_back(base);
+}
+
 
 void    DestructTest::showAttribute(DStruct* def)
 {
@@ -235,15 +265,15 @@ DObject* DestructTest::getObjectValue()
 }
 
 
-void DestructTest::createFuncClass(void)
+void DestructTest::createFuncClass(std::vector<DStruct*>& list)
 {
-  std::cout << "Test list " << std::endl;
-  DObject* iv = this->createIntVector();
-  iv->destroy();
-  std::cout << "Creafunc class  create string vector" << std::endl; 
-  DObject* is = this->createStringVector();
-  is->destroy();
-  std::cout << "return create string vector" << std::endl;
+  //std::cout << "Test list " << std::endl;
+  ////DObject* iv = this->createIntVector();
+  //iv->destroy();
+  //std::cout << "Creafunc class  create string vector" << std::endl; 
+  //DObject* is = this->createStringVector();
+  //is->destroy();
+  //std::cout << "return create string vector" << std::endl;
 }
 
 DObject*        DestructTest::createIntVector(void)
@@ -508,10 +538,8 @@ void DestructTest::readArchive(void)
   //}
 }
 
-Destruct* DestructTest::structRegistry(void)
+Destruct::Destruct* DestructTest::structRegistry(void)
 {
   return (&Destruct::Destruct::instance());
 }
 
-
-}

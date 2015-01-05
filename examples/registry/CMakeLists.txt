@@ -29,6 +29,7 @@ set(registry_libfiles
 )
 
 add_library(registry SHARED ${registry_libfiles})
+target_link_libraries(registry destruct destruct_rpc)
 
 set(registry_files
 registryrpc.cpp)

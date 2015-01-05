@@ -119,6 +119,8 @@ PyObject* PyDStruct::newObject(PyDStruct::DPyObject* self, PyObject* args, PyObj
   PyDObject::DPyObject*   dobjectObject = (PyDObject::DPyObject*)_PyObject_New((PyTypeObject*)PyDObject::pyType);
   dobjectObject->pimpl = dobject;
 
+  Py_INCREF(dobjectObject);
+
   return ((PyObject*)dobjectObject);
 }
 

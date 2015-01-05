@@ -29,11 +29,11 @@ int32_t NetworkStream::write(std::string const& str)
   uint64_t size = str.size();
   uint32_t readed = this->__send((void*)&size, sizeof(size));
   if (readed != sizeof(size))
-    throw std::string("Can't write string size ");
+    throw DException("NetworkStream::write Can't write string size ");
 
   readed = this->__send((void*)str.c_str(), size);
   if (readed != size)
-    throw std::string("Can't write string");
+    throw DException("NetworkStream::write Can't write string");
   
   return (readed);
 }
@@ -48,7 +48,7 @@ int32_t NetworkStream::read(std::string& readValue)
 {    
   uint64_t size = 0;
   if (this->__recv(&size, sizeof(size)) != sizeof(size))
-    throw std::string("NetworkStream::read can't get size");
+    throw DException("NetworkStream::read can't get size");
 
   uint8_t*  value = new uint8_t[size + 1];
   this->__recv(value, size); //test return value

@@ -10,7 +10,7 @@
 
 using namespace Destruct;
 
-Server::Server(uint32_t port) : __networkStream(NULL), __serializer(NULL)
+Server::Server(uint32_t port) : DCppObject<Server>(NULL, RealValue<DUInt32>(port)), __networkStream(NULL), __serializer(NULL)
 {
   this->__bind(port);
 }
@@ -27,14 +27,14 @@ void            Server::__bind(int32_t port)
   int on = 1;
   setsockopt(this->__listenSocket, SOL_SOCKET, SO_REUSEADDR, (const char *)&on, sizeof(on));
   if (this->__listenSocket == -1)
-    throw std::string("Could not create socket");
+    throw DException("Server::__bind Could not create socket");
      
   sockaddr_in server;
   server.sin_family = AF_INET;
   server.sin_addr.s_addr = INADDR_ANY;
   server.sin_port = htons(port);
   if(bind(this->__listenSocket,(sockaddr *)&server , sizeof(server)) < 0)
-    throw std::string("bind failed. Error");
+    throw DException("Server::__bind bind failed. Error");
 }
 
 void            Server::__listen(void) 
@@ -47,7 +47,7 @@ void            Server::__listen(void)
   c = sizeof(sockaddr_in);
   this->__connectionSocket = accept(this->__listenSocket, (sockaddr *)&client, (socklen_t*)&c);
   if (this->__connectionSocket < 0)
-    throw std::string("accept failed");
+    throw DException("Server::__listen accept failed");
   std::cout << "Connection accepted" << std::endl;
 
   delete this->__networkStream;
@@ -66,7 +66,7 @@ void    Server::findDStruct(void)
   Destruct::Destruct& destruct = Destruct::Destruct::instance();
   DStruct* dstruct = destruct.find(name);
   if (!dstruct)
-   throw std::string("DStruct not found");
+   throw DException("Server::findDStruct DStruct not found");
 
   this->__serializer->serialize(*this->__networkStream, *dstruct);
   this->__networkStream->flush();
@@ -102,7 +102,7 @@ void            Server::serve(void)
 {
   this->__listen();
   ServerObject serverObject(*this->__networkStream, this->__serializer, this->__objectManager, this->__functionObjectManager);
-  this->initRoot(); //again
+  this->initRoot(); //again? XXX
   this->showRoot();
 
   while (true)

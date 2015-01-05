@@ -4,28 +4,31 @@
 #include <iostream>
 
 #include "destruct.hpp"
+#include "dstruct.hpp"
 #include "drealvalue.hpp"
 #include "dmethodobject.hpp"
 
+using namespace Destruct;
 
-namespace Destruct
-{
 
 class DestructTest
 {
 public:
-            DestructTest(bool output = false);
- Destruct*  structRegistry(void);
+ DestructTest(bool output = false);
+ ~DestructTest();
 
- void      createBaseClass(void);
- void      createNtfsClass(void);
- void      createNestedClass(void);
-
- void      createNtfsBootSector(void);
- void      deserializeNtfsBootSector(void);
+ Destruct::Destruct*  structRegistry(void);
+ static std::vector<DStruct*> declare(void);
  
- void      createModifiableClass(void);
- void      createFuncClass(void);
+ static void    createBaseClass(std::vector<DStruct*>&);
+ static void    createNtfsClass(std::vector<DStruct*>&);
+ static void    createNestedClass(std::vector<DStruct*>&);
+
+ void           createNtfsBootSector(void);
+ void           deserializeNtfsBootSector(void);
+ 
+ static void    createModifiableClass(std::vector<DStruct*>&);
+ static void    createFuncClass(std::vector<DStruct*>&);
 
  void      createArchive(void);
  void      readArchive(void);
@@ -40,7 +43,6 @@ public:
 
  DObject*  createStringVector(void);
  DObject*  createIntVector(void);
-
 private:        
  bool      __output;       
 };
@@ -48,8 +50,12 @@ private:
 /*
  *  Class Volume Information Block
  */
-
-
-
+extern "C"
+{
+  void declare(void)
+  {
+    DestructTest::declare();
+  }
 }
+
 #endif

@@ -4,7 +4,7 @@
 int main(int argc, char **argv)
 {
   Destruct::DType::init();
-  Destruct::DestructTest destructTest = Destruct::DestructTest(true);
+  DestructTest destructTest = DestructTest(true);
   destructTest.run();
   Destruct::DType::clean();
   //Destruct::DObject* iter = destructTest.getObjectValue();

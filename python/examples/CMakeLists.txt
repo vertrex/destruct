@@ -9,3 +9,5 @@ add_subdirectory(embedding)
 add_subdirectory(registry)
 add_subdirectory(workerpool)
 
+add_subdirectory(loader)
+#add_subdirectory(inheritance)

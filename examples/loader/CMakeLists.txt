@@ -11,20 +11,17 @@
 # 
 # Author(s):
 #  Solal Jacob <sja@digital-forensic.org>
-include_directories("../")
 
-add_subdirectory(dtest)
-add_subdirectory(rpc)
-add_subdirectory(db)
-add_subdirectory(refcount)
-add_subdirectory(registry)
-add_subdirectory(threading)
-add_subdirectory(inheritance)
-add_subdirectory(loader)
+include_directories("../../")
 
-set (test_files
-test.cpp
+set (loader_libfiles
+loader.cpp
 )
 
-add_executable(test ${test_files})
-target_link_libraries(test destruct destruct_test)
+add_library(destruct_loader SHARED ${loader_libfiles})
+
+set (load_files
+load.cpp)
+
+add_executable(load ${load_files})
+target_link_libraries(load destruct destruct_loader dl) #mettre XXX libdl linker al a lib pas l exe

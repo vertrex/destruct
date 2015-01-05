@@ -147,7 +147,7 @@ public:
   Inheritance();
   ~Inheritance();
 
-  void  declare(void);
+  static void  declare(void);
   void  test(void);
   void  show(DObject* object) const;
   void  show(DStruct* dstruct) const;

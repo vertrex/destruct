@@ -6,6 +6,14 @@
 
 #include "threadsafeobject.hpp"
 
+extern "C"
+{
+  void declare(void)
+  {
+    WorkerPool::Declare();
+  }
+}
+
 /**
  * Worker
  */

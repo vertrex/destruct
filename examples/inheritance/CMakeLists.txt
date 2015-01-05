@@ -14,10 +14,17 @@
 
 include_directories("../../")
 
-set (inherit_files
+set (inherit_libfiles
 inherit.cpp
 compose.cpp
 )
 
+add_library(destruct_inherit SHARED ${inherit_libfiles})
+target_link_libraries(destruct_inherit destruct)
+
+set (inherit_files
+inheritance.cpp
+)
+
 add_executable(inherit ${inherit_files})
-target_link_libraries(inherit destruct)
+target_link_libraries(inherit destruct destruct_inherit)

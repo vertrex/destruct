@@ -123,15 +123,14 @@ PyObject* PyDMethodObject::call(PyObject* _self, PyObject* args)
   } 
   catch (Destruct::DException const& exception)
   {  
-    PyEval_RestoreThread(_save); 
     PyErr_SetString(PyExc_TypeError, exception.error().c_str());
   }
   catch (std::bad_cast exception) //catch in cpp ?
   {
-    PyEval_RestoreThread(_save); 
     std::string argumentString = "MethodObject must return a " + type.returnName();
     PyErr_SetString(PyExc_TypeError, argumentString.c_str()); 
   }
+  //PyEval_RestoreThread(_save); //block ? 
 
   return (0);
 }
@@ -200,10 +199,9 @@ PyObject* PyDMethodObject::getType(PyDMethodObject::DPyObject* self, PyObject* a
  */ 
 Destruct::DValue DPythonMethodObject::call(void) const
 {
-  PyGILState_STATE gstate;
-  gstate = PyGILState_Ensure();
-
+  PyGILState_STATE gstate = PyGILState_Ensure();
   PyObject* pythonResult = PyObject_CallFunctionObjArgs(this->__pythonCallable, this->__self, NULL, NULL);
+  PyGILState_Release(gstate);
 
   if (!pythonResult)
   {
@@ -211,18 +209,15 @@ Destruct::DValue DPythonMethodObject::call(void) const
      throw Destruct::DException(error);
   }
 
-  PyGILState_Release(gstate);
   Destruct::DStruct* dstruct = ((PyDObject::DPyObject*)this->__self)->pimpl->instanceOf();
   Destruct::DType type = dstruct->attribute(this->__attributeIndex).type();
-
+  
   //return DValueDispatchTable[this->__type.getReturnType()]->toDValue(pythonResult);
   return DValueDispatchTable[type.getReturnType()]->toDValue(pythonResult);
 }
 
 Destruct::DValue DPythonMethodObject::call(Destruct::DValue const& args) const
 {
-  PyGILState_STATE gstate;
-  gstate = PyGILState_Ensure();
 
   PyObject* pythonResult = NULL;
   //Destruct::DType::Type_t argumentType = this->__type.getArgumentType();
@@ -237,11 +232,15 @@ Destruct::DValue DPythonMethodObject::call(Destruct::DValue const& args) const
   if (argumentType != Destruct::DType::DNoneType)
   {
     PyObject* pyargs = DValueDispatchTable[argumentType]->asDValue(args);
+    PyGILState_STATE gstate = PyGILState_Ensure();
     pythonResult = PyObject_CallFunctionObjArgs(this->__pythonCallable, this->__self, pyargs, NULL);
+    PyGILState_Release(gstate);
   }
   else
   { 
+    PyGILState_STATE gstate = PyGILState_Ensure();
     pythonResult = PyObject_CallFunctionObjArgs(this->__pythonCallable, this->__self, NULL, NULL);
+    PyGILState_Release(gstate);
   }
 
   if (!pythonResult)
@@ -250,7 +249,6 @@ Destruct::DValue DPythonMethodObject::call(Destruct::DValue const& args) const
      throw Destruct::DException(error);
   }
 
-  PyGILState_Release(gstate);
   return DValueDispatchTable[type.getReturnType()]->toDValue(pythonResult);
 }
 

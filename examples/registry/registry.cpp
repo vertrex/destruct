@@ -23,6 +23,14 @@
 
 #include "streamvfile.hpp"
 
+extern "C"
+{
+  void declare()
+  {
+    Registry::declare();
+  }
+}
+
 void    Registry::declare(void)
 {
   Destruct::Destruct& destruct = Destruct::Destruct::instance();

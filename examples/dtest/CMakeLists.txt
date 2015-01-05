@@ -20,3 +20,4 @@ set (destruct_test_files
 )
 
 add_library(destruct_test SHARED ${destruct_test_files})
+target_link_libraries(destruct_test destruct)
