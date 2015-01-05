@@ -282,6 +282,7 @@ Destruct::DValue PythonBaseModule::pyObjectToDValue(PyObject* object)
     if (typeId < Destruct::DType::DUnknownType)
       return Destruct::DValue(DValueDispatchTable[typeId]->toDValue(object));// -de check mais 1 call en plus possibilite de faire mieux avec unarg static ? objectTypeId.type ?
   }
+  PyErr_Clear();
     //XXX a utiliser pour forcer le type int8, int16, ... car pas gerer la !      
 //table:yDObject::pyType pyoject->type ? dynamic 
   if (PyObject_TypeCheck(object, PyDObject::pyType))
