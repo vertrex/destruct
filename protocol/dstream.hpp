@@ -63,6 +63,7 @@ public:
 
   virtual DInt64 write(DValue const& args);
   virtual DInt64 read(DValue const& args);
+
   static size_t ownAttributeCount()
   {
     return (0);

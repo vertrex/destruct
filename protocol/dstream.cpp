@@ -67,35 +67,35 @@ DInt64 DStream::write(DValue const& args)
 
 DStream& DStream::operator<<(DStream& input)
 {
-        //this->__fstream << input;
-  std::cout << "DStream: Not implemented " << std::endl;
+  //this->__fstream << input;
   return (*this);
 }
 
 /* read */
 DStream& DStream::operator>>(DStream& output)
 {
-        //this->__fstream >> output;
-  std::cout << "DStream: Not implemented " << std::endl;
+  //this->__fstream >> output;
   return (*this);
 }
 
 DStream& DStream::operator>>(std::string& val) 
 {
   this->__fstream >> val;
+
+  //std::cout << "res " << this->__fstream ? << std::endl;
   return (*this);
 }
 
 DStream& DStream::read(char*  buff, uint32_t size)
 {
   this->__fstream.read((char*)buff, size);
+
   return (*this);
 }
 
 DInt64 DStream::read(DValue const& args)
 {
 //XXX get args.buff, args.size  ...
-  std::cout << "DStream: Not implemented " << std::endl;
   return (0);
 }
 

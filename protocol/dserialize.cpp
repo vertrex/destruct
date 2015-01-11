@@ -187,7 +187,7 @@ DStruct* DSerializeBinary::deserialize(DStream& input)
     return (NULL);
   if (input.read((char*)&attributeCount, sizeof(size_t)).fail())
     return (NULL);
- 
+
   if ((dstruct = new DStruct(0, name, DSimpleObject::newObject)) == NULL) //XXX parent etc !!
     return (NULL);
   for (size_t i = 0; i < attributeCount; i++) 

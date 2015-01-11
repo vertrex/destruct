@@ -22,13 +22,17 @@ class   DMapItem : public DCppObject<DMapItem<KeyType, KeyTypeId, ValueType, Val
 public:
   DMapItem(DStruct* dstruct, DValue const& args) : DCppObject<DMapItemType>(dstruct, args)
   {
+    this->init();
   }
+
   DMapItem(const DMapItem& copy) : DCppObject<DMapItemType >(copy), key(copy.key), value(copy.value)
   {
+    this->init();
   }
 
   RealValue<KeyType>       key;
   RealValue<ValueType>     value;
+
   static size_t ownAttributeCount()
   {
     return (2);
@@ -92,6 +96,7 @@ public:
 
   DMapIterator(const DMapIterator& copy) : DCppObject<DMapIteratorType >(copy), begin(copy.begin), end(copy.end), container(copy.container)
   {
+    this->init();
   }
 
   ~DMapIterator()
