@@ -10,11 +10,11 @@ Compose::Compose(DComposedStruct* composedStruct, DValue const& args) : DObject(
   std::vector<DStruct const*> dstructs = composedStruct->inherit();
   std::vector<DStruct const*>::iterator dstruct = dstructs.begin();
   
-  std::string msg = "<";
+  DUnicodeString msg = "<";
   for (; dstruct != dstructs.end(); ++dstruct)
   {
     if (dstruct != dstructs.begin())
-      msg += ", ";
+      msg += DUnicodeString(", ");
     msg += (*dstruct)->name();
     //XXX if composable object si non on devrait pas passer this ca peut s attendre a autre chose !
 
@@ -78,7 +78,7 @@ DValue           Compose::call(size_t index, DValue const& args)
   return (this->call(attribute.name(), args));
 }
 
-DValue           Compose::getValue(std::string const& name) const
+DValue           Compose::getValue(DUnicodeString const& name) const
 {
   std::vector<DObject*>::const_iterator object = this->__objects.begin();
   for (; object != this->__objects.end(); ++object)
@@ -89,11 +89,11 @@ DValue           Compose::getValue(std::string const& name) const
       return ((*object)->getValue(name)); 
   }
 
-  std::string error = "getValue " + name + " not found";
+  DUnicodeString error = "getValue " + name + " not found";
   throw DException(error);
 }
 
-void             Compose::setValue(std::string const& name, DValue const& args)
+void             Compose::setValue(DUnicodeString const& name, DValue const& args)
 {
   std::vector<DObject*>::const_iterator object = this->__objects.begin();
   for (; object != this->__objects.end(); ++object)
@@ -104,11 +104,11 @@ void             Compose::setValue(std::string const& name, DValue const& args)
       return ((*object)->setValue(name, args)); 
   }
 
-  std::string error = "setValue(" + name + ", " + args.asUnicodeString() + ") not found";
+  DUnicodeString error = "setValue(" + name + ", " + args.asUnicodeString() + ") not found";
   throw DException(error);
 }
 
-DValue           Compose::call(std::string const& name, DValue const& args)
+DValue           Compose::call(DUnicodeString const& name, DValue const& args)
 {
   std::vector<DObject*>::const_iterator object = this->__objects.begin();
   for (; object != this->__objects.end(); ++object)
@@ -119,11 +119,11 @@ DValue           Compose::call(std::string const& name, DValue const& args)
       return ((*object)->call(name), args); 
   }
 
-  std::string error = "getValue " + name + " not found";
+  DUnicodeString error = "getValue " + name + " not found";
   throw DException(error);
 }
 
-DValue           Compose::call(std::string const& name)
+DValue           Compose::call(DUnicodeString const& name)
 {
   std::vector<DObject*>::const_iterator object = this->__objects.begin();
   for (; object != this->__objects.end(); ++object)
@@ -134,7 +134,7 @@ DValue           Compose::call(std::string const& name)
       return ((*object)->call(name)); 
   }
 
-  std::string error = "call " + name + " not found";
+  DUnicodeString error = "call " + name + " not found";
   throw DException(error);
 }
 
@@ -147,5 +147,3 @@ BaseValue const* Compose::getBaseValue(size_t index) const
 {
   return (NULL);
 }
-
-

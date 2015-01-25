@@ -103,7 +103,7 @@ size_t DStruct::attributeCount() const
   return (this->__effectiveAttributes.size());
 }
 
-int32_t DStruct::findAttribute(std::string const& name) const
+int32_t DStruct::findAttribute(DUnicodeString const& name) const
 {
   for (DAttributeContainer::const_reverse_iterator i = this->__effectiveAttributes.rbegin(); i != this->__effectiveAttributes.rend(); ++i)
   {

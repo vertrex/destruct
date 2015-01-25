@@ -21,11 +21,11 @@ public:
 
   DStream&          operator>>(DStreamString& output);
   int32_t           read(void* buff, int32_t size);
-  int32_t           read(std::string & readValue);
+  int32_t           read(DUnicodeString& readValue);
   int32_t           read(uint64_t*  id);
 
   DStream&          operator<<(DStreamString& input);
-  int32_t           write(std::string const& str); 
+  int32_t           write(DUnicodeString const& str); 
   int32_t           write(uint64_t id) ;
 
   int32_t           flush(void) ; 

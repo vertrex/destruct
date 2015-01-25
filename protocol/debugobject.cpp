@@ -7,7 +7,7 @@ namespace Destruct
 
 DebugObject::DebugObject(DStruct* dstruct, DValue const& args) : DObject(args.get<DObject*>()->instanceOf(), args), __dobject(args.get<DObject*>())
 {
-  std::string const& name = __dobject->instanceOf()->name();
+  DUnicodeString const& name = __dobject->instanceOf()->name();
   std::cout << name <<  "::" << name << "()" << std::endl;
 }
 
@@ -66,7 +66,7 @@ DValue           DebugObject::call(size_t index, DValue const& args)
   return (result);
 }
 
-DValue           DebugObject::getValue(std::string const& name) const
+DValue           DebugObject::getValue(DUnicodeString const& name) const
 {
   DValue result = this->__dobject->getValue(name);
 
@@ -75,7 +75,7 @@ DValue           DebugObject::getValue(std::string const& name) const
   return (result);
 }
 
-void             DebugObject::setValue(std::string const& name, DValue const& args)
+void             DebugObject::setValue(DUnicodeString const& name, DValue const& args)
 {
   std::cout << this->__dobject->instanceOf()->name() << "::" << name << " => " << args.asUnicodeString() << std::endl;
 
@@ -83,7 +83,7 @@ void             DebugObject::setValue(std::string const& name, DValue const& ar
 }
 
 
-DValue           DebugObject::call(std::string const& name, DValue const& args)
+DValue           DebugObject::call(DUnicodeString const& name, DValue const& args)
 {
   DValue result = this->__dobject->call(name, args);
 
@@ -92,7 +92,7 @@ DValue           DebugObject::call(std::string const& name, DValue const& args)
   return (result);
 }
 
-DValue           DebugObject::call(std::string const& name)
+DValue           DebugObject::call(DUnicodeString const& name)
 {
   DValue result = this->__dobject->call(name);
 

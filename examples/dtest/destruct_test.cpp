@@ -180,7 +180,7 @@ void    DestructTest::showAttribute(DStruct* def)
 
 void    DestructTest::showObjectAttribute(DObject* object, int depth)
 {
-  std::string fname("output/test-" + object->instanceOf()->name() + ".xml");
+  //std::string fname("output/test-" + object->instanceOf()->name() + ".xml");
   
   //DStream binoutxml(fname, DStream::Output); //XXX Dserializer
   //DSerializers::to("XML")->serialize(binoutxml, *object);
@@ -420,7 +420,7 @@ void DestructTest::createNtfsBootSector(void)
 
   this->showObjectAttribute(bootSector);
 
-  std::string fname = "output/test-BIG-" + bootSector->instanceOf()->name() + ".raw";
+  //std::string fname = "output/test-BIG-" + bootSector->instanceOf()->name() + ".raw";
   //DStream binoutraw(fname, DStream::Output); //XXX DSerializer
   ////for (int x = 0; x < 1000000*2; x++) //deserialize 10 go
   ////DSerializers::to("Raw")->serialize(binoutraw, *bootSector);

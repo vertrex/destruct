@@ -13,7 +13,7 @@ ServerObject::ServerObject(NetworkStream& networkStream, DSerialize* serializer,
 void    ServerObject::setValue(void)
 {
   this->__networkStream.read(&this->__id); 
-  std::string name;
+  DUnicodeString name;
   this->__networkStream.read(name);
 
   DObject* object = this->__objectManager.object(this->__id);
@@ -26,7 +26,7 @@ void    ServerObject::getValue(void)
 {
   this->__networkStream.read(&this->__id); 
   DObject* object = this->__objectManager.object(this->__id);
-  std::string name;
+  DUnicodeString  name;
   this->__networkStream.read(name);
   
   Destruct::DValue value = object->getValue(name);
@@ -43,7 +43,7 @@ void    ServerObject::call(void)
 {
   this->__networkStream.read(&this->__id); 
   DObject* object = this->__objectManager.object(this->__id);
-  std::string name;
+  DUnicodeString name;
   this->__networkStream.read(name);
 
   Destruct::DValue args = this->__serializer->deserialize(this->__networkStream, object->instanceOf()->attribute(name).type().getArgumentType());
@@ -58,7 +58,7 @@ void    ServerObject::call0(void)
 {
   this->__networkStream.read(&this->__id); 
   DObject* object = this->__objectManager.object(this->__id);
-  std::string name;
+  DUnicodeString name;
   this->__networkStream.read(name);
 
   Destruct::DValue value = object->call(name); 

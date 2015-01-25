@@ -32,7 +32,7 @@ DStream::~DStream()
 }
 
 /* write */
-DStream& DStream::operator<<(std::string val) 
+DStream& DStream::operator<<(DUnicodeString val) 
 {
   this->__fstream << val;
   return (*this);
@@ -78,7 +78,7 @@ DStream& DStream::operator>>(DStream& output)
   return (*this);
 }
 
-DStream& DStream::operator>>(std::string& val) 
+DStream& DStream::operator>>(DUnicodeString& val) 
 {
   this->__fstream >> val;
 
@@ -121,13 +121,13 @@ DStreamCout::~DStreamCout()
 {
 }
 
-DStream& DStreamCout::operator>>(std::string& val) 
+DStream& DStreamCout::operator>>(DUnicodeString& val) 
 {
   std::cin >> val;
   return (*this);
 }
 
-DStream& DStreamCout::operator<<(std::string val) 
+DStream& DStreamCout::operator<<(DUnicodeString val) 
 {
   std::cout << val;
   return (*this);

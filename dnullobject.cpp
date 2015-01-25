@@ -58,16 +58,16 @@ DValue DNullObject::call(size_t index, DValue const&)
   return (RealValue<DObject*>(this));
 }
 
-DValue DNullObject::getValue(std::string const& name) const
+DValue DNullObject::getValue(DUnicodeString const& name) const
 {
   return RealValue<DObject*>((DObject*)this);
 }
 
-void DNullObject::setValue(std::string const& name, DValue const& value)
+void DNullObject::setValue(DUnicodeString const& name, DValue const& value)
 {
 }
 
-DValue DNullObject::call(std::string const& name, DValue const& value)
+DValue DNullObject::call(DUnicodeString const& name, DValue const& value)
 {
   return RealValue<DObject*>(this); 
 }

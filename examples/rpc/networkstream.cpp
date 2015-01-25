@@ -24,7 +24,7 @@ NetworkStream::~NetworkStream()
 {
 }
 
-int32_t NetworkStream::write(std::string const& str) 
+int32_t NetworkStream::write(DUnicodeString const& str) 
 {
   uint64_t size = str.size();
   uint32_t readed = this->__send((void*)&size, sizeof(size));
@@ -44,7 +44,7 @@ int32_t NetworkStream::write(uint64_t id)
   return (sizeof(id));
 }
 
-int32_t NetworkStream::read(std::string& readValue)
+int32_t NetworkStream::read(DUnicodeString& readValue)
 {    
   uint64_t size = 0;
   if (this->__recv(&size, sizeof(size)) != sizeof(size))
@@ -53,7 +53,7 @@ int32_t NetworkStream::read(std::string& readValue)
   uint8_t*  value = new uint8_t[size + 1];
   this->__recv(value, size); //test return value
   value[size] = 0;
-  readValue = std::string((char*)value, size);
+  readValue = DUnicodeString(std::string((char*)value, size));
   delete value;
 
   return (readValue.size());
@@ -79,7 +79,7 @@ DStream& NetworkStream::operator<<(DStreamString& input)
 
 DStream& NetworkStream::operator>>(DStreamString& output)
 {
-  std::string tmp;
+  DUnicodeString tmp;
   this->read(tmp);
   output.write(tmp.c_str(), tmp.size());
 

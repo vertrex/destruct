@@ -17,9 +17,9 @@ namespace Destruct
  *  This is the default serialization format for destruct 
  *  All object & protocol must be serializable and unserializable trough it's interface 
  */
-const std::string DSerializeBinary::name(void)
+const DUnicodeString DSerializeBinary::name(void)
 {
-  return ("Binary");
+  return (DUnicodeString("Binary"));
 }
 
 DSerializeBinary*   DSerializeBinary::create(void)
@@ -164,7 +164,7 @@ bool DSerializeBinary::serialize(DStream& output, DObject*  dobject)
 }
 //king of specialization for string type 
 
-bool DSerializeBinary::serialize(DStream& output, const std::string& str)
+bool DSerializeBinary::serialize(DStream& output, const DUnicodeString& str)
 {
  size_t ssize = str.size();
   //utilisase 8 bytes pour une size ca fait bcp ... 
@@ -179,7 +179,7 @@ bool DSerializeBinary::serialize(DStream& output, const std::string& str)
 //Deserialization 
 DStruct* DSerializeBinary::deserialize(DStream& input)
 {
-  std::string name;
+  DUnicodeString name;
   size_t attributeCount;
   DStruct* dstruct = NULL; 
 
@@ -193,7 +193,7 @@ DStruct* DSerializeBinary::deserialize(DStream& input)
   for (size_t i = 0; i < attributeCount; i++) 
   {
      DType::Type_t type;
-     std::string   name;
+     DUnicodeString name;
 
      if (this->deserialize(input, name) == false)
        return (NULL);
@@ -229,7 +229,7 @@ DValue DSerializeBinary::deserialize(DStream& input, DType::Type_t dtype)
       return (RealValue<DObject*>(DNone));
     DStruct* dstruct = destruct.find(structName);
     if (dstruct == NULL)
-      throw std::string("Can't find struct : " + structName + " in destruct database.");
+      throw DException("Can't find struct : " + structName + " in destruct database.");
    
     DObject* dobject = dstruct->newObject();
     this->deserialize(input, dobject);
@@ -328,7 +328,7 @@ bool DSerializeBinary::deserialize(DStream& input, DObject* dobject) //not imple
   return (true);
 }
 
-bool DSerializeBinary::deserialize(DStream& input, std::string& str)
+bool DSerializeBinary::deserialize(DStream& input, DUnicodeString& str)
 {
   size_t ssize;
   if (input.read((char*)&ssize, sizeof(size_t)).fail())
@@ -350,7 +350,7 @@ bool DSerializeBinary::deserialize(DStream& input, std::string& str)
 /**
  *   XML serialization
  */ 
-const std::string DSerializeXML::name(void)
+const DUnicodeString DSerializeXML::name(void)
 {
   return ("XML");
 }
@@ -459,7 +459,7 @@ DStruct* DSerializeXML::deserialize(DStream& output)
 /** 
  *  Text serialization
  */
-const std::string DSerializeText::name(void)
+const DUnicodeString DSerializeText::name(void)
 {
   return ("Text");
 }
@@ -491,8 +491,7 @@ bool DSerializeText::serialize(DStream& output, DObject* dobject, int depth)
   DStruct const* dstruct = dobject->instanceOf();
 
   if (dstruct == NULL)
-    throw DException("DSerializeText::serialize(DStream& output, DObject* dobject) object instance is NULL")
-;
+    throw DException("DSerializeText::serialize(DStream& output, DObject* dobject) object instance is NULL");
 
   int32_t index = dobject->instanceOf()->findAttribute("iterator");
   if (index != -1)
@@ -597,7 +596,7 @@ DStruct* DSerializeText::deserialize(DStream& output)
 /**
  *  Raw serialization (on disk/memory serialization without meta info on type 
  */
-const std::string DSerializeRaw::name(void)
+const DUnicodeString DSerializeRaw::name(void)
 {
   return ("Raw");
 }
@@ -609,7 +608,7 @@ DSerializeRaw*   DSerializeRaw::create(void)
 
 bool DSerializeRaw::serialize(DStream& output, DFunctionObject* value, DType::Type_t argumentType, DType::Type_t returnType)
 {
-  DException("Not implemented"); 
+  DException("Not implemented");
   return (false);
 }
 
@@ -744,7 +743,7 @@ DSerialize* DSerializers::to(size_t id)
   return (__serializers[id]);
 }
 
-DSerialize* DSerializers::to(const std::string type)
+DSerialize* DSerializers::to(const DUnicodeString type)
 {
   std::vector<DSerialize* >::iterator i;
 

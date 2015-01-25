@@ -87,15 +87,15 @@ template <>
 class RealValue<DUnicodeString> : public TypedValue<DUnicodeString>, public DUnicodeString
 {
 public:
-  RealValue(DUnicodeString const& s) : std::basic_string<char>(s)
+  RealValue(DUnicodeString const& s) : DUnicodeString(s)
   {
   }
 
-  RealValue(char const* s) : std::basic_string<char>(s)
+  RealValue(char const* s) : DUnicodeString(s)
   {
   }
 
-  RealValue()
+  RealValue() : DUnicodeString("")
   {
   }
 
@@ -106,7 +106,8 @@ public:
 
   DUnicodeString asUnicodeString() const
   {
-    DUnicodeString const& ref = '"' +  *this + '"';
+    DUnicodeString const ref('"' +  this->string() + '"');
+
     return (ref);
   }
 
@@ -130,7 +131,8 @@ public:
     char* data = new char[size + 1];
     is.read(data, size);
     data[size] = 0;
-    *this = std::string(data);
+//    *this = std::string(data);
+    *this = DUnicodeString(data);
     delete[] data;
     return (is);
     /*
@@ -149,7 +151,10 @@ public:
     *this = buffer;
     return (is); */
   }
-
+  operator DUnicodeString() const
+  {
+    return (*this);
+  }
   operator std::string() const
   {
     return (*this);
@@ -157,7 +162,7 @@ public:
 
   void set(DValue const& v)
   {
-    *this = v.get<std::string>();
+    *this = v.get<DUnicodeString>();
   }
 };
 

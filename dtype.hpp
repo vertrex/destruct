@@ -63,9 +63,9 @@ public:
   Type_t                                getType(void) const;
   Type_t                                getReturnType(void) const;
   Type_t                                getArgumentType(void) const;
-  const std::string                     name(void) const;
-  const std::string                     returnName(void) const;
-  const std::string                     argumentName(void) const;
+  const DUnicodeString                  name(void) const;
+  const DUnicodeString                  returnName(void) const;
+  const DUnicodeString                  argumentName(void) const;
   
   static void                           init(void);
   static void                           clean(void);

@@ -130,6 +130,7 @@ dvalue.cpp
 destruct.cpp
 dnullobject.cpp
 dexception.cpp
+dunicodestring.cpp
 
 protocol/protocol.cpp
 protocol/dmutablestruct.cpp

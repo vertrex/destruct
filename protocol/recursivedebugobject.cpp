@@ -39,7 +39,7 @@ DValue    RecursiveDebugObject::getValue(size_t index) const
   return (result);
 }
 
-DValue    RecursiveDebugObject::getValue(std::string const& name) const
+DValue    RecursiveDebugObject::getValue(DUnicodeString const& name) const
 {
   DValue result = DebugObject::getValue(name);
   DType::Type_t  attributeType = this->object()->instanceOf()->attribute(name).type().getType();
@@ -61,7 +61,7 @@ DValue    RecursiveDebugObject::call(size_t index, DValue const &args)
   return (result);
 }
 
-DValue    RecursiveDebugObject::call(std::string const& name, DValue const &args)
+DValue    RecursiveDebugObject::call(DUnicodeString const& name, DValue const &args)
 {
   DValue result = DebugObject::call(name, args);
   if (this->object()->instanceOf()->attribute(name).type().getReturnType() == DType::DObjectType)
@@ -70,7 +70,7 @@ DValue    RecursiveDebugObject::call(std::string const& name, DValue const &args
   return (result);
 }
 
-DValue    RecursiveDebugObject::call(std::string const& name)
+DValue    RecursiveDebugObject::call(DUnicodeString const& name)
 {
   DValue result = DebugObject::call(name);
   if (this->object()->instanceOf()->attribute(name).type().getReturnType() == DType::DObjectType)

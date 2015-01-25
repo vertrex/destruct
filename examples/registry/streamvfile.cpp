@@ -9,7 +9,7 @@ using namespace Destruct;
 StreamFile::StreamFile(DStruct* dstruct, DValue const& args): DStream(dstruct)
 {
   this->init();
-  std::string filePath = args.get<DUnicodeString>();
+  DUnicodeString filePath = args.get<DUnicodeString>();
   this->__fd = open(filePath.c_str(), O_RDONLY);
 }
 

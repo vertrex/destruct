@@ -17,7 +17,7 @@ class DStream;
 class DSerialize  //public DCppObject ! doit pouvoir se passer as soit meme qunad call serializeText / serialzieRaw etc... pour pouvoir appeller la method de base sans recreer un dserializer;  
 {
 public:
-  virtual const std::string  name(void) = 0;
+  virtual const DUnicodeString name(void) = 0;
   virtual bool serialize(DStream& output, DObject*  dobject)  = 0;
   virtual bool deserialize(DStream& output, DObject* dobject) = 0;
   virtual bool serialize(DStream& output, DFunctionObject* value, DType::Type_t argumentType, DType::Type_t returnType) = 0;
@@ -43,7 +43,7 @@ public:
   {
   }
 
-  const std::string name(void);
+  const DUnicodeString name(void);
   DSerializeBinary*   create(void);
 
   bool serialize(DStream& output, DObject* dobject); 
@@ -54,8 +54,8 @@ public:
   DStruct* deserialize(DStream& input);
 
 // pascal string deserialization
-  bool serialize(DStream& output, const std::string& str);
-  bool deserialize(DStream& input, std::string& str);
+  bool serialize(DStream& output, const DUnicodeString& str);
+  bool deserialize(DStream& input, DUnicodeString& str);
 
   bool serialize(DStream& output, DValue value, DType::Type_t type);
   DValue deserialize(DStream& input, DType::Type_t type);
@@ -69,7 +69,7 @@ public:
   {
   }
 
-  const std::string name(void);
+  const DUnicodeString name(void);
   DSerializeText*   create(void);
   bool serialize(DStream& output, DObject* dobject); 
   bool serialize(DStream& output, DFunctionObject* value, DType::Type_t argumentType, DType::Type_t returnType);
@@ -94,7 +94,7 @@ public:
   {
   };
 
-  const std::string name(void);
+  const DUnicodeString name(void);
   DSerializeRaw*   create(void);
 
   bool serialize(DStream& output, DObject* dobject); 
@@ -126,7 +126,7 @@ public :
     this->init();
   }
 
-  const std::string name(void);
+  const DUnicodeString name(void);
   DSerializeXML*   create(void);
   bool serialize(DStream& output, DObject* dobject); 
   bool serialize(DStream& output, DFunctionObject* value, DType::Type_t argumentType, DType::Type_t returnType);
@@ -143,22 +143,22 @@ private:
   class XMLTag
   {
   public:
-    XMLTag(DStream& output, std::string const & tag, std::string const & value = "", int depth = 1, bool enclose = false) : __output(output), __tag(tag), __depth(depth), __enclose(enclose)
+    XMLTag(DStream& output, DUnicodeString const & tag, DUnicodeString const & value = "", int depth = 1, bool enclose = false) : __output(output), __tag(tag), __depth(depth), __enclose(enclose)
     {
-      output  << std::string(2*(depth - 1), ' ') <<  '<' << tag << '>' << value;   
+      output  << DUnicodeString(std::string(2*(depth - 1), ' ')) <<  '<' << tag << '>' << value;   
     }
 
     ~XMLTag()
     {
      if (this->__enclose)
-       this->__output << std::string(2*(this->__depth - 1), ' ') <<  "</" <<this->__tag << '>' << std::endl;
+       this->__output <<DUnicodeString(std::string(2*(this->__depth - 1), ' ')) <<  "</" <<this->__tag << '>' << std::endl;
      else
        this->__output <<  "</" <<this->__tag << '>' << std::endl;
     }
 
   private:
     DStream&           __output;
-    const std::string  __tag;
+    const DUnicodeString __tag;
     int                __depth;
     bool               __enclose;
   };
@@ -204,7 +204,7 @@ class DSerializers
 public:
   DSerializers();
   ~DSerializers(); 
-  static DSerialize* to(const std::string type);
+  static DSerialize* to(const DUnicodeString type);
   static DSerialize* to(size_t id);
   static size_t      count(void);
   static bool        registerSerializer(DSerialize* serializer);

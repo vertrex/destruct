@@ -149,7 +149,7 @@ PyObject* PyDObject::getValue(PyDObject::DPyObject* self, PyObject* attributeObj
 
   if (attributeIndex == -1 || attributeIndex >= (int32_t)self->pimpl->instanceOf()->attributeCount())
   {
-    std::string errorString = "destruct.DObject." + self->pimpl->instanceOf()->name() +  " instance has no attribute '" + attributeName + "'";
+    DUnicodeString errorString = "destruct.DObject." + self->pimpl->instanceOf()->name() +  " instance has no attribute '" + attributeName + "'";
     PyErr_SetString(PyExc_AttributeError, errorString.c_str()); 
     return (0);
   }
@@ -199,7 +199,7 @@ PyObject* PyDObject::setValue(PyDObject::DPyObject* self, const char* attributeN
   int32_t attributeIndex = self->pimpl->instanceOf()->findAttribute(std::string(attributeName));
   if (attributeIndex == -1 || attributeIndex >= (int32_t)self->pimpl->instanceOf()->attributeCount())
   {
-    std::string errorString = "destruct.DObject." + self->pimpl->instanceOf()->name() +  " instance has no attribute '" + attributeName + "'";
+    Destruct::DUnicodeString errorString = "destruct.DObject." + self->pimpl->instanceOf()->name() +  " instance has no attribute '" + attributeName + "'";
 
     
     PyErr_SetString(PyExc_AttributeError, errorString.c_str()); 
@@ -214,7 +214,7 @@ PyObject*  PyDObject::setValue(PyDObject::DPyObject* self, int32_t attributeInde
 {
   if (attributeIndex == -1 || attributeIndex >= (int32_t)self->pimpl->instanceOf()->attributeCount())
   {
-    std::string errorString = "destruct.DObject." + self->pimpl->instanceOf()->name() +  " instance has no attribute at index '"; 
+    Destruct::DUnicodeString errorString = "destruct.DObject." + self->pimpl->instanceOf()->name() + " instance has no attribute at index '"; 
     errorString += attributeIndex; 
     errorString += std::string("'");
     PyErr_SetString(PyExc_AttributeError, errorString.c_str()); 
@@ -406,7 +406,7 @@ int  PyDObject::_setattr(PyDObject::DPyObject* self, PyObject* name, PyObject* v
 PyObject* PyDObject::_repr(PyDObject::DPyObject* self)
 {
   CHECK_PIMPL
-  std::string repr = "<destruct.DObject." + self->pimpl->instanceOf()->name() + " object>";
+  Destruct::DUnicodeString repr = "<destruct.DObject." + self->pimpl->instanceOf()->name() + " object>";
   return (PyString_FromString(repr.c_str()));
 }
 
@@ -574,7 +574,7 @@ PyObject*  PyDObject::_dir(PyDObject::DPyObject* self, PyObject* args, PyObject 
     Destruct::DStruct* instance = self->pimpl->instanceOf();
     for (size_t index = 0; index < instance->attributeCount(); ++index)
     {
-      std::string name = instance->attribute(index).name(); 
+      Destruct::DUnicodeString name = instance->attribute(index).name(); 
       PyList_Append(result, PyString_FromString(name.c_str()));
     }
     /* fall through */
@@ -614,7 +614,7 @@ PyObject* PyDObject::_iter(PyDObject::DPyObject* self)
   }
   catch (Destruct::DException const& exception)
   {
-    const std::string error = self->pimpl->instanceOf()->name() + " is not iterable\n" + exception.error();
+    const Destruct::DUnicodeString error = self->pimpl->instanceOf()->name() + " is not iterable\n" + exception.error();
     PyErr_SetString(PyExc_TypeError, error.c_str());
     return (NULL);
   }
@@ -637,7 +637,7 @@ PyObject* PyDObject::_iternext(PyDObject::DPyObject* self)
   } 
   catch (Destruct::DException const& exception) 
   {
-    const std::string error = self->pimpl->instanceOf()->name() + " is not iterable : " + exception.error();
+    const Destruct::DUnicodeString error = self->pimpl->instanceOf()->name() + " is not iterable : " + exception.error();
     PyErr_SetString(PyExc_TypeError, error.c_str());
   }
 

@@ -19,7 +19,7 @@ DSerializeRPC*   DSerializeRPC::create(void)
   return (new DSerializeRPC(this->__networkStream, this->__objects, this->__functionObjects));
 }
 
-const std::string DSerializeRPC::name(void)
+const DUnicodeString DSerializeRPC::name(void)
 {
   return ("RPC");
 }

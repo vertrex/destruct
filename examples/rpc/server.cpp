@@ -59,7 +59,7 @@ void            Server::__listen(void)
 
 void    Server::findDStruct(void)
 {
-  std::string name;
+  DUnicodeString name;
   this->__networkStream->read(name);
 
   std::cout << "Send DStruct " << name << std::endl;
@@ -72,7 +72,7 @@ void    Server::findDStruct(void)
   this->__networkStream->flush();
 }
  
-void Server::unknown(const std::string& cmd)
+void Server::unknown(const DUnicodeString& cmd)
 {
   std::cout << "Receive unknown command : " << cmd << std::endl;
   this->__networkStream->write("Unknown command : " + cmd);
@@ -108,7 +108,7 @@ void            Server::serve(void)
   while (true)
   {
     //std::cout << "Wait for message..." << std::endl;
-    std::string msg;
+    DUnicodeString msg;
     this->__networkStream->read(msg);
 
     if (msg == "show") 

@@ -15,9 +15,9 @@ public:
   DValue           getValue(size_t index) const;
   void             setValue(size_t index, DValue const&);
   DValue           call(size_t index, DValue const&);
-  DValue           getValue(std::string const& name) const;
-  void             setValue(std::string const& name, DValue const& value);
-  DValue           call(std::string const& name, DValue const& value);
+  DValue           getValue(DUnicodeString const& name) const;
+  void             setValue(DUnicodeString const& name, DValue const& value);
+  DValue           call(DUnicodeString const& name, DValue const& value);
 
 protected:
   BaseValue*       getBaseValue(size_t index);

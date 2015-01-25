@@ -29,9 +29,9 @@ public:
   virtual DValue    getValue(size_t index) const;
   virtual DValue    call(size_t index, DValue const &);
 
-  virtual DValue    getValue(std::string const& name) const;
-  virtual DValue    call(std::string const& name, DValue const &);
-  virtual DValue    call(std::string const& name);
+  virtual DValue    getValue(DUnicodeString const& name) const;
+  virtual DValue    call(DUnicodeString const& name, DValue const &);
+  virtual DValue    call(DUnicodeString const& name);
 
   static DObject*   newObject(DStruct *, DValue const& args);
 };

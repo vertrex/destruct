@@ -37,7 +37,7 @@ void Destruct::registerDStruct(DStruct* dstruct)
   this->__nameSpace->addStructure(dstruct);
 }
 
-void Destruct::registerDStruct(const std::string& nameSpaceName, DStruct* dstruct)
+void Destruct::registerDStruct(const DUnicodeString& nameSpaceName, DStruct* dstruct)
 {
   NameSpace* nameSpace = this->__nameSpace->create(nameSpaceName);
   nameSpace->addStructure(dstruct);
@@ -89,10 +89,7 @@ DObject *       Destruct::generate(DUnicodeString const& name, DValue const& arg
 {
   DStruct* dstruct = this->find(name);
   if (dstruct == NULL)
-  {
-    std::string error = "Can't find DStruct : " + name;
-    throw DException(error);
-  }
+    throw DException("Can't find DStruct : " + name);
 
   return (dstruct->newObject(args));
 } 
@@ -100,16 +97,16 @@ DObject *       Destruct::generate(DUnicodeString const& name, DValue const& arg
 /**
  * NameSpace
  */
-NameSpace::NameSpace(std::string const& name) : __name(name)
+NameSpace::NameSpace(DUnicodeString const& name) : __name(name)
 {
 }
 
 NameSpace::~NameSpace(void)
 {
-  std::cout << "Unloding NameSpace " << this->__name << std::endl;
+  std::cout << DUnicodeString("Unloading NameSpace ") << this->__name << std::endl;
 }
 
-const std::string  NameSpace::name(void) const
+const DUnicodeString NameSpace::name(void) const
 {
   return (this->__name);
 }
@@ -122,7 +119,7 @@ void  NameSpace::addStructure(DStruct* dstruct)
 /**
  *  Return nameSpace named name from this nameSpaces or return NULL 
  */
-NameSpace* NameSpace::nameSpace(std::string const& name) const
+NameSpace* NameSpace::nameSpace(DUnicodeString const& name) const
 {
   std::vector<NameSpace*>::const_iterator nameSpace = this->__nameSpaces.begin();
   for (; nameSpace != this->__nameSpaces.end(); ++nameSpace)
@@ -137,12 +134,12 @@ NameSpace* NameSpace::nameSpace(std::string const& name) const
 /**
  *  Create and return nameSpace from nameSpaces recursively
  */
-NameSpace* NameSpace::create(std::string const& nameSpaces)
+NameSpace* NameSpace::create(DUnicodeString const& nameSpaces)
 {
-  std::string nameSpaceName = "";
-  std::string subNameSpace = "";
+  DUnicodeString nameSpaceName = "";
+  DUnicodeString  subNameSpace = "";
 
-  std::size_t idx = nameSpaces.find(".");
+  size_t idx = nameSpaces.find(".");
   if (idx == std::string::npos)
     nameSpaceName = nameSpaces;
   else
@@ -211,10 +208,10 @@ DStruct*        NameSpace::findDStruct(size_t index)
  */
 DStruct*       NameSpace::findDStruct(DUnicodeString const& dstructPath)
 {
-  std::string nameSpaceName = "";
-  std::string subNameSpace = "";
+  DUnicodeString nameSpaceName = "";
+  DUnicodeString subNameSpace = "";
 
-  std::size_t idx = dstructPath.find(".");
+  size_t idx = dstructPath.find(".");
   if (idx == std::string::npos)
     return (this->dstruct(dstructPath));
   else
@@ -242,7 +239,7 @@ DStruct*        NameSpace::dstruct(const size_t index)
   throw DException("NameSpace : Can't find DStruct at index in NameSpace " + this->name());
 }
 
-DStruct*        NameSpace::dstruct(std::string const& name)
+DStruct*        NameSpace::dstruct(DUnicodeString const& name)
 {
   std::vector<DStruct*>::iterator dstruct = this->__structures.begin();
   for (; dstruct != this->__structures.end(); ++dstruct)

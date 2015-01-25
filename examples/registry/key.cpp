@@ -69,7 +69,7 @@ DValue    NameLength::deserializeRaw(DValue const& arg)
   stream->read(keyNameBuff, size);
   stream->destroy();
 
-  this->keyName = std::string(keyNameBuff, size);
+  this->keyName = DUnicodeString(std::string(keyNameBuff, size));
 
   return (RealValue<DUInt8>(1));
 }

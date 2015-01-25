@@ -35,9 +35,9 @@ DObject* ClientObject::newObject(DStruct* dstruct, DValue const& args)
   return (new ClientObject(dstruct, args)); //XXX copy network stream, handle connection & struct etc...
 }
 
-DValue ClientObject::getValue(std::string const& name) const
+DValue ClientObject::getValue(DUnicodeString const& name) const
 {
-   this->__networkStream.write(std::string("getValue"));
+   this->__networkStream.write(DUnicodeString("getValue"));
    this->__networkStream.write(this->__id);
    this->__networkStream.write(name);
    this->__networkStream.flush();
@@ -56,9 +56,9 @@ DValue ClientObject::getValue(std::string const& name) const
   return (returnValue);
 }
 
-void ClientObject::setValue(std::string const& name, DValue const &v)
+void ClientObject::setValue(DUnicodeString const& name, DValue const &v)
 {
-  this->__networkStream.write(std::string("setValue"));
+  this->__networkStream.write(DUnicodeString("setValue"));
   this->__networkStream.write(this->__id);
   this->__networkStream.write(name);
 
@@ -67,7 +67,7 @@ void ClientObject::setValue(std::string const& name, DValue const &v)
   this->__networkStream.flush();
 }
                                         
-DValue ClientObject::call(std::string const& name, DValue const &args)
+DValue ClientObject::call(DUnicodeString const& name, DValue const &args)
 {
   DType  dtype = this->instanceOf()->attribute(name).type();
   //if (name == "serializeText")
@@ -78,7 +78,7 @@ DValue ClientObject::call(std::string const& name, DValue const &args)
     //return RealValue<DObject*>(DNone);
   //}
 
-  this->__networkStream.write(std::string("call"));
+  this->__networkStream.write(DUnicodeString("call"));
   this->__networkStream.write(this->__id);
   this->__networkStream.write(name);
   /* Send argument (object is not compatible) */
@@ -91,9 +91,9 @@ DValue ClientObject::call(std::string const& name, DValue const &args)
   return (dvalue);
 }
 
-DValue ClientObject::call(std::string const& name)
+DValue ClientObject::call(DUnicodeString const& name)
 {
-  this->__networkStream.write(std::string("call0"));
+  this->__networkStream.write(DUnicodeString("call0"));
   this->__networkStream.write(this->__id);
   this->__networkStream.write(name);
   this->__networkStream.flush();
@@ -112,13 +112,13 @@ DValue ClientObject::getValue(size_t index) const
 
 void ClientObject::setValue(size_t index, DValue const &value)
 {
-  std::string name = this->instanceOf()->attribute(index).name();
+  DUnicodeString name = this->instanceOf()->attribute(index).name();
   this->setValue(name, value); 
 }
 
 DValue ClientObject::call(size_t index, DValue const &value)
 {
-  std::string name = this->instanceOf()->attribute(index).name();
+  DUnicodeString name = this->instanceOf()->attribute(index).name();
   return (this->call(name, value));  //use call 0 ? 
 }
 

@@ -38,7 +38,7 @@ PyObject* PyDStruct::name(PyDStruct::DPyObject* self, PyObject* args, PyObject* 
 
 PyObject* PyDStruct::repr(PyDStruct::DPyObject* self)
 {
-  std::string repr = "<destruct.DStruct." + self->pimpl->name() + " object>";
+  Destruct::DUnicodeString repr = "<destruct.DStruct." + self->pimpl->name() + " object>";
   return (PyString_FromString(repr.c_str()));
 }
 

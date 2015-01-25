@@ -85,7 +85,7 @@ public:
   }
 private:
   void                                  findDStruct(void);
-  void                                  unknown(const std::string& cmd);
+  void                                  unknown(const DUnicodeString& cmd);
   void                                  showRoot(void);
 
   int                                   __listenSocket;

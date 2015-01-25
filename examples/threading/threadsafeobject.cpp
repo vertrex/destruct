@@ -70,13 +70,13 @@ DValue           ThreadSafeObject::call(size_t index, DValue const& args)
   return (result);
 }
 
-DValue           ThreadSafeObject::getValue(std::string const& name) const//...
+DValue           ThreadSafeObject::getValue(DUnicodeString const& name) const//...
 {
   DValue result = this->__dobject->getValue(name);
   return (result);
 }
 
-void             ThreadSafeObject::setValue(std::string const& name, DValue const& args)
+void             ThreadSafeObject::setValue(DUnicodeString const& name, DValue const& args)
 {
   //pthread_mutex_lock(&this->__mutex);
   this->__dobject->setValue(name, args);
@@ -84,7 +84,7 @@ void             ThreadSafeObject::setValue(std::string const& name, DValue cons
 }
 
 
-DValue           ThreadSafeObject::call(std::string const& name, DValue const& args)
+DValue           ThreadSafeObject::call(DUnicodeString const& name, DValue const& args)
 {
   //std::cout << "Lock call name " << std::endl;
   pthread_mutex_lock(&this->__mutex);
@@ -96,7 +96,7 @@ DValue           ThreadSafeObject::call(std::string const& name, DValue const& a
   return (result);
 }
 
-DValue           ThreadSafeObject::call(std::string const& name)
+DValue           ThreadSafeObject::call(DUnicodeString const& name)
 {
   //if (name != "dequeue")
   pthread_mutex_lock(&this->__mutex);

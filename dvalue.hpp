@@ -1,8 +1,6 @@
 #ifndef DSTRUCT_DVALUE_HPP_
 #define DSTRUCT_DVALUE_HPP_
 
-#include <string>
-
 #include "dobject.hpp"
 #include "dfunction.hpp"
 #include "dunicodestring.hpp"

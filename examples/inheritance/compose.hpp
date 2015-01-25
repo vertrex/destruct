@@ -43,7 +43,7 @@ public:
    return CppClass::getValue(idx);
   }
 
-  virtual DValue getValue(std::string const& name) const
+  virtual DValue getValue(DUnicodeString const& name) const
   {
     try
     {
@@ -60,7 +60,7 @@ public:
     return CppClass::setValue(idx, v);
   }
 
-  virtual void  setValue(std::string const& name, DValue const& v)
+  virtual void  setValue(DUnicodeString const& name, DValue const& v)
   {
     try
     {
@@ -72,7 +72,7 @@ public:
     }
   }
 
-  virtual DValue call(std::string const& name, DValue const& args)
+  virtual DValue call(DUnicodeString const& name, DValue const& args)
   {
     try
     {
@@ -84,7 +84,7 @@ public:
     }
   }
 
-  virtual DValue call(std::string const& name)
+  virtual DValue call(DUnicodeString const& name)
   {
     try
     {
@@ -113,11 +113,11 @@ public:
   void              setValue(size_t idx, DValue const &);
   virtual DValue    call(size_t index, DValue const &);
 
-  virtual DValue    getValue(std::string const& name) const;
-  void              setValue(std::string const& name, DValue const &);
+  virtual DValue    getValue(DUnicodeString const& name) const;
+  void              setValue(DUnicodeString  const& name, DValue const &);
 
-  virtual DValue    call(std::string const& name, DValue const &);
-  virtual DValue    call(std::string const& name);
+  virtual DValue    call(DUnicodeString const& name, DValue const &);
+  virtual DValue    call(DUnicodeString const& name);
 protected:
   ~Compose();
 

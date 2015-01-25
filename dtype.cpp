@@ -73,17 +73,17 @@ DType::Type_t   DType::getArgumentType(void) const
   return (this->__argumentTypeId);
 }
 
-const std::string DType::name(void) const
+const DUnicodeString DType::name(void) const
 {
   return (this->__typeName[this->__typeId]);
 }
 
-const std::string DType::returnName(void) const
+const DUnicodeString DType::returnName(void) const
 {
   return (this->__typeName[this->__returnTypeId]);
 }
 
-const std::string DType::argumentName(void) const
+const DUnicodeString DType::argumentName(void) const
 {
   return (this->__typeName[this->__argumentTypeId]);
 }

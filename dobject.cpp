@@ -51,7 +51,7 @@ void DObject::setValue(DUnicodeString const& name, DValue const& v)
   throw DException(this->instanceOf()->name() + "::setValue instance has no attribute " + name);
 }
 
-DValue DObject::call(std::string const& name, DValue const& v) //const ? XXX  : throw
+DValue DObject::call(DUnicodeString const& name, DValue const& v) //const ? XXX  : throw
 {
   int32_t index = this->instanceOf()->findAttribute(name);
   if (index != -1)
@@ -60,7 +60,7 @@ DValue DObject::call(std::string const& name, DValue const& v) //const ? XXX  : 
   throw DException(this->instanceOf()->name() + "::call instance has no attribute " + name); 
 }
 
-DValue DObject::call(std::string const& name) //const ? XXX  : throw
+DValue DObject::call(DUnicodeString const& name) //const ? XXX  : throw
 {
   int32_t index = this->instanceOf()->findAttribute(name);
   if (index != -1)

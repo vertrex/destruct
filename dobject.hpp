@@ -4,9 +4,10 @@
 #include <memory>
 #include "dpolicy.hpp"
 #include "dstruct.hpp"
+#include "dunicodestring.hpp"
 
-#include <iostream>
-#include <string>
+//#include <iostream>
+//#include <string>
 
 namespace Destruct
 {
@@ -29,11 +30,11 @@ public:
   virtual void setValue(size_t idx, DValue const &) = 0;
   virtual DValue call(size_t index, DValue const &)  = 0;
 
-  virtual DValue getValue(std::string const& name) const;
-  virtual void setValue(std::string const& name, DValue const &);
+  virtual DValue getValue(DUnicodeString const& name) const;
+  virtual void setValue(DUnicodeString const& name, DValue const &);
 
-  virtual DValue call(std::string const& name, DValue const &);
-  virtual DValue call(std::string const& name);
+  virtual DValue call(DUnicodeString const& name, DValue const &);
+  virtual DValue call(DUnicodeString const& name);
 
 
   virtual BaseValue* getBaseValue(size_t index) = 0;

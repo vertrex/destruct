@@ -93,7 +93,7 @@ PyObject* PyDMethodObject::call(PyObject* _self, PyObject* args)
     if (argumentTypeId != Destruct::DType::DObjectType)
     {
       argumentObject = NULL;
-      std::string argumentString = "MethodObject argument must be a " + type.argumentName();
+      Destruct::DUnicodeString argumentString = "MethodObject argument must be a " + type.argumentName();
       PyErr_SetString(PyExc_TypeError, argumentString.c_str());
       return (0);
     }
@@ -127,7 +127,7 @@ PyObject* PyDMethodObject::call(PyObject* _self, PyObject* args)
   }
   catch (std::bad_cast exception) //catch in cpp ?
   {
-    std::string argumentString = "MethodObject must return a " + type.returnName();
+    Destruct::DUnicodeString argumentString = "MethodObject must return a " + type.returnName();
     PyErr_SetString(PyExc_TypeError, argumentString.c_str()); 
   }
   //PyEval_RestoreThread(_save); //block ? 
@@ -178,7 +178,7 @@ PyObject* PyDMethodObject::_repr(PyDMethodObject::DPyObject* self)
   Destruct::DAttribute attribute = dstruct->attribute(self->index);
   Destruct::DType  type = attribute.type();
 
-  std::string methodName = type.returnName() + " " + dstruct->name() + "::" + attribute.name() + "(" + type.argumentName() + ")";
+  Destruct::DUnicodeString methodName = Destruct::DUnicodeString(type.returnName()) + " " + dstruct->name() + "::" + attribute.name() + "(" + type.argumentName() + ")";
 
   return (PyString_FromString(methodName.c_str()));
 }

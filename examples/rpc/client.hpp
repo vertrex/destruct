@@ -14,14 +14,14 @@ class ServerFunctionObject;
 class Client : public DCppObject<Client>
 {
 public:
-  Client(std::string const& addr, uint32_t port);
+  Client(DUnicodeString const& addr, uint32_t port);
   Client(DStruct* dstruct, DValue const& args);
   ~Client();
 
   virtual DObject*                      start(void);
   DValue                                findObject(void); ///XXX:
 
-  Destruct::DStruct*                    remoteFind(const std::string name);
+  Destruct::DStruct*                    remoteFind(const DUnicodeString name);
   bool                                  print(DObject* dobject) const;
   bool                                  print(DStruct* dstruct) const;
 
@@ -31,7 +31,7 @@ public:
   ObjectManager<DObject*>&              objectManager(void);
   ObjectManager<ServerFunctionObject*>& functionObjectManager(void);
 private:
-  void                                  __connect(std::string const& addr, uint32_t port);
+  void                                  __connect(DUnicodeString const& addr, uint32_t port);
   void                                  __close(void);
   int32_t                               __connectionSocket;
   NetworkStream*                        __networkStream;

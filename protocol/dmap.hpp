@@ -38,7 +38,7 @@ public:
     if (it != this->__map.end())
       return RealValue<ValueType>(it->second);
      
-    std::string error("DMap key : " + args.asUnicodeString() + " not found.");
+    DUnicodeString error("DMap key : " + args.asUnicodeString() + " not found.");
     throw DException(error);
   }
 
@@ -60,13 +60,13 @@ public:
 
   DObject*    iterator(void)
   {
-    std::string structName = "DMapIterator" + DType(KeyTypeId).name() + DType(ValueTypeId).name();
+    DUnicodeString structName = "DMapIterator" + DType(KeyTypeId).name() + DType(ValueTypeId).name();
     return (Destruct::Destruct::instance().generate(structName, RealValue<DObject*>(this)));
   }
 
   DObject*    newItem(void)
   {
-    std::string structName = "DMapItem" + DType(KeyTypeId).name() + DType(ValueTypeId).name();
+    DUnicodeString structName = "DMapItem" + DType(KeyTypeId).name() + DType(ValueTypeId).name();
     return (Destruct::Destruct::instance().generate(structName, RealValue<DObject*>(this)));
   }
 

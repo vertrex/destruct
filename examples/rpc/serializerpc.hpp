@@ -15,7 +15,7 @@ public:
   DSerializeRPC(NetworkStream& networkStream, ObjectManager<DObject*>& objects, ObjectManager<ServerFunctionObject*>& functionObjects);
   DSerializeRPC*        create(void);
 
-  const std::string     name(void); 
+  const DUnicodeString  name(void); 
   bool                  serialize(DStream& output, DStruct& dstruct); 
   bool                  serialize(DStream& output, DValue value, DType::Type_t type);
   bool                  serialize(DStream& output, DValue value, DType::Type_t argumentType, DType::Type_t returnType);

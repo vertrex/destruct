@@ -45,7 +45,7 @@ void  registerVector(Destruct* destruct, DUnicodeString const& name)
 {
   registerCpp<DVector<VectorType, VectorTypeId> >(destruct, name);
 
-  std::string iteratorName = "DIterator" + DType(VectorTypeId).name();
+  DUnicodeString iteratorName = "DIterator" + DType(VectorTypeId).name();
   registerCpp<DIterator<VectorType, VectorTypeId> >(destruct, iteratorName);
 }
 
@@ -56,10 +56,10 @@ void  registerMap(Destruct* destruct, DUnicodeString const& name)
 {
   registerCpp<DMap<KeyType, KeyTypeId, ValueType, ValueTypeId > >(destruct, name);
 
-  std::string iteratorName = "DMapIterator" + DType(KeyTypeId).name() + DType(ValueTypeId).name();
+  DUnicodeString iteratorName = "DMapIterator" + DType(KeyTypeId).name() + DType(ValueTypeId).name();
   registerCpp<DMapIterator<KeyType, KeyTypeId, ValueType, ValueTypeId > >(destruct, iteratorName);
 
-  std::string itemName = "DMapItem" + DType(KeyTypeId).name() + DType(ValueTypeId).name();
+  DUnicodeString itemName = "DMapItem" + DType(KeyTypeId).name() + DType(ValueTypeId).name();
   registerCpp<DMapItem<KeyType, KeyTypeId, ValueType, ValueTypeId > >(destruct, itemName);
 }
 

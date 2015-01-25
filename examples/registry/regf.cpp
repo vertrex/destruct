@@ -133,7 +133,7 @@ DValue    RegfName::deserializeRaw(DValue const& arg)
          break;
   }
   if (i < 58)
-    this->fileName = std::string(fileNameBuff, i);
+    this->fileName = DUnicodeString(std::string(fileNameBuff, i));
 
   return (RealValue<DUInt8>(1));
 }

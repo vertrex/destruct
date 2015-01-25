@@ -1,7 +1,7 @@
 #ifndef DESTRUCT_DEXCEPTION_HPP_
 #define DESTRUCT_DEXCEPTION_HPP_
 
-#include <iostream>
+#include "dunicodestring.hpp"
 
 namespace Destruct
 {
@@ -12,10 +12,12 @@ namespace Destruct
 class DException
 {
 public:
+  DException(const char* errorMessage);
   DException(const std::string errorMessage);
-  const std::string error(void) const;
-private:
-  const std::string __errorMessage;
+  DException(const DUnicodeString errorMessage);
+  const DUnicodeString error(void) const;
+  //private:
+  const DUnicodeString __errorMessage;
 };
 
 }

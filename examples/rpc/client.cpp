@@ -29,7 +29,7 @@ extern "C"
 }
 
 
-Client::Client(std::string const& addr, uint32_t port) : DCppObject<Client>(NULL, RealValue<DObject*>(DNone)), __networkStream(NULL), __serializeRPC(NULL)
+Client::Client(DUnicodeString const& addr, uint32_t port) : DCppObject<Client>(NULL, RealValue<DObject*>(DNone)), __networkStream(NULL), __serializeRPC(NULL)
 {
   this->__connect(addr, port);
   this->__networkStream = new NetworkStream(NULL, RealValue<DInt32>(this->__connectionSocket));
@@ -41,7 +41,7 @@ Client::Client(DStruct* dstruct, DValue const& value) : DCppObject<Client>(dstru
   this->init();
   DObject* args = value.get<DObject*>();
 
-  std::string addr = args->getValue("address").get<DUnicodeString>();
+  DUnicodeString addr = args->getValue("address").get<DUnicodeString>();
   uint32_t port = args->getValue("port").get<DUInt32>();
   this->__connect(addr, port);
   this->__networkStream = new NetworkStream(NULL, RealValue<DInt32>(this->__connectionSocket));
@@ -54,7 +54,7 @@ Client::~Client()
   this->__close();
 }
 
-void    Client::__connect(std::string const& addr, uint32_t port)
+void    Client::__connect(DUnicodeString const& addr, uint32_t port)
 {
   sockaddr_in server;
 
@@ -94,7 +94,7 @@ DValue     Client::findObject(void) //getRoot
   return (RealValue<DObject*>(root));
 }
 
-Destruct::DStruct* Client::remoteFind(const std::string name)
+Destruct::DStruct* Client::remoteFind(const DUnicodeString name)
 {
   //std::cout << "Client::_remoteFind(stream, " << name << ")" << std::endl;
   this->__networkStream->write("findDStruct" );

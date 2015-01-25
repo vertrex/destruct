@@ -39,7 +39,7 @@ public:
   {
     DUInt64 index = args.get<DUInt64>();
     if (index >= this->__vector.size())
-      throw DException("DContainer::get bad index\n");
+      throw DException(std::string("DContainer::get bad index\n"));
       
     return (RealValue<VectorType>(this->__vector[index]));
   }
@@ -57,8 +57,8 @@ public:
 
     argumentsObject->destroy();
 
-    if (index >= (DInt64)this->__vector.size()) 
-     throw DException("setItem : Index error");    
+    if (index >= (DInt64)this->__vector.size())
+     throw DException(std::string("setItem : Index error"));
 
     this->__vector[index] = item; 
  
@@ -67,7 +67,7 @@ public:
 
   DObject*  iterator(void)
   {
-    std::string iteratorname = "DIterator" + std::string(DType(VectorTypeId).name());
+    DUnicodeString iteratorname = DUnicodeString("DIterator") + DType(VectorTypeId).name();
     return (Destruct::Destruct::instance().generate(iteratorname, RealValue<DObject*>(this)));
   }
 
@@ -149,7 +149,7 @@ inline DValue  DVector<DObject*, DType::DObjectType>::get(DValue const& args)
   {
     DUInt64 index = args.get<DUInt64>();
     if (index >= this->__vector.size())
-      throw DException("DContainer::get bad index\n");
+      throw DException(std::string("DContainer::get bad index\n"));
     DObject* object = this->__vector[index];
     object->addRef();
     return (RealValue<DObject*>(object));

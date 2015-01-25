@@ -44,11 +44,11 @@ public:
   void              setValue(size_t idx, DValue const &);
   virtual DValue    call(size_t index, DValue const &);
 
-  virtual DValue    getValue(std::string const& name) const;
-  void              setValue(std::string const& name, DValue const &);
+  virtual DValue    getValue(DUnicodeString const& name) const;
+  void              setValue(DUnicodeString  const& name, DValue const &);
 
-  virtual DValue    call(std::string const& name, DValue const &);
-  virtual DValue    call(std::string const& name);
+  virtual DValue    call(DUnicodeString const& name, DValue const &);
+  virtual DValue    call(DUnicodeString const& name);
 protected:
   ~ThreadSafeObject();
 

@@ -23,11 +23,11 @@ public:
   static DObject*       newObject(DStruct* dstruct, DValue const& args);
   DObject*              clone() const;
 
-  DValue                getValue(std::string const& name) const;
-  void                  setValue(std::string const& name, DValue const &);
+  DValue                getValue(DUnicodeString const& name) const;
+  void                  setValue(DUnicodeString const& name, DValue const &);
                                         
-  DValue                call(std::string const& name, DValue const &);
-  DValue                call(std::string const& name);
+  DValue                call(DUnicodeString const& name, DValue const &);
+  DValue                call(DUnicodeString const& name);
 
   DValue                getValue(size_t index) const;
   void                  setValue(size_t idx, DValue const &);

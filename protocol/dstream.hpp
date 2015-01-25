@@ -41,8 +41,8 @@ public:
   virtual DStream& operator>>(DStream& output);
   virtual DStream& operator<<(DStream& input);
 
-  virtual DStream& operator>>(std::string& val); 
-  virtual DStream& operator<<(std::string val);
+  virtual DStream& operator>>(DUnicodeString& val); 
+  virtual DStream& operator<<(DUnicodeString val);
   virtual DStream& operator<<(char val);
   virtual DStream& operator<<(StandardEndLine func);
   virtual DStream& read(char*  buff, uint32_t size);
@@ -106,8 +106,8 @@ class DStreamCout : public DStream //Base
 public:
   DStreamCout(DStruct* dstruct, DValue const &args);
   DStreamCout(const DStreamCout& copy);
-  DStream& operator>>(std::string& val);
-  DStream& operator<<(std::string val);
+  DStream& operator>>(DUnicodeString& val);
+  DStream& operator<<(DUnicodeString val);
   DStream& operator<<(char val);
   DStream& operator<<(StandardEndLine func);
   DStream& read(char*  buff, uint32_t size);
