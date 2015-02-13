@@ -31,6 +31,11 @@ DUnicodeString& operator=(std::string rhs);
 DUnicodeString& operator+=(const DUnicodeString& rhs);
 DUnicodeString operator+(const DUnicodeString& rhs);
 
+operator std::string() const
+{
+  return (this->string());
+}
+
 friend DUnicodeString operator+(const char* left, const DUnicodeString& rhs)
 {
   std::string tmp = left + rhs.string();

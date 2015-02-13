@@ -21,15 +21,15 @@ template <typename PlainType>
 class RealValue : public TypedValue<PlainType>
 {
 public:
+  RealValue()
+  {
+  }
+
   RealValue(PlainType value) : __val(value)
   {
   }
 
   RealValue(DValue value) : __val(value.get<PlainType>())
-  {
-  }
-
-  RealValue()
   {
   }
 
@@ -151,13 +151,15 @@ public:
     *this = buffer;
     return (is); */
   }
+
   operator DUnicodeString() const
   {
     return (*this);
   }
+
   operator std::string() const
   {
-    return (*this);
+    return (this->string());
   }
 
   void set(DValue const& v)

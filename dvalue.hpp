@@ -88,6 +88,12 @@ public:
 
   DValue& replace(const DValue&);
 
+  //template <typename PlainType>// ok but could be ambigous in some case
+  //operator PlainType() const
+  //{
+  //return (this->get<PlainType>());
+  //}
+
   template <typename PlainType>
   PlainType get() const
   {
