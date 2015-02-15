@@ -9,7 +9,7 @@ int main(int argc, char** argv)
 
   int count = 100000;
 
-  DObject* vector = Destruct::Destruct::instance().find("DVectorUInt64")->newObject();
+  DObject* vector = Destruct::DStructs::instance().find("DVectorUInt64")->newObject();
   for (int index = 0; index < count; ++index)
     vector->call("push", RealValue<DUInt64>(index));
 

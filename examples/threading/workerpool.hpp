@@ -153,12 +153,12 @@ public:
   {
     
     DStruct* workerPool = makeNewDCpp<WorkerPool>("WorkerPool");
-    Destruct::Destruct::instance().registerDStruct(workerPool);
+    Destruct::DStructs::instance().registerDStruct(workerPool);
     DStruct* task = makeNewDCpp<Task<DUInt64, DType::DUInt64Type, DUInt64, DType::DUInt64Type> >("Task"); //XXX mus derivate to other possible type 
-    Destruct::Destruct::instance().registerDStruct(task);
+    Destruct::DStructs::instance().registerDStruct(task);
   
     DStruct* taskObject = makeNewDCpp<Task<DObject*, DType::DObjectType, DUInt64, DType::DUInt64Type > >("TaskObject");//mutable etc... ?
-    Destruct::Destruct::instance().registerDStruct(taskObject);
+    Destruct::DStructs::instance().registerDStruct(taskObject);
   }
 
   WorkerPool(DStruct* dstruct, DValue const& args);

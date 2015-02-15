@@ -68,7 +68,7 @@ public:
   DObject*  iterator(void)
   {
     DUnicodeString iteratorname = DUnicodeString("DIterator") + DType(VectorTypeId).name();
-    return (Destruct::Destruct::instance().generate(iteratorname, RealValue<DObject*>(this)));
+    return (DStructs::instance().generate(iteratorname, RealValue<DObject*>(this)));
   }
 
   RealValue<DFunctionObject* >  _serializeText;

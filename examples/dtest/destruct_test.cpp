@@ -72,16 +72,16 @@ void DestructTest::run()
 void DestructTest::createBaseClass(std::vector<DStruct*>& list)
 {
   DStruct* base = new DStruct(0, "BaseNode", DSimpleObject::newObject);
-  Destruct::Destruct::instance().registerDStruct("Test", base);
+  Destruct::DStructs::instance().registerDStruct("Test", base);
 
   base = new DStruct(0, "BaseNode2", DSimpleObject::newObject);
-  Destruct::Destruct::instance().registerDStruct("Test", base);
+  Destruct::DStructs::instance().registerDStruct("Test", base);
 
   base = new DStruct(0, "BaseNode", DSimpleObject::newObject);
-  Destruct::Destruct::instance().registerDStruct("Test.parser", base);
+  Destruct::DStructs::instance().registerDStruct("Test.parser", base);
 
   base = new DStruct(0, "Test.parser.special.BaseNode2", DSimpleObject::newObject);
-  Destruct::Destruct::instance().registerDStruct("Test.parser.special", base);
+  Destruct::DStructs::instance().registerDStruct("Test.parser.special", base);
 
   base->addAttribute(DAttribute(DType::DInt64Type, "Size"));
   base->addAttribute(DAttribute(DType::DInt64Type, "Children count"));
@@ -538,8 +538,8 @@ void DestructTest::readArchive(void)
   //}
 }
 
-Destruct::Destruct* DestructTest::structRegistry(void)
+Destruct::DStructs* DestructTest::structRegistry(void)
 {
-  return (&Destruct::Destruct::instance());
+  return (&Destruct::DStructs::instance());
 }
 

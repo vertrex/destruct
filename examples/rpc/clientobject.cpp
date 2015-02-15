@@ -1,4 +1,4 @@
-#include "destruct.hpp"
+#include "dstructs.hpp"
 #include "protocol/dserialize.hpp"
 
 #include "networkstream.hpp"

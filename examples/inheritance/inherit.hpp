@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-#include "destruct.hpp"
+#include "dstructs.hpp"
 #include "dobject.hpp"
 #include "dunicodestring.hpp"
 #include "drealvalue.hpp"
@@ -153,7 +153,7 @@ public:
   void  show(DStruct* dstruct) const;
   void  testComposition(DObject* object) const;
 private:
-  Destruct::Destruct&   __destruct;
+  Destruct::DStructs&   __destruct;
 };
 
 #endif

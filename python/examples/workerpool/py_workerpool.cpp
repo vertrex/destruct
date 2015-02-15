@@ -40,7 +40,7 @@ PyMODINIT_FUNC init_workerpool(void)
 
   WorkerPool::Declare();
   //Destruct::DStruct* workerPool = Destruct::makeNewDCpp<WorkerPool>("WorkerPool");
-  //Destruct::Destruct::instance().registerDStruct(workerPool);
+  //Destruct::DStructs::instance().registerDStruct(workerPool);
 
 
   PyExamples::moduleInit();

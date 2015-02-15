@@ -4,7 +4,7 @@
 #include <string>
 #include <iostream>
 
-#include "destruct.hpp"
+#include "dstructs.hpp"
 #include "dstruct.hpp"
 
 class Loader // CLoader / PyLoader inherit CLoader
@@ -18,7 +18,7 @@ public:
 private:
   void  __showDestruct(void) const;
 
-  Destruct::Destruct&  __destruct;
+  Destruct::DStructs&  __destruct;
 };
 
 #endif

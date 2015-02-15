@@ -10,7 +10,7 @@
 #include "protocol/dserialize.hpp"
 #include "protocol/dmutableobject.hpp"
 
-Refcount::Refcount() : __destruct(Destruct::Destruct::instance())
+Refcount::Refcount() : __destruct(Destruct::DStructs::instance())
 {
   Destruct::DType::init();
   this->declare();

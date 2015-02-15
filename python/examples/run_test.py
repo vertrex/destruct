@@ -5,7 +5,7 @@ sys.path.append('../')
 sys.path.append('test/')
 
 import unittest
-from _destruct import Destruct, DStruct, DAttribute, DObject, DType, DInt8, DInt16, DInt32, DInt64, DUInt8, DUInt16, DUInt32, DUInt64, DUnicodeString
+from _destruct import DStruct, DStruct, DAttribute, DObject, DType, DInt8, DInt16, DInt32, DInt64, DUInt8, DUInt16, DUInt32, DUInt64, DUnicodeString
 from _dtest import Test
 import base64
 
@@ -13,13 +13,13 @@ import base64
 class PyTest(unittest.TestCase):
   def test_CStruct(self):
      print """Search for C++ created DStruct"""
-     d = Destruct()
+     d = DStructs()
      self.assertIsInstance(d.find(1), DStruct)
      #self.assertIsInstance(d.find("PrefetchXP"), None) #PrefetchXP is not registered
 
   def test_modify(self):
      print """Use a not yet initialized (Fix = 0) CPP create DStruct and add new attribute to it"""
-     ms = Destruct().find("Modify")
+     ms = DStructs().find("Modify")
      self.assertIsInstance(ms, DStruct)
      self.assertEqual(ms.attributeCount(), 3)
 
@@ -91,7 +91,7 @@ class PyTest(unittest.TestCase):
      pyps.addAttribute(DAttribute("info", DUnicodeString))
      pyps.addAttribute(DAttribute("parent", DObject))
      #show_attribute(pyps)
-     destruct = Destruct()
+     destruct = DStructs()
      destruct.registerDStruct(pyps)
      PyNtfsBaseStruct = destruct.find("PyNtfsBase")
      self.assertIsInstance(PyNtfsBaseStruct, DStruct)
@@ -99,7 +99,7 @@ class PyTest(unittest.TestCase):
 
   def test_generateObject(self):
      print """Create a pure python object from a python DStruct"""
-     dstruct = Destruct().find("PyNtfsBase")
+     dstruct = DStructs().find("PyNtfsBase")
      self.assertEqual(dstruct.name(), "PyNtfsBase")
      obj = dstruct.newObject()
      self.assertIsInstance(obj, DObject)
@@ -142,7 +142,7 @@ class PyTest(unittest.TestCase):
 
   def test_generateCPynested(self):
      print """Create a nested object from C++ definition. Test for garbage collection"""
-     dstruct = Destruct().find("Nested")
+     dstruct = DStructs().find("Nested")
      nested = dstruct.newObject()
      nested.setValue("NestedStart", 123)
      nested.setValue("NestedEnd", "End of object")
@@ -158,8 +158,8 @@ class PyTest(unittest.TestCase):
      dstruct.addAttribute(DAttribute("num", DInt64))
      dstruct.addAttribute(DAttribute("text", DUnicodeString))
      dstruct.addAttribute(DAttribute("parent", DObject))
-     print "Destruct().registerDStruct(dstruct)"
-     Destruct().registerDStruct(dstruct)
+     print "DStructs().registerDStruct(dstruct)"
+     DStructs().registerDStruct(dstruct)
      sobj = dstruct.newObject()
      print "Test().setObjectValue(sobj)"
      Test().setObjectValue(sobj)
@@ -198,13 +198,13 @@ class PyTest(unittest.TestCase):
      ns.addAttribute(DAttribute("name", DUnicodeString))
      ns.addAttribute(DAttribute("absolute", DUnicodeString))
      ns.addAttribute(DAttribute("parent", DObject))
-     Destruct().registerDStruct(ns)
+     DStructs().registerDStruct(ns)
 
      fns = DStruct(ns, "FatNode") #DStruct("Node", "FatNode") not implemtend yet  
      fns.addAttribute(DAttribute("offset", DInt64))
      fns.addAttribute(DAttribute("data", DUnicodeString))
      fns.addAttribute(DAttribute("dataDecode", DUnicodeString))
-     Destruct().registerDStruct(fns)
+     DStructs().registerDStruct(fns)
 
      class RootNode(DObject):
        def __init__(self):

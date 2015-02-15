@@ -4,7 +4,7 @@
 #include "dtype.hpp"
 #include "dmethodobject.hpp"
 #include "dsimpleobject.hpp"
-#include "destruct.hpp"
+#include "dstructs.hpp"
 #include "protocol/dserialize.hpp"
 
 DWrapper::DWrapper()
@@ -14,7 +14,7 @@ DWrapper::DWrapper()
 
   Destruct::DStruct*  module = new Destruct::DStruct(NULL, "DModule", Destruct::DSimpleObject::newObject);
   module->addAttribute(Destruct::DAttribute(Destruct::DType::DNoneType, "start", Destruct::DType::DObjectType));
-  Destruct::Destruct::instance().registerDStruct(module);
+  Destruct::DStructs::instance().registerDStruct(module);
 }
 
 DWrapper::~DWrapper()

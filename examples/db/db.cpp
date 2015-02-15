@@ -10,7 +10,7 @@
 #include "protocol/dserialize.hpp"
 #include "protocol/dmutableobject.hpp"
 
-DB::DB() : __destruct(Destruct::Destruct::instance()), __session(NULL)
+DB::DB() : __destruct(Destruct::DStructs::instance()), __session(NULL)
 {
   Destruct::DType::init();
   this->declare();

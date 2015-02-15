@@ -1,6 +1,6 @@
 #include "py_dobject.hpp"
 #include "dvalue.hpp"
-#include "destruct.hpp"
+#include "dstructs.hpp"
 #include "dobject.hpp"
 #include "drealvalue.hpp"
 #include "dexception.hpp"
@@ -290,7 +290,7 @@ int PyDObject::_init(PyDObjectT::DPyObject* self, PyObject *args, PyObject *kwds
     PyErr_Clear();
   }
 
-  Destruct::DStruct* dstruct = Destruct::Destruct::instance().find(std::string(dstructName));
+  Destruct::DStruct* dstruct = Destruct::DStructs::instance().find(std::string(dstructName));
   if (dstruct != NULL)
   {
     Py_ssize_t pos = 0;
@@ -677,7 +677,7 @@ int PyDObject::_setitem(PyDObject::DPyObject* self, Py_ssize_t index, PyObject* 
 //XXX sert pu a rien !!
   try 
   {
-    Destruct::DMutableObject* argument = static_cast<Destruct::DMutableObject*>(Destruct::Destruct::instance().generate("DMutable"));
+    Destruct::DMutableObject* argument = static_cast<Destruct::DMutableObject*>(Destruct::DStructs::instance().generate("DMutable"));
    
     Destruct::DType pushType = self->pimpl->instanceOf()->attribute("push").type();
     Destruct::DValue itemValue = DValueDispatchTable[pushType.getArgumentType()]->toDValue(item);
@@ -708,7 +708,7 @@ int  PyDObject::_setmap(DPyObject* self, PyObject* _key, PyObject* _value)
     try 
     {
 // pour les vecteur
-      Destruct::DMutableObject* argument = static_cast<Destruct::DMutableObject*>(Destruct::Destruct::instance().generate("DMutable"));
+      Destruct::DMutableObject* argument = static_cast<Destruct::DMutableObject*>(Destruct::DStructs::instance().generate("DMutable"));
   
       Destruct::DType  getType = self->pimpl->instanceOf()->attribute("get").type();
       Destruct::DType::Type_t  valueType = getType.getReturnType();

@@ -1,4 +1,4 @@
-#include "destruct.hpp"
+#include "dstructs.hpp"
 #include "dexception.hpp"
 #include "protocol/protocol.hpp"
 #include "drealvalue.hpp"
@@ -9,12 +9,12 @@
 namespace Destruct
 {
 
-Destruct::Destruct() : __nameSpace(new NameSpace(""))
+DStructs::DStructs() : __nameSpace(new NameSpace(""))
 {
    Protocol(this);
 }
 
-Destruct::~Destruct()
+DStructs::~DStructs()
 {
 //XXX FIX BECAUSE SOME struct are registred twice 
 //std::vector<DStruct* >::const_iterator dstruct = this->__structures.begin();
@@ -25,25 +25,25 @@ Destruct::~Destruct()
  //this->__nameSpace.clear();
 }
 
-Destruct&     Destruct::instance()
+DStructs&     DStructs::instance()
 {
-  static Destruct       destruct;
+  static DStructs       destruct;
   return (destruct);
 }
 
-void Destruct::registerDStruct(DStruct* dstruct)
+void DStructs::registerDStruct(DStruct* dstruct)
 {
   //XXX check if already exist
   this->__nameSpace->addStructure(dstruct);
 }
 
-void Destruct::registerDStruct(const DUnicodeString& nameSpaceName, DStruct* dstruct)
+void DStructs::registerDStruct(const DUnicodeString& nameSpaceName, DStruct* dstruct)
 {
   NameSpace* nameSpace = this->__nameSpace->create(nameSpaceName);
   nameSpace->addStructure(dstruct);
 }
 
-bool Destruct::unregister(DStruct* dstructDef)
+bool DStructs::unregister(DStruct* dstructDef)
 {
   //for (Iterator c = this->__structures.begin(); c != this->__structures.end(); ++c)
   //{
@@ -63,29 +63,29 @@ bool Destruct::unregister(DStruct* dstructDef)
 /**
  * Total DStruct count
  */
-size_t  Destruct::count(void)
+size_t  DStructs::count(void)
 {
  return (this->__nameSpace->count());
 }
 
-DStruct*        Destruct::find(const size_t index)
+DStruct*        DStructs::find(const size_t index)
 {
   return (this->__nameSpace->findDStruct(index));
 }
 
-DStruct*       Destruct::find(DUnicodeString const & dstructPath) 
+DStruct*       DStructs::find(DUnicodeString const & dstructPath) 
 {
   return (this->__nameSpace->findDStruct(dstructPath));
 }
 
                         //rename newObject(name)
-DObject *       Destruct::generate(DUnicodeString const& name)
+DObject *       DStructs::generate(DUnicodeString const& name)
 {
   return (this->generate(name, RealValue<DObject*>(DNone)));
 } 
 
                         //rename newObject(name)
-DObject *       Destruct::generate(DUnicodeString const& name, DValue const& args)
+DObject *       DStructs::generate(DUnicodeString const& name, DValue const& args)
 {
   DStruct* dstruct = this->find(name);
   if (dstruct == NULL)

@@ -14,7 +14,7 @@
 
 
 set (pydestruct_files
-py_destruct.cpp
+py_dstructs.cpp
 py_dstruct.cpp
 py_dattribute.cpp
 py_dnullobject.cpp

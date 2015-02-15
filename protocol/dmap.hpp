@@ -61,13 +61,13 @@ public:
   DObject*    iterator(void)
   {
     DUnicodeString structName = "DMapIterator" + DType(KeyTypeId).name() + DType(ValueTypeId).name();
-    return (Destruct::Destruct::instance().generate(structName, RealValue<DObject*>(this)));
+    return (DStructs::instance().generate(structName, RealValue<DObject*>(this)));
   }
 
   DObject*    newItem(void)
   {
     DUnicodeString structName = "DMapItem" + DType(KeyTypeId).name() + DType(ValueTypeId).name();
-    return (Destruct::Destruct::instance().generate(structName, RealValue<DObject*>(this)));
+    return (DStructs::instance().generate(structName, RealValue<DObject*>(this)));
   }
 
   iteratorType begin(void)

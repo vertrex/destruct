@@ -1,4 +1,4 @@
-#include "destruct.hpp"
+#include "dstructs.hpp"
 #include "dstruct.hpp"
 #include "dnullobject.hpp"
 
@@ -14,12 +14,12 @@
 
 namespace Destruct
 {
-Protocol::Protocol(Destruct* destruct)
+Protocol::Protocol(DStructs* destruct)
 {
   this->__registerStruct(destruct);
 }
 
-void Protocol::__registerStruct(Destruct* destruct)
+void Protocol::__registerStruct(DStructs* destruct)
 {
   registerVector<DInt8T>(destruct, "DVectorInt8");
   registerVector<DUInt8T>(destruct, "DVectorUInt8");

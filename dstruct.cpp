@@ -1,6 +1,6 @@
 #include <iterator>
 
-#include "destruct.hpp"
+#include "dstructs.hpp"
 #include "dexception.hpp"
 #include "drealvalue.hpp"
 #include "dnullobject.hpp"
@@ -26,7 +26,7 @@ void DStruct::__baseInit()
 DStruct::~DStruct()
 {
   //should remove from Destruct if exist !
-  Destruct::Destruct::instance().unregister(this);
+  DStructs::instance().unregister(this);
 }
 
 DUnicodeString  DStruct::name() const

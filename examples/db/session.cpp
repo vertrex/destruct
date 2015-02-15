@@ -1,10 +1,10 @@
 #include "session.hpp"
-#include "destruct.hpp"
+#include "dstructs.hpp"
 #include "protocol/dstream.hpp"
 #include "protocol/dserialize.hpp"
 #include "protocol/dmutableobject.hpp"
 
-Session::Session(DStruct* dstruct, Destruct::DValue const& args) : DCppObject<Session>(dstruct, args), __destruct(Destruct::Destruct::instance())
+Session::Session(DStruct* dstruct, Destruct::DValue const& args) : DCppObject<Session>(dstruct, args), __destruct(Destruct::DStructs::instance())
 {
   this->init();
 }

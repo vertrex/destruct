@@ -1,6 +1,6 @@
 #include "dattribute.hpp"
+#include "dstructs.hpp"
 #include "dstruct.hpp"
-#include "destruct.hpp"
 #include "dtype.hpp"
 
 namespace Destruct

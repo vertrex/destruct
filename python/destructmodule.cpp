@@ -2,7 +2,7 @@
 #include <python2.7/frameobject.h>
 
 #include "destructmodule.hpp"
-#include "py_destruct.hpp"
+#include "py_dstructs.hpp"
 #include "py_dstruct.hpp"
 #include "py_dattribute.hpp"
 #include "py_dtype.hpp"
@@ -27,7 +27,7 @@ PyMODINIT_FUNC init_destruct(void)
 
   PyEval_InitThreads();
 
-  PyDestruct::moduleInit();
+  PyDStructs::moduleInit();
   PyDStruct::moduleInit();
   PyDAttribute::moduleInit();
   PyDObject::moduleInit();
@@ -41,7 +41,7 @@ PyMODINIT_FUNC init_destruct(void)
   if ((module = Py_InitModule3("_destruct", destruct_methods, "The destruct library")) == NULL)
     return;    
 
-  DESTRUCT_ADD_MODULE(PyDestruct::pyType, "Destruct")
+  DESTRUCT_ADD_MODULE(PyDStructs::pyType, "DStructs")
   DESTRUCT_ADD_MODULE(PyDStruct::pyType, "DStruct")
   DESTRUCT_ADD_MODULE(PyDAttribute::pyType, "DAttribute")
 

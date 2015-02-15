@@ -50,7 +50,7 @@ public:
              method(Registry, open)
             )
 private:
-  Destruct::Destruct&           __destruct;
+  Destruct::DStructs&           __destruct;
   RealValue<DFunctionObject*>   _open;
 };
 

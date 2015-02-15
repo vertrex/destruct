@@ -1,6 +1,6 @@
 #include <typeinfo>
 
-#include "destruct.hpp"
+#include "dstructs.hpp"
 #include "dobject.hpp"
 #include "drealvalue.hpp"
 #include "dnullobject.hpp"

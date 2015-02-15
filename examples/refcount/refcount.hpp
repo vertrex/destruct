@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-#include "destruct.hpp"
+#include "dstructs.hpp"
 #include "dobject.hpp"
 #include "dunicodestring.hpp"
 #include "drealvalue.hpp"
@@ -48,7 +48,7 @@ public:
   } 
  
 private:
-  Destruct::Destruct&   __destruct;
+  Destruct::DStructs&   __destruct;
 };
 
 #endif

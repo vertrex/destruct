@@ -152,7 +152,7 @@ class PyMapObject(DObject):
 
 def dvectorstring():
   print "------ Python create c++ object via Destruct --"
-  cs = Destruct().find('DVectorString')
+  cs = DStructs().find('DVectorString')
   c = cs.newObject()
   a = timeFunc(fill, c)
   b = timeFunc(iterate, c)
@@ -174,7 +174,7 @@ def pythonvector():
 
 def simplevectorint():
   print "------ DINT64 Test  Python create c++ object via Destruct --"
-  cs = Destruct().find('DVectorInt32')
+  cs = DStructs().find('DVectorInt32')
   c = cs.newObject()
   a = timeFunc(fillInt, c)
   b = timeFunc(iterate, c)
@@ -321,7 +321,7 @@ class DStreamArgumentS(DStruct):
     DStruct.__init__(self, DNone, "Argument")
     self.addAttribute(DAttribute("input", DInt8))   
     self.addAttribute(DAttribute("filePath", DUnicodeString))   
-    Destruct().registerDStruct(self)
+    DStructs().registerDStruct(self)
 DStreamArgumentS()
 
 class DStreamArgument(DObject):

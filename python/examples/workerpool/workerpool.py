@@ -10,14 +10,14 @@ from _workerpool import *
 
 COUNT = 10
 
-workerPool = Destruct().find("WorkerPool").newObject(DUInt8(4))
+workerPool = DStructs().find("WorkerPool").newObject(DUInt8(4))
 
 
-vector = Destruct().find("DVectorUInt64").newObject()
+vector = DStructs().find("DVectorUInt64").newObject()
 for x in range(0, COUNT):
   vector.push(x)
 
-taskStruct = Destruct().find("Task")
+taskStruct = DStructs().find("Task")
 get = vector.get
 
 #Test task with pure C++ object
@@ -35,16 +35,16 @@ for x in vector:
 
 #Test map
 print 'Map'
-vector = Destruct().find("DVectorUInt64").newObject()
+vector = DStructs().find("DVectorUInt64").newObject()
 
-#vector = Destruct().find("DebugObject").newObject(vector)
+#vector = DStructs().find("DebugObject").newObject(vector)
 #print vector
 
 
 for x in range(0, COUNT):
   vector.push(x)
 
-task = Destruct().find("TaskObject").newObject()
+task = DStructs().find("TaskObject").newObject()
 task.function = vector.get
 task.argument = vector
 

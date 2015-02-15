@@ -24,7 +24,7 @@ extern "C"
 /**
  * Test launcher
  */
-Inheritance::Inheritance() : __destruct(Destruct::Destruct::instance())
+Inheritance::Inheritance() : __destruct(Destruct::DStructs::instance())
 {
   DType::init();
   Inheritance::declare();
@@ -40,7 +40,7 @@ void  Inheritance::declare(void)
   /**
    * Simple Object
    */
-  Destruct::Destruct&  destruct = Destruct::Destruct::instance();
+  Destruct::DStructs&  destruct = Destruct::DStructs::instance();
 
   DStruct*  simpleA = new DStruct(0, "SimpleA", DSimpleObject::newObject);
   simpleA->addAttribute(Destruct::DAttribute(DType::DUnicodeStringType, "text1"));

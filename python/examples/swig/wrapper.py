@@ -25,13 +25,13 @@ def createDStruct():
   pyps.addAttribute(DAttribute("info", DUnicodeString))
   pyps.addAttribute(DAttribute("parent", DObject))
   #show_attribute(pyps)
-  destruct = Destruct()
+  destruct = DStructs()
   destruct.registerDStruct(pyps)
   PyNtfsBaseStruct = destruct.find("PyNtfsBase")
 
 def generateObject():
   print """Create a pure python object from a python DStruct"""
-  dstruct = Destruct().find("PyNtfsBase")
+  dstruct = DStructs().find("PyNtfsBase")
   obj = dstruct.newObject()
 
   obj.setValue("mbr", 666)
@@ -180,7 +180,7 @@ class NtfsConfig(DStruct):
      self.addAttribute(DAttribute("block_size", DInt16))
      self.addAttribute(DAttribute("root", DObject))
      self.addAttribute(DAttribute("children", DObject))
-     destruct = Destruct()
+     destruct = DStructs()
      destruct.registerDStruct(self)
    
  
@@ -255,7 +255,7 @@ class DPythonModule(DStruct):
      self.addAttribute(DAttribute("start", DMethod, DNone, DObject))
      self.addAttribute(DAttribute("args", DObject))
      self.addAttribute(DAttribute("report", DMethod, DNone, DNone))
-     destruct = Destruct() #RELOUTE DE DEVOIR CE REGISTER !!1 faut un DMutableOBject ..
+     destruct = DStructs() #RELOUTE DE DEVOIR CE REGISTER !!1 faut un DMutableOBject ..
      destruct.registerDStruct(self)
    
 print "create DPythonModule()"
@@ -305,7 +305,7 @@ class PyPureIteratorDef(DStruct):
     self.addAttribute(DAttribute("__getitem__", DMethod, DUnicodeString, DInt32))
     self.addAttribute(DAttribute("__iter__", DMethod, DObject, DNone))
     self.addAttribute(DAttribute("__next__", DMethod, DObject, DNone))
-    destruct = Destruct() #RELOUTE DE DEVOIR CE REGISTER !!1 faut un DMutableOBject ..
+    destruct = DStructs() #RELOUTE DE DEVOIR CE REGISTER !!1 faut un DMutableOBject ..
     destruct.registerDStruct(self)
       #self.register()
 pureIteratorDef = PyPureIteratorDef()
@@ -369,7 +369,7 @@ pyIterator.push("string 3")
 pyIterator.push("string 4")
 print pyIterator.get(1)
 
-diterator = Destruct().find('DIterator').newObject()
+diterator = DStructs().find('DIterator').newObject()
 print diterator
 print 'FORING USING A C++ PROTOCOL ITERATOR !' 
 
@@ -388,7 +388,7 @@ iterate(di)
 di.setContainer(pureIterator)
 iterate(di)
 
-ci = Destruct().find('DVectorString').newObject()
+ci = DStructs().find('DVectorString').newObject()
 ci.push('c++ object push in pi 1')
 ci.push('c++ object push in pi 2')
 ci.push('c++ object push in pi 3')

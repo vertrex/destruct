@@ -1,14 +1,14 @@
 #ifndef _DESTRUCT_DESTRUCT_HPP_
 #define _DESTRUCT_DESTRUCT_HPP_
 
-#include "destruct.hpp"
+#include "dstructs.hpp"
 #include "destructmodule.hpp"
 
-typedef PythonModule< class PyDestruct, Destruct::Destruct> PyDestructT;
-class PyDestruct : public PyDestructT
+typedef PythonModule< class PyDStructs, Destruct::DStructs> PyDStructsT;
+class PyDStructs : public PyDStructsT
 {
 public:
-                      PyDestruct();
+                      PyDStructs();
   static PyMethodDef  pyMethods[];
 
   static int          _init(DPyObject* self, PyObject* args, PyObject* kwds);

@@ -11,13 +11,13 @@ namespace Destruct
 class DStruct;
 class NameSpace;
 
-class Destruct
+class DStructs
 {
 public:
   typedef std::vector<DStruct* >  Container;
   typedef Container::iterator     Iterator;
 
-  static Destruct& instance(void);
+  static DStructs& instance(void);
 
   size_t        count(void);
   DStruct*      find(DUnicodeString const & name);
@@ -28,10 +28,10 @@ public:
   DObject*      generate(DUnicodeString const& name);
   DObject*      generate(DUnicodeString const& name, DValue const& args);
 private:
-  Destruct();
-  ~Destruct();
-  Destruct(const Destruct&);
-  Destruct&                 operator=(Destruct&);
+  DStructs();
+  ~DStructs();
+  DStructs(const DStructs&);
+  DStructs&                 operator=(DStructs&);
 
   NameSpace*                 __nameSpace; //NameSpace("")
 };

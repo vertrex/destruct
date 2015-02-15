@@ -1,6 +1,6 @@
 #include "dserialize.hpp"
 #include "dstruct.hpp"
-#include "destruct.hpp"
+#include "dstructs.hpp"
 #include "dobject.hpp"
 #include "dsimpleobject.hpp"
 #include "dnullobject.hpp"
@@ -221,7 +221,7 @@ DValue DSerializeBinary::deserialize(DStream& input, DType::Type_t dtype)
 {
   if (dtype == DType::DObjectType)
   {
-    Destruct& destruct = Destruct::instance(); //mettre ds this car la ca va etre lent. 
+    DStructs& destruct = DStructs::instance(); //mettre ds this car la ca va etre lent. 
     DUnicodeString structName;
     this->deserialize(input, structName);
 
@@ -380,7 +380,7 @@ bool DSerializeXML::serialize(DStream& output, DObject* dobject, int depth)
   try 
   { 
     //if dobject.getValue("serialize") :
-    DMutableObject* arguments = static_cast<DMutableObject*>(Destruct::instance().find("DMutable")->newObject());
+    DMutableObject* arguments = static_cast<DMutableObject*>(DStructs::instance().find("DMutable")->newObject());
     arguments->setValueAttribute(DType::DObjectType, "stream", RealValue<DObject*>(&output));
     arguments->setValueAttribute(DType::DUnicodeStringType, "type", RealValue<DUnicodeString>("XML"));
     //arguments->setAttributeValue(DType::DObjectType, "serializer", this);

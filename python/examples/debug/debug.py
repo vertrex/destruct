@@ -6,9 +6,9 @@ sys.path.append('../../')
 from _destruct import *
 
 print "== create dvector string"
-vector = Destruct().find("DVectorString").newObject()
+vector = DStructs().find("DVectorString").newObject()
 print "== pass it to devctor object"
-debugVector = Destruct().find("DebugObject").newObject(vector)
+debugVector = DStructs().find("DebugObject").newObject(vector)
 
 print "== push string and iterate"
 print "== push first string"
@@ -30,13 +30,13 @@ for string in vector:
 
 
 print "== create DVectorObject with two object"
-origObj = Destruct().find("DVectorObject").newObject()
-objects = Destruct().find("DebugObject").newObject(origObj)
+origObj = DStructs().find("DVectorObject").newObject()
+objects = DStructs().find("DebugObject").newObject(origObj)
 print "=========", objects
 
-mapString = Destruct().find("DMapString").newObject()
+mapString = DStructs().find("DMapString").newObject()
 mapString["first"] = "first string"
-mapLong = Destruct().find("DMapUInt64Object").newObject()
+mapLong = DStructs().find("DMapUInt64Object").newObject()
 mapLong[0] = mapString
 objects.push(mapString)
 objects.push(mapLong)
@@ -48,7 +48,7 @@ for obj in objects:
     print '  ', subObj.index ," : ", subObj.value
 
 print "==============recursive debug"
-objects = Destruct().find("RecursiveDebugObject").newObject(origObj)
+objects = DStructs().find("RecursiveDebugObject").newObject(origObj)
 
 print 'obj in ', objects
 for obj in objects:

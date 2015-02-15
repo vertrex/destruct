@@ -3,7 +3,7 @@
 
 #include <iostream>
 
-#include "destruct.hpp"
+#include "dstructs.hpp"
 #include "dstruct.hpp"
 #include "drealvalue.hpp"
 #include "dmethodobject.hpp"
@@ -17,7 +17,7 @@ public:
  DestructTest(bool output = false);
  ~DestructTest();
 
- Destruct::Destruct*  structRegistry(void);
+ Destruct::DStructs*  structRegistry(void);
  static std::vector<DStruct*> declare(void);
  
  static void    createBaseClass(std::vector<DStruct*>&);

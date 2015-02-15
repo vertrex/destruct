@@ -1,4 +1,4 @@
-#include "destruct.hpp"
+#include "dstructs.hpp"
 #include "fsobject.hpp"
 /*
  * Directory
@@ -30,7 +30,7 @@ Directory::Directory(DStruct* dstruct, DValue const& args) : DCppObject<Director
 {
   this->init();
   this->name = "unknown-directory";
-  DStruct* vectorStruct = Destruct::Destruct::instance().find("DVectorObject");
+  DStruct* vectorStruct = Destruct::DStructs::instance().find("DVectorObject");
   this->children = vectorStruct->newObject();
 }
 

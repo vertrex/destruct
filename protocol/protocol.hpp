@@ -22,26 +22,26 @@
 
 namespace Destruct
 {
-class Destruct;
+class DSstructs;
 
 class Protocol
 {
 public:
-   Protocol(Destruct* destruct);
+   Protocol(DStructs* destruct);
 private:
-   void __registerStruct(Destruct* destruct);
+   void __registerStruct(DStructs* destruct);
 };
 
 template <typename CppClass>
 inline 
-void  registerCpp(Destruct* destruct, DUnicodeString const& name)
+void  registerCpp(DStructs* destruct, DUnicodeString const& name)
 {
   destruct->registerDStruct(new DStruct(NULL, name, DCppObject<CppClass>::newObject, CppClass::ownAttributeBegin(), CppClass::ownAttributeEnd()));
 }
 
 template <typename VectorType, DType::Type_t VectorTypeId>
 inline 
-void  registerVector(Destruct* destruct, DUnicodeString const& name)
+void  registerVector(DStructs* destruct, DUnicodeString const& name)
 {
   registerCpp<DVector<VectorType, VectorTypeId> >(destruct, name);
 
@@ -52,7 +52,7 @@ void  registerVector(Destruct* destruct, DUnicodeString const& name)
 template <typename KeyType, DType::Type_t  KeyTypeId,
           typename ValueType, DType::Type_t  ValueTypeId>
 inline 
-void  registerMap(Destruct* destruct, DUnicodeString const& name)
+void  registerMap(DStructs* destruct, DUnicodeString const& name)
 {
   registerCpp<DMap<KeyType, KeyTypeId, ValueType, ValueTypeId > >(destruct, name);
 

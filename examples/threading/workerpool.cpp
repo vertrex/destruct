@@ -1,6 +1,6 @@
 #include <pthread.h>
 
-#include "destruct.hpp"
+#include "dstructs.hpp"
 #include "workerpool.hpp"
 #include "protocol/dcppobject.hpp"
 
@@ -125,7 +125,7 @@ DValue  Queue::join(void)
   //pthread_cond_wait(&__conditionWaitv, &__mutex);
 
   pthread_mutex_lock(&__mutex);
-  DObject* results = Destruct::Destruct::instance().generate("DVectorObject");
+  DObject* results = Destruct::DStructs::instance().generate("DVectorObject");
   while (!this->__result.empty())
   {
     DValue result = this->__result.front();

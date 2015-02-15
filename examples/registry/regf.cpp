@@ -18,7 +18,7 @@
 #include "regf.hpp"
 #include "registryopt.hpp"
 
-#include "destruct.hpp"
+#include "dstructs.hpp"
 
 using namespace Destruct;
 
@@ -29,8 +29,8 @@ Regf::Regf(DStruct* dstruct, DValue const& args) : DCppObject<Regf>(dstruct, arg
 {
   this->init();
 
-  this->regfName = new RegfName(Destruct::Destruct::instance().find("RegfName"), RealValue<DObject*>(DNone));
-  this->timestamp = new RegfTime64(Destruct::Destruct::instance().find("RegfTime64"), RealValue<DObject*>(DNone));
+  this->regfName = new RegfName(Destruct::DStructs::instance().find("RegfName"), RealValue<DObject*>(DNone));
+  this->timestamp = new RegfTime64(Destruct::DStructs::instance().find("RegfTime64"), RealValue<DObject*>(DNone));
 
   ((DObject*)this->regfName)->addRef();
   ((DObject*)this->timestamp)->addRef();
@@ -67,7 +67,7 @@ DValue  Regf::version(void)
 
 //dDValue  Regf::key(void)
 //{
-//return  RealValue<DObject*>(new RegistryKey(Destruct::Destruct::instance().find("RegistryKey"), RealValue<DObject*>(DNone)));
+//return  RealValue<DObject*>(new RegistryKey(Destruct::DStructs::instance().find("RegistryKey"), RealValue<DObject*>(DNone)));
 //}
 /**
  *  RegfTime

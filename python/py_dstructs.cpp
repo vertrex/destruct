@@ -1,53 +1,53 @@
 #include "dexception.hpp"
 
-#include "py_destruct.hpp"
+#include "py_dstructs.hpp"
 #include "py_dstruct.hpp"
 
 template<>
-PyTypeObject* PyDestructT::pyType = NULL;
+PyTypeObject* PyDStructsT::pyType = NULL;
 
-PyDestruct::PyDestruct()
+PyDStructs::PyDStructs()
 {
   pyType = (PyTypeObject*)malloc(sizeof(basePyType));
   memcpy(pyType , &basePyType , sizeof(basePyType));
 
-  pyType->tp_name = "destruct.Destruct";
+  pyType->tp_name = "destruct.DStructs";
   pyType->tp_basicsize = sizeof(DPyObject);
   pyType->tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE;
-  pyType->tp_doc = "destruct.Destruct objects";
-  pyType->tp_methods = PyDestruct::pyMethods;
+  pyType->tp_doc = "destruct.DStructs objects";
+  pyType->tp_methods = PyDStructs::pyMethods;
   pyType->tp_methods = pyMethods;
-  pyType->tp_init = (initproc)PyDestruct::_init;
-  pyType->tp_new = PyDestruct::_new;
-  pyType->tp_dealloc = (destructor)PyDestruct::_dealloc;
+  pyType->tp_init = (initproc)PyDStructs::_init;
+  pyType->tp_new = PyDStructs::_new;
+  pyType->tp_dealloc = (destructor)PyDStructs::_dealloc;
 
   if (PyType_Ready(pyType) < 0)
     throw Destruct::DException("PyType ready error");
 }
 
-PyObject* PyDestruct::count(PyDestruct::DPyObject* self, PyObject* args, PyObject* kwds)
+PyObject* PyDStructs::count(PyDStructs::DPyObject* self, PyObject* args, PyObject* kwds)
 {
   size_t count = self->pimpl->count();
 
   return (Py_BuildValue("i", count)); 
 }
 
-PyObject* PyDestruct::findObject(PyDestruct::DPyObject* self, PyObject* args, PyObject* kwds)
+PyObject* PyDStructs::findObject(PyDStructs::DPyObject* self, PyObject* args, PyObject* kwds)
 {
   if (PyString_Check(args))
   {  
-    return (PyDestruct::find(self, PyString_AsString(args)));
+    return (PyDStructs::find(self, PyString_AsString(args)));
   }  
   if (PyInt_Check(args))
   {
-    return (PyDestruct::find(self, PyInt_AsLong(args)));
+    return (PyDStructs::find(self, PyInt_AsLong(args)));
   }
 
   PyErr_SetString(PyExc_TypeError, "must be string or integer"); 
   return (0);
 }
 
-PyObject* PyDestruct::find(PyDestruct::DPyObject* self, const char* index)
+PyObject* PyDStructs::find(PyDStructs::DPyObject* self, const char* index)
 {
   Destruct::DStruct* dstruct = self->pimpl->find(std::string(index));
   if (dstruct == NULL)
@@ -59,7 +59,7 @@ PyObject* PyDestruct::find(PyDestruct::DPyObject* self, const char* index)
   return(Py_BuildValue("O", dstructObject)); 
 }
 
-PyObject* PyDestruct::find(PyDestruct::DPyObject* self, size_t index)
+PyObject* PyDStructs::find(PyDStructs::DPyObject* self, size_t index)
 {
   Destruct::DStruct* dstruct = self->pimpl->find(index);
   if (dstruct == NULL)
@@ -71,7 +71,7 @@ PyObject* PyDestruct::find(PyDestruct::DPyObject* self, size_t index)
   return(Py_BuildValue("O", dstructObject)); 
 }
 
-PyObject* PyDestruct::registerDStruct(PyDestruct::DPyObject* self, PyObject* args, PyObject* kwds)
+PyObject* PyDStructs::registerDStruct(PyDStructs::DPyObject* self, PyObject* args, PyObject* kwds)
 {
   PyDStruct::DPyObject* dstructObject;
  
@@ -89,7 +89,7 @@ PyObject* PyDestruct::registerDStruct(PyDestruct::DPyObject* self, PyObject* arg
   Py_RETURN_NONE;
 }
 
-PyMethodDef PyDestruct::pyMethods[] = 
+PyMethodDef PyDStructs::pyMethods[] = 
 {
   {"count", (PyCFunction)count, METH_NOARGS, "Return the number of registered DStruct."},
   {"find", (PyCFunction)findObject, METH_O, "Search and return a DStruct object. Return None if not found."},
@@ -97,14 +97,14 @@ PyMethodDef PyDestruct::pyMethods[] =
   {NULL}
 };
 
-int PyDestruct::_init(PyDestructT::DPyObject *self, PyObject *args, PyObject *kwds)
+int PyDStructs::_init(PyDStructsT::DPyObject *self, PyObject *args, PyObject *kwds)
 {
-   self->pimpl = &Destruct::Destruct::instance();
+   self->pimpl = &Destruct::DStructs::instance();
  
    return (0);
 }
 
-void PyDestruct::_dealloc(PyDestructT::DPyObject* self)
+void PyDStructs::_dealloc(PyDStructsT::DPyObject* self)
 {
   self->ob_type->tp_free((PyObject* )self);
 }

@@ -1,7 +1,7 @@
 #ifndef __SESSIONOBJECT__
 #define __SESSIONOBJECT__
 
-#include "destruct.hpp"
+#include "dstructs.hpp"
 #include "protocol/dcppobject.hpp"
 
 /*
@@ -73,7 +73,7 @@ public:
     return (memberBegin() + ownAttributeCount());
   } 
 private:
-  Destruct::Destruct&    __destruct;
+  Destruct::DStructs&    __destruct;
 };
 
 #endif

@@ -63,7 +63,7 @@ void    Server::findDStruct(void)
   this->__networkStream->read(name);
 
   std::cout << "Send DStruct " << name << std::endl;
-  Destruct::Destruct& destruct = Destruct::Destruct::instance();
+  Destruct::DStructs& destruct = Destruct::DStructs::instance();
   DStruct* dstruct = destruct.find(name);
   if (!dstruct)
    throw DException("Server::findDStruct DStruct not found");
@@ -144,7 +144,7 @@ ObjectManager<ServerFunctionObject*>& Server::functionObjectManager(void)
 
 void            Server::showRoot(void)
 {
-  Destruct::Destruct& destruct = Destruct::Destruct::instance();
+  Destruct::DStructs& destruct = Destruct::DStructs::instance();
   DStruct* streamStruct = destruct.find("DStreamCout");
 
   DStream* stream = new DStream(streamStruct); 

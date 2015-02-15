@@ -24,7 +24,7 @@ RegistryRPC::~RegistryRPC()
 
 void RegistryRPC::local(const std::string filePath)
 {
-  Destruct::Destruct& destruct = Destruct::Destruct::instance();
+  Destruct::DStructs& destruct = Destruct::DStructs::instance();
   DObject* registry = destruct.generate("Registry");
 
   std::cout << "opening file " << filePath << std::endl;

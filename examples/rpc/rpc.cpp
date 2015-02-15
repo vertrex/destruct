@@ -104,7 +104,7 @@ void            TestServer::initRoot(void)
 {
   DStruct* fileStruct = makeNewDCpp<File>("File");
   DStruct* directoryStruct = makeNewDCpp<Directory>("Directory");
-  Destruct::Destruct& dstruct = Destruct::Destruct::instance();
+  Destruct::DStructs& dstruct = Destruct::DStructs::instance();
 
   dstruct.registerDStruct(fileStruct);
   dstruct.registerDStruct(directoryStruct);

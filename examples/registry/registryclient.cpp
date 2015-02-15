@@ -11,7 +11,7 @@ DObject* RegistryClient::start(void)
   std::cout << "connect to host" << std::endl;
   this->__networkStream = new NetworkStream(NULL, RealValue<DInt32>(this->connectionSocket()));
 
-  Destruct::Destruct& destruct = Destruct::Destruct::instance();
+  Destruct::DStructs& destruct = Destruct::DStructs::instance();
 
   DStruct* registryS = destruct.find("Registry");
 

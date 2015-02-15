@@ -2,7 +2,7 @@
 #include "dsimpleobject.hpp"
 #include "dattribute.hpp"
 #include "dobject.hpp"
-#include "destruct.hpp"
+#include "dstructs.hpp"
 #include "py_dstruct.hpp"
 #include "py_dattribute.hpp"
 #include "py_dobject.hpp"
@@ -154,7 +154,7 @@ int PyDStruct::_init(PyDStructT::DPyObject* self, PyObject* args, PyObject* kwds
     //string first because string are object and "Os" will match too
    if (PyArg_ParseTuple(args, "ss", &baseName, &name))
    {
-     base = Destruct::Destruct::instance().find(baseName);
+     base = Destruct::DStructs::instance().find(baseName);
      if (base == NULL) 
      {
        PyErr_SetString(PyExc_ValueError, "Can't find base class in Destruct"); //XXX + baseName

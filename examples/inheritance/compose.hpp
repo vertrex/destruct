@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-#include "destruct.hpp"
+#include "dstructs.hpp"
 #include "dobject.hpp"
 #include "dunicodestring.hpp"
 #include "drealvalue.hpp"

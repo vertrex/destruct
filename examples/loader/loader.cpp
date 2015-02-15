@@ -6,7 +6,7 @@
 #include "dobject.hpp"
 #include "dexception.hpp"
 
-Loader::Loader(void) : __destruct(Destruct::Destruct::instance())
+Loader::Loader(void) : __destruct(Destruct::DStructs::instance())
 {
 }
 

@@ -10,7 +10,7 @@
 namespace Destruct
 {
 
-DSerializeRPC::DSerializeRPC(NetworkStream& stream, ObjectManager<DObject*>& objects, ObjectManager<ServerFunctionObject*>& functionObjects) : __networkStream(stream), __objects(objects), __functionObjects(functionObjects), __streamString(DStreamString(Destruct::instance().find("DStreamString"), RealValue<DObject*>(DNone)))
+DSerializeRPC::DSerializeRPC(NetworkStream& stream, ObjectManager<DObject*>& objects, ObjectManager<ServerFunctionObject*>& functionObjects) : __networkStream(stream), __objects(objects), __functionObjects(functionObjects), __streamString(DStreamString(DStructs::instance().find("DStreamString"), RealValue<DObject*>(DNone)))
 {
 }
 
@@ -109,7 +109,7 @@ DValue DSerializeRPC::deserialize(DStream& networkStream, DType::Type_t type)
     objectName.unserialize(this->__streamString);
     id.unserialize(this->__streamString);
 
-    DStruct* dstruct = Destruct::Destruct::instance().find(objectName);
+    DStruct* dstruct = Destruct::DStructs::instance().find(objectName);
     if (dstruct == NULL)
     {
       std::cout << "DSerializeRPC Can't deserialize object not find in base must get struct named :  " << objectName << std::endl;

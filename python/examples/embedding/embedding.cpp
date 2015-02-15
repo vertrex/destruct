@@ -1,5 +1,5 @@
 #include <python2.7/Python.h>
-#include "destruct.hpp"
+#include "dstructs.hpp"
 
 #include <iostream>
 
@@ -29,7 +29,7 @@ void PythonInterpreter::registerStructures(void)
 {
         //typedef Destruct::DVector<Destruct::DUnicodeString, Destruct::DType::DUnicodeStringType> DVectorString;
         //Destruct::DStruct* dstructvectors = Destruct::makeNewDClass < DVectorString >(NULL, "DVectorString");
-        //Destruct::Destruct::instance().registerDStruct(dstructvectors);
+        //Destruct::DStructs::instance().registerDStruct(dstructvectors);
 }
 
 int main(int argc, char **argv)
@@ -42,7 +42,7 @@ int main(int argc, char **argv)
 
  
   //std::cout << "--- Showing destruct database --- " << std::endl; 
-  //Destruct::Destruct&  destruct = Destruct::Destruct::instance(); //::instance();
+  //Destruct::DStructs&  destruct = Destruct::DStructs::instance(); //::instance();
   //for (size_t i = 0; i < destruct.count() ; i++)
   //std::cout << destruct.find(i)->name() << std::endl;
 

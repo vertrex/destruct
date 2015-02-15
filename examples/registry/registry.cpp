@@ -33,7 +33,7 @@ extern "C"
 
 void    Registry::declare(void)
 {
-  Destruct::Destruct& destruct = Destruct::Destruct::instance();
+  Destruct::DStructs& destruct = Destruct::DStructs::instance();
 
   registerDCpp(Registry)
   registerDCpp(StreamFile)
@@ -49,12 +49,12 @@ void    Registry::declare(void)
   registerDCpp(RegistryValueData)
 }
 
-Registry::Registry(DStruct* dstruct, const DValue& args) : DCppObject<Registry>(dstruct),  __destruct(Destruct::Destruct::instance())
+Registry::Registry(DStruct* dstruct, const DValue& args) : DCppObject<Registry>(dstruct),  __destruct(Destruct::DStructs::instance())
 {
   this->init();
 }
 
-Registry::Registry(Registry const& copy) : DCppObject<Registry>(copy), __destruct(Destruct::Destruct::instance())
+Registry::Registry(Registry const& copy) : DCppObject<Registry>(copy), __destruct(Destruct::DStructs::instance())
 {
   this->init();
 }
@@ -93,7 +93,7 @@ DValue Registry::open(DValue const& args)
 
 void            Registry::toFile(std::string filePath, DObject* object, std::string type)
 {
-  Destruct::Destruct& destruct = Destruct::Destruct::instance();
+  Destruct::DStructs& destruct = Destruct::DStructs::instance();
 
   DMutableObject* arg = static_cast<DMutableObject*>(destruct.generate("DMutable"));
   arg->setValueAttribute(DType::DUnicodeStringType, "filePath", RealValue<DUnicodeString>(filePath)); 
@@ -110,7 +110,7 @@ void            Registry::toFile(std::string filePath, DObject* object, std::str
 
 void            Registry::show(DObject* object)
 {
-  DStream* cout = static_cast<DStream*>(Destruct::Destruct::instance().generate("DStreamCout"));
+  DStream* cout = static_cast<DStream*>(Destruct::DStructs::instance().generate("DStreamCout"));
   DSerialize* text = DSerializers::to("Text");
 
   text->serialize(*cout, object);

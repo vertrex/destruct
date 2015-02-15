@@ -1,7 +1,7 @@
 #include<sys/socket.h>
 #include<arpa/inet.h>
 
-#include "destruct.hpp"
+#include "dstructs.hpp"
 
 #include "client.hpp"
 #include "clientobject.hpp"
@@ -14,7 +14,7 @@ extern "C"
 {
   void  declare(void)
   {
-    Destruct::Destruct& destruct = Destruct::Destruct::instance();
+    Destruct::DStructs& destruct = Destruct::DStructs::instance();
    
     DStruct* dstruct = makeNewDCpp<Server>("Server"); 
     destruct.registerDStruct(dstruct);
@@ -84,7 +84,7 @@ DValue     Client::findObject(void) //getRoot
 {
   this->__networkStream = new NetworkStream(NULL, RealValue<DInt32>(this->connectionSocket()));
 
-  Destruct::Destruct& destruct = Destruct::Destruct::instance();
+  Destruct::DStructs& destruct = Destruct::DStructs::instance();
 
   DStruct* registryS = destruct.find("Registry");
 
@@ -105,7 +105,7 @@ Destruct::DStruct* Client::remoteFind(const DUnicodeString name)
 
   if (dstruct)
   {
-    Destruct::Destruct& destruct = Destruct::Destruct::instance();
+    Destruct::DStructs& destruct = Destruct::DStructs::instance();
     destruct.registerDStruct(dstruct);
     //this->__print(dstruct); 
   } 
@@ -116,7 +116,7 @@ Destruct::DStruct* Client::remoteFind(const DUnicodeString name)
 
 bool    Client::print(DStruct* dstruct) const
 {
-  Destruct::Destruct& destruct = Destruct::Destruct::instance();
+  Destruct::DStructs& destruct = Destruct::DStructs::instance();
   DStruct* streamStruct = destruct.find("DStreamCout");
   DStream* outStream = new DStream(streamStruct);  
   if (outStream == NULL)
@@ -132,7 +132,7 @@ bool    Client::print(DStruct* dstruct) const
 
 bool    Client::print(DObject* dobject) const
 {
-  Destruct::Destruct& destruct = Destruct::Destruct::instance();
+  Destruct::DStructs& destruct = Destruct::DStructs::instance();
   DStruct* streamStruct = destruct.find("DStreamCout");
   DStream* outStream = new DStream(streamStruct);  
   if (outStream == NULL)

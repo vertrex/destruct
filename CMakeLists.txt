@@ -116,6 +116,11 @@ else( "${CMAKE_SIZEOF_VOID_P}" EQUAL 4 )
 endif( "${CMAKE_SIZEOF_VOID_P}" EQUAL 4 )
 #
 
+
+if (MSVC)
+  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D__value=_value")
+endif(MSVC)
+
 include_directories(.)
 add_subdirectory(protocol)
 
@@ -127,7 +132,7 @@ dsimpleobject.cpp
 dstruct.cpp 
 dtype.cpp 
 dvalue.cpp
-destruct.cpp
+dstructs.cpp
 dnullobject.cpp
 dexception.cpp
 dunicodestring.cpp
