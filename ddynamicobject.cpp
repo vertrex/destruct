@@ -20,23 +20,39 @@ DDynamicObject::DDynamicObject(DDynamicObject const & rhs) : DObject(rhs), __val
 
 void DDynamicObject::init(DDynamicObject* self)
 {
-   DObject const * def = instanceOf()->defaultDObject();//XXX use it to set default value !
-
-   if (def) // def is not necessarily a DDynamicObject!
+   DObject const * def = instanceOf()->defaultDObject();//XXX use it to set default value ! not used yet
+  
+   if (this->baseObject())
    {
-     for (size_t idx = 0; idx != this->__values.size(); ++idx)
-     {
-        this->__values[idx] = DObject::getBaseValue(def, idx)->clone(self);
-     }
+     DObject* baseObject = this->baseObject();
+     const DStruct* base = this->base();
+    
+     uint32_t index = 0;
+     uint32_t attributeCount = base->attributeCount();
+     for (; index < attributeCount; ++index)
+       this->__values[index] = baseObject->getBaseValue(index);
+
+     for (; index < this->instanceOf()->attributeCount(); ++index)
+       this->__values[index] = this->instanceOf()->attribute(index).type().newValue();
    }
    else
    {
-     DStruct::DAttributeIterator a;
-     std::vector<BaseValue*>::iterator i = this->__values.begin();
-
-     for (a = instanceOf()->attributeBegin(); a != instanceOf()->attributeEnd(); ++a, ++i)
+     if (def) // def is not necessarily a DDynamicObject! XXX not used yet
      {
-       *i = a->type().newValue();
+       for (size_t idx = 0; idx != this->__values.size(); ++idx)
+       {
+          this->__values[idx] = DObject::getBaseValue(def, idx)->clone(self);
+       }
+     }
+     else
+     {
+       DStruct::DAttributeIterator a;
+       std::vector<BaseValue*>::iterator i = this->__values.begin();
+
+       for (a = instanceOf()->attributeBegin(); a != instanceOf()->attributeEnd(); ++a, ++i)
+       {
+         *i = a->type().newValue();
+       }
      }
   }
 }
