@@ -1,10 +1,11 @@
 #ifndef _DESTRUCT_MODULE_DOBJECT_HPP_
 #define _DESTRUCT_MODULE_DOBJECT_HPP_
 
+#include "destructmodule.hpp"
+
 #include "drealvalue.hpp"
 #include "dsimpleobject.hpp"
 #include "dnullobject.hpp"
-#include "destructmodule.hpp"
 #include "dexception.hpp"
 
 typedef PythonModule< class PyDObject, Destruct::DObject > PyDObjectT;

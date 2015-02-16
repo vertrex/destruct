@@ -1,11 +1,12 @@
+#include "py_dstruct.hpp"
+#include "py_dattribute.hpp"
+#include "py_dobject.hpp"
+
 #include "dstruct.hpp"
 #include "dsimpleobject.hpp"
 #include "dattribute.hpp"
 #include "dobject.hpp"
 #include "dstructs.hpp"
-#include "py_dstruct.hpp"
-#include "py_dattribute.hpp"
-#include "py_dobject.hpp"
 
 template<>
 PyTypeObject* PyDStructT::pyType = NULL;

@@ -1,7 +1,7 @@
-#include <python2.7/Python.h>
-#include "dstructs.hpp"
-
+#include <Python.h>
 #include <iostream>
+
+#include "dstructs.hpp"
 
 #include "embedding.hpp"
 

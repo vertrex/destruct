@@ -2,6 +2,7 @@
 #define _DESTRUCT_MODULE_DNULLOBJECT_HPP_
 
 #include "destructmodule.hpp"
+
 #include "dnullobject.hpp"
 #include "drealvalue.hpp"
 #include "dexception.hpp"

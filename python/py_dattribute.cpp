@@ -1,7 +1,8 @@
-#include "dstruct.hpp"
-#include "dsimpleobject.hpp"
 #include "py_dattribute.hpp"
 #include "py_dtype.hpp"
+
+#include "dstruct.hpp"
+#include "dsimpleobject.hpp"
 #include "dattribute.hpp"
 
 template<>

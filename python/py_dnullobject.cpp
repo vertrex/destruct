@@ -1,6 +1,6 @@
-#include "dexception.hpp"
-
 #include "py_dnullobject.hpp"
+
+#include "dexception.hpp"
 
 template<>
 PyTypeObject* PyDNullObjectT::pyType = NULL;

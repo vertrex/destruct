@@ -84,7 +84,7 @@ protected:
  * DUnicodeString class specialization
  */
 template <> 
-class RealValue<DUnicodeString> : public TypedValue<DUnicodeString>, public DUnicodeString
+class RealValue<DUnicodeString> : public TypedValue<DUnicodeString>, public DUnicodeString //inherit ? use private copy ?
 {
 public:
   RealValue(DUnicodeString const& s) : DUnicodeString(s)

@@ -1,9 +1,10 @@
 #ifndef _DESTRUCT_MODULE_DTYPE_HPP_
 #define _DESTRUCT_MODULE_DTYPE_HPP_
 
-#include "dtype.hpp"
 #include "destructmodule.hpp"
 #include "py_dvalue.hpp"
+
+#include "dtype.hpp"
 
 typedef PythonModule< class PyDType, Destruct::DType > PyDTypeT;
 class PyDType : public PyDTypeT 

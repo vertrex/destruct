@@ -1,8 +1,8 @@
 #ifndef _DESTRUCT_MODULE_DSTRUCT_HPP_
 #define _DESTRUCT_MODULE_DSTRUCT_HPP_
 
-#include "dstruct.hpp"
 #include "destructmodule.hpp"
+#include "dstruct.hpp"
 
 typedef PythonModule< class PyDStruct, Destruct::DStruct> PyDStructT;
 class PyDStruct : public PyDStructT

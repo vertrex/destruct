@@ -1,8 +1,8 @@
 #ifndef _DESTRUCT_MODULE_DATTRIBUTE_HPP_
 #define _DESTRUCT_MODULE_DATTRIBUTE_HPP_
 
-#include "dattribute.hpp"
 #include "destructmodule.hpp"
+#include "dattribute.hpp"
 
 typedef PythonModule< class PyDAttribute, Destruct::DAttribute > PyDAttributeT;
 class PyDAttribute : public PyDAttributeT 

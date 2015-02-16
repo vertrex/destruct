@@ -1,8 +1,8 @@
 #ifndef _DESTRUCTMODULE_TEST_HPP_
 #define _DESTRUCTMODULE_TEST_HPP_
 
-#include <python2.7/Python.h>
-#include <python2.7/frameobject.h>
+#include <Python.h>
+#include <frameobject.h>
 
 #include "destructmodule.hpp"
 #include "destruct_test.hpp"

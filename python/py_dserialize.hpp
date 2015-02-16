@@ -2,6 +2,7 @@
 #define _DESTRUCT_MODULE_DSERIALIZE_HPP_
 
 #include "destructmodule.hpp"
+
 #include "protocol/dserialize.hpp"
 
 typedef PythonModule< class PyDSerialize, Destruct::DSerialize> PyDSerializeT;

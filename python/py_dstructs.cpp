@@ -1,7 +1,7 @@
-#include "dexception.hpp"
-
 #include "py_dstructs.hpp"
 #include "py_dstruct.hpp"
+
+#include "dexception.hpp"
 
 template<>
 PyTypeObject* PyDStructsT::pyType = NULL;

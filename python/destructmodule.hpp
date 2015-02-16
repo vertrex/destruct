@@ -1,7 +1,7 @@
 #ifndef _DESTRUCTMODULE_HPP
 #define _DESTRUCTMODULE_HPP
 
-#include <python2.7/Python.h>
+#include <Python.h>
 #include "dvalue.hpp"
 
 #define CHECK_PIMPL\

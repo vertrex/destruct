@@ -1,8 +1,8 @@
-#include "protocol/dstream.hpp"
-
 #include "py_dserialize.hpp"
 #include "py_dstruct.hpp"
 #include "py_dobject.hpp"
+
+#include "protocol/dstream.hpp"
 
 template<>
 PyTypeObject* PyDSerializeT::pyType = NULL;

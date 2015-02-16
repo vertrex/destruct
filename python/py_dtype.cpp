@@ -1,8 +1,8 @@
-#include "dexception.hpp"
-
 #include "py_dtype.hpp"
 #include "py_dvalue.hpp"
 #include "py_dobject.hpp"
+
+#include "dexception.hpp"
 
 template<>
 PyTypeObject* PyDTypeT::pyType = NULL;

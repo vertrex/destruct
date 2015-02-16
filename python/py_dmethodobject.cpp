@@ -1,3 +1,7 @@
+#include "py_dstruct.hpp"
+#include "py_dtype.hpp"
+#include "py_dmethodobject.hpp"
+
 #include <typeinfo>
 
 #include "dstructs.hpp"
@@ -5,10 +9,6 @@
 #include "drealvalue.hpp"
 #include "dnullobject.hpp"
 #include "dexception.hpp"
-
-#include "py_dstruct.hpp"
-#include "py_dtype.hpp"
-#include "py_dmethodobject.hpp"
 
 using Destruct::DUnicodeString;
 

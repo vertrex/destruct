@@ -1,4 +1,7 @@
 #include "py_dobject.hpp"
+#include "py_dstruct.hpp"
+#include "py_dtype.hpp"
+
 #include "dvalue.hpp"
 #include "dstructs.hpp"
 #include "dobject.hpp"
@@ -10,9 +13,6 @@
 #include "protocol/dcontainer.hpp"
 #include "protocol/dmutablestruct.hpp"
 #include "protocol/dmutableobject.hpp"
-
-#include "py_dstruct.hpp"
-#include "py_dtype.hpp"
 
 using Destruct::DUnicodeString;
 
