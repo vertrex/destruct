@@ -17,28 +17,51 @@ loader.loadFile("/home/vertrex/destruct/examples/inheritance/libdestruct_inherit
 #load cpp iterator exemple and inherite from cpp class
 #DStructs.find("DVectorString")
 
-class PyB(DStruct):
+class PyBStruct(DStruct):
   def __init__(self):
     DStruct.__init__(self, DStructs().find("CppA"), "PyCppAB")
     #DStruct.__init__(self, DNone, "PyCppAB")
     self.addAttribute(DAttribute("text3", DUnicodeString))
-    #DStructs().registerDStruct(self)
+    self.addAttribute(DAttribute("object3", DUnicodeString))
+    self.addAttribute(DAttribute("changeA", DMethod, DNone, DNone))
+    self.addAttribute(DAttribute("callA", DMethod, DNone, DNone))
+DStructs().registerDStruct(PyBStruct())
+
+class PyB(DObject):
+  def __init__(self):
+    DObject.__init__(self, "PyCppAB")
+    
+  def changeA(self):
+    print "changeA(void) getValue text1:", self.text1
+    self.text1 = "changed by changeA"
+
+  def callA(self):
+    self.callable1()
 
 print PyB()
-DStructs().registerDStruct(PyB())
 
-pyCppAB = DStructs().find("PyCppAB").newObject()
+#pyCppAB = DStructs().find("PyCppAB").newObject()
 
-print pyCppAB
+#print pyCppAB
+#
+#print dir(pyCppAB)
 
-print dir(pyCppAB)
+pyCppAB = PyB()
 
-print pyCppAB.callable1()
-print pyCppAB.object1
-print pyCppAB.object2
-print pyCppAB.text1
+print '.callable1() ', pyCppAB.callable1()
+print '.object1 ', pyCppAB.object1
+print '.object2 ', pyCppAB.object2
+print '.object3 ', pyCppAB.object3
+print '.text1 ', pyCppAB.text1
+print '.text1 = Salut'
 pyCppAB.text1 = "Salut"
-print pyCppAB.text1
-print pyCppAB.text2
-print pyCppAB.text3
+print '.text1 ', pyCppAB.text1
+print '.text2 ', pyCppAB.text2
+print '.text3 ', pyCppAB.text3
 
+print '.text2 = reset'
+pyCppAB.text2 = 'reset'
+print '.changeA', pyCppAB.changeA()
+print '.text1', pyCppAB.text1
+print '.callA', pyCppAB.callA()
+print '.text2 ', pyCppAB.text2
