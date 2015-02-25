@@ -124,8 +124,8 @@ protocol/dmutablestruct.cpp
 protocol/dmutableobject.cpp
 protocol/dserialize.cpp
 protocol/dstream.cpp
-protocol/debugobject.cpp
-protocol/recursivedebugobject.cpp
+protocol/traceobject.cpp
+protocol/recursivetraceobject.cpp
 )
 
 add_library(destruct SHARED ${destruct_source_files})

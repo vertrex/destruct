@@ -19,7 +19,7 @@
 #include "regf.hpp"
 #include "key.hpp"
 #include "value.hpp"
-#include "protocol/debugobject.hpp"
+#include "protocol/traceobject.hpp"
 
 #include "streamvfile.hpp"
 
@@ -79,7 +79,7 @@ DValue Registry::open(DValue const& args)
     std::cout << "Registry file is invalid" << std::endl;
 
   RegistryKey* rkey = new RegistryKey(this->__destruct.find("RegistryKey"), RealValue<DObject*>(DNone));
-  //DObject* key = this->__destruct.generate("RecursiveDebugObject", RealValue<DObject*>(rkey));
+  //DObject* key = this->__destruct.generate("RecursiveTraceObject", RealValue<DObject*>(rkey));
   DObject* key = rkey;
 
   DInt64 x = 0x1000 + regf->keyrecord;

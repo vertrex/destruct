@@ -10,11 +10,11 @@ namespace Destruct
 
 class BaseValue;
 
-class DebugFunctionObject : public DFunctionObject
+class TraceFunctionObject : public DFunctionObject
 {
 public:
-  DebugFunctionObject(DFunctionObject* functionObject); 
-  ~DebugFunctionObject();
+  TraceFunctionObject(DFunctionObject* functionObject); 
+  ~TraceFunctionObject();
 
   virtual DValue call(void) const;
   virtual DValue call(DValue const& args) const;
@@ -22,12 +22,12 @@ private:
   DFunctionObject*      __functionObject;
 };
 
-class DebugObject : public DObject 
+class TraceObject : public DObject 
 {
 public:
-  DebugObject(DStruct* dstruct, DValue const& args);
-  DebugObject(DebugObject const&);
-  DebugObject(DObject*);
+  TraceObject(DStruct* dstruct, DValue const& args);
+  TraceObject(TraceObject const&);
+  TraceObject(DObject*);
 
   static DObject*   newObject(DStruct *, DValue const& args);
 
@@ -42,7 +42,7 @@ public:
   virtual DValue    call(DUnicodeString const& name, DValue const &);
   virtual DValue    call(DUnicodeString const& name);
 protected:
-  ~DebugObject();
+  ~TraceObject();
 
   BaseValue*        getBaseValue(size_t index);
   BaseValue const*  getBaseValue(size_t index) const;

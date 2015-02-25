@@ -37,7 +37,7 @@ for x in vector:
 print 'Map'
 vector = DStructs().find("DVectorUInt64").newObject()
 
-#vector = DStructs().find("DebugObject").newObject(vector)
+#vector = DStructs().find("TraceObject").newObject(vector)
 #print vector
 
 

@@ -9,8 +9,8 @@
 #include "protocol/protocol.hpp"
 
 #include "protocol/dstream.hpp"
-#include "protocol/debugobject.hpp"
-#include "protocol/recursivedebugobject.hpp"
+#include "protocol/traceobject.hpp"
+#include "protocol/recursivetraceobject.hpp"
 
 namespace Destruct
 {
@@ -41,8 +41,8 @@ void Protocol::__registerStruct(DStructs* destruct)
   registerCpp<DStreamString >(destruct, "DStreamString");
   //registerCpp<DSerializeXML>(destruct, "DSerializeBinary");
 
-  destruct->registerDStruct(new DStruct(NULL, "DebugObject",  DebugObject::newObject));
-  destruct->registerDStruct(new DStruct(NULL, "RecursiveDebugObject",  RecursiveDebugObject::newObject));
+  destruct->registerDStruct(new DStruct(NULL, "TraceObject",  TraceObject::newObject));
+  destruct->registerDStruct(new DStruct(NULL, "RecursiveTraceObject",  RecursiveTraceObject::newObject));
   destruct->registerDStruct(static_cast<DStruct*>(new DMutableStruct(NULL, "DMutable", DMutableObject::newObject)));
 }
 

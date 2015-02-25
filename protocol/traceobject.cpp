@@ -1,42 +1,42 @@
-#include "debugobject.hpp"
+#include "traceobject.hpp"
 #include "dvalue.hpp"
 #include "drealvalue.hpp"
 
 namespace Destruct
 {
 
-DebugObject::DebugObject(DStruct* dstruct, DValue const& args) : DObject(args.get<DObject*>()->instanceOf(), args), __dobject(args.get<DObject*>())
+TraceObject::TraceObject(DStruct* dstruct, DValue const& args) : DObject(args.get<DObject*>()->instanceOf(), args), __dobject(args.get<DObject*>())
 {
   DUnicodeString const& name = __dobject->instanceOf()->name();
   std::cout << name <<  "::" << name << "()" << std::endl;
 }
 
-DebugObject::DebugObject(DebugObject const& copy) : DObject(copy), __dobject(copy.__dobject)
+TraceObject::TraceObject(TraceObject const& copy) : DObject(copy), __dobject(copy.__dobject)
 {
 }
 
-DebugObject::DebugObject(DObject* object) : DObject(*object), __dobject(object)
+TraceObject::TraceObject(DObject* object) : DObject(*object), __dobject(object)
 {
 }
 
-DebugObject::~DebugObject()
+TraceObject::~TraceObject()
 {
   std::cout << this->instanceOf()->name() << "::~" << this->instanceOf()->name() << " count => " << this->__dobject->refCount() << std::endl;
   this->__dobject->destroy();
 }
 
-DObject*         DebugObject::newObject(DStruct* dstruct, DValue const& args)
+DObject*         TraceObject::newObject(DStruct* dstruct, DValue const& args)
 {
-  return (new DebugObject(dstruct, args)); 
+  return (new TraceObject(dstruct, args)); 
 }
 
-DObject*         DebugObject::clone() const
+DObject*         TraceObject::clone() const
 {
   std::cout << this->__dobject->instanceOf()->name() << "->clone()" << std::endl;
   return (this->__dobject->clone());
 }
 
-DValue           DebugObject::getValue(size_t index) const
+DValue           TraceObject::getValue(size_t index) const
 {
   DValue result = this->__dobject->getValue(index);
   DStruct* dstruct = this->__dobject->instanceOf();
@@ -45,19 +45,19 @@ DValue           DebugObject::getValue(size_t index) const
   std::cout <<dstruct->name() << "::getValue(" << attribute.name() << ") => " << result.asUnicodeString() << std::endl;
 
   if (attribute.type().getType() == DType::DMethodType)
-    return (RealValue<DFunctionObject*>(new DebugFunctionObject(result.get<DFunctionObject*>())));
+    return (RealValue<DFunctionObject*>(new TraceFunctionObject(result.get<DFunctionObject*>())));
 
   return (result);
 }
 
-void             DebugObject::setValue(size_t index, DValue const& args)
+void             TraceObject::setValue(size_t index, DValue const& args)
 {
   std::cout << this->__dobject->instanceOf()->name() << "::setValue(" << index << "," << args.asUnicodeString() << std::endl;
 
   this->__dobject->setValue(index, args);
 }
 
-DValue           DebugObject::call(size_t index, DValue const& args)
+DValue           TraceObject::call(size_t index, DValue const& args)
 {
   DValue result = this->__dobject->call(index, args);
 
@@ -66,7 +66,7 @@ DValue           DebugObject::call(size_t index, DValue const& args)
   return (result);
 }
 
-DValue           DebugObject::getValue(DUnicodeString const& name) const
+DValue           TraceObject::getValue(DUnicodeString const& name) const
 {
   DValue result = this->__dobject->getValue(name);
 
@@ -75,7 +75,7 @@ DValue           DebugObject::getValue(DUnicodeString const& name) const
   return (result);
 }
 
-void             DebugObject::setValue(DUnicodeString const& name, DValue const& args)
+void             TraceObject::setValue(DUnicodeString const& name, DValue const& args)
 {
   std::cout << this->__dobject->instanceOf()->name() << "::" << name << " => " << args.asUnicodeString() << std::endl;
 
@@ -83,7 +83,7 @@ void             DebugObject::setValue(DUnicodeString const& name, DValue const&
 }
 
 
-DValue           DebugObject::call(DUnicodeString const& name, DValue const& args)
+DValue           TraceObject::call(DUnicodeString const& name, DValue const& args)
 {
   DValue result = this->__dobject->call(name, args);
 
@@ -92,7 +92,7 @@ DValue           DebugObject::call(DUnicodeString const& name, DValue const& arg
   return (result);
 }
 
-DValue           DebugObject::call(DUnicodeString const& name)
+DValue           TraceObject::call(DUnicodeString const& name)
 {
   DValue result = this->__dobject->call(name);
 
@@ -101,34 +101,34 @@ DValue           DebugObject::call(DUnicodeString const& name)
   return (result);
 }
 
-BaseValue*       DebugObject::getBaseValue(size_t index) 
+BaseValue*       TraceObject::getBaseValue(size_t index) 
 {
   return (NULL);
 }
 
-BaseValue const* DebugObject::getBaseValue(size_t index) const 
+BaseValue const* TraceObject::getBaseValue(size_t index) const 
 {
   return (NULL);
 }
 
-DObject*         DebugObject::object(void) const
+DObject*         TraceObject::object(void) const
 {
   return (this->__dobject);
 }
 
 /**
- *  DebugFunctionObject
+ *  TraceFunctionObject
  */
-DebugFunctionObject::DebugFunctionObject(DFunctionObject* functionObject) : __functionObject(functionObject)
+TraceFunctionObject::TraceFunctionObject(DFunctionObject* functionObject) : __functionObject(functionObject)
 {
 }
 
-DebugFunctionObject::~DebugFunctionObject()
+TraceFunctionObject::~TraceFunctionObject()
 {
   delete __functionObject;
 }
 
-DValue          DebugFunctionObject::call(void) const
+DValue          TraceFunctionObject::call(void) const
 {
   DValue result = this->__functionObject->call(); 
   std::cout << "DFunctionObject::call(void) => " << result.asUnicodeString() << std::endl;
@@ -136,7 +136,7 @@ DValue          DebugFunctionObject::call(void) const
   return (result);
 }
 
-DValue          DebugFunctionObject::call(DValue const& args) const
+DValue          TraceFunctionObject::call(DValue const& args) const
 {
   DValue result = this->__functionObject->call(args); 
   std::cout << "DFunctionObject::call(" << args.asUnicodeString() << ") => " << result.asUnicodeString() << std::endl;

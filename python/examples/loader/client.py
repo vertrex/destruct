@@ -28,7 +28,7 @@ def registryShow():
   finder = FindKey()
   registry = DStructs().find("Registry").newObject()
   regf = registry.open("/home/vertrex/dump/registry/system")
-  regfDebug = DStructs().find("DebugObject").newObject(regf)
+  regfDebug = DStructs().find("TraceObject").newObject(regf)
 
   for key in regf.key.subkeys.list:
     print key.time

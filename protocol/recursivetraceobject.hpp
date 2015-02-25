@@ -1,16 +1,16 @@
 #ifndef _DESTRUCT_RECURSIVEDEBUGOBJECT_HPP_
 #define _DESTRUCT_RECURSIVEDEBUGOBJECT_HPP_
 
-#include "protocol/debugobject.hpp"
+#include "protocol/traceobject.hpp"
 
 namespace Destruct
 {
 
-class RecursiveDebugFunctionObject : public DebugFunctionObject
+class RecursiveTraceFunctionObject : public TraceFunctionObject
 {
 public:
-  RecursiveDebugFunctionObject(DFunctionObject* functionObject); 
-  ~RecursiveDebugFunctionObject();
+  RecursiveTraceFunctionObject(DFunctionObject* functionObject); 
+  ~RecursiveTraceFunctionObject();
 
   DValue call(void)const;
   DValue call(DValue const& args) const;
@@ -19,12 +19,12 @@ private:
 };
 
 
-class RecursiveDebugObject : public DebugObject
+class RecursiveTraceObject : public TraceObject
 {
 public:
-  RecursiveDebugObject(DStruct* dstruct, DValue const& args);
-  RecursiveDebugObject(DebugObject const&);
-  RecursiveDebugObject(DObject*);
+  RecursiveTraceObject(DStruct* dstruct, DValue const& args);
+  RecursiveTraceObject(TraceObject const&);
+  RecursiveTraceObject(DObject*);
 
   virtual DValue    getValue(size_t index) const;
   virtual DValue    call(size_t index, DValue const &);

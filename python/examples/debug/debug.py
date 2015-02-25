@@ -8,7 +8,7 @@ from _destruct import *
 print "== create dvector string"
 vector = DStructs().find("DVectorString").newObject()
 print "== pass it to devctor object"
-debugVector = DStructs().find("DebugObject").newObject(vector)
+debugVector = DStructs().find("TraceObject").newObject(vector)
 
 print "== push string and iterate"
 print "== push first string"
@@ -31,7 +31,7 @@ for string in vector:
 
 print "== create DVectorObject with two object"
 origObj = DStructs().find("DVectorObject").newObject()
-objects = DStructs().find("DebugObject").newObject(origObj)
+objects = DStructs().find("TraceObject").newObject(origObj)
 print "=========", objects
 
 mapString = DStructs().find("DMapString").newObject()
@@ -48,7 +48,7 @@ for obj in objects:
     print '  ', subObj.index ," : ", subObj.value
 
 print "==============recursive debug"
-objects = DStructs().find("RecursiveDebugObject").newObject(origObj)
+objects = DStructs().find("RecursiveTraceObject").newObject(origObj)
 
 print 'obj in ', objects
 for obj in objects:
