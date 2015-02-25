@@ -110,20 +110,20 @@ public:
   DValue deserialize(DStream& input, DType::Type_t returnType, DType::Type_t argumentType);
 };
 
-class DSerializeXML : public DSerialize, public DCppObject<DSerializeXML>
+class DSerializeXML : public DSerialize//, public DCppObject<DSerializeXML>
 {
 public :
   //DSerializeXML()
   //{
   //}
 
-  DSerializeXML(DStruct* dstruct, DValue const& args) : DCppObject<DSerializeXML>(dstruct, args)
+  DSerializeXML(DStruct* dstruct, DValue const& args)// : DCppObject<DSerializeXML>(dstruct, args)
   {
-    this->init();
+   // this->init();
   }
-  DSerializeXML(const DSerializeXML& copy) : DCppObject<DSerializeXML>(copy) 
+  DSerializeXML(const DSerializeXML& copy) //: DCppObject<DSerializeXML>(copy) 
   {
-    this->init();
+   // this->init();
   }
 
   const DUnicodeString name(void);
@@ -163,6 +163,7 @@ private:
     bool               __enclose;
   };
 public:
+  /*
   static size_t ownAttributeCount()
   {
     return (0);
@@ -196,7 +197,7 @@ public:
   static DPointer<DSerializeXML>*  memberEnd()
   {
     return (memberBegin() + ownAttributeCount());
-  } 
+  } */
 };
 
 class DSerializers

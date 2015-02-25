@@ -1,6 +1,7 @@
 #ifndef DESTRUCT_DESTRUCT_HPP_
 #define DESTRUCT_DESTRUCT_HPP_
 
+#include "destruct.hpp"
 #include "dstruct.hpp"
 
 namespace Destruct
@@ -17,22 +18,21 @@ public:
   typedef std::vector<DStruct* >  Container;
   typedef Container::iterator     Iterator;
 
-  static DStructs& instance(void);
+  EXPORT static DStructs& instance(void);
 
-  size_t        count(void);
-  DStruct*      find(DUnicodeString const & name);
-  DStruct*      find(const size_t name);  
-  void          registerDStruct(DStruct* dstruct);
-  void          registerDStruct(DUnicodeString const& name, DStruct* dstruct);
-  bool          unregister(DStruct* dstruct);
-  DObject*      generate(DUnicodeString const& name);
-  DObject*      generate(DUnicodeString const& name, DValue const& args);
+  EXPORT size_t        count(void);
+  EXPORT DStruct*      find(DUnicodeString const & name);
+  EXPORT DStruct*      find(const size_t name);  
+  EXPORT void          registerDStruct(DStruct* dstruct);
+  EXPORT void          registerDStruct(DUnicodeString const& name, DStruct* dstruct);
+  EXPORT bool          unregister(DStruct* dstruct);
+  EXPORT DObject*      generate(DUnicodeString const& name);
+  EXPORT DObject*      generate(DUnicodeString const& name, DValue const& args);
 private:
   DStructs();
   ~DStructs();
   DStructs(const DStructs&);
   DStructs&                 operator=(DStructs&);
-
   NameSpace*                 __nameSpace; //NameSpace("")
 };
 

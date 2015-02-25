@@ -5,6 +5,8 @@
 #include <iostream>
 #include <sstream>
 
+#include "destruct.hpp"
+
 namespace Destruct
 {
 
@@ -12,43 +14,43 @@ class DUnicodeString
 {
 public:
 
-DUnicodeString();
-DUnicodeString(const DUnicodeString& dunicodeString);
-DUnicodeString(const std::string& string);
-DUnicodeString(const char *); 
-DUnicodeString(const char);
+EXPORT DUnicodeString();
+EXPORT DUnicodeString(const DUnicodeString& dunicodeString);
+EXPORT DUnicodeString(const std::string& string);
+EXPORT DUnicodeString(const char *); 
+EXPORT DUnicodeString(const char);
 
-~DUnicodeString(); 
+EXPORT ~DUnicodeString(); 
 
-std::string  string(void) const;
-const char* c_str() const;
-size_t size(void) const; 
-size_t find(const std::string& str) const;
-DUnicodeString substr(size_t pos, size_t len = std::string::npos) const;
+EXPORT std::string  string(void) const;
+EXPORT const char* c_str() const;
+EXPORT size_t size(void) const; 
+EXPORT size_t find(const std::string& str) const;
+EXPORT DUnicodeString substr(size_t pos, size_t len = std::string::npos) const;
 
-DUnicodeString& operator=(const DUnicodeString& rhs); 
-DUnicodeString& operator=(std::string rhs);
-DUnicodeString& operator+=(const DUnicodeString& rhs);
-DUnicodeString operator+(const DUnicodeString& rhs);
+EXPORT DUnicodeString& operator=(const DUnicodeString& rhs); 
+EXPORT DUnicodeString& operator=(std::string rhs);
+EXPORT DUnicodeString& operator+=(const DUnicodeString& rhs);
+EXPORT DUnicodeString operator+(const DUnicodeString& rhs);
 
-operator std::string() const
+EXPORT operator std::string() const
 {
   return (this->string());
 }
 
-friend DUnicodeString operator+(const char* left, const DUnicodeString& rhs)
+EXPORT friend DUnicodeString operator+(const char* left, const DUnicodeString& rhs)
 {
   std::string tmp = left + rhs.string();
   return (DUnicodeString(tmp));
 }
 
-friend std::ostream& operator<<(std::ostream& out, const DUnicodeString &dunicodeString)
+EXPORT friend std::ostream& operator<<(std::ostream& out, const DUnicodeString &dunicodeString)
 {
   out << dunicodeString.string(); 
   return (out);
 }
 
-friend std::istream& operator>>(std::istream& in, DUnicodeString &dunicodeString)
+EXPORT friend std::istream& operator>>(std::istream& in, DUnicodeString &dunicodeString)
 {
   std::string tmp;
   in >> tmp;
@@ -57,26 +59,25 @@ friend std::istream& operator>>(std::istream& in, DUnicodeString &dunicodeString
   return (in);
 }
 
-friend bool operator<(const DUnicodeString &left, const DUnicodeString &right)
+EXPORT friend bool operator<(const DUnicodeString &left, const DUnicodeString &right)
 {
   return (left.string() < right.string()); 
 }
 
-friend bool operator>(const DUnicodeString &left, const DUnicodeString &right)
+EXPORT friend bool operator>(const DUnicodeString &left, const DUnicodeString &right)
 {
   return (left.string() > right.string());
 }
 
-friend bool operator==(const DUnicodeString &left, const DUnicodeString &right)
+EXPORT friend bool operator==(const DUnicodeString &left, const DUnicodeString &right)
 {
   return (left.string() == right.string());
 }
 
-friend bool operator!=(const DUnicodeString &left, const DUnicodeString &right)
+EXPORT friend bool operator!=(const DUnicodeString &left, const DUnicodeString &right)
 {
   return (left.string() != right.string());
 }
-
 private:
   std::string __string;
 };

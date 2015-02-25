@@ -1,6 +1,7 @@
 #ifndef DSTRUCT_DVALUE_HPP_
 #define DSTRUCT_DVALUE_HPP_
 
+#include "destruct.hpp"
 #include "dobject.hpp"
 #include "dfunction.hpp"
 #include "dunicodestring.hpp"
@@ -79,14 +80,13 @@ protected:
 class DValue
 {
 public:
-  DValue(FinalValue const &);
-  DValue(DValue const &);
-  explicit DValue (FinalValue* = NULL);
-  ~DValue();
+  EXPORT DValue(FinalValue const &);
+  EXPORT DValue(DValue const &);
+  EXPORT explicit DValue (FinalValue* = NULL);
+  EXPORT ~DValue();
 
-  DValue& operator=(const DValue&);
-
-  DValue& replace(const DValue&);
+  EXPORT DValue& operator=(const DValue&);
+  EXPORT DValue& replace(const DValue&);
 
   //template <typename PlainType>// ok but could be ambigous in some case
   //operator PlainType() const
@@ -95,7 +95,7 @@ public:
   //}
 
   template <typename PlainType>
-  PlainType get() const
+  EXPORT PlainType get() const
   {
     if (this->__value)
     {
@@ -107,10 +107,10 @@ public:
   }
 
   //operator std::string();
-  friend DStreamBase& operator<<(DStreamBase& os, DValue& value);
-  friend DStreamBase& operator>>(DStreamBase& is, DValue& value);
+  EXPORT friend DStreamBase& operator<<(DStreamBase& os, DValue& value);
+  EXPORT friend DStreamBase& operator>>(DStreamBase& is, DValue& value);
   //std::ostream& serialize (std::ostream& os) const;
-  DUnicodeString asUnicodeString() const;
+  EXPORT DUnicodeString asUnicodeString() const;
 private:
   FinalValue*   __value;
 };

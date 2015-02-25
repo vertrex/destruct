@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <vector>
 
+#include "destruct.hpp"
 #include "dunicodestring.hpp"
 
 namespace Destruct
@@ -54,21 +55,21 @@ public:
     DUnknownType,
   };
 
-  explicit DType(Type_t typeId); //explicit to be sure to have a defined type when constructing DType 
-  explicit DType(Type_t typeId, Type_t ReturnTypeId, Type_t ArgumentTypeId);
+  EXPORT explicit DType(Type_t typeId); //explicit to be sure to have a defined type when constructing DType 
+  EXPORT explicit DType(Type_t typeId, Type_t ReturnTypeId, Type_t ArgumentTypeId);
 
-  FinalValue*                           newValue(void) const;
-  FinalValue*                           newReturnValue(void) const; //hum hum
-  FinalValue*                           newArgumentValue(void) const; //hum hum only usefull for func object ...
-  Type_t                                getType(void) const;
-  Type_t                                getReturnType(void) const;
-  Type_t                                getArgumentType(void) const;
-  const DUnicodeString                  name(void) const;
-  const DUnicodeString                  returnName(void) const;
-  const DUnicodeString                  argumentName(void) const;
+  EXPORT FinalValue*                    newValue(void) const;
+  EXPORT FinalValue*                    newReturnValue(void) const; //hum hum
+  EXPORT FinalValue*                    newArgumentValue(void) const; //hum hum only usefull for func object ...
+  EXPORT Type_t                         getType(void) const;
+  EXPORT Type_t                         getReturnType(void) const;
+  EXPORT Type_t                         getArgumentType(void) const;
+  EXPORT const DUnicodeString           name(void) const;
+  EXPORT const DUnicodeString           returnName(void) const;
+  EXPORT const DUnicodeString           argumentName(void) const;
   
-  static void                           init(void);
-  static void                           clean(void);
+  EXPORT static void                    init(void);
+  EXPORT static void                    clean(void);
 private:
   Type_t                                __typeId;
   Type_t                                __returnTypeId; //xor ? flag pour prendre moins de place ?

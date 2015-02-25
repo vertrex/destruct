@@ -6,9 +6,6 @@
 #include "dstruct.hpp"
 #include "dunicodestring.hpp"
 
-//#include <iostream>
-//#include <string>
-
 namespace Destruct
 {
 class DValue;
