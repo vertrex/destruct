@@ -5,6 +5,7 @@
 #include <iostream> 
 #include <vector>
 
+#include "destruct.hpp"
 #include "dstream.hpp"
 #include "protocol/dcppobject.hpp"
 
@@ -29,7 +30,6 @@ public:
   virtual DValue deserialize(DStream& input, DType::Type_t returnType, DType::Type_t argumentType) = 0;
 
   virtual DSerialize* create(void) = 0;
-
   virtual ~DSerialize() {};
 };
 
@@ -203,12 +203,12 @@ public:
 class DSerializers
 {
 public:
-  DSerializers();
-  ~DSerializers(); 
-  static DSerialize* to(const DUnicodeString type);
-  static DSerialize* to(size_t id);
-  static size_t      count(void);
-  static bool        registerSerializer(DSerialize* serializer);
+  EXPORT DSerializers();
+  EXPORT ~DSerializers(); 
+  EXPORT static DSerialize* to(const DUnicodeString type);
+  EXPORT static DSerialize* to(size_t id);
+  EXPORT static size_t      count(void);
+  EXPORT static bool        registerSerializer(DSerialize* serializer);
 private:
   static std::vector<DSerialize*  > __serializers;
 };

@@ -1,6 +1,7 @@
 #ifndef __DESTRUCT_MUTABLEOBJECT_HPP
 #define __DESTRUCT_MUTABLEOBJECT_HPP
 
+#include "destruct.hpp"
 #include "ddynamicobject.hpp"
 
 class DMutableStruct;
@@ -11,22 +12,22 @@ namespace Destruct
 class DMutableObject : public DDynamicObject
 {
 public:
-  DMutableObject(const DUnicodeString& name, DValue const& args); 
-  DMutableObject(DMutableStruct* dstructDef, DValue const& args); 
-  DMutableObject(DMutableObject const &);
-  ~DMutableObject();
+  EXPORT DMutableObject(const DUnicodeString& name, DValue const& args); 
+  EXPORT DMutableObject(DMutableStruct* dstructDef, DValue const& args); 
+  EXPORT DMutableObject(DMutableObject const &);
+  EXPORT ~DMutableObject();
 
   using DObject::getValue;
   using DObject::setValue;
 
-  virtual DValue           getValue(size_t idx) const;
-  virtual void             setValue(size_t idx, DValue const &);
-  virtual DValue           call(size_t idx, DValue const&); //this is juste an helper function
+  EXPORT virtual DValue           getValue(size_t idx) const;
+  EXPORT virtual void             setValue(size_t idx, DValue const &);
+  EXPORT virtual DValue           call(size_t idx, DValue const&); //this is juste an helper function
 
-  void setValueAttribute(DType::Type_t type, std::string const& name, DValue const& v);
+  EXPORT void setValueAttribute(DType::Type_t type, std::string const& name, DValue const& v);
 
-  static DObject* newObject(DMutableStruct* myClass, DValue const& args);
-  virtual DObject*  clone() const;
+  EXPORT static DObject* newObject(DMutableStruct* myClass, DValue const& args);
+  EXPORT virtual DObject*  clone() const;
 };
 
 }

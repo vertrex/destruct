@@ -23,14 +23,14 @@ namespace Destruct
 class BaseValue
 {
 public:
-  virtual BaseValue* clone(DObject *) const = 0;
-  virtual ~BaseValue() {};
-  virtual DValue getFinal() const = 0;
-  virtual void set(DValue const & v) = 0;
+  EXPORT virtual BaseValue* clone(DObject *) const = 0;
+  EXPORT virtual ~BaseValue() {};
+  EXPORT virtual DValue getFinal() const = 0;
+  EXPORT virtual void set(DValue const & v) = 0;
 protected:
-  BaseValue() {}
-  BaseValue(BaseValue const &) {}
-  BaseValue& operator=(BaseValue const &)
+  EXPORT BaseValue() {}
+  EXPORT BaseValue(BaseValue const &) {}
+  EXPORT BaseValue& operator=(BaseValue const &)
   {
     return (*this);
   }  
@@ -41,17 +41,17 @@ protected:
 class FinalValue : public BaseValue
 {
 public:
-  virtual BaseValue * clone(DObject *) const;
-  virtual FinalValue * clone() const = 0;
+  EXPORT virtual BaseValue * clone(DObject *) const;
+  EXPORT virtual FinalValue * clone() const = 0;
  
-  virtual DUnicodeString asUnicodeString() const = 0;
-  virtual DStreamBase&  serialize(DStreamBase& os) const = 0;//XXX Better use an object protocol ?
-  virtual DStreamBase&  unserialize(DStreamBase& is) = 0;   //XXX Better use an object protocol ?
-  virtual DValue    getFinal() const;
+  EXPORT virtual DUnicodeString asUnicodeString() const = 0;
+  EXPORT virtual DStreamBase&  serialize(DStreamBase& os) const = 0;//XXX Better use an object protocol ?
+  EXPORT virtual DStreamBase&  unserialize(DStreamBase& is) = 0;   //XXX Better use an object protocol ?
+  EXPORT virtual DValue    getFinal() const;
 protected:
-  FinalValue();
-  FinalValue(FinalValue const &);
-  FinalValue& operator=(FinalValue const &);
+  EXPORT FinalValue();
+  EXPORT FinalValue(FinalValue const &);
+  EXPORT FinalValue& operator=(FinalValue const &);
 };
 
 /*! \brief provide copy and plain type conversion operator

@@ -26,5 +26,5 @@ set (test_files
 test.cpp
 )
 
-add_executable(test ${test_files})
-target_link_libraries(test destruct destruct_test)
+add_executable(test_destruct ${test_files})
+target_link_libraries(test_destruct destruct destruct_test)
