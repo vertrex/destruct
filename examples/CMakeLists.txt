@@ -14,13 +14,16 @@
 include_directories("../")
 
 add_subdirectory(dtest)
-add_subdirectory(rpc)
 add_subdirectory(db)
 add_subdirectory(refcount)
+add_subdirectory(inheritance)
+
+if (UNIX)
+add_subdirectory(loader)
+add_subdirectory(rpc)
 add_subdirectory(registry)
 add_subdirectory(threading)
-add_subdirectory(inheritance)
-add_subdirectory(loader)
+endif (UNIX)
 
 set (test_files
 test.cpp
