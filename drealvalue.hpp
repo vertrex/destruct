@@ -113,9 +113,9 @@ public:
 
   DStreamBase& serialize(DStreamBase& os) const
   {
-    DUInt32 size = this->size();
+    DUInt32 size = (uint32_t)this->size();
     os.write((char*)&size, sizeof(size));
-    os.write(this->c_str(), this->size());
+    os.write(this->c_str(), (uint32_t)this->size());
 
     //write Size then string best place here or deserializer / encoder ? 
     //os.write((char *)this->c_str(), this->size()); // pascal string ? 00
@@ -216,7 +216,7 @@ inline void RealValue<DObject* >::set(DValue const& v)
 }
 
 template <>
-inline RealValue<DObject* >::~RealValue<DObject* >()
+inline RealValue<DObject* >::~RealValue()
 {
   if (this->__val)
     this->__val->destroy();
@@ -275,7 +275,7 @@ inline void RealValue<DFunctionObject* >::set(DValue const& v)
 }
 
 template <>
-inline RealValue<DFunctionObject* >::~RealValue<DFunctionObject* >()
+inline RealValue<DFunctionObject* >::~RealValue()
 {
   if (this->__val)
   {

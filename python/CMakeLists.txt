@@ -12,7 +12,6 @@
 # Author(s):
 #  Solal Jacob <sja@digital-forensic.org>
 
-
 set (pydestruct_files
 py_dstructs.cpp
 py_dstruct.cpp
@@ -27,10 +26,34 @@ py_dserialize.cpp
 destructmodule.cpp
 )
 
+if (MSVC)
+  find_package(PythonLibs)
+  #if (PythonLibs_FOUND)
+    include_directories(${PYTHON_INCLUDE_PATH})
+    include_directories(${PYTHON_LIBRARY})
+    #  else()
+    #set(PYTHON_LIBRARY        "C:/Python27/libs/python27.lib")
+    #set(PYTHON_INCLUDE_DIR    "C:/Python27/include")
+    #  endif()
+  set(PYTHON_BIN_PATH ${PYTHON_EXECUTABLE})
+endif(MSVC)
+
+if (UNIX)
+  FIND_PACKAGE(PythonLibrary REQUIRED)
+endif(UNIX)
+
 add_library(_destruct SHARED ${pydestruct_files})
 
 set_target_properties(_destruct PROPERTIES PREFIX "")
-target_link_libraries(_destruct destruct python2.7)
+
+if (MSVC)
+  target_link_libraries(_destruct destruct ${PYTHON_LIBRARY})
+set_target_properties(_destruct
+    PROPERTIES
+    SUFFIX ".pyd")
+else(MSVC)
+  target_link_libraries(_destruct destruct python2.7)
+endif(MSVC)
 
 include_directories("../")
 

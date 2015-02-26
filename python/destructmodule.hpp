@@ -2,6 +2,8 @@
 #define _DESTRUCTMODULE_HPP
 
 #include <Python.h>
+
+#include "destruct.hpp"
 #include "dvalue.hpp"
 
 #define CHECK_PIMPL\
@@ -25,7 +27,7 @@
 class PythonBaseModule
 {
 public:
-  static PyTypeObject        basePyType; 
+  EXPORT static PyTypeObject        basePyType; 
   static PySequenceMethods   baseSequenceMethods;
   static PyMappingMethods    baseMappingMethods;
   static const std::string   pyErrorAsString(void);
@@ -45,14 +47,14 @@ template < typename FinalType, typename PlainType >
 class PythonModule : public PythonBaseModule
 {
 public: 
-  struct DPyObject 
+  EXPORT struct DPyObject 
   {
      PyObject_HEAD;
      PlainType*    pimpl;
   };
  
-  static DPyObject          pyObject;
-  static PyTypeObject*      pyType;
+  EXPORT static DPyObject          pyObject;
+  EXPORT static PyTypeObject*      pyType;
   static PySequenceMethods* pySequenceMethods;
   static PyMappingMethods* pyMappingMethods;
 
@@ -113,8 +115,8 @@ public:
      PythonObject  __base;
   };
 
-  static PyTypeObject* pyType;
-  static DPyObject     pyObject;
+  EXPORT static PyTypeObject* pyType;
+  EXPORT static DPyObject     pyObject;
  
   static int    _init(PyObject* self, PyObject* args, PyObject* kwds)
   {

@@ -48,7 +48,7 @@ public:
       DObject* baseObject = this->baseObject();
       const DStruct* base = this->base();
    
-      int32_t attributeCount = base->attributeCount();
+      int32_t attributeCount = (int32_t)base->attributeCount();
       for (int32_t index = 0; index < attributeCount; ++index)
         this->__baseValue.push_back(baseObject->getBaseValue(index));
     }

@@ -109,7 +109,7 @@ int32_t DStruct::findAttribute(DUnicodeString const& name) const
   {
      if (i->name() == name)
      {
-       return std::distance(i, this->__effectiveAttributes.rend()) - 1; 
+       return ((int32_t)std::distance(i, this->__effectiveAttributes.rend()) - 1);
      } 
   }
   return (-1);

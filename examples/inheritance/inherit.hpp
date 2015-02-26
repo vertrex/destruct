@@ -144,14 +144,14 @@ public:
 class Inheritance
 {
 public:
-  Inheritance();
-  ~Inheritance();
+  EXPORT Inheritance();
+  EXPORT ~Inheritance();
 
-  static void  declare(void);
-  void  test(void);
-  void  show(DObject* object) const;
-  void  show(DStruct* dstruct) const;
-  void  testComposition(DObject* object) const;
+  EXPORT static void  declare(void);
+  EXPORT void  test(void);
+  EXPORT void  show(DObject* object) const;
+  EXPORT void  show(DStruct* dstruct) const;
+  EXPORT void  testComposition(DObject* object) const;
 private:
   Destruct::DStructs&   __destruct;
 };

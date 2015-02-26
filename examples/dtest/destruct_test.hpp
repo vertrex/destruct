@@ -3,6 +3,7 @@
 
 #include <iostream>
 
+#include "destruct.hpp"
 #include "dstructs.hpp"
 #include "dstruct.hpp"
 #include "drealvalue.hpp"
@@ -14,35 +15,35 @@ using namespace Destruct;
 class DestructTest
 {
 public:
- DestructTest(bool output = false);
- ~DestructTest();
+ EXPORT DestructTest(bool output = false);
+ EXPORT ~DestructTest();
 
- Destruct::DStructs*  structRegistry(void);
- static std::vector<DStruct*> declare(void);
+ EXPORT Destruct::DStructs*  structRegistry(void);
+ EXPORT static std::vector<DStruct*> declare(void);
  
- static void    createBaseClass(std::vector<DStruct*>&);
- static void    createNtfsClass(std::vector<DStruct*>&);
- static void    createNestedClass(std::vector<DStruct*>&);
+ EXPORT static void    createBaseClass(std::vector<DStruct*>&);
+ EXPORT static void    createNtfsClass(std::vector<DStruct*>&);
+ EXPORT static void    createNestedClass(std::vector<DStruct*>&);
 
- void           createNtfsBootSector(void);
- void           deserializeNtfsBootSector(void);
+ EXPORT void           createNtfsBootSector(void);
+ EXPORT void           deserializeNtfsBootSector(void);
  
- static void    createModifiableClass(std::vector<DStruct*>&);
- static void    createFuncClass(std::vector<DStruct*>&);
+ EXPORT static void    createModifiableClass(std::vector<DStruct*>&);
+ EXPORT static void    createFuncClass(std::vector<DStruct*>&);
 
- void      createArchive(void);
- void      readArchive(void);
+ EXPORT void      createArchive(void);
+ EXPORT void      readArchive(void);
 
- void      run(void);
- void      showAttribute(DStruct* def);
- void      showObjectAttribute(DObject* object, int depth = 1);
- void      setObjectValue(DObject* object);
- DObject*  getObjectValue(void);
+ EXPORT void      run(void);
+ EXPORT void      showAttribute(DStruct* def);
+ EXPORT void      showObjectAttribute(DObject* object, int depth = 1);
+ EXPORT void      setObjectValue(DObject* object);
+ EXPORT DObject*  getObjectValue(void);
 
- DValue    toto(DObject* self, DValue& args);
+ EXPORT DValue    toto(DObject* self, DValue& args);
 
- DObject*  createStringVector(void);
- DObject*  createIntVector(void);
+ EXPORT DObject*  createStringVector(void);
+ EXPORT DObject*  createIntVector(void);
 private:        
  bool      __output;       
 };

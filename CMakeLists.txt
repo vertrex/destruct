@@ -57,33 +57,6 @@ endif(UNIX)
 #endif (ICU_DEP_PATH)
 
 #find_package(ICU REQUIRED)
-#FIND_PACKAGE(PythonInterp REQUIRED)
-
-if (MSVC)
-  find_package(PythonLibs)
-  find_package(PythonInterp)
-  SET(PYTHON_BIN_PATH ${PYTHON_EXECUTABLE})
-endif(MSVC)
-
-message(STATUS "Python in: ${PYTHON_BIN_PATH}")
-
-if (UNIX)
-  FIND_PACKAGE(PythonLibrary REQUIRED)
-endif(UNIX)
-INCLUDE(PythonMacros)
-
-include_directories(${PYTHON_INCLUDE_PATH})
-#IF (NOT MSVC)
-  #ADD_DEFINITIONS(-fPIC)
-#ENDIF ()
-
-#find_package(SWIG REQUIRED)
-#if (${SWIG_VERSION_MAJOR} LESS 2 OR (${SWIG_VERSION_MAJOR} EQUAL 2 AND ${SWIG_VERSION_PATCH} LESS 7))
-  #message(FATAL_ERROR "Need SWIG version >= 2.0.7 (current version is ${SWIG_VERSION})")
-#else()
-  #message(STATUS "Found compatible SWIG version (${SWIG_VERSION})")
-#endif()
-#include(${SWIG_USE_FILE})
 
 # Check 64 bit
 if( "${CMAKE_SIZEOF_VOID_P}" EQUAL 4 )
@@ -97,7 +70,6 @@ else( "${CMAKE_SIZEOF_VOID_P}" EQUAL 4 )
   set( HAVE_64_BITS 1 )
 endif( "${CMAKE_SIZEOF_VOID_P}" EQUAL 4 )
 #
-
 
 if (MSVC)
   set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D__value=_value")
@@ -129,7 +101,6 @@ protocol/recursivetraceobject.cpp
 )
 
 add_library(destruct SHARED ${destruct_source_files})
-
 
 add_subdirectory(examples)
 add_subdirectory(python)

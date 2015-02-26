@@ -105,7 +105,7 @@ bool DSerializeBinary::serialize(DStream& output, DObject*  dobject)
     DValue count = dobject->call("size");   
     output << count; 
  
-    for ( ; iterator->call("isDone").get<DInt8>() != true; iterator->call("nextItem"))
+    for ( ; iterator->call("isDone").get<DInt8>() != 1; iterator->call("nextItem"))
     {
        DValue value = iterator->call("currentItem");
        if (returnType == DType::DObjectType)
@@ -170,7 +170,7 @@ bool DSerializeBinary::serialize(DStream& output, const DUnicodeString& str)
   //utilisase 8 bytes pour une size ca fait bcp ... 
   if (output.write((char*)&ssize, sizeof(ssize)).fail())
     return (false);
-  if (output.write(str.c_str(), ssize).fail())
+  if (output.write(str.c_str(), (uint32_t)ssize).fail())
     return (false);
 
   return (true);
@@ -338,7 +338,7 @@ bool DSerializeBinary::deserialize(DStream& input, DUnicodeString& str)
 
   if (buff == NULL)
     return (false);
-  if (input.read(buff, ssize).fail())
+  if (input.read(buff, (uint32_t)ssize).fail())
     return (false);
 
   str = std::string(buff, ssize);
@@ -502,7 +502,7 @@ bool DSerializeText::serialize(DStream& output, DObject* dobject, int depth)
     DValue count = dobject->call("size");
 
   //  output << count.asUnicdeString(); // affiche XXX (count) ? 
-    for ( ; iterator->call("isDone").get<DInt8>() != true; iterator->call("nextItem"))
+    for ( ; iterator->call("isDone").get<DInt8>() != 1; iterator->call("nextItem"))
     {
        DValue value = iterator->call("currentItem");
        if (returnType == DType::DObjectType)
