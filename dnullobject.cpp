@@ -21,11 +21,11 @@ DStruct* DNullObject::__dstructInstance()
   return &dstruct;
 }
 
-DNullObject::DNullObject() : DObject(this->__dstructInstance(), RealValue<DObject*>(DNone))
+DNullObject::DNullObject() : DObject(DNullObject::__dstructInstance(), RealValue<DObject*>(DNone))
 {
 }
 
-DNullObject::DNullObject(DValue const& args) : DObject(this->__dstructInstance(), args) //XXX args sert clairement a rien
+DNullObject::DNullObject(DValue const& args) : DObject(DNullObject::__dstructInstance(), args) //XXX args sert clairement a rien
 {
 //XXX use newobject to return singleton ?
 }

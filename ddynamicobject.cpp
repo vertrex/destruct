@@ -28,7 +28,7 @@ void DDynamicObject::init(DDynamicObject* self)
      const DStruct* base = this->base();
     
      uint32_t index = 0;
-     uint32_t attributeCount = base->attributeCount();
+     uint32_t attributeCount = (uint32_t)base->attributeCount();
      for (; index < attributeCount; ++index)
        this->__values[index] = baseObject->getBaseValue(index);
 
