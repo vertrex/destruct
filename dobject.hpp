@@ -38,13 +38,13 @@ public:
   EXPORT static  BaseValue* getBaseValue(DObject*, size_t index);
   EXPORT static  BaseValue const* getBaseValue(DObject const*, size_t idx);
 protected:
-  DObject(const DObject& rhs);
+  EXPORT DObject(const DObject& rhs);
  
   //virtual BaseValue* getBaseValue(size_t index) = 0;
   //virtual BaseValue const* getBaseValue(size_t index) const = 0;
   //static  BaseValue* getBaseValue(DObject*, size_t index);
   //static  BaseValue const* getBaseValue(DObject const*, size_t idx);
-  virtual ~DObject()
+  EXPORT virtual ~DObject()
   {
   }
 private:

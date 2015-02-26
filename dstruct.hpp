@@ -59,7 +59,7 @@ protected:
   DAttributeContainer   __ownAttributes;
   DAttributeContainer   __effectiveAttributes;
 private:
-  void                          __baseInit();
+  EXPORT void                   __baseInit();
   DStruct const * const         __baseClass;
   const DUnicodeString          __name;
   const CreateObjectFunction    __createObject;
