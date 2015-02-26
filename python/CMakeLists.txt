@@ -40,6 +40,7 @@ endif(MSVC)
 
 if (UNIX)
   FIND_PACKAGE(PythonLibrary REQUIRED)
+    include_directories(${PYTHON_INCLUDE_PATH})
 endif(UNIX)
 
 add_library(_destruct SHARED ${pydestruct_files})
