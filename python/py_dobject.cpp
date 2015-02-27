@@ -16,8 +16,10 @@
 
 using Destruct::DUnicodeString;
 
+#ifndef (WIN32)
 template<>
-PyTypeObject* PyDObjectT::pyType = NULL;
+EXPORT PyTypeObject* PyDObjectT::pyType = NULL;
+#endif
 template<>
 PySequenceMethods* PyDObjectT::pySequenceMethods = NULL;
 template<>

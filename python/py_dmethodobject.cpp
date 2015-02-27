@@ -13,7 +13,7 @@
 using Destruct::DUnicodeString;
 
 template<>
-PyTypeObject* PyDMethodObjectT::pyType = NULL;
+EXPORT PyTypeObject* PyDMethodObjectT::pyType = NULL;
 
 Destruct::DValue PyDMethodObject::toDValue(PyObject* value) 
 {

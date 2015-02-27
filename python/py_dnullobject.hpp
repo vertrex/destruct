@@ -11,7 +11,7 @@ typedef PythonModule< class PyDNullObject, Destruct::DNullObject > PyDNullObject
 class PyDNullObject : public PyDNullObjectT, public PythonTypeBaseModule
 {
 public:
-                      PyDNullObject();
+  EXPORT              PyDNullObject();
   static PyMethodDef  pyMethods[];
 
   static int          _init(DPyObject* self, PyObject* args, PyObject* kwds);

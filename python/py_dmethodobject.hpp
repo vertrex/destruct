@@ -38,7 +38,7 @@ public :
     Destruct::DObject*          dobject;
     int32_t                     index;
   };
-                                PyDMethodObject();
+  EXPORT                        PyDMethodObject();
   static PyMethodDef            pyMethods[];
 
   static int                    _init(DPyObject* self, PyObject* args, PyObject* kwds);

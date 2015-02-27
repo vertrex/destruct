@@ -12,9 +12,9 @@ typedef PythonModule< class PyDObject, Destruct::DObject > PyDObjectT;
 class PyDObject : public PyDObjectT, public PythonTypeBaseModule
 {
 public:
-                      PyDObject();
+  EXPORT              PyDObject();
   static PyMethodDef  pyMethods[];
-
+ 
   static int          _init(DPyObject* self, PyObject* args, PyObject* kwds);
   static void         _dealloc(DPyObject* self);
   static PyObject*    _getattr(DPyObject* self, PyObject* name); 
@@ -48,5 +48,11 @@ public:
   PyObject*           asDValue(Destruct::DValue const& v);
   PyObject*           asPyObject(PyObject* self, int32_t attributeIndex);
 };
+
+
+#ifdef (WIN32)
+template<>
+EXPORT PyTypeObject* PyDObjectT::pyType;
+#endif
 
 #endif

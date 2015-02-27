@@ -32,8 +32,8 @@ public:
   static PyMappingMethods    baseMappingMethods;
   static const std::string   pyErrorAsString(void);
 
-  static Destruct::DValue    pyObjectToDValue(PyObject* object);
-  static PyObject*           dvalueAsPyObject(Destruct::DValue const& value);
+  EXPORT static Destruct::DValue    pyObjectToDValue(PyObject* object);
+  EXPORT static PyObject*           dvalueAsPyObject(Destruct::DValue const& value);
   //static const std::string   pyErrorAsString(void);
 
   static int pyTracebackInternalAsString(PyTracebackObject* tb, std::string& errorMessage, long limit);
