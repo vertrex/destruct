@@ -16,7 +16,7 @@
 
 using Destruct::DUnicodeString;
 
-#ifndef (WIN32)
+#ifndef WIN32
 template<>
 EXPORT PyTypeObject* PyDObjectT::pyType = NULL;
 #endif
