@@ -100,6 +100,7 @@ protocol/traceobject.cpp
 protocol/recursivetraceobject.cpp
 )
 
+configure_file(__init__.py __init__.py COPYONLY)
 add_library(destruct SHARED ${destruct_source_files})
 
 add_subdirectory(examples)
