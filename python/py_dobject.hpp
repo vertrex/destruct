@@ -50,7 +50,7 @@ public:
 };
 
 
-#ifdef (WIN32)
+#ifdef WIN32
 template<>
 EXPORT PyTypeObject* PyDObjectT::pyType;
 #endif
