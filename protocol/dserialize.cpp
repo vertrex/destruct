@@ -646,7 +646,7 @@ bool DSerializeRaw::deserialize(DStream& input, DObject* dobject)
 
   int32_t index = dobject->instanceOf()->findAttribute("deserializeRaw");
   if (index != -1)
-    return (dobject->call(index, (RealValue<DObject*>(&input))).get<DUInt8>());
+    return (dobject->call(index, (RealValue<DObject*>(&input))).get<DUInt8>() != 0);
 
   for (DStruct::DAttributeIterator i = dstruct->attributeBegin(); i != dstruct->attributeEnd(); ++i, ++x)
   {
