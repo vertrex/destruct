@@ -155,7 +155,7 @@ int main(int argc, char** argv)
         rpc.serve(atoi(argv[2]));
     }
     else if (std::string(argv[1]) == std::string("-c"))
-      rpc.connect("127.0.0.1", 0xdff);
+      rpc.connect(std::string(argv[2]), 0xdff);
     else
       std::cout << "Launch server : -d" << std::endl
                 << "Launch client : -c" << std::endl;       

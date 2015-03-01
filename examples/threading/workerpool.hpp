@@ -88,7 +88,6 @@ public:
   DValue                      empty(void);
   void                        addResult(DValue const& args);
   DValue                      join(void);
-
 protected:
   ~Queue();
 private:
@@ -96,12 +95,11 @@ private:
   std::queue<DValue>          __queue;
   std::queue<DValue>          __result;
   
-  mutex_def(__mutex);
-  mutex_def(__joinMutex);
+  mutex                       __mutex;
+  mutex                       __joinMutex;
   cond_def(__enqueueSignal);
   cond_def(__itemCountSignal);
   RealValue<DFunctionObject*> _enqueue, _dequeue, _empty, _addResult, _join;
-
 
   /**
    *  DStruct declaration
@@ -175,11 +173,7 @@ public:
   DValue                        map(DValue const& task);
 private:
   DUInt8                        __threadNumber;
-#ifdef WIN32
-  PHANDLE						__threads;
-#else
-  pthread_t*                    __threads;
-#endif
+  ThreadStruct*                 __threads;
   DObject*                      __taskQueue;
   RealValue<DFunctionObject*>   _addTask, _join, _map;
 

@@ -19,11 +19,7 @@ extern "C"
  */
 
 
-#ifdef WIN32
-DWORD WINAPI Worker(LPVOID dobject) 
-#else
-void *Worker(void *dobject)
-#endif
+ThreadResult Worker(ThreadData dobject)
 {
   //DObject* workQueue = ((DObject*)dobject); //segfault car les method instanceOf() et call sont pas locker bizarre acces a une list en mme temps suffit 
   Queue* workQueue = ((Queue*)dobject);
@@ -41,7 +37,6 @@ void *Worker(void *dobject)
 
     workQueue->call("addResult", RealValue<DObject*>(task));
   }
-//  pthread_exit(0);
 }
 
 
@@ -57,44 +52,22 @@ WorkerPool::WorkerPool(DStruct* dstruct, DValue const& args) : DCppObject<Worker
 
   this->__taskQueue = (new DStruct(NULL, "ThreadSafeObject", ThreadSafeObject::newObject))->newObject(RealValue<DObject*>(this->__taskQueue)); 
 
-#ifdef WIN32
- PDWORD   dwThreadIdArray = new DWORD[this->__threadNumber];
- 
-  this->__threads = new HANDLE[this->__threadNumber]; 
+  this->__threads = new ThreadStruct[this->__threadNumber];
+
   for (int i = 0; i < this->__threadNumber; ++i)
   {
-    this->__threads[i] = CreateThread(NULL, 0, Worker, (void *)this->__taskQueue, 0, &dwThreadIdArray[i]); 
-
-    if (this->__threads[i] == NULL) 
-      ExitProcess(3);
- }
+    createThread(Worker, (void*)this->__taskQueue, this->__threads[i])
+  }
 
   std::cout << "wait for object" << std::endl;
-// WaitForMultipleObjects(this->__threadNumber, hThreadArray, TRUE, INFINITE);
-  /*
- for(int i=0; i< this->__threadNumber; i++)
- {
-   CloseHandle(hThreadArray[i]);
- }*/
-
-  return;
-#else
-  this->__threads = new pthread_t[this->__threadNumber];
-  for (int i = 0; i < this->__threadNumber ; ++i)
-  {
-    int result = pthread_create(&this->__threads[i], NULL, Worker, (void *)this->__taskQueue);
-    if (result)
-    {
-      std::cout << "Error:unable to create thread," << result << std::endl;
-      break; 
-    } 
-  }
- thread_exit(NULL);
-#endif
 }
 
 WorkerPool::~WorkerPool()
 {
+  for(int i=0; i< this->__threadNumber; i++)
+  {
+    destroyThread(this->__threads[i]);
+  }
 }
 
 DValue WorkerPool::join(void)
@@ -125,7 +98,6 @@ DValue  WorkerPool::map(DValue const& arg)
     task->setValue("argument", iterator->call("currentItem"));
     this->addTask(RealValue<DObject*>(task));
   }
-//  std::cout << "join map taskqueue" << std::endl;
   return (this->__taskQueue->call("join"));
 }
 
@@ -135,7 +107,7 @@ DValue  WorkerPool::map(DValue const& arg)
 Queue::Queue(DStruct* dstruct, DValue const& args) : DCppObject<Queue>(dstruct, args)
 {    
   mutex_init(&__mutex);
-   mutex_init(&__joinMutex);
+  mutex_init(&__joinMutex);
   cond_init(&__enqueueSignal);
   cond_init(&__itemCountSignal);
   this->__itemCount = 0;
@@ -152,18 +124,10 @@ Queue::~Queue()
 
 DValue  Queue::join(void)
 {
-	//std::cout << "queue join" << std::endl;
-
-	//  cond_eait(&
-   // continue;
- 
-
- // std::cout << "queue join" << std::endl;
-//  mutex_lock(&mutex)
   mutex_lock(&__joinMutex);
-  std::cout << "joining" << std::endl;
-    while (this->__itemCount != 0)
-      cond_wait(&__itemCountSignal, &__joinMutex);
+  while (this->__itemCount != 0)
+    cond_wait(&__itemCountSignal, &__joinMutex);
+
   DObject* results = Destruct::DStructs::instance().generate("DVectorObject");
   while (!this->__result.empty())
   {
@@ -181,7 +145,7 @@ void Queue::addResult(DValue const& task)
   this->__itemCount--;
   this->__result.push(task);
   if (this->__itemCount == 0)
-	cond_signal(&__itemCountSignal);
+    cond_signal(&__itemCountSignal);
   mutex_unlock(&__mutex);
 }
 
