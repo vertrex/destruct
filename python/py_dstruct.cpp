@@ -8,8 +8,10 @@
 #include "dobject.hpp"
 #include "dstructs.hpp"
 
+#ifndef WIN32
 template<>
 PyTypeObject* PyDStructT::pyType = NULL;
+#endif
 
 PyDStruct::PyDStruct()
 {

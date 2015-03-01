@@ -1,5 +1,6 @@
 #!/usr/bin/python -i 
 import sys
+import os
 
 sys.path.append("../")
 sys.path.append("../../")
@@ -82,15 +83,22 @@ def connect():
 
 if __name__ == "__main__":
   loader = Loader()
+   
+  baseDir = os.path.expanduser("~") + "/destruct-build/examples/" 
+  print "found baseDir" + baseDir
 
-  paths = ["/home/vertrex/destruct/examples/dtest/libdestruct_test.so",
-           "/home/vertrex/destruct/examples/registry/libregistry.so",
-           "/home/vertrex/destruct/examples/threading/libdthreading.so",
-           "/home/vertrex/destruct/examples/rpc/libdestruct_rpc.so",
-           "/home/vertrex/destruct/examples/inheritance/libdestruct_inherit.so"]
+  pathname = [("dtest", "destruct_test",),
+	      ("threading", "dthreading",),
+	      ("inheritance", "destruct_inherit",),
+	     ]
 
-  for path in paths:
-    loader.loadFile(path)
-
-  #serve()
-  #obj = connect()
+#           "/destruct/examples/registry/libregistry.so",
+   #        "/destruct/examples/rpc/destruct_rpc.dll",
+  for (path, name,) in pathname:
+    if os.name == 'nt':
+      absolute = baseDir + path + "/Release/" + name + ".dll"
+      absolute = os.path.normpath(absolute)
+    else:
+      absolute = baseDir + path + "/" + name + ".dll"
+    loader.loadFile(absolute)
+ 

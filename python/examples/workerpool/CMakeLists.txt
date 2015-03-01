@@ -16,12 +16,12 @@ set (python_workerpool_files
   py_workerpool.cpp
 )
 
-
 include_directories("../")
 include_directories("../../")
 include_directories("../../../")
 
 add_library(_workerpool SHARED ${python_workerpool_files})
+configure_file(workerpool.py workerpool.py COPYONLY)
 
 set_target_properties(_workerpool PROPERTIES PREFIX "")
 if (MSVC)

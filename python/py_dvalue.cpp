@@ -27,7 +27,7 @@ Destruct::DValue PyDInt8::toDValue(PyObject* value)
 {
   if (PyInt_Check(value))
   {
-    DInt8  fvalue = PyLong_AsLong(value);
+    DInt8  fvalue = (DInt8)PyLong_AsLong(value);
     return Destruct::RealValue<DInt8>(fvalue);
   }
   throw Destruct::DException("Can't cast to DInt8");
@@ -78,7 +78,7 @@ Destruct::DValue PyDInt16::toDValue(PyObject* value)
 {
   if (PyInt_Check(value))
   {
-    DInt16  fvalue = PyLong_AsLong(value);
+    DInt16  fvalue = (DInt16)PyLong_AsLong(value);
     return (Destruct::RealValue<DInt16>(fvalue));
   }
   throw Destruct::DException("Can't cast to DInt16");
@@ -190,7 +190,7 @@ PyObject*     PyDInt64::asDValue(Destruct::DValue const& v)
 {
   DInt64 value = v.get<DInt64>();
 #ifdef FAST_CONVERSION
-  return (PyLong_FromLong(value));
+  return (PyLong_FromLong((long)value));
 #else
   return (PyObject_CallObject((PyObject*)PyDInt64::pyType  , Py_BuildValue("(O)", PyLong_FromLong(value))));
 #endif
@@ -200,7 +200,7 @@ PyObject*     PyDInt64::asPyObject(PyObject* self, int32_t attributeIndex)
 {
   DInt64 value = ((PyDObject::DPyObject*)self)->pimpl->getValue(attributeIndex).get<DInt64>();
 #ifdef FAST_CONVERSION
-  return (PyLong_FromLong(value));
+  return (PyLong_FromLong((long)value));
 #else
   return (PyObject_CallObject((PyObject*)PyDInt64::pyType  , Py_BuildValue("(O)", PyLong_FromLong(value))));
 #endif
@@ -231,7 +231,7 @@ Destruct::DValue PyDUInt8::toDValue(PyObject* value)
 {
   if (PyInt_Check(value))
   {
-    DUInt8  fvalue = PyLong_AsLong(value);
+    DUInt8  fvalue = (DUInt8)PyLong_AsLong(value);
     return Destruct::RealValue<DUInt8>(fvalue);
   }
   throw Destruct::DException("Can't cast to DUInt8");
@@ -241,7 +241,7 @@ PyObject*     PyDUInt8::asDValue(Destruct::DValue const& v)
 {
   DUInt8 value = v.get<DUInt8>();
 #ifdef FAST_CONVERSION
-  return (PyInt_FromLong(value));
+  return (PyInt_FromLong((long)value));
 #else
   return (PyObject_CallObject((PyObject*)PyDUInt8::pyType  , Py_BuildValue("(O)", PyInt_FromLong(value))));
 #endif
@@ -282,7 +282,7 @@ Destruct::DValue PyDUInt16::toDValue(PyObject* value)
 {
   if (PyInt_Check(value))
   {
-    DUInt16  fvalue = PyLong_AsLong(value);
+    DUInt16  fvalue = (DUInt16)PyLong_AsLong(value);
     return (Destruct::RealValue<DUInt16>(fvalue));
   }
   throw Destruct::DException("Can't cast to DUInt16");
@@ -292,7 +292,7 @@ PyObject*     PyDUInt16::asDValue(Destruct::DValue const& v)
 {
   DUInt16 value = v.get<DUInt16>();
 #ifdef FAST_CONVERSION
-  return (PyInt_FromLong(value));
+  return (PyInt_FromLong((long)value));
 #else
   return (PyObject_CallObject((PyObject*)PyDUInt16::pyType  , Py_BuildValue("(O)", PyInt_FromLong(value))));
 #endif
@@ -394,7 +394,7 @@ PyObject*     PyDUInt64::asDValue(Destruct::DValue const& v)
 {
   DUInt64 value = v.get<DUInt64>();
 #ifdef FAST_CONVERSION
-  return (PyInt_FromLong(value));
+  return (PyInt_FromLong((long)value));
 #else
   return (PyObject_CallObject((PyObject*)PyDUInt64::pyType  , Py_BuildValue("(O)", PyLong_FromLong(value))));
 #endif
@@ -404,7 +404,7 @@ PyObject*     PyDUInt64::asPyObject(PyObject* self, int32_t attributeIndex)
 {
   DUInt64 value = ((PyDObject::DPyObject*)self)->pimpl->getValue(attributeIndex).get<DUInt64>();
 #ifdef FAST_CONVERSION
-  return (PyInt_FromLong(value));
+  return (PyInt_FromLong((long)value));
 #else
   return (PyObject_CallObject((PyObject*)PyDUInt64::pyType  , Py_BuildValue("(O)", PyLong_FromLong(value))));
 #endif

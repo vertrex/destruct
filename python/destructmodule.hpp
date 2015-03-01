@@ -28,6 +28,7 @@ class PythonBaseModule
 {
 public:
   EXPORT static PyTypeObject        basePyType; 
+
   static PySequenceMethods   baseSequenceMethods;
   static PyMappingMethods    baseMappingMethods;
   static const std::string   pyErrorAsString(void);
@@ -147,9 +148,13 @@ public:
   }
 };
 
+
+
 extern "C"
 {
   PyMODINIT_FUNC initdestruct(void);
 };
+
+
 
 #endif

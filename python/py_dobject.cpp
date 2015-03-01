@@ -652,7 +652,7 @@ Py_ssize_t PyDObject::_length(PyDObject::DPyObject* self)
   { 
     return (self->pimpl->call("size").get<DUInt64>());
   }
-  catch (Destruct::DException const& exception)
+  catch (Destruct::DException)// const& exception)
   {
     return (0);
   }

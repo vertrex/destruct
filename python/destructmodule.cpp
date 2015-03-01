@@ -73,7 +73,8 @@ PyMethodDef   PythonTypeBaseModule::baseTypePyMethods[2] =
   { NULL, NULL, 0, NULL }
 };
 
-PyTypeObject PythonBaseModule::basePyType =
+
+EXPORT PyTypeObject PythonBaseModule::basePyType =
 {
         PyObject_HEAD_INIT(NULL)
         0,

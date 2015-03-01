@@ -5,8 +5,7 @@
 #include <frameobject.h>
 
 #include "destructmodule.hpp"
-//#include "registry.hpp"
-//#include "registryclient.hpp"
+
 
 #define DESTRUCT_ADD_MODULE(moduleType, moduleName)\
   Py_INCREF(moduleType);\
@@ -21,10 +20,12 @@ public:
   static PyMethodDef  pyMethods[];
 };
 
-
 static PyMethodDef destruct_methods[] = 
 {
   { NULL, NULL, 0, NULL }
 };
+
+template<>
+EXPORT PyTypeObject* PyExamplesT::pyType = NULL;
 
 #endif

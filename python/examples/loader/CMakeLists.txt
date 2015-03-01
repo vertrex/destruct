@@ -16,6 +16,9 @@ set (python_loader_files
   py_loader.cpp
 )
 
+configure_file(loader.py loader.py COPYONLY)
+configure_file(client.py client.py COPYONLY)
+configure_file(server.py server.py COPYONLY)
 
 include_directories("../")
 include_directories("../../")
