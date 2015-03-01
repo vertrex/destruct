@@ -9,7 +9,7 @@
 #include <Windows.h>
 
   typedef HANDLE                ThreadStruct;
-  typedef DWORD WINAPI          ThreadResult; 
+  typedef DWORD          ThreadResult;
   typedef LPVOID                ThreadData;
   #define createThread(function, data, threadStruct)\
   threadStruct = CreateThread(NULL, 0, function, data, 0, NULL);\

@@ -1,4 +1,4 @@
-#include <dlfcn.h>
+
 
 #include "dstruct.hpp"
 #include "loader.hpp"
@@ -15,21 +15,38 @@ bool    Loader::loadFile(const std::string& filePath)
   std::cout << "Loading file : " << filePath << std::endl;
 
   //found x struct :
+#ifndef WIN32
   void* library = dlopen(filePath.c_str(), RTLD_LAZY);
   if (!library)
   {
     std::cout << "Can't load libray " << filePath << std::endl;
     return (false);
   }
+#else
+  HMODULE library = LoadLibrary(filePath.c_str());
+  if (library == NULL) 
+  {
+      std::cout << "Can't load libray " << filePath << std::endl;
+    return (false);
+  }
+#endif
 
   std::cout << "Loading symbol from libray " << filePath << std::endl;
-
+#ifndef WIN32
   void* declare = dlsym(library, "declare");//must better return a list of struct that we register so we now about them and can unload them if the module is unloaded and closed
   if (!declare)
   {
     std::cout << "No method declare found in " << filePath << std::endl;
     return (false);
   }
+#else
+  FARPROC declare = GetProcAddress(library, "declare");
+  if (declare == NULL) 
+  {
+    std::cout << "No method declare found in " << filePath << std::endl;
+    return (false);
+  }
+#endif
   
   //typedef std::vector<Destruct::DStruct*> (*declareFunc)(void);
   typedef void (*declareFunc)(void);
@@ -47,7 +64,7 @@ bool    Loader::loadFile(const std::string& filePath)
 
 //return list of dstruct to delete before closing library // but if a dobject is created it will crash if not refcount
 //  dlclose(library);
- 
+//FreeLibrary(library); 
   return (true);
 }
 
@@ -65,7 +82,7 @@ void    Loader::registerDStructs(std::vector<Destruct::DStruct*>& dstructs)
 
 void    Loader::__showDestruct() const
 {
-  int32_t count = this->__destruct.count();
+  int32_t count = (int32_t)this->__destruct.count();
   for (int32_t index = 0; index < count; ++index)
   {
     std::cout << this->__destruct.find(index)->name() << std::endl;

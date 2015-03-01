@@ -13,17 +13,17 @@
 #  Solal Jacob <sja@digital-forensic.org>
 include_directories("../")
 
+add_subdirectory(loader)
 add_subdirectory(dtest)
 add_subdirectory(db)
 add_subdirectory(refcount)
 add_subdirectory(inheritance)
+add_subdirectory(threading)
 
 if (UNIX)
-add_subdirectory(loader)
 add_subdirectory(rpc)
 add_subdirectory(registry)
 endif (UNIX)
-add_subdirectory(threading)
 
 set (test_files
 test.cpp

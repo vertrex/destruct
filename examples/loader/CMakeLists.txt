@@ -19,9 +19,14 @@ loader.cpp
 )
 
 add_library(destruct_loader SHARED ${loader_libfiles})
+if(MSVC)
+target_link_libraries(destruct_loader destruct)
+else(MSVC)
+target_link_libraries(destruct_loader destruct dl)
+endif(MSVC)
 
 set (load_files
 load.cpp)
 
 add_executable(load ${load_files})
-target_link_libraries(load destruct destruct_loader dl) #mettre XXX libdl linker al a lib pas l exe
+target_link_libraries(load destruct_loader) 

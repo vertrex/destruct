@@ -14,7 +14,7 @@
 
 extern "C"
 {
-  void declare(void)
+  EXPORT void declare(void)
   {
     Inheritance::declare();
   }
@@ -146,7 +146,7 @@ void           Inheritance::show(DStruct* dstruct) const
   std::cout << "Show struct : " << std::endl 
             << "{" << dstruct->name() << std::endl;
 
-  int32_t count = dstruct->attributeCount();
+  int32_t count = (int32_t)dstruct->attributeCount();
   for (int32_t index = 0; index < count; ++index)
   {
     DAttribute attribute = dstruct->attribute(index);

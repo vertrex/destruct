@@ -53,7 +53,7 @@ private:
  */
 extern "C"
 {
-  void declare(void)
+  EXPORT void declare(void)
   {
     DestructTest::declare();
   }

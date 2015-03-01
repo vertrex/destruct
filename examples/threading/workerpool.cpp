@@ -8,7 +8,7 @@
 
 extern "C"
 {
-  void declare(void)
+  EXPORT void declare(void)
   {
     WorkerPool::Declare();
   }
@@ -17,8 +17,6 @@ extern "C"
 /**
  * Worker
  */
-
-
 ThreadResult Worker(ThreadData dobject)
 {
   //DObject* workQueue = ((DObject*)dobject); //segfault car les method instanceOf() et call sont pas locker bizarre acces a une list en mme temps suffit 
