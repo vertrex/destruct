@@ -32,9 +32,10 @@ int main(int argc, char** argv)
     DObject* result = workerPool->call("join").get<DObject*>(); 
   
     DUInt64 size = result->call("size").get<DUInt64>();
-    std::cout << "got " << size << " result " << std::endl;
     if (size != count)
       throw DException("WorkerPool join can't get all results");
+    else
+      std::cout << "got all results (" << size << ")" << std::endl;
 
     for (DUInt64 index = 0; index < size; ++index)
     {
@@ -53,9 +54,10 @@ int main(int argc, char** argv)
     DObject* mapResult = workerPool->call("map", RealValue<DObject*>(task)).get<DObject*>();
 
     size = mapResult->call("size").get<DUInt64>();
-    std::cout << "got " << size << " result " << std::endl;
     if (size != count)
       throw (DException("Map didn't got all results"));
+    else
+      std::cout << "got all results (" << size << ")" << std::endl;
 
     for (DUInt64 index = 0; index < size; ++index)
     {
