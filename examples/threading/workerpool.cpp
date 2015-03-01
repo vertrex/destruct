@@ -1,4 +1,4 @@
-#include <pthread.h>
+//#include <pthread.h>
 
 #include "dstructs.hpp"
 #include "workerpool.hpp"
@@ -17,7 +17,13 @@ extern "C"
 /**
  * Worker
  */
+
+
+#ifdef WIN32
+DWORD WINAPI Worker(LPVOID dobject) 
+#else
 void *Worker(void *dobject)
+#endif
 {
   //DObject* workQueue = ((DObject*)dobject); //segfault car les method instanceOf() et call sont pas locker bizarre acces a une list en mme temps suffit 
   Queue* workQueue = ((Queue*)dobject);
@@ -35,7 +41,7 @@ void *Worker(void *dobject)
 
     workQueue->call("addResult", RealValue<DObject*>(task));
   }
-  pthread_exit(0);
+//  pthread_exit(0);
 }
 
 
@@ -51,6 +57,28 @@ WorkerPool::WorkerPool(DStruct* dstruct, DValue const& args) : DCppObject<Worker
 
   this->__taskQueue = (new DStruct(NULL, "ThreadSafeObject", ThreadSafeObject::newObject))->newObject(RealValue<DObject*>(this->__taskQueue)); 
 
+#ifdef WIN32
+ PDWORD   dwThreadIdArray = new DWORD[this->__threadNumber];
+ 
+  this->__threads = new HANDLE[this->__threadNumber]; 
+  for (int i = 0; i < this->__threadNumber; ++i)
+  {
+    this->__threads[i] = CreateThread(NULL, 0, Worker, (void *)this->__taskQueue, 0, &dwThreadIdArray[i]); 
+
+    if (this->__threads[i] == NULL) 
+      ExitProcess(3);
+ }
+
+  std::cout << "wait for object" << std::endl;
+// WaitForMultipleObjects(this->__threadNumber, hThreadArray, TRUE, INFINITE);
+  /*
+ for(int i=0; i< this->__threadNumber; i++)
+ {
+   CloseHandle(hThreadArray[i]);
+ }*/
+
+  return;
+#else
   this->__threads = new pthread_t[this->__threadNumber];
   for (int i = 0; i < this->__threadNumber ; ++i)
   {
@@ -61,8 +89,8 @@ WorkerPool::WorkerPool(DStruct* dstruct, DValue const& args) : DCppObject<Worker
       break; 
     } 
   }
-
- //pthread_exit(NULL);
+ thread_exit(NULL);
+#endif
 }
 
 WorkerPool::~WorkerPool()
@@ -97,7 +125,7 @@ DValue  WorkerPool::map(DValue const& arg)
     task->setValue("argument", iterator->call("currentItem"));
     this->addTask(RealValue<DObject*>(task));
   }
-
+//  std::cout << "join map taskqueue" << std::endl;
   return (this->__taskQueue->call("join"));
 }
 
@@ -106,25 +134,29 @@ DValue  WorkerPool::map(DValue const& arg)
  */
 Queue::Queue(DStruct* dstruct, DValue const& args) : DCppObject<Queue>(dstruct, args)
 {    
-  pthread_mutex_init(&__mutex, NULL);
-  pthread_cond_init(&__conditionWait, NULL);
+  mutex_init(&__mutex);
+  cond_init(&__enqueueSignal);
+  cond_init(&__itemCountSignal);
   this->__itemCount = 0;
   this->init();
 }
 
 Queue::~Queue()
 {
-  pthread_mutex_destroy(&__mutex);
-  pthread_cond_destroy(&__conditionWait);
+  mutex_destroy(&__mutex);
+  cond_destroy(&__conditionWait);
+  cond_destroy(&__itemCountSignal);
 }
 
 DValue  Queue::join(void)
 {
-  while (this->__itemCount != 0)
-    continue;
-  //pthread_cond_wait(&__conditionWaitv, &__mutex);
+	//std::cout << "queue join" << std::endl;
+ // while (this->__itemCount != 0)
+   // continue;
+  cond_wait(&__itemCountSignal, &__mutex);
 
-  pthread_mutex_lock(&__mutex);
+ // std::cout << "queue join" << std::endl;
+  mutex_lock(&__mutex);
   DObject* results = Destruct::DStructs::instance().generate("DVectorObject");
   while (!this->__result.empty())
   {
@@ -132,45 +164,47 @@ DValue  Queue::join(void)
     results->call("push" , result);
     this->__result.pop();
   }
-  pthread_mutex_unlock(&__mutex);
+  mutex_unlock(&__mutex);
   return RealValue<DObject*>(results);
 }
 
 void Queue::addResult(DValue const& task)
 {
-  pthread_mutex_lock(&__mutex);
+  mutex_lock(&__mutex);
   this->__itemCount--;
   this->__result.push(task);
-  pthread_mutex_unlock(&__mutex);
+  if (this->__itemCount == 0)
+	cond_signal(&__itemCountSignal);
+  mutex_unlock(&__mutex);
 }
 
 DValue  Queue::empty(void)
 {
-  pthread_mutex_lock(&__mutex);
+  mutex_lock(&__mutex);
   int size = this->__queue.empty();
-  pthread_mutex_unlock(&__mutex);
+  mutex_unlock(&__mutex);
 
   return (RealValue<DUInt8>(size));
 }
 
 void    Queue::enqueue(DValue const& args)
 { 
-  pthread_mutex_lock(&__mutex);
+  mutex_lock(&__mutex);
   this->__itemCount++;
   this->__queue.push(args);
-  pthread_cond_signal(&__conditionWait);
-  pthread_mutex_unlock(&__mutex);
+  cond_signal(&__enqueueSignal);
+  mutex_unlock(&__mutex);
 }
 
 DValue  Queue::dequeue(void)
 { 
-  pthread_mutex_lock(&__mutex);
+  mutex_lock(&__mutex);
   while (this->__queue.empty()) 
-    pthread_cond_wait(&__conditionWait, &__mutex);
+    cond_wait(&__enqueueSignal, &__mutex);
           
   DValue object = this->__queue.front();
   this->__queue.pop();
-  pthread_mutex_unlock(&__mutex);
+  mutex_unlock(&__mutex);
   
   return (object);
 }

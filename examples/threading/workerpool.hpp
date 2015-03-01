@@ -3,10 +3,12 @@
 
 #include <queue>
 
+#include "destruct.hpp"
 #include "dvalue.hpp"
 #include "dobject.hpp"
 #include "dfunction.hpp"
 #include "protocol/dcppobject.hpp"
+#include "threadsafeobject.hpp"
 
 using namespace Destruct;
 
@@ -93,9 +95,12 @@ private:
   uint64_t                    __itemCount; //semaphore or another mutexed queue
   std::queue<DValue>          __queue;
   std::queue<DValue>          __result;
-  pthread_mutex_t             __mutex;
-  pthread_cond_t              __conditionWait;
+  
+  mutex_def(__mutex);
+  cond_def(__enqueueSignal);
+  cond_def(__itemCountSignal);
   RealValue<DFunctionObject*> _enqueue, _dequeue, _empty, _addResult, _join;
+
 
   /**
    *  DStruct declaration
@@ -161,7 +166,7 @@ public:
     Destruct::DStructs::instance().registerDStruct(taskObject);
   }
 
-  WorkerPool(DStruct* dstruct, DValue const& args);
+  EXPORT WorkerPool(DStruct* dstruct, DValue const& args);
   ~WorkerPool();
 
   bool                          addTask(DValue const& task);
@@ -169,7 +174,11 @@ public:
   DValue                        map(DValue const& task);
 private:
   DUInt8                        __threadNumber;
+#ifdef WIN32
+  PHANDLE						__threads;
+#else
   pthread_t*                    __threads;
+#endif
   DObject*                      __taskQueue;
   RealValue<DFunctionObject*>   _addTask, _join, _map;
 

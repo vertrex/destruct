@@ -21,7 +21,11 @@ set(threading_libfiles
 )
 
 add_library(dthreading SHARED ${threading_libfiles})
+if (MSVC)
+target_link_libraries(dthreading destruct)
+else (MSVC)
 target_link_libraries(dthreading pthread destruct)
+endif(MSVC)
 
 set(threading_files
 threading.cpp)

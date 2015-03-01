@@ -7,8 +7,10 @@ int main(int argc, char** argv)
   std::cout << "creating thread pool of 4 thread " << std::endl;
   DObject* workerPool = makeNewDCpp<WorkerPool>("WorkerPool")->newObject(RealValue<DUInt8>(4));
 
-  int count = 100000;
+  //int count = 100000;
+  int count = 100;
 
+  std::cout << "generating number" << std::endl;
   DObject* vector = Destruct::DStructs::instance().find("DVectorUInt64")->newObject();
   for (int index = 0; index < count; ++index)
     vector->call("push", RealValue<DUInt64>(index));
@@ -35,15 +37,16 @@ int main(int argc, char** argv)
     std::cout << "result " << index << " " << task->getValue("result").asUnicodeString() << std::endl;
   }
 
-  std::cout << "mapping " << std::endl;
+  std::cout << "create task" << std::endl;
   DObject* task = makeNewDCpp<Task<DObject*, DType::DObjectType, DUInt64, DType::DUInt64Type > >("Task")->newObject();
   task->setValue("function", get);
   task->setValue("argument", RealValue<DObject* >(vector));
+
+  std::cout << "map task" << std::endl;
   DObject* mapResult = workerPool->call("map", RealValue<DObject*>(task)).get<DObject*>();
  
   size = mapResult->call("size").get<DUInt64>();
-  
-  std::cout << "found " << size << " map result " << std::endl;
+  std::cout << "got " << size << " result " << std::endl;
   for (DUInt64 index = 0; index < size; ++index)
   {
     DObject* task = mapResult->call("get", RealValue<DUInt64>(index)).get<DObject* >();

@@ -22,8 +22,8 @@ if (UNIX)
 add_subdirectory(loader)
 add_subdirectory(rpc)
 add_subdirectory(registry)
-add_subdirectory(threading)
 endif (UNIX)
+add_subdirectory(threading)
 
 set (test_files
 test.cpp
