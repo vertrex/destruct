@@ -12,13 +12,13 @@ namespace Destruct
 ThreadSafeObject::ThreadSafeObject(DStruct* dstruct, DValue const& args) : DObject(args.get<DObject*>()->instanceOf(), args), __dobject(args.get<DObject*>())
 {
   //std::cout << "create mutex object" << std::endl;
-  mutex_init(&this->__mutex, NULL);
+  mutex_init(&this->__mutex);
 }
 
 ThreadSafeObject::ThreadSafeObject(ThreadSafeObject const& copy) : DObject(copy), __dobject(copy.__dobject)
 {
   //std::cout << "copy threadsafe object" << std::endl;
-  mutex_init(&this->__mutex, NULL);
+  mutex_init(&this->__mutex);
 }
 
 //ThreadSafeObject::ThreadSafeObject(DObject* object) : DObject(*object), __dobject(object)

@@ -135,6 +135,7 @@ DValue  WorkerPool::map(DValue const& arg)
 Queue::Queue(DStruct* dstruct, DValue const& args) : DCppObject<Queue>(dstruct, args)
 {    
   mutex_init(&__mutex);
+   mutex_init(&__joinMutex);
   cond_init(&__enqueueSignal);
   cond_init(&__itemCountSignal);
   this->__itemCount = 0;
@@ -144,19 +145,25 @@ Queue::Queue(DStruct* dstruct, DValue const& args) : DCppObject<Queue>(dstruct, 
 Queue::~Queue()
 {
   mutex_destroy(&__mutex);
-  cond_destroy(&__conditionWait);
+  mutex_destroy(&__joinMutex);
+  cond_destroy(&__enqueueSignal);
   cond_destroy(&__itemCountSignal);
 }
 
 DValue  Queue::join(void)
 {
 	//std::cout << "queue join" << std::endl;
- // while (this->__itemCount != 0)
+
+	//  cond_eait(&
    // continue;
-  cond_wait(&__itemCountSignal, &__mutex);
+ 
 
  // std::cout << "queue join" << std::endl;
-  mutex_lock(&__mutex);
+//  mutex_lock(&mutex)
+  mutex_lock(&__joinMutex);
+  std::cout << "joining" << std::endl;
+    while (this->__itemCount != 0)
+      cond_wait(&__itemCountSignal, &__joinMutex);
   DObject* results = Destruct::DStructs::instance().generate("DVectorObject");
   while (!this->__result.empty())
   {
@@ -164,7 +171,7 @@ DValue  Queue::join(void)
     results->call("push" , result);
     this->__result.pop();
   }
-  mutex_unlock(&__mutex);
+  mutex_unlock(&__joinMutex);
   return RealValue<DObject*>(results);
 }
 

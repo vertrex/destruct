@@ -97,6 +97,7 @@ private:
   std::queue<DValue>          __result;
   
   mutex_def(__mutex);
+  mutex_def(__joinMutex);
   cond_def(__enqueueSignal);
   cond_def(__itemCountSignal);
   RealValue<DFunctionObject*> _enqueue, _dequeue, _empty, _addResult, _join;
