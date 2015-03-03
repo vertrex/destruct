@@ -5,8 +5,6 @@
 #include "client.hpp"
 #include "dtype.hpp"
 
-
-
 RPC::RPC()
 {
   Destruct::DType::init();
@@ -19,7 +17,9 @@ RPC::~RPC()
 
 void RPC::serve(uint32_t port)
 {
+  std::cout << "create TesterServer" << std::endl;
   TestServer  server(port);
+  std::cout << "Daemonize server " << std::endl;
   server.daemonize();
 }
 
@@ -91,6 +91,7 @@ DObject* TestClient::start(void)
  */
 TestServer::TestServer(uint32_t port) : Server(port)
 {
+ std::cout << "TestServer::TestServer() " << std::endl;
 }
 
 /**
@@ -142,7 +143,6 @@ int main(int argc, char** argv)
 {
   if (argc < 2)
     return (1);
-
   RPC   rpc;
   
   try 
@@ -157,8 +157,10 @@ int main(int argc, char** argv)
     else if (std::string(argv[1]) == std::string("-c"))
       rpc.connect(std::string(argv[2]), 0xdff);
     else
+	{
       std::cout << "Launch server : -d" << std::endl
                 << "Launch client : -c" << std::endl;       
+	}
   }
   catch (Destruct::DException const& exception)
   {
@@ -168,4 +170,5 @@ int main(int argc, char** argv)
   {
      std::cout << "Error : " << std::endl << error << std::endl;
   }
+  std::cout << "end " << std::endl;
 }

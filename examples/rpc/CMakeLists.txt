@@ -27,9 +27,14 @@ serverfunctionobject.cpp
 )
 
 add_library(destruct_rpc SHARED ${rpc_libfiles})
+if (MSVC)
+  target_link_libraries(destruct_rpc destruct Ws2_32.lib)
+else (MSVC)
+  target_link_libraries(destruct_rpc destruct)
+endif (MSVC)
 
 set (rpc_files
 rpc.cpp)
 
 add_executable(rpc ${rpc_files})
-target_link_libraries(rpc destruct destruct_rpc)
+target_link_libraries(rpc destruct_rpc)

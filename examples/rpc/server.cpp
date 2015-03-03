@@ -1,9 +1,16 @@
 #include <iostream>
 #include <stdio.h>
 #include <string.h>
+
+#ifdef WIN32
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#else
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#endif
+
 
 #include "server.hpp"
 #include "serverobject.hpp"
@@ -21,6 +28,52 @@ Server::~Server()
   delete this->__serializer;
 }
 
+#ifdef WIN32
+void			Server::__bind(int32_t port)
+{
+  struct addrinfo *result = NULL;
+  struct addrinfo hints;
+  WSADATA wsaData;
+
+  if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
+    throw DException("WSAStartup failed");
+
+  ZeroMemory(&hints, sizeof (hints));
+  hints.ai_family = AF_INET;
+  hints.ai_socktype = SOCK_STREAM;
+  hints.ai_protocol = IPPROTO_TCP;
+  hints.ai_flags = AI_PASSIVE;
+
+// Resolve the local address and port to be used by the server
+  char sport[6];
+  ZeroMemory(&sport, sizeof(char)*6);
+  itoa(port, sport, 10);
+  if (getaddrinfo(NULL, sport, &hints, &result) != 0)
+  {
+    WSACleanup();
+	throw DException("Server::__bind getaddrinfo failed.");
+  }
+  this->__listenSocket = INVALID_SOCKET;
+
+  std::cout << "createsocket port " << sport << std::endl;
+  this->__listenSocket = socket(result->ai_family, result->ai_socktype, result->ai_protocol);  
+  if (this->__listenSocket == INVALID_SOCKET) 
+  {
+	freeaddrinfo(result);
+    WSACleanup();
+	throw DException("Server::__bind Could not create socket");
+  }
+  std::cout << "socket created " << std::endl;
+ if (bind(this->__listenSocket, result->ai_addr, (int)result->ai_addrlen) == SOCKET_ERROR)
+ {
+   freeaddrinfo(result);
+   closesocket(this->__listenSocket);
+   WSACleanup();
+   throw DException("Bind failed");
+ }
+
+}
+#else
 void            Server::__bind(int32_t port)
 {
   this->__listenSocket = socket(AF_INET , SOCK_STREAM, 0);
@@ -36,7 +89,34 @@ void            Server::__bind(int32_t port)
   if(bind(this->__listenSocket,(sockaddr *)&server , sizeof(server)) < 0)
     throw DException("Server::__bind bind failed. Error");
 }
+#endif
 
+#ifdef WIN32
+void			Server::__listen(void)
+{
+  std::cout << "Waiting for incoming connections ..." << std::endl;
+  if (listen(this->__listenSocket, SOMAXCONN) == SOCKET_ERROR)
+  {
+	printf( "Listen failed with error: %ld\n", WSAGetLastError() );
+	closesocket(this->__listenSocket);
+    WSACleanup();
+	throw DException("Server::__listen failed");
+  }
+// Accept a client socket
+  this->__connectionSocket = accept(this->__listenSocket, NULL, NULL);
+  if (this->__connectionSocket == INVALID_SOCKET) 
+  {
+	closesocket(this->__listenSocket);
+    WSACleanup();
+	throw DException("Server::__listen accept failed");
+  }
+  std::cout << "Connection accepted" << std::endl;
+  delete this->__networkStream;
+  delete this->__serializer;
+  this->__networkStream = new NetworkStream(NULL, RealValue<DInt32>(this->__connectionSocket));
+  this->__serializer = new DSerializeRPC(*this->__networkStream, this->__objectManager, this->__functionObjectManager);
+}
+#else
 void            Server::__listen(void) 
 {
   int c;
@@ -45,7 +125,7 @@ void            Server::__listen(void)
   listen(this->__listenSocket , 3);
   std::cout << "Waiting for incoming connections ..." << std::endl;
   c = sizeof(sockaddr_in);
-  this->__connectionSocket = accept(this->__listenSocket, (sockaddr *)&client, (socklen_t*)&c);
+  this->__connectionSocket = accept(this->__listenSocket, (sockaddr *)&client, (socklen_t*)&c);//XXX windows
   if (this->__connectionSocket < 0)
     throw DException("Server::__listen accept failed");
   std::cout << "Connection accepted" << std::endl;
@@ -55,7 +135,7 @@ void            Server::__listen(void)
   this->__networkStream = new NetworkStream(NULL, RealValue<DInt32>(this->__connectionSocket));
   this->__serializer = new DSerializeRPC(*this->__networkStream, this->__objectManager, this->__functionObjectManager);
 }
-
+#endif
 
 void    Server::findDStruct(void)
 {
@@ -85,6 +165,7 @@ void            Server::daemonize(void)
   {
     try
     {
+	  std::cout << "Daemonize this->Server()" << std::endl;
       this->serve();
     }
     catch (DException const& exception)
@@ -100,7 +181,9 @@ void            Server::daemonize(void)
 
 void            Server::serve(void)
 {
+  std::cout << "Sever::serve listen" << std::endl;
   this->__listen();
+  std::cout << "Create serverObject " << std::endl;
   ServerObject serverObject(*this->__networkStream, this->__serializer, this->__objectManager, this->__functionObjectManager);
   this->initRoot(); //again? XXX
   this->showRoot();

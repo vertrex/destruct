@@ -1,4 +1,9 @@
+#ifdef WIN32
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#else
 #include <arpa/inet.h>
+#endif
 #include <iostream>
 #include <sstream>
 #include <string.h>
@@ -12,7 +17,9 @@ namespace Destruct
 NetworkStream::NetworkStream(DStruct* dstruct, DValue const& args) : DStream(dstruct)
 {
   this->__socket = args.get<DInt32>();
+#ifndef WIN32
   signal(SIGPIPE, SIG_IGN);
+#endif
 }
 
 NetworkStream::NetworkStream(NetworkStream const& copy) : DStream(copy), __socket(copy.__socket)//, __readStream(copy.__readStream)
@@ -101,7 +108,7 @@ int32_t NetworkStream::flush(void)// const
   int32_t totalSent = 0;
   while (totalSent < size)
   {
-    int32_t sent = ::send(this->__socket, (void*)(buff + totalSent), size - totalSent, 0);
+    int32_t sent = ::send(this->__socket, (const char*)(buff + totalSent), size - totalSent, 0);
     if (sent != -1)
       totalSent += sent;
     else

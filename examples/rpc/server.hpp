@@ -5,39 +5,44 @@
 #include "serverfunctionobject.hpp"
 #include "networkstream.hpp"
 
+#include "destruct.hpp"
 #include "serializerpc.hpp"
 #include "protocol/dserialize.hpp"
+
+#ifdef WIN32
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#endif
 
 class Server : public DCppObject<Server>
 {
 public:
-  Server(uint32_t port);
+  EXPORT Server(uint32_t port);
 
-  Server(DStruct* dstruct, DValue const& args) : DCppObject<Server>(dstruct, args)
+  EXPORT Server(DStruct* dstruct, DValue const& args) : DCppObject<Server>(dstruct, args)
   {
     this->init();
     this->__bind(args.get<DUInt32>());
   }
 
-  ~Server();
+  EXPORT ~Server();
 
-  virtual void                          initRoot(void) //setRoot(DValue object);
+  EXPORT virtual void                          initRoot(void) //setRoot(DValue object);
   {
     //throw DException("Not implemented");
     std::cout << "Server::initRoot not implemented" << std::endl;
   }
 
-  virtual void                          addRoot(RealValue<DObject*> root)
+  EXPORT virtual void                          addRoot(RealValue<DObject*> root)
   {
     this->objectManager().registerObject(root);
   }
 
-  virtual void                          serve();
-  void                                  daemonize(void);
+  EXPORT virtual void                          serve();
+  EXPORT void                                  daemonize(void);
 
-
-  ObjectManager<ServerFunctionObject*>& functionObjectManager(void);
-  ObjectManager<Destruct::DObject*>&    objectManager(void);
+  EXPORT ObjectManager<ServerFunctionObject*>& functionObjectManager(void);
+  EXPORT ObjectManager<Destruct::DObject*>&    objectManager(void);
 
   RealValue<DFunctionObject*>   _addRoot, _serve, _daemonize;
 
@@ -88,10 +93,15 @@ private:
   void                                  unknown(const DUnicodeString& cmd);
   void                                  showRoot(void);
 
+#ifdef WIN32
+  SOCKET								__listenSocket;
+  SOCKET								__connectionSocket;
+#else
   int                                   __listenSocket;
   int32_t                               __connectionSocket;
-  void                                  __bind(int32_t port);
-  void                                  __listen(void);
+#endif
+  EXPORT void                                  __bind(int32_t port);
+  EXPORT void                                  __listen(void);
   NetworkStream*                        __networkStream;
   DSerialize*                           __serializer;
   ObjectManager<Destruct::DObject*>     __objectManager;

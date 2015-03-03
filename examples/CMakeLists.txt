@@ -20,8 +20,8 @@ add_subdirectory(refcount)
 add_subdirectory(inheritance)
 add_subdirectory(threading)
 
-if (UNIX)
 add_subdirectory(rpc)
+if (UNIX)
 add_subdirectory(registry)
 endif (UNIX)
 

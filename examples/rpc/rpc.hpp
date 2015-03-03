@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+#include "destruct.hpp"
+
 #include "client.hpp"
 #include "server.hpp"
 #include "clientobject.hpp"

@@ -50,7 +50,7 @@ private:
 };
 
 template<>
-inline ObjectManager<Destruct::DObject* >::~ObjectManager<Destruct::DObject*>()
+inline ObjectManager<Destruct::DObject* >::~ObjectManager()
 {
   mapIterator object = this->__objectsID.begin();
   for (; object != this->__objectsID.end(); ++object)

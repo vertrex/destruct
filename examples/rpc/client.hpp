@@ -4,6 +4,7 @@
 #include <iostream>
 #include <stdint.h>
 
+#include "destruct.hpp"
 #include "networkstream.hpp" 
 #include "objectmanager.hpp"
 #include "serializerpc.hpp"
@@ -14,25 +15,25 @@ class ServerFunctionObject;
 class Client : public DCppObject<Client>
 {
 public:
-  Client(DUnicodeString const& addr, uint32_t port);
-  Client(DStruct* dstruct, DValue const& args);
-  ~Client();
+  EXPORT Client(DUnicodeString const& addr, uint32_t port);
+  EXPORT Client(DStruct* dstruct, DValue const& args);
+  EXPORT ~Client();
 
-  virtual DObject*                      start(void);
-  DValue                                findObject(void); ///XXX:
+  EXPORT virtual DObject*                      start(void);
+  EXPORT DValue                                findObject(void); ///XXX:
 
-  Destruct::DStruct*                    remoteFind(const DUnicodeString name);
-  bool                                  print(DObject* dobject) const;
-  bool                                  print(DStruct* dstruct) const;
+  EXPORT Destruct::DStruct*                    remoteFind(const DUnicodeString name);
+  EXPORT bool                                  print(DObject* dobject) const;
+  EXPORT bool                                  print(DStruct* dstruct) const;
 
-  int32_t                               connectionSocket(void) const;
-  NetworkStream*                        networkStream(void) const;
-  DSerialize*                           serializeRPC(void) const;
-  ObjectManager<DObject*>&              objectManager(void);
-  ObjectManager<ServerFunctionObject*>& functionObjectManager(void);
+  EXPORT int32_t                               connectionSocket(void) const;
+  EXPORT NetworkStream*                        networkStream(void) const;
+  EXPORT DSerialize*                           serializeRPC(void) const;
+  EXPORT ObjectManager<DObject*>&              objectManager(void);
+  EXPORT ObjectManager<ServerFunctionObject*>& functionObjectManager(void);
 private:
-  void                                  __connect(DUnicodeString const& addr, uint32_t port);
-  void                                  __close(void);
+  EXPORT void                                  __connect(DUnicodeString const& addr, uint32_t port);
+  EXPORT void                                  __close(void);
   int32_t                               __connectionSocket;
   NetworkStream*                        __networkStream;
   DSerialize*                           __serializeRPC; 

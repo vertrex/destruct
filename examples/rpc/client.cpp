@@ -1,5 +1,8 @@
+
+#ifndef WIN32
 #include<sys/socket.h>
 #include<arpa/inet.h>
+#endif
 
 #include "dstructs.hpp"
 

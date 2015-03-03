@@ -1,6 +1,7 @@
 #ifndef __FSOBJECT__
 #define __FSOBJECT__
 
+#include "destruct.hpp"
 #include "protocol/dcppobject.hpp"
 
 using namespace Destruct;
@@ -8,8 +9,8 @@ using namespace Destruct;
 class File : public DCppObject<File>
 {
 public:
-                                File(DStruct* dstruct, DValue const& args);
-                                ~File();
+  EXPORT                         File(DStruct* dstruct, DValue const& args);
+  EXPORT                         ~File();
   RealValue<DUnicodeString >    name;
   RealValue<DUInt64 >           size;
   RealValue<DFunctionObject* >  _path;
@@ -59,7 +60,7 @@ public:
 class Directory : public DCppObject<Directory>
 {
 public:
-                                Directory(DStruct* dstruct, DValue const& args);
+  EXPORT                        Directory(DStruct* dstruct, DValue const& args);
   RealValue<DUnicodeString >    name;
   RealValue<DObject* >          children;
   RealValue<DFunctionObject* >  _path;

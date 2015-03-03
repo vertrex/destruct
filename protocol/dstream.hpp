@@ -6,6 +6,7 @@
 #include <fstream>
 #include <sstream>
 
+#include "destruct.hpp"
 #include "dcppobject.hpp"
 #include "protocol/dstreambase.hpp"
 
@@ -35,21 +36,21 @@ public:
 
   typedef std::basic_ostream<char, std::char_traits<char> > CoutType;
   typedef CoutType& (*StandardEndLine)(CoutType&);
-  DStream(DStruct* dstruct, DValue const& args);
-  DStream(const DStream& copy);
+  EXPORT DStream(DStruct* dstruct, DValue const& args);
+  EXPORT DStream(const DStream& copy);
   
-  virtual DStream& operator>>(DStream& output);
-  virtual DStream& operator<<(DStream& input);
+  EXPORT virtual DStream& operator>>(DStream& output);
+  EXPORT virtual DStream& operator<<(DStream& input);
 
-  virtual DStream& operator>>(DUnicodeString& val); 
-  virtual DStream& operator<<(DUnicodeString val);
-  virtual DStream& operator<<(char val);
-  virtual DStream& operator<<(StandardEndLine func);
-  virtual DStream& read(char*  buff, uint32_t size);
-  virtual DStream& write(const char* buff, uint32_t size);
-  virtual bool fail(void);
+  EXPORT virtual DStream& operator>>(DUnicodeString& val); 
+  EXPORT virtual DStream& operator<<(DUnicodeString val);
+  EXPORT virtual DStream& operator<<(char val);
+  EXPORT virtual DStream& operator<<(StandardEndLine func);
+  EXPORT virtual DStream& read(char*  buff, uint32_t size);
+  EXPORT virtual DStream& write(const char* buff, uint32_t size);
+  EXPORT virtual bool fail(void);
   //protected:
-  virtual ~DStream();
+  EXPORT virtual ~DStream();
  // DStream(DStruct* dstruct);
 private:
   std::fstream  __fstream; //if not fd !
@@ -57,12 +58,12 @@ private:
  *  DStruct declaration
  */ 
 public:
-  DStream(DStruct* dstruct);
+  EXPORT DStream(DStruct* dstruct);
   RealValue<DFunctionObject* > _read;
   RealValue<DFunctionObject* > _write;
 
-  virtual DInt64 write(DValue const& args);
-  virtual DInt64 read(DValue const& args);
+  EXPORT virtual DInt64 write(DValue const& args);
+  EXPORT virtual DInt64 read(DValue const& args);
 
   static size_t ownAttributeCount()
   {
@@ -120,18 +121,18 @@ protected:
 class DStreamString : public DStream //Base
 {
 public:
-  DStreamString(DStruct* dstruct, DValue const &args);
-  DStreamString(const DStreamString& copy);
-  DStream&          read(char*  buff, uint32_t size);
-  DStream&          write(const char* buff, uint32_t size);
-  const std::string str(void) const;
-  void              clear(void);    
+  EXPORT DStreamString(DStruct* dstruct, DValue const &args);
+  EXPORT DStreamString(const DStreamString& copy);
+  EXPORT DStream&          read(char*  buff, uint32_t size);
+  EXPORT DStream&          write(const char* buff, uint32_t size);
+  EXPORT const std::string str(void) const;
+  EXPORT void              clear(void);    
   //DStream& operator>>(std::string& val); 
   //DStream& operator<<(std::string val);
   //virtual DInt64 write(DValue const& args);
   //virtual DInt64 read(DValue const& args);
   //protected:
-  ~DStreamString();
+  EXPORT ~DStreamString();
 private:
   std::stringstream   __stream; 
 };
