@@ -16,10 +16,6 @@
 
 using Destruct::DUnicodeString;
 
-#ifndef WIN32
-template<>
-EXPORT PyTypeObject* PyDObjectT::pyType = NULL;
-#endif
 template<>
 PySequenceMethods* PyDObjectT::pySequenceMethods = NULL;
 template<>
@@ -27,7 +23,7 @@ PyMappingMethods* PyDObjectT::pyMappingMethods = NULL;
 
 Destruct::DValue PyDObject::toDValue(PyObject* value) 
 {
-  if (PyObject_TypeCheck(value, PyDObject::pyType))
+  if (PyObject_TypeCheck(value, PyDObjectT::pyType()))
   {
     Destruct::DObject* v = ((DPyObject*)value)->pimpl;
     return Destruct::RealValue<Destruct::DObject* >(v);
@@ -43,9 +39,10 @@ PyObject*     PyDObject::asDValue(Destruct::DValue const& v)
 
   if (value == NULL || value == Destruct::DNone)
     Py_RETURN_NONE;
-   
+  
+  PyTypeObject* pyType = PyDObjectT::pyType(); 
   Py_INCREF(pyType);
-  PyDObject::DPyObject*  dobjectObject = (PyDObject::DPyObject*)_PyObject_New(PyDObject::pyType);
+  PyDObject::DPyObject*  dobjectObject = (PyDObject::DPyObject*)_PyObject_New(pyType);
   dobjectObject->pimpl = value;
 
   return ((PyObject*)dobjectObject);
@@ -58,8 +55,9 @@ PyObject*     PyDObject::asPyObject(PyObject* self, int32_t attributeIndex)
   if (value == NULL || value == Destruct::DNone)
     Py_RETURN_NONE;
    
+  PyTypeObject* pyType = PyDObjectT::pyType(); 
   Py_INCREF(pyType);
-  PyDObject::DPyObject*  dobjectObject = (PyDObject::DPyObject*)_PyObject_New(PyDObject::pyType);
+  PyDObject::DPyObject*  dobjectObject = (PyDObject::DPyObject*)_PyObject_New(pyType);
   dobjectObject->pimpl = value; //don't addref because .get<> already add a Ref
 
   return ((PyObject*)dobjectObject);
@@ -67,7 +65,7 @@ PyObject*     PyDObject::asPyObject(PyObject* self, int32_t attributeIndex)
 
 PyDObject::PyDObject()
 {
-  pyType = (PyTypeObject*)malloc(sizeof(basePyType));
+  PyTypeObject* pyType = PyDObjectT::pyType();
   memcpy(pyType, &basePyType, sizeof(basePyType));
 
   pyType->tp_name = "destruct.DObject";
@@ -109,7 +107,7 @@ PyObject* PyDObject::instanceOf(PyDObject::DPyObject* self)
   CHECK_PIMPL
   const Destruct::DStruct* dstruct = self->pimpl->instanceOf();
 
-  PyDStruct::DPyObject* dstructObject = (PyDStruct::DPyObject*)_PyObject_New(PyDStruct::pyType);
+  PyDStruct::DPyObject* dstructObject = (PyDStruct::DPyObject*)_PyObject_New(PyDStructT::pyType());
   dstructObject->pimpl = (Destruct::DStruct*)dstruct;
   
   return ((PyObject*)dstructObject);
@@ -120,7 +118,7 @@ PyObject* PyDObject::clone(PyDObject::DPyObject* self)
   CHECK_PIMPL
   Destruct::DObject* dobject = self->pimpl->clone();
 
-  PyDObject::DPyObject* pyDObject = (PyDObject::DPyObject*)_PyObject_New(PyDObject::pyType);
+  PyDObject::DPyObject* pyDObject = (PyDObject::DPyObject*)_PyObject_New(PyDObjectT::pyType());
   pyDObject->pimpl = (Destruct::DObject*)dobject;
    
   return ((PyObject*)pyDObject);
@@ -239,7 +237,7 @@ PyObject*  PyDObject::setValue(PyDObject::DPyObject* self, int32_t attributeInde
         //Special case get = vector.get  toto.setValue("func", get")
         //->get : c++ -> PyDMethodObject 
         //setValue PyDMethodObject -> DPythonMethodObject ! -> rewrapper une deuxieme fois en python must cast directly to c+
-        if (PyObject_TypeCheck(valueObject, PyDMethodObject::pyType))
+        if (PyObject_TypeCheck(valueObject, PyDMethodObjectT::pyType()))
         {
           PyDMethodObject::DPyObject* funcObject = (PyDMethodObject::DPyObject*)valueObject;
           self->pimpl->setValue(attributeIndex, Destruct::RealValue<Destruct::DFunctionObject*>(funcObject->pimpl));
@@ -609,7 +607,7 @@ PyObject* PyDObject::_iter(PyDObject::DPyObject* self)
     Destruct::DObject* iterator = self->pimpl->call("iterator").get<Destruct::DObject*>();
     iterator->destroy(); //destroy get<ref> but have an other one add by call()
   
-    PyDObject::DPyObject*  dobjectObject = (PyDObject::DPyObject*)_PyObject_New(PyDObject::pyType);
+    PyDObject::DPyObject*  dobjectObject = (PyDObject::DPyObject*)_PyObject_New(PyDObjectT::pyType());
     dobjectObject->pimpl = iterator;
 
     return ((PyObject*)dobjectObject);

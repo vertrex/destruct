@@ -23,9 +23,4 @@ public:
   static PyObject*    newObject(DPyObject* self, PyObject* args, PyObject* kwds);
 };
 
-#ifdef WIN32
-template<>
-PyTypeObject* PyDStructT::pyType = NULL;
-#endif
-
 #endif

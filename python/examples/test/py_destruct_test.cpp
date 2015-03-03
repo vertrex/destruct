@@ -48,12 +48,9 @@ EXPORT PyTypeObject PythonBaseModule::basePyType =
 };
 #endif
 
-template<>
-PyTypeObject* PyTestT::pyType = NULL;
-
 PyTest::PyTest()
 {
-  pyType = (PyTypeObject*)malloc(sizeof(basePyType));
+  PyTypeObject* pyType = PyTestT::pyType();
   memcpy(pyType , &basePyType , sizeof(basePyType));
 
   pyType->tp_name = "destruct.Test";
@@ -86,7 +83,7 @@ PyObject*   PyTest::showAttribute(PyTest::DPyObject* self, PyObject* args, PyObj
   if (!PyArg_ParseTuple(args, "O", &dstructObject))
     return (0);
 
-  if (!PyObject_TypeCheck(dstructObject, PyDStruct::pyType))
+  if (!PyObject_TypeCheck(dstructObject, PyDStructT::pyType()))
     return (0);
 
   self->pimpl->showAttribute(dstructObject->pimpl);
@@ -100,7 +97,7 @@ PyObject*    PyTest::showObjectAttribute(PyTest::DPyObject* self, PyObject* args
   if (!PyArg_ParseTuple(args, "O", &dobjectObject))
     return (0);
 
-  if (!PyObject_TypeCheck(dobjectObject, PyDObject::pyType))
+  if (!PyObject_TypeCheck(dobjectObject, PyDObjectT::pyType()))
     return (0);
 
   self->pimpl->showObjectAttribute(dobjectObject->pimpl);
@@ -115,7 +112,7 @@ PyObject*    PyTest::setObjectValue(PyTest::DPyObject* self, PyObject* args, PyO
   if (!PyArg_ParseTuple(args, "O", &dobjectObject))
     return (0);
 
-  if (!PyObject_TypeCheck(dobjectObject, PyDObject::pyType))
+  if (!PyObject_TypeCheck(dobjectObject, PyDObjectT::pyType()))
     return (0);
 
 
@@ -128,7 +125,7 @@ PyObject*    PyTest::getObjectValue(PyTest::DPyObject* self, PyObject* args, PyO
 {
   Destruct::DObject* dobject = self->pimpl->getObjectValue();
 
-  PyDObject::DPyObject*  dobjectObject = (PyDObject::DPyObject*)_PyObject_New(PyDObject::pyType);
+  PyDObject::DPyObject*  dobjectObject = (PyDObject::DPyObject*)_PyObject_New(PyDObjectT::pyType());
   dobjectObject->pimpl = dobject;
 
   Py_INCREF(dobjectObject);
@@ -155,5 +152,5 @@ PyMODINIT_FUNC init_dtest(void)
   if ((module = Py_InitModule3("_dtest", destruct_methods, "Test library for destruct")) == NULL)
     return;    
 
-  DESTRUCT_ADD_MODULE(PyTest::pyType, "Test")
+  DESTRUCT_ADD_MODULE(PyTestT::pyType(), "Test")
 }

@@ -49,10 +49,4 @@ public:
   PyObject*           asPyObject(PyObject* self, int32_t attributeIndex);
 };
 
-
-#ifdef WIN32
-template<>
-EXPORT PyTypeObject* PyDObjectT::pyType;
-#endif
-
 #endif

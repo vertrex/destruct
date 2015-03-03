@@ -2,12 +2,9 @@
 
 #define FAST_CONVERSION true 
 
-template<>
-PyTypeObject* PyDInt8T::pyType = NULL;
-
 PyDInt8::PyDInt8()
 {
-  pyType = (PyTypeObject*)malloc(sizeof(basePyType));
+  PyTypeObject* pyType = PyDInt8::pyType();
   memcpy(pyType , &basePyType , sizeof(basePyType));
 
   PyMethodDef* pyMethods = (PyMethodDef*)malloc(sizeof(baseTypePyMethods));
@@ -53,12 +50,9 @@ PyObject*     PyDInt8::asPyObject(PyObject* self, int32_t attributeIndex)
 #endif
 }
 
-template<>
-PyTypeObject* PyDInt16T::pyType = NULL;
-
 PyDInt16::PyDInt16()
 {
-  pyType = (PyTypeObject*)malloc(sizeof(basePyType));
+  PyTypeObject* pyType = PyDInt16::pyType();
   memcpy(pyType , &basePyType , sizeof(basePyType));
 
   PyMethodDef* pyMethods = (PyMethodDef*)malloc(sizeof(baseTypePyMethods));
@@ -104,12 +98,9 @@ PyObject*     PyDInt16::asPyObject(PyObject* self, int32_t attributeIndex)
 #endif
 }
 
-template<>
-PyTypeObject* PyDInt32T::pyType = NULL;
-
 PyDInt32::PyDInt32()
 {
-  pyType = (PyTypeObject*)malloc(sizeof(basePyType));
+  PyTypeObject* pyType = PyDInt32::pyType();
   memcpy(pyType , &basePyType , sizeof(basePyType));
 
   PyMethodDef* pyMethods = (PyMethodDef*)malloc(sizeof(baseTypePyMethods));
@@ -155,12 +146,9 @@ PyObject*        PyDInt32::asPyObject(PyObject* self, int32_t attributeIndex)
 #endif
 }
 
-template<>
-PyTypeObject* PyDInt64T::pyType = NULL;
-
 PyDInt64::PyDInt64()
 {
-  pyType = (PyTypeObject*)malloc(sizeof(PyDInt64::basePyType));
+  PyTypeObject* pyType = PyDInt64::pyType();
   memcpy(pyType , &basePyType , sizeof(PyDInt64::basePyType));
 
   PyMethodDef* pyMethods = (PyMethodDef*)malloc(sizeof(baseTypePyMethods));
@@ -206,12 +194,9 @@ PyObject*     PyDInt64::asPyObject(PyObject* self, int32_t attributeIndex)
 #endif
 }
 
-template<>
-PyTypeObject* PyDUInt8T::pyType = NULL;
-
 PyDUInt8::PyDUInt8()
 {
-  pyType = (PyTypeObject*)malloc(sizeof(basePyType));
+  PyTypeObject* pyType = PyDUInt8::pyType();
   memcpy(pyType , &basePyType , sizeof(basePyType));
 
   PyMethodDef* pyMethods = (PyMethodDef*)malloc(sizeof(baseTypePyMethods));
@@ -257,12 +242,9 @@ PyObject*     PyDUInt8::asPyObject(PyObject* self, int32_t attributeIndex)
 #endif
 }
 
-template<>
-PyTypeObject* PyDUInt16T::pyType = NULL;
-
 PyDUInt16::PyDUInt16()
 {
-  pyType = (PyTypeObject*)malloc(sizeof(basePyType));
+  PyTypeObject* pyType = PyDUInt16::pyType();
   memcpy(pyType , &basePyType , sizeof(basePyType));
 
   PyMethodDef* pyMethods = (PyMethodDef*)malloc(sizeof(baseTypePyMethods));
@@ -308,12 +290,9 @@ PyObject*     PyDUInt16::asPyObject(PyObject* self, int32_t attributeIndex)
 #endif
 }
 
-template<>
-PyTypeObject* PyDUInt32T::pyType = NULL;
-
 PyDUInt32::PyDUInt32()
 {
-  pyType = (PyTypeObject*)malloc(sizeof(basePyType));
+  PyTypeObject* pyType = PyDUInt32::pyType();
   memcpy(pyType , &basePyType , sizeof(basePyType));
 
   PyMethodDef* pyMethods = (PyMethodDef*)malloc(sizeof(baseTypePyMethods));
@@ -359,12 +338,9 @@ PyObject*     PyDUInt32::asPyObject(PyObject* self, int32_t attributeIndex)
 #endif
 }
 
-template<>
-PyTypeObject* PyDUInt64T::pyType = NULL;
-
 PyDUInt64::PyDUInt64()
 {
-  pyType = (PyTypeObject*)malloc(sizeof(PyDUInt64::basePyType));
+  PyTypeObject* pyType = PyDUInt64::pyType();
   memcpy(pyType , &basePyType , sizeof(PyDUInt64::basePyType));
 
   PyMethodDef* pyMethods = (PyMethodDef*)malloc(sizeof(baseTypePyMethods));
@@ -410,12 +386,9 @@ PyObject*     PyDUInt64::asPyObject(PyObject* self, int32_t attributeIndex)
 #endif
 }
 
-template<>
-PyTypeObject* PyDUnicodeStringT::pyType = NULL;
-
 PyDUnicodeString::PyDUnicodeString()
 {
-  pyType = (PyTypeObject*)malloc(sizeof(basePyType));
+  PyTypeObject* pyType = PyDUnicodeString::pyType();
   memcpy(pyType , &basePyType , sizeof(basePyType));
 
   PyMethodDef* pyMethods = (PyMethodDef*)malloc(sizeof(baseTypePyMethods));

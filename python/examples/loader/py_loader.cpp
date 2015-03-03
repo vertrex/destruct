@@ -49,12 +49,9 @@ EXPORT PyTypeObject PythonBaseModule::basePyType =
 };
 #endif
 
-template<>
-PyTypeObject* PyLoaderT::pyType = NULL;
-
 PyLoader::PyLoader()
 {
-  pyType = (PyTypeObject*)malloc(sizeof(basePyType));
+  PyTypeObject* pyType = PyLoaderT::pyType();
   memcpy(pyType , &basePyType , sizeof(basePyType));
 
   pyType->tp_name = "destruct.Loader";
@@ -101,5 +98,5 @@ PyMODINIT_FUNC init_loader(void)
   if ((module = Py_InitModule3("_loader", destruct_methods, "Destruct C Loader")) == NULL)
     return;    
 
-  DESTRUCT_ADD_MODULE(PyLoader::pyType, "Loader")
+  DESTRUCT_ADD_MODULE(PyLoaderT::pyType(), "Loader")
 }

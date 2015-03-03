@@ -25,7 +25,4 @@ static PyMethodDef destruct_methods[] =
   { NULL, NULL, 0, NULL }
 };
 
-template<>
-EXPORT PyTypeObject* PyExamplesT::pyType = NULL;
-
 #endif

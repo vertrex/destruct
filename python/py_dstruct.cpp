@@ -8,14 +8,9 @@
 #include "dobject.hpp"
 #include "dstructs.hpp"
 
-#ifndef WIN32
-template<>
-PyTypeObject* PyDStructT::pyType = NULL;
-#endif
-
 PyDStruct::PyDStruct()
 {
-  pyType = (PyTypeObject*)malloc(sizeof(basePyType));
+  PyTypeObject* pyType = PyDStructT::pyType();
   memcpy(pyType , &basePyType , sizeof(basePyType));
 
   pyType->tp_name = "destruct.DStruct";
@@ -78,7 +73,7 @@ PyObject* PyDStruct::attribute(PyDStruct::DPyObject* self, PyObject* args, PyObj
 
   Destruct::DAttribute* dattribute = new Destruct::DAttribute(self->pimpl->attribute(index));
   CHECK_ALLOC(dattribute)
-  PyDAttribute::DPyObject* dattributeObject = (PyDAttribute::DPyObject*) _PyObject_New(PyDAttribute::pyType);
+  PyDAttribute::DPyObject* dattributeObject = (PyDAttribute::DPyObject*) _PyObject_New(PyDAttributeT::pyType());
   dattributeObject->pimpl = dattribute;
 
   return(Py_BuildValue("O", dattributeObject));
@@ -93,7 +88,7 @@ PyObject* PyDStruct::addAttribute(PyDStruct::DPyObject* self, PyObject* args, Py
     return (0);
   }
 
-  if (!PyObject_TypeCheck(dattributeObject, PyDAttribute::pyType))
+  if (!PyObject_TypeCheck(dattributeObject, PyDAttributeT::pyType()))
     return (0);
 
   //if FIX == 0?
@@ -119,7 +114,7 @@ PyObject* PyDStruct::newObject(PyDStruct::DPyObject* self, PyObject* args, PyObj
  
   CHECK_ALLOC(dobject)
 
-  PyDObject::DPyObject*   dobjectObject = (PyDObject::DPyObject*)_PyObject_New((PyTypeObject*)PyDObject::pyType);
+  PyDObject::DPyObject*   dobjectObject = (PyDObject::DPyObject*)_PyObject_New((PyTypeObject*)PyDObjectT::pyType());
   dobjectObject->pimpl = dobject;
 
   Py_INCREF(dobjectObject);
@@ -167,7 +162,7 @@ int PyDStruct::_init(PyDStructT::DPyObject* self, PyObject* args, PyObject* kwds
    else if (PyArg_ParseTuple(args, "Os", &baseObject, &name))
    {
      PyErr_Clear(); //First ParseTuple fail so set an error
-     if (baseObject && PyObject_TypeCheck(baseObject, PyDStruct::pyType))
+     if (baseObject && PyObject_TypeCheck(baseObject, PyDStructT::pyType()))
      {
        Py_INCREF(baseObject);
        base = ((PyDStruct::DPyObject*)baseObject)->pimpl;

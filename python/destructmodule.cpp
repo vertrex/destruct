@@ -41,30 +41,30 @@ PyMODINIT_FUNC init_destruct(void)
   if ((module = Py_InitModule3("_destruct", destruct_methods, "The destruct library")) == NULL)
     return;    
 
-  DESTRUCT_ADD_MODULE(PyDStructs::pyType, "DStructs")
-  DESTRUCT_ADD_MODULE(PyDStruct::pyType, "DStruct")
-  DESTRUCT_ADD_MODULE(PyDAttribute::pyType, "DAttribute")
+  DESTRUCT_ADD_MODULE(PyDStructsT::pyType(), "DStructs")
+  DESTRUCT_ADD_MODULE(PyDStructT::pyType(), "DStruct")
+  DESTRUCT_ADD_MODULE(PyDAttributeT::pyType(), "DAttribute")
 
 //type specialization
-  DESTRUCT_ADD_MODULE(PyDInt8::pyType, "DInt8")
-  DESTRUCT_ADD_MODULE(PyDInt16::pyType, "DInt16")
-  DESTRUCT_ADD_MODULE(PyDInt32::pyType, "DInt32")
-  DESTRUCT_ADD_MODULE(PyDInt64::pyType, "DInt64")
+  DESTRUCT_ADD_MODULE(PyDInt8::pyType(), "DInt8")
+  DESTRUCT_ADD_MODULE(PyDInt16::pyType(), "DInt16")
+  DESTRUCT_ADD_MODULE(PyDInt32::pyType(), "DInt32")
+  DESTRUCT_ADD_MODULE(PyDInt64::pyType(), "DInt64")
  
-  DESTRUCT_ADD_MODULE(PyDUInt8::pyType, "DUInt8")
-  DESTRUCT_ADD_MODULE(PyDUInt16::pyType, "DUInt16")
-  DESTRUCT_ADD_MODULE(PyDUInt32::pyType, "DUInt32")
-  DESTRUCT_ADD_MODULE(PyDUInt64::pyType, "DUInt64")
-  DESTRUCT_ADD_MODULE(PyDUnicodeString::pyType, "DUnicodeString")
+  DESTRUCT_ADD_MODULE(PyDUInt8::pyType(), "DUInt8")
+  DESTRUCT_ADD_MODULE(PyDUInt16::pyType(), "DUInt16")
+  DESTRUCT_ADD_MODULE(PyDUInt32::pyType(), "DUInt32")
+  DESTRUCT_ADD_MODULE(PyDUInt64::pyType(), "DUInt64")
+  DESTRUCT_ADD_MODULE(PyDUnicodeString::pyType(), "DUnicodeString")
 
-  DESTRUCT_ADD_MODULE(PyDObject::pyType, "DObject")
-  DESTRUCT_ADD_MODULE(PyDMethodObject::pyType, "DMethod")
-  DESTRUCT_ADD_MODULE(PyDNullObject::pyType, "DNone")
+  DESTRUCT_ADD_MODULE(PyDObjectT::pyType(), "DObject")
+  DESTRUCT_ADD_MODULE(PyDMethodObjectT::pyType(), "DMethod")
+  DESTRUCT_ADD_MODULE(PyDNullObjectT::pyType(), "DNone")
 //end type specialization 
 
-  DESTRUCT_ADD_MODULE(PyDType::pyType, "DType")
-  DESTRUCT_ADD_MODULE(PyDSerialize::pyType, "DSerialize");
-  //DESTRUCT_ADD_MODULE(PyTest::pyType, "Test")
+  DESTRUCT_ADD_MODULE(PyDType::pyType(), "DType")
+  DESTRUCT_ADD_MODULE(PyDSerialize::pyType(), "DSerialize");
+  //DESTRUCT_ADD_MODULE(PyTest::pyType()(), "Test")
 }
 
 PyMethodDef   PythonTypeBaseModule::baseTypePyMethods[2] = 
@@ -286,7 +286,7 @@ Destruct::DValue PythonBaseModule::pyObjectToDValue(PyObject* object)
   PyErr_Clear();
     //XXX a utiliser pour forcer le type int8, int16, ... car pas gerer la !      
 //table:yDObject::pyType pyoject->type ? dynamic 
-  if (PyObject_TypeCheck(object, PyDObject::pyType))
+  if (PyObject_TypeCheck(object, PyDObjectT::pyType()))
     return Destruct::RealValue<Destruct::DObject* >(((PyDObject::DPyObject*)object)->pimpl);
   else if (PyLong_Check(object) || PyInt_Check(object))
   {
@@ -295,7 +295,7 @@ Destruct::DValue PythonBaseModule::pyObjectToDValue(PyObject* object)
   }
   else if (PyString_Check(object)) 
     return Destruct::RealValue<Destruct::DUnicodeString>(std::string(PyString_AsString(object)));
-  else if (PyObject_TypeCheck(object, PyDMethodObject::pyType))
+  else if (PyObject_TypeCheck(object, PyDMethodObjectT::pyType()))
     return Destruct::RealValue<Destruct::DFunctionObject*>(((PyDMethodObject::DPyObject*)object)->pimpl);
   return (Destruct::RealValue<Destruct::DObject*>(Destruct::DNone));
 }

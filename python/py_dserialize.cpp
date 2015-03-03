@@ -4,12 +4,9 @@
 
 #include "protocol/dstream.hpp"
 
-template<>
-PyTypeObject* PyDSerializeT::pyType = NULL;
-
 PyDSerialize::PyDSerialize() //DSerializers XXX rename PyDSerialize.serialize serialize.serialize ... 
 {
-  pyType = (PyTypeObject*)malloc(sizeof(basePyType));
+  PyTypeObject* pyType = PyDSerializeT::pyType();
   memcpy(pyType , &basePyType , sizeof(basePyType));
 
   pyType->tp_name = "destruct.DSerialize";
@@ -41,9 +38,9 @@ PyObject* PyDSerialize::serialize(PyDSerialize::DPyObject* self, PyObject* args,
   bool result = false;
   Destruct::DStream*    dstream = (Destruct::DStream*)pyStream->pimpl; //force cast car serializer prend pas encore un dobject pour stream 
 
-  if (PyObject_TypeCheck(object, PyDStruct::pyType))
+  if (PyObject_TypeCheck(object, PyDStructT::pyType()))
     result = self->pimpl->serialize(*dstream, *((PyDStruct::DPyObject*)object)->pimpl);
-  else if (PyObject_TypeCheck(object, PyDObject::pyType))
+  else if (PyObject_TypeCheck(object, PyDObjectT::pyType()))
     result = self->pimpl->serialize(*dstream, ((PyDObject::DPyObject*)object)->pimpl);
 
   return (PyBool_FromLong(result));
@@ -72,14 +69,14 @@ PyObject* PyDSerialize::deserialize(PyDSerialize::DPyObject* self, PyObject* arg
       Py_RETURN_NONE;
     else
     {
-      PyDStruct::DPyObject* dstructObject = (PyDStruct::DPyObject*) _PyObject_New(PyDStruct::pyType);
+      PyDStruct::DPyObject* dstructObject = (PyDStruct::DPyObject*) _PyObject_New(PyDStructT::pyType());
       dstructObject->pimpl = dstruct;
 
       return ((PyObject*)dstructObject);
     }
   }
 
-  if (PyObject_TypeCheck(object, PyDObject::pyType))
+  if (PyObject_TypeCheck(object, PyDObjectT::pyType()))
   {
     bool result = self->pimpl->deserialize(*(dstream), ((PyDObject::DPyObject*)object)->pimpl);
 

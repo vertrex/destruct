@@ -55,9 +55,14 @@ public:
   };
  
   EXPORT static DPyObject          pyObject;
-  EXPORT static PyTypeObject*      pyType;
   static PySequenceMethods* pySequenceMethods;
   static PyMappingMethods* pyMappingMethods;
+
+  EXPORT static PyTypeObject*     pyType(void)
+  {
+    static PyTypeObject* pyType = (PyTypeObject*)malloc(sizeof(basePyType));
+    return (pyType);
+  }
 
   static FinalType& moduleInit()
   {
@@ -116,11 +121,16 @@ public:
      PythonObject  __base;
   };
 
-  EXPORT static PyTypeObject* pyType;
   EXPORT static DPyObject     pyObject;
- 
+
+  EXPORT static PyTypeObject*     pyType(void)
+  {
+    static PyTypeObject* pyType = (PyTypeObject*)malloc(sizeof(basePyType));
+    return (pyType);
+  }
   static int    _init(PyObject* self, PyObject* args, PyObject* kwds)
   {
+    PyTypeObject* pyType = PythonTypeModule<FinalType, PythonObject, __typeId>::pyType();
     if (pyType->tp_base->tp_init((PyObject *)self, args, kwds) < 0)
       return (-1);
     return (0);
@@ -134,6 +144,7 @@ public:
  
   PyObject* typeObject(void)
   {
+    PyTypeObject* pyType = PythonTypeModule<FinalType, PythonObject, __typeId>::pyType();
     if (pyType != NULL)
     {
       Py_INCREF((PyObject*)pyType);

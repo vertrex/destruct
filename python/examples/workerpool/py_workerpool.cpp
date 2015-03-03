@@ -58,7 +58,7 @@ PyTypeObject PythonBaseModule::basePyType =
 
 PyExamples::PyExamples()
 {
-  pyType = (PyTypeObject*)malloc(sizeof(basePyType));
+  PyTypeObject* pyType = PyExamplesT::pyType();
   memcpy(pyType , &basePyType , sizeof(basePyType));
 
   pyType->tp_name = "destruct.workerpool";

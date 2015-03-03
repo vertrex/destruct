@@ -5,12 +5,9 @@
 #include "dsimpleobject.hpp"
 #include "dattribute.hpp"
 
-template<>
-PyTypeObject* PyDAttributeT::pyType = NULL;
-
 PyDAttribute::PyDAttribute()
 {
-  pyType = (PyTypeObject*)malloc(sizeof(basePyType));
+  PyTypeObject* pyType = PyDAttributeT::pyType();
   memcpy(pyType , &basePyType , sizeof(basePyType));
 
   pyType->tp_name = "destruct.DAttribute";
@@ -37,7 +34,7 @@ PyObject* PyDAttribute::dtype(PyDAttribute::DPyObject* self, PyObject*args, PyOb
   Destruct::DType* dtype = new Destruct::DType(self->pimpl->type());
   CHECK_ALLOC(dtype) 
 
-  PyDType::DPyObject* dtypeObject = (PyDType::DPyObject*) _PyObject_New(PyDType::pyType);
+  PyDType::DPyObject* dtypeObject = (PyDType::DPyObject*) _PyObject_New(PyDTypeT::pyType());
   dtypeObject->pimpl = dtype;
 
   return (Py_BuildValue("O", dtypeObject));
