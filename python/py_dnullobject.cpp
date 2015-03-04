@@ -2,9 +2,15 @@
 
 #include "dexception.hpp"
 
+PyTypeObject*     PyDNullObject::pyType(void)
+{
+    static PyTypeObject* pyType = (PyTypeObject*)malloc(sizeof(basePyType));
+    return (pyType);
+}
+
 Destruct::DValue PyDNullObject::toDValue(PyObject* value)
 {
-  if (!value || (value == Py_None) || PyObject_TypeCheck(value, PyDNullObjectT::pyType()))
+  if (!value || (value == Py_None) || PyObject_TypeCheck(value, PyDNullObject::pyType()))
     return Destruct::RealValue<Destruct::DObject* >(Destruct::DNone); 
   throw Destruct::DException("Can't cast to DNone");
 }
@@ -21,9 +27,10 @@ PyObject*     PyDNullObject::asPyObject(PyObject* self, int32_t attributeIndex)
 
 PyDNullObject::PyDNullObject()
 {
-  PyTypeObject* pyType = PyDNullObjectT::pyType();
+  PyTypeObject* pyType = PyDNullObject::pyType();
   memcpy(pyType , &basePyType , sizeof(basePyType));
 
+  pyType->ob_type = &PyType_Type;
   pyType->tp_name = "destruct.DNone"; //XXX PYDNone ? en python singleton plutot que module/class -> directement acessible plus simple ? voir comment on fait je crois qu on la fait ailleurs pour destruct oue je c pu quoi !
   pyType->tp_basicsize = sizeof(DPyObject);
   pyType->tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE; //XXX SINGELTONE like Destruct() car DNone ? et pas DNullbojecT???

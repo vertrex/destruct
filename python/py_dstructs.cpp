@@ -3,11 +3,18 @@
 
 #include "dexception.hpp"
 
+PyTypeObject*     PyDStructs::pyType(void)
+{
+    static PyTypeObject* pyType = (PyTypeObject*)malloc(sizeof(basePyType));
+    return (pyType);
+}
+
 PyDStructs::PyDStructs()
 {
-  PyTypeObject* pyType = PyDStructsT::pyType(); 
+  PyTypeObject* pyType = PyDStructs::pyType(); 
   memcpy(pyType , &basePyType , sizeof(basePyType));
 
+  pyType->ob_type = &PyType_Type;
   pyType->tp_name = "destruct.DStructs";
   pyType->tp_basicsize = sizeof(DPyObject);
   pyType->tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE;
@@ -50,7 +57,7 @@ PyObject* PyDStructs::find(PyDStructs::DPyObject* self, const char* index)
   if (dstruct == NULL)
     Py_RETURN_NONE;
 
-  PyDStruct::DPyObject* dstructObject = (PyDStruct::DPyObject*) _PyObject_New(PyDStructT::pyType());
+  PyDStruct::DPyObject* dstructObject = (PyDStruct::DPyObject*) _PyObject_New(PyDStruct::pyType());
   dstructObject->pimpl = dstruct;
 
   return(Py_BuildValue("O", dstructObject)); 
@@ -62,7 +69,7 @@ PyObject* PyDStructs::find(PyDStructs::DPyObject* self, size_t index)
   if (dstruct == NULL)
     Py_RETURN_NONE;
 
-  PyDStruct::DPyObject* dstructObject = (PyDStruct::DPyObject*) _PyObject_New(PyDStructT::pyType());
+  PyDStruct::DPyObject* dstructObject = (PyDStruct::DPyObject*) _PyObject_New(PyDStruct::pyType());
   dstructObject->pimpl = dstruct;
 
   return(Py_BuildValue("O", dstructObject)); 
@@ -75,7 +82,7 @@ PyObject* PyDStructs::registerDStruct(PyDStructs::DPyObject* self, PyObject* arg
   if (!PyArg_ParseTuple(args, "O", &dstructObject))
     return (0);
 
-  if (!PyObject_TypeCheck(dstructObject, PyDStructT::pyType()))
+  if (!PyObject_TypeCheck(dstructObject, PyDStruct::pyType()))
   {
     PyErr_SetString(PyExc_TypeError, "must be a DStruct object");
     return (0);

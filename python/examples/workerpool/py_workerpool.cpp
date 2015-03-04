@@ -58,7 +58,7 @@ PyTypeObject PythonBaseModule::basePyType =
 
 PyExamples::PyExamples()
 {
-  PyTypeObject* pyType = PyExamplesT::pyType();
+  PyTypeObject* pyType = PyExamples::pyType();
   memcpy(pyType , &basePyType , sizeof(basePyType));
 
   pyType->tp_name = "destruct.workerpool";
@@ -73,6 +73,12 @@ PyExamples::PyExamples()
 
   if (PyType_Ready(pyType) < 0)
     throw std::string("PyType ready error");
+}
+
+PyTypeObject*     PyExamples::pyType(void)
+{
+    static PyTypeObject* pyType = (PyTypeObject*)malloc(sizeof(basePyType));
+    return (pyType);
 }
 
 PyMethodDef PyExamples::pyMethods[] = 

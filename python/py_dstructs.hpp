@@ -2,15 +2,18 @@
 #define _DESTRUCT_DESTRUCT_HPP_
 
 #include "py_module.hpp"
+
+#include "destruct.hpp"
 #include "dstructs.hpp"
 
 typedef PythonModule< class PyDStructs, Destruct::DStructs> PyDStructsT;
-class PyDStructs : public PyDStructsT
+class EXPORT PyDStructs : public PyDStructsT
 {
 public:
                       PyDStructs();
   static PyMethodDef  pyMethods[];
 
+  static PyTypeObject*  pyType(void);
   static int          _init(DPyObject* self, PyObject* args, PyObject* kwds);
   static void         _dealloc(DPyObject* self);
 

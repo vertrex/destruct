@@ -13,6 +13,7 @@ public:
                         PyDType();
   static PyMethodDef    pyMethods[];
 
+  static PyTypeObject*  pyType(void);
   static int            _init(DPyObject* self, PyObject* args, PyObject* kwds);
   static PyObject*      getType(DPyObject* self, PyObject* args, PyObject* kwds);
   static PyObject*      returnType(DPyObject* self, PyObject* args, PyObject* kwds);

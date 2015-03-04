@@ -12,6 +12,7 @@ public:
                      PyDSerialize();
   static PyMethodDef pyMethods[];
 
+  static PyTypeObject*  pyType(void);
   static int         _init(DPyObject* self, PyObject* args, PyObject* kwds);
   static PyObject*   serialize(DPyObject* self, PyObject* args, PyObject* kwds);
   static PyObject*   deserialize(DPyObject* self, PyObject* args, PyObject* kwds);

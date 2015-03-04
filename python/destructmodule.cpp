@@ -41,9 +41,9 @@ PyMODINIT_FUNC init_destruct(void)
   if ((module = Py_InitModule3("_destruct", destruct_methods, "The destruct library")) == NULL)
     return;    
 
-  DESTRUCT_ADD_MODULE(PyDStructsT::pyType(), "DStructs")
-  DESTRUCT_ADD_MODULE(PyDStructT::pyType(), "DStruct")
-  DESTRUCT_ADD_MODULE(PyDAttributeT::pyType(), "DAttribute")
+  DESTRUCT_ADD_MODULE(PyDStructs::pyType(), "DStructs")
+  DESTRUCT_ADD_MODULE(PyDStruct::pyType(), "DStruct")
+  DESTRUCT_ADD_MODULE(PyDAttribute::pyType(), "DAttribute")
 
 //type specialization
   DESTRUCT_ADD_MODULE(PyDInt8::pyType(), "DInt8")
@@ -57,9 +57,9 @@ PyMODINIT_FUNC init_destruct(void)
   DESTRUCT_ADD_MODULE(PyDUInt64::pyType(), "DUInt64")
   DESTRUCT_ADD_MODULE(PyDUnicodeString::pyType(), "DUnicodeString")
 
-  DESTRUCT_ADD_MODULE(PyDObjectT::pyType(), "DObject")
-  DESTRUCT_ADD_MODULE(PyDMethodObjectT::pyType(), "DMethod")
-  DESTRUCT_ADD_MODULE(PyDNullObjectT::pyType(), "DNone")
+  DESTRUCT_ADD_MODULE(PyDObject::pyType(), "DObject")
+  DESTRUCT_ADD_MODULE(PyDMethodObject::pyType(), "DMethod")
+  DESTRUCT_ADD_MODULE(PyDNullObject::pyType(), "DNone")
 //end type specialization 
 
   DESTRUCT_ADD_MODULE(PyDType::pyType(), "DType")
@@ -217,7 +217,7 @@ Destruct::DValue PythonBaseModule::pyObjectToDValue(PyObject* object)
   PyErr_Clear();
     //XXX a utiliser pour forcer le type int8, int16, ... car pas gerer la !      
 //table:yDObject::pyType pyoject->type ? dynamic 
-  if (PyObject_TypeCheck(object, PyDObjectT::pyType()))
+  if (PyObject_TypeCheck(object, PyDObject::pyType()))
     return Destruct::RealValue<Destruct::DObject* >(((PyDObject::DPyObject*)object)->pimpl);
   else if (PyLong_Check(object) || PyInt_Check(object))
   {
@@ -226,7 +226,7 @@ Destruct::DValue PythonBaseModule::pyObjectToDValue(PyObject* object)
   }
   else if (PyString_Check(object)) 
     return Destruct::RealValue<Destruct::DUnicodeString>(std::string(PyString_AsString(object)));
-  else if (PyObject_TypeCheck(object, PyDMethodObjectT::pyType()))
+  else if (PyObject_TypeCheck(object, PyDMethodObject::pyType()))
     return Destruct::RealValue<Destruct::DFunctionObject*>(((PyDMethodObject::DPyObject*)object)->pimpl);
   return (Destruct::RealValue<Destruct::DObject*>(Destruct::DNone));
 }

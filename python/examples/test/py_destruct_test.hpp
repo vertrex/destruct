@@ -17,6 +17,7 @@ class PyTest : public PyTestT
 {
 public:
                       PyTest();
+  static PyTypeObject*  pyType(void);
   static PyMethodDef  pyMethods[];
 
   static PyObject*    run(DPyObject* self, PyObject* args, PyObject *kwds);

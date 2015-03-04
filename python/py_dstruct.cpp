@@ -8,11 +8,18 @@
 #include "dobject.hpp"
 #include "dstructs.hpp"
 
+PyTypeObject*     PyDStruct::pyType(void)
+{
+    static PyTypeObject* pyType = (PyTypeObject*)malloc(sizeof(basePyType));
+    return (pyType);
+}
+
 PyDStruct::PyDStruct()
 {
-  PyTypeObject* pyType = PyDStructT::pyType();
+  PyTypeObject* pyType = PyDStruct::pyType();
   memcpy(pyType , &basePyType , sizeof(basePyType));
 
+  pyType->ob_type = &PyType_Type;
   pyType->tp_name = "destruct.DStruct";
   pyType->tp_basicsize = sizeof(PyDStruct::DPyObject);
   pyType->tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE;
@@ -73,7 +80,7 @@ PyObject* PyDStruct::attribute(PyDStruct::DPyObject* self, PyObject* args, PyObj
 
   Destruct::DAttribute* dattribute = new Destruct::DAttribute(self->pimpl->attribute(index));
   CHECK_ALLOC(dattribute)
-  PyDAttribute::DPyObject* dattributeObject = (PyDAttribute::DPyObject*) _PyObject_New(PyDAttributeT::pyType());
+  PyDAttribute::DPyObject* dattributeObject = (PyDAttribute::DPyObject*) _PyObject_New(PyDAttribute::pyType());
   dattributeObject->pimpl = dattribute;
 
   return(Py_BuildValue("O", dattributeObject));
@@ -88,7 +95,7 @@ PyObject* PyDStruct::addAttribute(PyDStruct::DPyObject* self, PyObject* args, Py
     return (0);
   }
 
-  if (!PyObject_TypeCheck(dattributeObject, PyDAttributeT::pyType()))
+  if (!PyObject_TypeCheck(dattributeObject, PyDAttribute::pyType()))
     return (0);
 
   //if FIX == 0?
@@ -114,7 +121,7 @@ PyObject* PyDStruct::newObject(PyDStruct::DPyObject* self, PyObject* args, PyObj
  
   CHECK_ALLOC(dobject)
 
-  PyDObject::DPyObject*   dobjectObject = (PyDObject::DPyObject*)_PyObject_New((PyTypeObject*)PyDObjectT::pyType());
+  PyDObject::DPyObject*   dobjectObject = (PyDObject::DPyObject*)_PyObject_New((PyTypeObject*)PyDObject::pyType());
   dobjectObject->pimpl = dobject;
 
   Py_INCREF(dobjectObject);
@@ -162,7 +169,7 @@ int PyDStruct::_init(PyDStructT::DPyObject* self, PyObject* args, PyObject* kwds
    else if (PyArg_ParseTuple(args, "Os", &baseObject, &name))
    {
      PyErr_Clear(); //First ParseTuple fail so set an error
-     if (baseObject && PyObject_TypeCheck(baseObject, PyDStructT::pyType()))
+     if (baseObject && PyObject_TypeCheck(baseObject, PyDStruct::pyType()))
      {
        Py_INCREF(baseObject);
        base = ((PyDStruct::DPyObject*)baseObject)->pimpl;

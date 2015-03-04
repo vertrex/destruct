@@ -12,9 +12,15 @@
 
 using Destruct::DUnicodeString;
 
+PyTypeObject*     PyDMethodObject::pyType(void)
+{
+    static PyTypeObject* pyType = (PyTypeObject*)malloc(sizeof(basePyType));
+    return (pyType);
+}
+
 Destruct::DValue PyDMethodObject::toDValue(PyObject* value) 
 {
-  if (PyObject_TypeCheck(value, PyDMethodObjectT::pyType()))
+  if (PyObject_TypeCheck(value, PyDMethodObject::pyType()))
   {
      return Destruct::RealValue<Destruct::DFunctionObject*>(((DPyObject*)value)->pimpl);
   }
@@ -39,7 +45,7 @@ PyObject*     PyDMethodObject::asPyObject(PyObject* _self, int32_t attributeInde
     Py_RETURN_NONE;
 // get ici type et sauvegarde le pointeur suffit au lieu de index + dobject (dobject qui est deja le this de l objet non ? en + ) 
 //mais le gain de temps est negligeable apparement !
-  PyDMethodObject::DPyObject* dmethodobject = (PyDMethodObject::DPyObject*)_PyObject_New(PyDMethodObjectT::pyType()); 
+  PyDMethodObject::DPyObject* dmethodobject = (PyDMethodObject::DPyObject*)_PyObject_New(PyDMethodObject::pyType()); 
   dmethodobject->pimpl = value;
   dmethodobject->index = attributeIndex;
   dmethodobject->dobject = self->pimpl;
@@ -51,9 +57,10 @@ PyObject*     PyDMethodObject::asPyObject(PyObject* _self, int32_t attributeInde
 
 PyDMethodObject::PyDMethodObject()
 {
-  PyTypeObject* pyType = PyDMethodObjectT::pyType();
+  PyTypeObject* pyType = PyDMethodObject::pyType();
   memcpy(pyType , &basePyType , sizeof(basePyType));
 
+  pyType->ob_type = &PyType_Type;
   pyType->tp_name = "destruct.DMethodObject";
   pyType->tp_basicsize = sizeof(PyDMethodObject::DPyObject);
   pyType->tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE;

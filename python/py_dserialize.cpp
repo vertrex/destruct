@@ -4,11 +4,18 @@
 
 #include "protocol/dstream.hpp"
 
+PyTypeObject*     PyDSerialize::pyType(void)
+{
+    static PyTypeObject* pyType = (PyTypeObject*)malloc(sizeof(basePyType));
+    return (pyType);
+}
+
 PyDSerialize::PyDSerialize() //DSerializers XXX rename PyDSerialize.serialize serialize.serialize ... 
 {
-  PyTypeObject* pyType = PyDSerializeT::pyType();
+  PyTypeObject* pyType = PyDSerialize::pyType();
   memcpy(pyType , &basePyType , sizeof(basePyType));
 
+  pyType->ob_type = &PyType_Type;
   pyType->tp_name = "destruct.DSerialize";
   pyType->tp_basicsize = sizeof(PyDSerialize::DPyObject);
   pyType->tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE;
@@ -38,9 +45,9 @@ PyObject* PyDSerialize::serialize(PyDSerialize::DPyObject* self, PyObject* args,
   bool result = false;
   Destruct::DStream*    dstream = (Destruct::DStream*)pyStream->pimpl; //force cast car serializer prend pas encore un dobject pour stream 
 
-  if (PyObject_TypeCheck(object, PyDStructT::pyType()))
+  if (PyObject_TypeCheck(object, PyDStruct::pyType()))
     result = self->pimpl->serialize(*dstream, *((PyDStruct::DPyObject*)object)->pimpl);
-  else if (PyObject_TypeCheck(object, PyDObjectT::pyType()))
+  else if (PyObject_TypeCheck(object, PyDObject::pyType()))
     result = self->pimpl->serialize(*dstream, ((PyDObject::DPyObject*)object)->pimpl);
 
   return (PyBool_FromLong(result));
@@ -69,14 +76,14 @@ PyObject* PyDSerialize::deserialize(PyDSerialize::DPyObject* self, PyObject* arg
       Py_RETURN_NONE;
     else
     {
-      PyDStruct::DPyObject* dstructObject = (PyDStruct::DPyObject*) _PyObject_New(PyDStructT::pyType());
+      PyDStruct::DPyObject* dstructObject = (PyDStruct::DPyObject*) _PyObject_New(PyDStruct::pyType());
       dstructObject->pimpl = dstruct;
 
       return ((PyObject*)dstructObject);
     }
   }
 
-  if (PyObject_TypeCheck(object, PyDObjectT::pyType()))
+  if (PyObject_TypeCheck(object, PyDObject::pyType()))
   {
     bool result = self->pimpl->deserialize(*(dstream), ((PyDObject::DPyObject*)object)->pimpl);
 

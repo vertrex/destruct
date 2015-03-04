@@ -50,7 +50,7 @@ EXPORT PyTypeObject PythonBaseModule::basePyType =
 
 PyTest::PyTest()
 {
-  PyTypeObject* pyType = PyTestT::pyType();
+  PyTypeObject* pyType = PyTest::pyType();
   memcpy(pyType , &basePyType , sizeof(basePyType));
 
   pyType->tp_name = "destruct.Test";
@@ -65,6 +65,12 @@ PyTest::PyTest()
 
   if (PyType_Ready(pyType) < 0)
     throw std::string("PyType ready error");
+}
+
+PyTypeObject*     PyTest::pyType(void)
+{
+  static PyTypeObject* pyType = (PyTypeObject*)malloc(sizeof(basePyType));
+  return (pyType);
 }
 
 PyObject*    PyTest::run(PyTest::DPyObject* self, PyObject* args, PyObject *kwds)
@@ -83,7 +89,7 @@ PyObject*   PyTest::showAttribute(PyTest::DPyObject* self, PyObject* args, PyObj
   if (!PyArg_ParseTuple(args, "O", &dstructObject))
     return (0);
 
-  if (!PyObject_TypeCheck(dstructObject, PyDStructT::pyType()))
+  if (!PyObject_TypeCheck(dstructObject, PyDStruct::pyType()))
     return (0);
 
   self->pimpl->showAttribute(dstructObject->pimpl);
@@ -97,7 +103,7 @@ PyObject*    PyTest::showObjectAttribute(PyTest::DPyObject* self, PyObject* args
   if (!PyArg_ParseTuple(args, "O", &dobjectObject))
     return (0);
 
-  if (!PyObject_TypeCheck(dobjectObject, PyDObjectT::pyType()))
+  if (!PyObject_TypeCheck(dobjectObject, PyDObject::pyType()))
     return (0);
 
   self->pimpl->showObjectAttribute(dobjectObject->pimpl);
@@ -112,7 +118,7 @@ PyObject*    PyTest::setObjectValue(PyTest::DPyObject* self, PyObject* args, PyO
   if (!PyArg_ParseTuple(args, "O", &dobjectObject))
     return (0);
 
-  if (!PyObject_TypeCheck(dobjectObject, PyDObjectT::pyType()))
+  if (!PyObject_TypeCheck(dobjectObject, PyDObject::pyType()))
     return (0);
 
 
@@ -125,7 +131,7 @@ PyObject*    PyTest::getObjectValue(PyTest::DPyObject* self, PyObject* args, PyO
 {
   Destruct::DObject* dobject = self->pimpl->getObjectValue();
 
-  PyDObject::DPyObject*  dobjectObject = (PyDObject::DPyObject*)_PyObject_New(PyDObjectT::pyType());
+  PyDObject::DPyObject*  dobjectObject = (PyDObject::DPyObject*)_PyObject_New(PyDObject::pyType());
   dobjectObject->pimpl = dobject;
 
   Py_INCREF(dobjectObject);
@@ -152,5 +158,5 @@ PyMODINIT_FUNC init_dtest(void)
   if ((module = Py_InitModule3("_dtest", destruct_methods, "Test library for destruct")) == NULL)
     return;    
 
-  DESTRUCT_ADD_MODULE(PyTestT::pyType(), "Test")
+  DESTRUCT_ADD_MODULE(PyTest::pyType(), "Test")
 }

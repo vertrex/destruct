@@ -4,13 +4,21 @@
 
 #include "dexception.hpp"
 
+PyTypeObject*     PyDType::pyType(void)
+{
+    static PyTypeObject* pyType = (PyTypeObject*)malloc(sizeof(basePyType));
+    return (pyType);
+}
+
+
 PyDType::PyDType()
 {
   Destruct::DType::init();//XXX should not be done here as it allocate object that are already allocated and clean is not called ! 
   //pyType = (PyTypeObject*)malloc(sizeof(basePyType));
-  PyTypeObject* pyType = PyDTypeT::pyType();
+  PyTypeObject* pyType = PyDType::pyType();
   memcpy(pyType , &basePyType , sizeof(basePyType));
-
+  
+  pyType->ob_type = &PyType_Type;
   pyType->tp_name = "destruct.DType";
   pyType->tp_basicsize = sizeof(PyDType::DPyObject);
   pyType->tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE;

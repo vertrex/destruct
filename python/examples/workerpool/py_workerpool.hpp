@@ -17,6 +17,7 @@ class PyExamples : public PyExamplesT
 {
 public:
                       PyExamples();
+  static PyTypeObject*  pyType(void);
   static PyMethodDef  pyMethods[];
 };
 

@@ -9,10 +9,12 @@
 #include "dexception.hpp"
 
 typedef PythonModule< class PyDObject, Destruct::DObject > PyDObjectT;
-class PyDObject : public PyDObjectT, public PythonTypeBaseModule
+class EXPORT PyDObject : public PyDObjectT, public PythonTypeBaseModule
 {
 public:
-  EXPORT              PyDObject();
+	                  PyDObject();
+  static PyTypeObject*  pyType(void);
+
   static PyMethodDef  pyMethods[];
  
   static int          _init(DPyObject* self, PyObject* args, PyObject* kwds);

@@ -10,7 +10,7 @@ PyDInt8::PyDInt8()
   PyMethodDef* pyMethods = (PyMethodDef*)malloc(sizeof(baseTypePyMethods));
   memcpy(pyMethods , &baseTypePyMethods , sizeof(baseTypePyMethods));
   pyMethods[0].ml_meth = (PyCFunction)this->getType;
-
+  
   pyType->tp_base = &PyInt_Type;
   pyType->tp_name = "destruct.DInt8";
   pyType->tp_basicsize = sizeof(DPyObject);

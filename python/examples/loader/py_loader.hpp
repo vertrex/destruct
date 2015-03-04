@@ -42,6 +42,7 @@ class PyLoader : public PyLoaderT
 public:
                       PyLoader();
   static PyMethodDef  pyMethods[];
+  static PyTypeObject*     pyType(void);
 
   static PyObject* loadFile(DPyObject* self, PyObject* args, PyObject *kwds);
 };

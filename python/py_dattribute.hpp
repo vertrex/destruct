@@ -11,6 +11,7 @@ public:
                       PyDAttribute();
   static PyMethodDef  pyMethods[];
 
+  static PyTypeObject*  pyType(void);
   static int          _init(DPyObject* self, PyObject* args, PyObject* kwds);
   static PyObject*    name(DPyObject* self, PyObject* args, PyObject* kwds);
   static PyObject*    dtype(DPyObject* self, PyObject* args, PyObject* kwds);

@@ -23,17 +23,17 @@
     return (-1);\
   }
 
-class PythonBaseModule
+class EXPORT PythonBaseModule
 {
 public:
-  EXPORT static PyTypeObject        basePyType; 
+  static PyTypeObject        basePyType; 
 
   static PySequenceMethods   baseSequenceMethods;
   static PyMappingMethods    baseMappingMethods;
   static const std::string   pyErrorAsString(void);
 
-  EXPORT static Destruct::DValue    pyObjectToDValue(PyObject* object);
-  EXPORT static PyObject*           dvalueAsPyObject(Destruct::DValue const& value);
+  static Destruct::DValue    pyObjectToDValue(PyObject* object);
+  static PyObject*           dvalueAsPyObject(Destruct::DValue const& value);
   //static const std::string   pyErrorAsString(void);
 
   static int pyTracebackInternalAsString(PyTracebackObject* tb, std::string& errorMessage, long limit);
@@ -44,24 +44,18 @@ public:
 };
 
 template < typename FinalType, typename PlainType >
-class PythonModule : public PythonBaseModule
+class EXPORT PythonModule : public PythonBaseModule
 {
 public: 
-  EXPORT struct DPyObject 
+  struct DPyObject 
   {
      PyObject_HEAD;
      PlainType*    pimpl;
   };
  
-  EXPORT static DPyObject          pyObject;
+  static DPyObject          pyObject;
   static PySequenceMethods* pySequenceMethods;
   static PyMappingMethods* pyMappingMethods;
-
-  EXPORT static PyTypeObject*     pyType(void)
-  {
-    static PyTypeObject* pyType = (PyTypeObject*)malloc(sizeof(basePyType));
-    return (pyType);
-  }
 
   static FinalType& moduleInit()
   {
@@ -100,7 +94,7 @@ public:
   };
 };
 
-class PythonTypeBaseModule : public PythonBaseModule
+class EXPORT PythonTypeBaseModule : public PythonBaseModule
 {
 public:
   static PyMethodDef         baseTypePyMethods[2];
@@ -112,7 +106,7 @@ public:
 };
 
 template < typename FinalType, typename PythonObject , int __typeId>
-class PythonTypeModule : public PythonTypeBaseModule
+class EXPORT PythonTypeModule : public PythonTypeBaseModule
 {
 public:
   struct DPyObject 
@@ -120,9 +114,9 @@ public:
      PythonObject  __base;
   };
 
-  EXPORT static DPyObject     pyObject;
+  static DPyObject     pyObject;
 
-  EXPORT static PyTypeObject*     pyType(void)
+  static PyTypeObject*     pyType(void)
   {
     static PyTypeObject* pyType = (PyTypeObject*)malloc(sizeof(basePyType));
     return (pyType);
