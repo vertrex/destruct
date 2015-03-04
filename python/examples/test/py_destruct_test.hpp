@@ -4,7 +4,7 @@
 #include <Python.h>
 #include <frameobject.h>
 
-#include "destructmodule.hpp"
+#include "py_module.hpp"
 #include "destruct_test.hpp"
 
 #define DESTRUCT_ADD_MODULE(moduleType, moduleName)\

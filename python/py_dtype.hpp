@@ -1,7 +1,7 @@
 #ifndef _DESTRUCT_MODULE_DTYPE_HPP_
 #define _DESTRUCT_MODULE_DTYPE_HPP_
 
-#include "destructmodule.hpp"
+#include "py_module.hpp"
 #include "py_dvalue.hpp"
 
 #include "dtype.hpp"

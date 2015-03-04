@@ -1,9 +1,10 @@
 #ifndef __PYDESTRUCT_DVALUE_HPP__ 
 #define __PYDESTRUCT_DVALUE_HPP__
 
-#include "destructmodule.hpp"
+#include "py_module.hpp"
 #include "dvalue.hpp"
 #include "drealvalue.hpp"
+
 #include "py_dobject.hpp"
 #include "py_dmethodobject.hpp"
 #include "py_dnullobject.hpp"

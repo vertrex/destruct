@@ -1,7 +1,7 @@
 #ifndef _DESTRUCT_MODULE_DNULLOBJECT_HPP_
 #define _DESTRUCT_MODULE_DNULLOBJECT_HPP_
 
-#include "destructmodule.hpp"
+#include "py_module.hpp"
 
 #include "dnullobject.hpp"
 #include "drealvalue.hpp"

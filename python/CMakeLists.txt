@@ -13,6 +13,7 @@
 #  Solal Jacob <sja@digital-forensic.org>
 
 set (pydestruct_files
+py_module.cpp
 py_dstructs.cpp
 py_dstruct.cpp
 py_dattribute.cpp
