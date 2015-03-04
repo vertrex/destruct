@@ -2,9 +2,15 @@
 #include "py_dobject.hpp"
 #include "py_registryrpc.hpp"
 
+PyTypeObject*     PyDObject::pyType(void)
+{
+    static PyTypeObject* pyType = (PyTypeObject*)malloc(sizeof(basePyType));
+    return (pyType);
+}
+
 PyRegistryRPC::PyRegistryRPC()
 {
-  PyTypeObject* pyType = PyRegistryRPCT::pyType();
+  PyTypeObject* pyType = PyRegistryRPC::pyType();
   memcpy(pyType , &basePyType , sizeof(basePyType));
 
   pyType->tp_name = "destruct.RegistryRPC";
@@ -34,7 +40,7 @@ PyObject*    PyRegistryRPC::connect(PyRegistryRPC::DPyObject* self, PyObject* ar
   const char* address = PyString_AsString(addressObject);
   std::cout << "connection on " << std::string(address) << "  " << port << std::endl;
   Destruct::DObject* dobject = self->pimpl->connect(address, port);
-  PyDObject::DPyObject*  dobjectObject = (PyDObject::DPyObject*)_PyObject_New(PyDObjectT::pyType());
+  PyDObject::DPyObject*  dobjectObject = (PyDObject::DPyObject*)_PyObject_New(PyDObject::pyType());
   dobjectObject->pimpl = dobject;
   Py_INCREF(dobjectObject);
 
@@ -56,5 +62,5 @@ PyMODINIT_FUNC init_registryrpc(void)
   if ((module = Py_InitModule3("_registryrpc", destruct_methods, "Registry RPC client")) == NULL)
     return;    
 
-  DESTRUCT_ADD_MODULE(PyRegistryRPCT::pyType(), "RegistryRPC")
+  DESTRUCT_ADD_MODULE(PyRegistryRPC::pyType(), "RegistryRPC")
 }

@@ -41,6 +41,7 @@ class PyRegistryRPC : public PyRegistryRPCT
 public:
                       PyRegistryRPC();
   static PyMethodDef  pyMethods[];
+  static PyTypeObject*  pyType(void);
 
   static PyObject*    connect(DPyObject* self, PyObject* args, PyObject *kwds);
 };
