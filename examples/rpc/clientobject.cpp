@@ -16,12 +16,12 @@ ClientObject::ClientObject(NetworkStream& stream, DSerialize* serializer, uint64
   //this->init(this);
 }
 
-ClientObject::ClientObject(DStruct* dstruct, DValue const& args) : DObject(dstruct, args), __networkStream(*(new NetworkStream(NULL, RealValue<DInt32>(0))))
+ClientObject::ClientObject(DStruct* dstruct, DValue const& args) : DObject(dstruct, args), __id(-1), __networkStream(*(new NetworkStream(NULL, RealValue<DInt32>(0)))), __serializer(NULL)
 {
   //this->init(this);
 }
 
-ClientObject::ClientObject(ClientObject const & rhs) : DObject(rhs), __networkStream(rhs.__networkStream)
+ClientObject::ClientObject(ClientObject const & rhs) : DObject(rhs), __id(rhs.__id),  __networkStream(rhs.__networkStream), __serializer(rhs.__serializer)
 {
   //this->copy(this, rhs);
 }

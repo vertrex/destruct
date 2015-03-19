@@ -1,4 +1,5 @@
 #include "dtype.hpp"
+#include "dexception.hpp"
 
 #include "load.hpp"
 
@@ -10,6 +11,8 @@ int main(int argc, char **argv)
   Destruct::DType::init();
   Loader loader = Loader();
 
+  try
+  {
 #ifndef WIN32
   std::string filePath = "/home/vertrex/destruct/examples/dtest/libdestruct_test.so";
   loader.loadFile(filePath);
@@ -25,4 +28,9 @@ int main(int argc, char **argv)
   //filePath = "/home/vertrex/destruct/examples/registry/libregistry.so";
   //loader.loadFile(filePath);
 #endif
+  }
+  catch (Destruct::DException const& exception)
+  {
+    std::cout << exception.error() << std::endl;
+  }
 }

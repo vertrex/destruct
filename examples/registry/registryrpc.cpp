@@ -57,7 +57,7 @@ void RegistryRPC::connect(std::string const& filePath, std::string const& addr, 
 
   client.printKey(rootKey);
   return ;
-
+/*
   DObject* subKeys = rootKey->getValue("subkeys").get<DObject*>();
   DObject* subKeysList = subKeys->getValue("list").get<DObject*>();
 
@@ -68,6 +68,7 @@ void RegistryRPC::connect(std::string const& filePath, std::string const& addr, 
     DObject* subKey = iterator->call("currentItem").get<DObject*>();
     std::cout << "subKey " << subKey->instanceOf()->name() << std::endl;
   }
+*/
 }
 
 const std::string RegistryRPC::usage(void)

@@ -21,7 +21,7 @@ template <typename PlainType>
 class RealValue : public TypedValue<PlainType>
 {
 public:
-  RealValue()
+  RealValue() : __val()
   {
   }
 

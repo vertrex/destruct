@@ -61,14 +61,14 @@ int32_t NetworkStream::read(DUnicodeString& readValue)
   this->__recv(value, size); //test return value
   value[size] = 0;
   readValue = DUnicodeString(std::string((char*)value, size));
-  delete value;
+  delete[] value;
 
   return (readValue.size());
 }
 
 int32_t NetworkStream::read(uint64_t* id)
 {
-  return (this->__recv((void*)id, sizeof(id)));
+  return (this->__recv((void*)id, sizeof(*id)));
 }
 
 int32_t NetworkStream::read(void* buff, int32_t size)
@@ -116,7 +116,7 @@ int32_t NetworkStream::flush(void)// const
   }
   this->__writeStream.seekp(0);
   this->__writeStream.seekg(0);
-  delete buff;
+  delete[] buff;
 
   return (size);
 }

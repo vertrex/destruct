@@ -156,7 +156,11 @@ PyObject* PyDObject::getValue(PyDObject::DPyObject* self, PyObject* attributeObj
 
   if (attributeIndex == -1 || attributeIndex >= (int32_t)self->pimpl->instanceOf()->attributeCount())
   {
-    DUnicodeString errorString = "destruct.DObject." + self->pimpl->instanceOf()->name() +  " instance has no attribute '" + attributeName + "'";
+    DUnicodeString errorString = "destruct.DObject." + self->pimpl->instanceOf()->name();
+    if (attributeName)
+      errorString += std::string(" instance has no attribute '") + attributeName + "'";
+    else
+      errorString += " instance has no attribute at this index '";
     PyErr_SetString(PyExc_AttributeError, errorString.c_str()); 
     return (0);
   }

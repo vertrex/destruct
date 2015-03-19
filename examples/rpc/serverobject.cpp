@@ -6,7 +6,7 @@ using namespace Destruct;
 /* 
  *  ServerObject
  */
-ServerObject::ServerObject(NetworkStream& networkStream, DSerialize* serializer, ObjectManager<DObject*>& objectManager, ObjectManager<ServerFunctionObject*>& functionObjectManager) : __networkStream(networkStream), __serializer(serializer),__objectManager(objectManager), __functionObjectManager(functionObjectManager)
+ServerObject::ServerObject(NetworkStream& networkStream, DSerialize* serializer, ObjectManager<DObject*>& objectManager, ObjectManager<ServerFunctionObject*>& functionObjectManager) : __networkStream(networkStream), __serializer(serializer),__objectManager(objectManager), __functionObjectManager(functionObjectManager), __object(NULL), __id(-1)
 {
 }
 

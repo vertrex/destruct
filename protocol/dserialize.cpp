@@ -67,7 +67,7 @@ bool DSerializeBinary::serialize(DStream& output, DFunctionObject* value, DType:
 bool DSerializeBinary::serialize(DStream& output, DValue value, DType::Type_t type) //XXX type is not needed here 
 {
   throw std::string("UNUSED UNUSED UNUSED UNUSED Serialize(output, value, type)");
-  if (type == DType::DObjectType)
+  /*if (type == DType::DObjectType)
   {
     DObject* object = value.get<DObject*>();
     this->serialize(output, object);
@@ -83,7 +83,7 @@ bool DSerializeBinary::serialize(DStream& output, DValue value, DType::Type_t ty
   else
     output << value; 
 
-  return (true);
+  return (true);*/
 }
                                                 //const ref or pointer and const func ? 
 bool DSerializeBinary::serialize(DStream& output, DObject*  dobject)
@@ -196,17 +196,29 @@ DStruct* DSerializeBinary::deserialize(DStream& input)
      DUnicodeString name;
 
      if (this->deserialize(input, name) == false)
+     {
+       delete dstruct;
        return (NULL);
+     }
      if (input.read((char*)&type, sizeof(type)).fail())
+     {
+       delete dstruct;
        return (NULL); //strange error checking !
+     }
      if (type == DType::DMethodType)
      {
        DType::Type_t argumentType;
        DType::Type_t returnType;
        if (input.read((char*)&argumentType, sizeof(type)).fail())
+       {
+         delete dstruct;
          return (NULL); //s
+       }
        if (input.read((char*)&returnType, sizeof(type)).fail())
+       {
+         delete dstruct;
          return (NULL); //s
+       }
        dstruct->addAttribute(DAttribute(returnType, name, argumentType, type));
      }
      else

@@ -27,7 +27,7 @@ using namespace Destruct;
 /**
  * RegistryValues
  */
-RegistryValues::RegistryValues(DStruct* dstruct, DValue const& args) : DCppObject<RegistryValues>(dstruct, args)
+RegistryValues::RegistryValues(DStruct* dstruct, DValue const& args) : DCppObject<RegistryValues>(dstruct, args), __size(0)
 {
   this->init();
   this->parent = args.get<DObject* >();
@@ -80,7 +80,7 @@ DValue    RegistryValues::deserializeRaw(DValue const& arg)
 /**
  * RegistryValues
  */
-RegistryValue::RegistryValue(DStruct* dstruct, DValue const& args) : DCppObject<RegistryValue>(dstruct, args)
+RegistryValue::RegistryValue(DStruct* dstruct, DValue const& args) : DCppObject<RegistryValue>(dstruct, args), __size(0)
 {
   this->init();
   this->name = new NameLength(Destruct::DStructs::instance().find("NameLength"), RealValue<DObject*>(this));

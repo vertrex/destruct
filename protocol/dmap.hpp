@@ -15,12 +15,12 @@ class DMap : public DContainer, public DCppObject<DMap<KeyType, KeyTypeId, Value
   typedef DMap<KeyType, KeyTypeId, ValueType, ValueTypeId> DMapType;
 public:
 
-  DMap(DStruct* dstruct, DValue const& args) : DCppObject<DMap<KeyType, KeyTypeId, ValueType, ValueTypeId> >(dstruct, args)
+  DMap(DStruct* dstruct, DValue const& args) : DCppObject<DMap<KeyType, KeyTypeId, ValueType, ValueTypeId> >(dstruct, args), __itemStruct(NULL)
   {
     this->init();
   };
 
-  DMap(const DMapType& copy) : DCppObject<DMap<KeyType, KeyTypeId, ValueType, ValueTypeId> >(copy),  __map(copy.__map) 
+  DMap(const DMapType& copy) : DCppObject<DMap<KeyType, KeyTypeId, ValueType, ValueTypeId> >(copy),  __map(copy.__map), __itemStruct(NULL)
   {
     this->init();
   }
@@ -124,9 +124,9 @@ public:
     return (memberBegin() + ownAttributeCount());
   } 
 private:
-  DStruct*                       __itemStruct;
   RealValue<DFunctionObject*>    __newItem;
   std::map<KeyType, ValueType>   __map;
+  DStruct*                       __itemStruct;
 };
 
 }

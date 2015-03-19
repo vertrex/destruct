@@ -37,6 +37,7 @@ bool    Loader::loadFile(const std::string& filePath)
   if (!declare)
   {
     std::cout << "No method declare found in " << filePath << std::endl;
+    dlclose(library);
     return (false);
   }
 #else

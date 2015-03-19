@@ -8,12 +8,12 @@
 namespace Destruct
 {
 
-DDynamicObject::DDynamicObject(DStruct * dstruct, DValue const& args) : DObject(dstruct, args), __values(dstruct->attributeCount(), 0), __object(0)
+DDynamicObject::DDynamicObject(DStruct * dstruct, DValue const& args) : DObject(dstruct, args), __values(dstruct->attributeCount(), 0), __object(NULL)
 {
   // we can't initialize 'values' here, as 'this' is not a valid pointer
 }
 
-DDynamicObject::DDynamicObject(DDynamicObject const & rhs) : DObject(rhs), __values(rhs.instanceOf()->attributeCount(), 0)
+DDynamicObject::DDynamicObject(DDynamicObject const & rhs) : DObject(rhs), __values(rhs.instanceOf()->attributeCount(), 0), __object(NULL)
 {
   // we can't initialize 'values' here, as 'this' is not a valid pointer
 }

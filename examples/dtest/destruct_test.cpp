@@ -238,6 +238,8 @@ void DestructTest::setObjectValue(DObject* object)
 //DValue r = object->call("get", RealValue<DInt32>(0));
   //
   return;
+
+/*
   object->setValue("num", RealValue<DInt64>(424242));
   object->setValue("text", RealValue<DUnicodeString>("My text."));
 
@@ -247,6 +249,7 @@ void DestructTest::setObjectValue(DObject* object)
   parentObject->setValue("num", RealValue<DInt64>(414141));
   parentObject->setValue("text", RealValue<DUnicodeString>("My parent object"));
   object->setValue("parent", RealValue<DObject*>(parentObject));
+*/
 }
 
 std::string   member(DObject* self)

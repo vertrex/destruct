@@ -1,7 +1,7 @@
 #include "registryclient.hpp"
 #include "clientobject.hpp"
 
-RegistryClient::RegistryClient(std::string const& addr, uint32_t port) : Client(addr, port)
+RegistryClient::RegistryClient(std::string const& addr, uint32_t port) : Client(addr, port), __networkStream(NULL)
 {
 
 }

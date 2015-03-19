@@ -54,6 +54,8 @@ Client::Client(DStruct* dstruct, DValue const& value) : DCppObject<Client>(dstru
 
 Client::~Client()
 {
+  delete this->__networkStream;
+  delete this->__serializeRPC;
   this->__close();
 }
 
@@ -100,7 +102,7 @@ DValue     Client::findObject(void) //getRoot
 Destruct::DStruct* Client::remoteFind(const DUnicodeString name)
 {
   //std::cout << "Client::_remoteFind(stream, " << name << ")" << std::endl;
-  this->__networkStream->write("findDStruct" );
+  this->__networkStream->write(DUnicodeString("findDStruct"));
   this->__networkStream->write(name);
   this->__networkStream->flush();
 

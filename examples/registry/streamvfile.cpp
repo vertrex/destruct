@@ -6,7 +6,7 @@
 
 using namespace Destruct;
 
-StreamFile::StreamFile(DStruct* dstruct, DValue const& args): DStream(dstruct)
+StreamFile::StreamFile(DStruct* dstruct, DValue const& args): DStream(dstruct), __fd(-1)
 {
   this->init();
   DUnicodeString filePath = args.get<DUnicodeString>();

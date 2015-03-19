@@ -47,7 +47,7 @@ DValue DMutableObject::getValue(size_t idx) const
   return (this->__values[idx]->getFinal());
 
   //XXX values must be set to 0 by default 
-  return Destruct::RealValue<Destruct::DObject*>(Destruct::DNone);
+  //return Destruct::RealValue<Destruct::DObject*>(Destruct::DNone);
 }
 
 void DMutableObject::setValue(size_t idx, DValue const & v)

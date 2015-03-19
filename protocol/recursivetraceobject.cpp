@@ -82,7 +82,7 @@ DValue    RecursiveTraceObject::call(DUnicodeString const& name)
 /**
  *  RecursiveTraceFunctionObject
  */
-RecursiveTraceFunctionObject::RecursiveTraceFunctionObject(DFunctionObject* functionObject) : TraceFunctionObject(functionObject)
+RecursiveTraceFunctionObject::RecursiveTraceFunctionObject(DFunctionObject* functionObject) : TraceFunctionObject(functionObject), __functionObject(NULL)
 {
 }
 

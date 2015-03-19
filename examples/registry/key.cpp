@@ -78,7 +78,7 @@ DValue    NameLength::deserializeRaw(DValue const& arg)
 /**
  * Subkeys
  */
-Subkeys::Subkeys(DStruct* dstruct, DValue const& args) : DCppObject<Subkeys>(dstruct, args)
+Subkeys::Subkeys(DStruct* dstruct, DValue const& args) : DCppObject<Subkeys>(dstruct, args), __size(0)
 {
   this->init();
   this->parent = args.get<DObject* >();

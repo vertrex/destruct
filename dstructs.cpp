@@ -16,6 +16,7 @@ DStructs::DStructs() : __nameSpace(new NameSpace(""))
 
 DStructs::~DStructs()
 {
+  delete this->__nameSpace;
 //XXX FIX BECAUSE SOME struct are registred twice 
 //std::vector<DStruct* >::const_iterator dstruct = this->__structures.begin();
  //for (; dstruct != this->__structures.end(); ++dstruct)
@@ -103,7 +104,7 @@ NameSpace::NameSpace(DUnicodeString const& name) : __name(name)
 
 NameSpace::~NameSpace(void)
 {
-  std::cout << DUnicodeString("Unloading NameSpace ") << this->__name << std::endl;
+  //std::cout << DUnicodeString("Unloading NameSpace ") << this->__name << std::endl;
 }
 
 const DUnicodeString NameSpace::name(void) const
