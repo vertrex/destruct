@@ -1,8 +1,10 @@
 
 #ifndef WIN32
-#include<sys/socket.h>
-#include<arpa/inet.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <unistd.h>
 #endif
+
 
 #include "dstructs.hpp"
 
@@ -70,14 +72,15 @@ void    Client::__connect(DUnicodeString const& addr, uint32_t port)
   server.sin_addr.s_addr = inet_addr(addr.c_str());
   server.sin_family = AF_INET;
   server.sin_port = htons(port);
- 
+  memset(&server.sin_zero, 0, sizeof(server.sin_zero));
+
   if (connect(this->__connectionSocket, (sockaddr *)&server , sizeof(server)) < 0)
     throw DException("Client::__connect connect failed. Error");
 }
 
 void    Client::__close(void)
 {
-  //close(this->__connectionSocket);
+  close(this->__connectionSocket);
 }
 
 DObject*                Client::start(void)

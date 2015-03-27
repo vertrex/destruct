@@ -49,7 +49,7 @@ RegistryKey::~RegistryKey(void)
 /**
  * NameLength 
  */
-NameLength::NameLength(DStruct* dstruct, DValue const& args) : DCppObject<NameLength>(dstruct, args)
+NameLength::NameLength(DStruct* dstruct, DValue const& args) : DCppObject<NameLength>(dstruct, args), __size(0)
 {
   this->init();
   this->parent = args.get<DObject* >();
@@ -134,8 +134,12 @@ DValue    Subkeys::deserializeRaw(DValue const& arg)
     }
 
   }
-  else 
+  else
+  {
+     std::ios::fmtflags flags(std::cout.flags()); 
      std::cout << "Key bad signature" << std::hex << signature << std::endl;
+     std::cout.flags(flags);
+  }
 
   stream->destroy();
   delete serializer;

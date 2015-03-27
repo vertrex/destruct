@@ -17,13 +17,14 @@
 
 using namespace Destruct;
 
-Server::Server(uint32_t port) : DCppObject<Server>(NULL, RealValue<DUInt32>(port)), __networkStream(NULL), __serializer(NULL)
+Server::Server(uint32_t port) : DCppObject<Server>(NULL, RealValue<DUInt32>(port)), __connectionSocket(), __networkStream(NULL), __serializer(NULL)
 {
   this->__bind(port);
 }
 
 Server::~Server()
 {
+  close(this->__connectionSocket);
   delete this->__networkStream;
   delete this->__serializer;
 }
@@ -77,8 +78,12 @@ void			Server::__bind(int32_t port)
 void            Server::__bind(int32_t port)
 {
   this->__listenSocket = socket(AF_INET , SOCK_STREAM, 0);
+  if (this->__listenSocket == -1)
+    throw DException("Sever::__bind Can't create socket. ");
+
   int on = 1;
-  setsockopt(this->__listenSocket, SOL_SOCKET, SO_REUSEADDR, (const char *)&on, sizeof(on));
+  if (setsockopt(this->__listenSocket, SOL_SOCKET, SO_REUSEADDR, (const char *)&on, sizeof(on)) == -1)
+    throw DException("Server::__bind Can't set socket options");
   if (this->__listenSocket == -1)
     throw DException("Server::__bind Could not create socket");
      
@@ -86,6 +91,8 @@ void            Server::__bind(int32_t port)
   server.sin_family = AF_INET;
   server.sin_addr.s_addr = INADDR_ANY;
   server.sin_port = htons(port);
+  memset(&server.sin_zero, 0, sizeof(server.sin_zero));
+
   if(bind(this->__listenSocket,(sockaddr *)&server , sizeof(server)) < 0)
     throw DException("Server::__bind bind failed. Error");
 }
