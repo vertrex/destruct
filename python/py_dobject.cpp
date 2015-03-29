@@ -91,6 +91,15 @@ PyDObject::PyDObject()
   pyType->tp_iter = (getiterfunc)PyDObject::_iter;
   pyType->tp_iternext = (iternextfunc)PyDObject::_iternext;
 
+
+  /**
+   *  This cause a real problem when doing if toto.a: print 'exists'
+   *  it will be  return False because object.c PyObject_IsTrue will first 
+   *  get result of the tp_as_mapping_length that will return 0 before
+   *  testing other possiblities ! 
+   *  sequence and method must not be mapped if it doesn't exist in the object
+   *  we rather should use __map__ __seq__ dynamically
+   */
   pySequenceMethods = (PySequenceMethods*)malloc(sizeof(baseSequenceMethods));
   memcpy(pySequenceMethods, &baseSequenceMethods, sizeof(baseSequenceMethods)); //is empty can bzero
   pyType->tp_as_sequence = pySequenceMethods; //XXX
@@ -424,7 +433,11 @@ PyObject* PyDObject::_repr(PyDObject::DPyObject* self)
 /* This only make sense when pointer is equal */
 int PyDObject::_compare(PyDObject::DPyObject* self, PyDObject::DPyObject* other)
 {
-  return ((int)(self->pimpl - other->pimpl));
+  if ((self->pimpl - other->pimpl) == 0)
+    return (0);
+  if ((self->pimpl - other->pimpl) > 0)
+    return (1);
+  return (-1);
 }
 
 static int

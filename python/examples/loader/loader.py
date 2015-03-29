@@ -83,7 +83,6 @@ def connect():
 
 if __name__ == "__main__":
   loader = Loader()
-  
   if os.name == 'nt': 
     baseDir = os.path.expanduser("~") + "/destruct-build/examples/" 
   else:
@@ -104,4 +103,18 @@ if __name__ == "__main__":
     else:
       absolute = baseDir + path + "/lib" + name + ".so"
     loader.loadFile(absolute)
- 
+
+sa = DStructs().find("SimpleA").newObject() 
+print dir(sa)
+print sa.object1
+if sa.object1:
+  print 'sa.object1 exists'
+else:
+  print 'sa.object1 is none'
+
+sa.object1 = DStructs().find("DVectorString").newObject()
+print sa.object1
+if sa.object1:
+  print 'sa.object1 exists'
+else:
+  print 'sa.object1 is none'

@@ -66,6 +66,7 @@ WorkerPool::~WorkerPool()
   {
     destroyThread(this->__threads[i]);
   }
+  delete this->__threads;
 }
 
 DValue WorkerPool::join(void)

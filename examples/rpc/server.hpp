@@ -19,7 +19,7 @@ class Server : public DCppObject<Server>
 public:
   EXPORT Server(uint32_t port);
 
-  EXPORT Server(DStruct* dstruct, DValue const& args) : DCppObject<Server>(dstruct, args)
+  EXPORT Server(DStruct* dstruct, DValue const& args) : DCppObject<Server>(dstruct, args), __connectionSocket(), __networkStream(NULL), __serializer(NULL) 
   {
     this->init();
     this->__bind(args.get<DUInt32>());
@@ -94,14 +94,14 @@ private:
   void                                  showRoot(void);
 
 #ifdef WIN32
-  SOCKET								__listenSocket;
-  SOCKET								__connectionSocket;
+  SOCKET			        __listenSocket;
+  SOCKET			        __connectionSocket;
 #else
   int                                   __listenSocket;
   int32_t                               __connectionSocket;
 #endif
-  EXPORT void                                  __bind(int32_t port);
-  EXPORT void                                  __listen(void);
+  EXPORT void                           __bind(int32_t port);
+  EXPORT void                           __listen(void);
   NetworkStream*                        __networkStream;
   DSerialize*                           __serializer;
   ObjectManager<Destruct::DObject*>     __objectManager;
