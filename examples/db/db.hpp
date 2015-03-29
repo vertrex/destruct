@@ -8,6 +8,7 @@
 #include "dunicodestring.hpp"
 #include "session.hpp"
 
+using namespace Destruct;
 
 class DB
 {
@@ -15,12 +16,12 @@ public:
                         DB();
                         ~DB();
   void                  declare(void);
-  Destruct::DObject*    populateSession(void);
-  void                  show(Destruct::DObject* dobject) const; 
-  void                  load(Destruct::DValue const& filePath);
+  DObject*    populateSession(void);
+  void                  show(DObject* dobject) const; 
+  void                  load(DValue const& filePath);
   Session*              session(void);
 private:
-  Destruct::DStructs&   __destruct;
+  DStructs&   __destruct;
   Session*              __session;
 };
 

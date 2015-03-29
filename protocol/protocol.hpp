@@ -19,6 +19,7 @@
 #define DUInt64T  DUInt64,  DType::DUInt64Type
 #define DObjectT  DObject*, DType::DObjectType
 #define DUnicodeStringT DUnicodeString, DType::DUnicodeStringType
+#define DStructT  DStruct*, DType::DStructType
 
 namespace Destruct
 {

@@ -4,7 +4,7 @@
 #include "protocol/dserialize.hpp"
 #include "protocol/dmutableobject.hpp"
 
-Session::Session(DStruct* dstruct, Destruct::DValue const& args) : DCppObject<Session>(dstruct, args), __destruct(Destruct::DStructs::instance())
+Session::Session(DStruct* dstruct, DValue const& args) : DCppObject<Session>(dstruct, args), __destruct(DStructs::instance())
 {
   this->init();
 }
@@ -14,15 +14,43 @@ Session::~Session()
   std::cout << "~Session" << std::endl;
 }
 
-void    Session::save(Destruct::DValue const& filePath)
+void    Session::save(DValue const& filePath)
 {
   std::cout << "Session::SAVE" << std::endl;
-  Destruct::DMutableObject* arg = static_cast<Destruct::DMutableObject*>(this->__destruct.generate("DMutable"));
-  arg->setValueAttribute(Destruct::DType::DUnicodeStringType, "filePath", filePath); 
-  arg->setValueAttribute(Destruct::DType::DInt8Type, "input",  Destruct::RealValue<DInt8>(Destruct::DStream::Output));
-  Destruct::DStream* dstream = static_cast<Destruct::DStream*>(this->__destruct.generate("DStream", Destruct::RealValue<Destruct::DObject*>(arg)));
+  DMutableObject* arg = static_cast<DMutableObject*>(this->__destruct.generate("DMutable"));
+  arg->setValueAttribute(DType::DUnicodeStringType, "filePath", filePath); 
+  arg->setValueAttribute(DType::DInt8Type, "input",  RealValue<DInt8>(DStream::Output));
+  DStream* dstream = static_cast<DStream*>(this->__destruct.generate("DStream", RealValue<DObject*>(arg)));
   arg->destroy();
-  Destruct::DSerialize* serializer = Destruct::DSerializers::to("Binary");
+  DSerialize* serializer = DSerializers::to("Binary");
+
+
+  std::cout << "Saving dstruct " << std::endl;
+
+  DStructs& dstructs = DStructs::instance();
+  DStruct* localArgumentsStruct = dstructs.find("LocalArguments");
+  DStruct* moduleArgumentStruct = dstructs.find("ModuleArguments");
+  DValue partitionArgValue = RealValue<DStruct*>(dstructs.find("PartitionArguments"));
+
+  DValue localArgValue = RealValue<DStruct*>(localArgumentsStruct);
+  DValue moduleArgValue = RealValue<DStruct*>(moduleArgumentStruct);
+
+  /**
+   *  serialize struct
+   */
+
+  //DStruct* test = localArgValue.get<DStruct*>();
+  serializer->serialize(*dstream, *localArgumentsStruct);  
+
+  /**
+   *  Serialize vector struct
+   */
+
+  DObject* vectorStruct = dstructs.generate("DVectorStruct");
+  vectorStruct->call("push", moduleArgValue);
+  vectorStruct->call("push", partitionArgValue);
+
+  serializer->serialize(*dstream, vectorStruct);
 
 
   std::cout << "Saving database to file " << filePath.asUnicodeString() << std::endl; 

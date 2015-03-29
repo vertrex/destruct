@@ -308,6 +308,27 @@ inline DUnicodeString RealValue<DInt8 >::asUnicodeString() const
   return (os.str());
 }
 
+/*
+ * DSruct specialization
+ */
+
+template <>
+inline FinalValue* RealValue<DStruct* >::clone() const
+{
+  return  (new RealValue(*this));
+}
+
+template <>
+inline DUnicodeString RealValue<DStruct* >::asUnicodeString() const
+{
+  if (this->__val)
+    return (this->__val->name());
+  return ("");
+}
+
+//serialize ? 
+//unserialize ?
+
 }
 
 #endif

@@ -18,6 +18,4 @@ public:
   virtual bool fail(void) = 0;
 };
 
-
-
 #endif

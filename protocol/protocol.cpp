@@ -32,6 +32,8 @@ void Protocol::__registerStruct(DStructs* destruct)
   registerVector<DUnicodeStringT>(destruct, "DVectorString");
   registerVector<DObjectT>(destruct, "DVectorObject");
 
+  registerVector<DStructT>(destruct, "DVectorStruct");
+
   registerMap<DUnicodeStringT, DUnicodeStringT>(destruct, "DMapString");
   registerMap<DObjectT, DObjectT>(destruct, "DMapObject");
   registerMap<DUInt64T, DObjectT>(destruct, "DMapUInt64Object");
@@ -40,6 +42,8 @@ void Protocol::__registerStruct(DStructs* destruct)
   //registerCpp<DStreamCout >(destruct, "DStreamCout");
   //registerCpp<DStreamString >(destruct, "DStreamString");
   //registerCpp<DSerializeXML>(destruct, "DSerializeXML");
+ 
+
 
   destruct->registerDStruct(new DStruct(NULL, "TraceObject",  TraceObject::newObject));
   destruct->registerDStruct(new DStruct(NULL, "RecursiveTraceObject",  RecursiveTraceObject::newObject));

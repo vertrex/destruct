@@ -107,7 +107,6 @@ bool DStream::fail(void)
 /*
  * DStreamCout
 */
-
 DStreamCout::DStreamCout(DStruct* dstruct, DValue const& args): DStream(dstruct)
 {
 }
@@ -170,7 +169,6 @@ bool DStreamCout::fail(void)
 /**
  *  DStream string
  */
-
 DStreamString::DStreamString(DStruct* dstruct, DValue const& args): DStream(dstruct)
 {
   this->init();

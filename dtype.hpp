@@ -52,6 +52,8 @@ public:
     DMethodType,
     DNoneType,
 
+    DStructType,
+
     DUnknownType,
   };
 

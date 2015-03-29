@@ -10,9 +10,9 @@
 #include "protocol/dserialize.hpp"
 #include "protocol/dmutableobject.hpp"
 
-DB::DB() : __destruct(Destruct::DStructs::instance()), __session(NULL)
+DB::DB() : __destruct(DStructs::instance()), __session(NULL)
 {
-  Destruct::DType::init();
+  DType::init();
   this->declare();
 }
 
@@ -24,44 +24,44 @@ DB::~DB()
   std::cout << "destroy session " << std::endl;
   this->__session->destroy();
   }
-  Destruct::DType::clean();
+  DType::clean();
 }
 
-Destruct::DObject*  DB::populateSession(void)
+DObject*  DB::populateSession(void)
 {
   std::cout << "POPUALTE SESSION" << std::endl;
-  Destruct::DObject* sessionObject = this->__destruct.generate("Session");
+  DObject* sessionObject = this->__destruct.generate("Session");
   this->__session = static_cast<Session*>(sessionObject);
   
-  Destruct::DObject* modules = this->__destruct.generate("DVectorObject");
+  DObject* modules = this->__destruct.generate("DVectorObject");
 
-  Destruct::DObject* local = this->__destruct.generate("LocalArguments"); 
+  DObject* local = this->__destruct.generate("LocalArguments"); 
 
-  Destruct::DObject* localPath = this->__destruct.generate("DVectorString");
-  localPath->call("push", Destruct::RealValue<Destruct::DUnicodeString>("/home/vertrex/dump/case/cfreds/cfreds.raw.raw"));
-  localPath->call("push", Destruct::RealValue<Destruct::DUnicodeString>("/home/vertrex/dump/case/cfreds/test"));
-  localPath->call("push", Destruct::RealValue<Destruct::DUnicodeString>("/home/vertrex/dump/case/cfreds/test3"));
-  local->setValue("path", Destruct::RealValue<Destruct::DObject*>(localPath));
+  DObject* localPath = this->__destruct.generate("DVectorString");
+  localPath->call("push", RealValue<DUnicodeString>("/home/vertrex/dump/case/cfreds/cfreds.raw.raw"));
+  localPath->call("push", RealValue<DUnicodeString>("/home/vertrex/dump/case/cfreds/test"));
+  localPath->call("push", RealValue<DUnicodeString>("/home/vertrex/dump/case/cfreds/test3"));
+  local->setValue("path", RealValue<DObject*>(localPath));
   localPath->destroy();
 
-  Destruct::DObject* moduleArguments = this->__destruct.generate("ModuleArguments");
-  moduleArguments->setValue("moduleName", Destruct::RealValue<Destruct::DUnicodeString>("local"));
-  moduleArguments->setValue("arguments", Destruct::RealValue<Destruct::DObject*>(local));
+  DObject* moduleArguments = this->__destruct.generate("ModuleArguments");
+  moduleArguments->setValue("moduleName", RealValue<DUnicodeString>("local"));
+  moduleArguments->setValue("arguments", RealValue<DObject*>(local));
   local->destroy();
 
-  modules->call("push", Destruct::RealValue<Destruct::DObject*>(moduleArguments));
+  modules->call("push", RealValue<DObject*>(moduleArguments));
   moduleArguments->destroy();
 
-  Destruct::DObject* partition = this->__destruct.generate("PartitionArguments");
-  partition->setValue("file", Destruct::RealValue<Destruct::DUnicodeString>("cfreds.raw.raw/Partitons 1"));
+  DObject* partition = this->__destruct.generate("PartitionArguments");
+  partition->setValue("file", RealValue<DUnicodeString>("cfreds.raw.raw/Partitons 1"));
 
   //modules->destroy();
   this->__session->modules = modules;
 
   moduleArguments = this->__destruct.generate("ModuleArguments");
-  moduleArguments->setValue("moduleName", Destruct::RealValue<Destruct::DUnicodeString>("partition"));
-  moduleArguments->setValue("arguments", Destruct::RealValue<Destruct::DObject*>(partition));
-  ((DObject*)this->__session->modules)->call("push", Destruct::RealValue<Destruct::DObject*>(moduleArguments));
+  moduleArguments->setValue("moduleName", RealValue<DUnicodeString>("partition"));
+  moduleArguments->setValue("arguments", RealValue<DObject*>(partition));
+  ((DObject*)this->__session->modules)->call("push", RealValue<DObject*>(moduleArguments));
   partition->destroy();
   moduleArguments->destroy();
 
@@ -71,49 +71,59 @@ Destruct::DObject*  DB::populateSession(void)
 
 void            DB::declare(void)
 {
-  Destruct::DStruct*  session = makeNewDCpp<Session>("Session");
+  DStruct*  session = makeNewDCpp<Session>("Session");
   this->__destruct.registerDStruct(session);
 
-  Destruct::DStruct*  argumentStruct = new Destruct::DStruct(0, "ModuleArguments", Destruct::DSimpleObject::newObject);
-  argumentStruct->addAttribute(Destruct::DAttribute(Destruct::DType::DUnicodeStringType, "moduleName"));
-  argumentStruct->addAttribute(Destruct::DAttribute(Destruct::DType::DObjectType, "arguments"));// DList<DObject*>()
+  DStruct*  argumentStruct = new DStruct(0, "ModuleArguments", DSimpleObject::newObject);
+  argumentStruct->addAttribute(DAttribute(DType::DUnicodeStringType, "moduleName"));
+  argumentStruct->addAttribute(DAttribute(DType::DObjectType, "arguments"));// DList<DObject*>()
   this->__destruct.registerDStruct(argumentStruct);
 
-  Destruct::DStruct*  localArgumentsStruct = new Destruct::DStruct(0, "LocalArguments", Destruct::DSimpleObject::newObject);
-  localArgumentsStruct->addAttribute(Destruct::DAttribute(Destruct::DType::DObjectType, "path")); 
+  DStruct*  localArgumentsStruct = new DStruct(0, "LocalArguments", DSimpleObject::newObject);
+  localArgumentsStruct->addAttribute(DAttribute(DType::DObjectType, "path")); 
   this->__destruct.registerDStruct(localArgumentsStruct);
 
-  Destruct::DStruct* partitionArgumentsStruct = new Destruct::DStruct(0, "PartitionArguments", Destruct::DSimpleObject::newObject);
-  partitionArgumentsStruct->addAttribute(Destruct::DAttribute(Destruct::DType::DUnicodeStringType, "file")); 
+  DStruct* partitionArgumentsStruct = new DStruct(0, "PartitionArguments", DSimpleObject::newObject);
+  partitionArgumentsStruct->addAttribute(DAttribute(DType::DUnicodeStringType, "file")); 
   this->__destruct.registerDStruct(partitionArgumentsStruct); 
 }
 
-void            DB::show(Destruct::DObject* object) const
+void            DB::show(DObject* object) const
 {
-  Destruct::DStream* cout = static_cast<Destruct::DStream*>(this->__destruct.generate("DStreamCout"));
-  Destruct::DSerializers::to("Text")->serialize(*cout, object);
+  DStream* cout = static_cast<DStream*>(this->__destruct.generate("DStreamCout"));
+  DSerializers::to("Text")->serialize(*cout, object);
 }
 
-void            DB::load(Destruct::DValue const& filePath)
+void            DB::load(DValue const& filePath)
 {
   std::cout << "Loading database from file " << filePath.asUnicodeString() << std::endl;
 
-  Destruct::DMutableObject* arg = static_cast<Destruct::DMutableObject*>(this->__destruct.generate("DMutable"));
-  arg->setValueAttribute(Destruct::DType::DUnicodeStringType, "filePath", filePath); 
-  arg->setValueAttribute(Destruct::DType::DInt8Type, "input",  Destruct::RealValue<DInt8>(Destruct::DStream::Input));
+  DMutableObject* arg = static_cast<DMutableObject*>(this->__destruct.generate("DMutable"));
+  arg->setValueAttribute(DType::DUnicodeStringType, "filePath", filePath); 
+  arg->setValueAttribute(DType::DInt8Type, "input",  RealValue<DInt8>(DStream::Input));
 
-  Destruct::DStream* dstream = static_cast<Destruct::DStream*>(this->__destruct.generate("DStream", Destruct::RealValue<Destruct::DObject*>(arg)));
+  DStream* dstream = static_cast<DStream*>(this->__destruct.generate("DStream", RealValue<DObject*>(arg)));
   arg->destroy();
-  Destruct::DSerialize* serializer = Destruct::DSerializers::to("Binary");
+  DSerialize* serializer = DSerializers::to("Binary");
 
-  Destruct::DValue value = serializer->deserialize(*dstream, Destruct::DType::DObjectType);
+  DValue dstruct = serializer->deserialize(*dstream, DType::DStructType);
+  std::cout << "Found struct " << dstruct.get<DStruct*>()->name() << std::endl;
+
+  DObject* vectorStruct= serializer->deserialize(*dstream, DType::DObjectType).get<DObject*>();
+  for (DUInt64 i = 0; i < vectorStruct->call("size").get<DUInt64>(); ++i)
+  {
+    DStruct* dstruct = vectorStruct->call("get", RealValue<DUInt64>()).get<DStruct*>();
+    std::cout << "Found " << dstruct->name() << std::endl;
+  }
+
+  DValue value = serializer->deserialize(*dstream, DType::DObjectType);
   
   dstream->destroy();
 //  std::cout << "Loaded ! found first object : " << value.asUnicodeString() << std::endl; 
 
   //this->__session = static_cast<Session*>(value.get<DObject*>());
-  Destruct::DObject* session = value.get<Destruct::DObject*>();
-  std::cout << "SESSION LOADED REFCUNT " << session->refCount() << " " << session->instanceOf()->name() << std::endl;
+  DObject* session = value.get<DObject*>();
+  std::cout << "Session load refcount " << session->refCount() << " " << session->instanceOf()->name() << std::endl;
   session->destroy(); 
   session->destroy(); 
 }
@@ -148,7 +158,7 @@ int     main(int argc, char** argv)
       return (1);
     }
   }
-  catch (Destruct::DException const& exception)
+  catch (DException const& exception)
   {
     std::cout << "Error : " << std::endl << exception.error() << std::endl; 
   }

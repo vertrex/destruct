@@ -12,6 +12,8 @@
 
 namespace Destruct
 {
+
+
 /*
  *  Basic stream object used for serialization test
  *      - Could be enhanced / replaced by file, buffer (data), socket protocol object for reflectivy
@@ -101,7 +103,6 @@ public:
   } 
 };
 
-
 class DStreamCout : public DStream //Base
 {
 public:
@@ -138,6 +139,5 @@ private:
 };
 
 }
-
 
 #endif

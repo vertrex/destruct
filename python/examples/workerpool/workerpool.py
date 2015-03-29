@@ -8,7 +8,8 @@ sys.path.append('../')
 from _destruct import *
 from _workerpool import *
 
-COUNT = 1000000
+#COUNT = 1000000
+COUNT = 100000
 
 print "create pool of 4 threads"
 workerPool = DStructs().find("WorkerPool").newObject(DUInt8(4))

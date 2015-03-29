@@ -2,7 +2,7 @@
 #include "py_dobject.hpp"
 #include "py_registryrpc.hpp"
 
-PyTypeObject*     PyDObject::pyType(void)
+PyTypeObject*     PyRegistryRPC::pyType(void)
 {
     static PyTypeObject* pyType = (PyTypeObject*)malloc(sizeof(basePyType));
     return (pyType);

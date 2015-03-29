@@ -19,6 +19,7 @@ add_subdirectory(db)
 add_subdirectory(refcount)
 add_subdirectory(inheritance)
 add_subdirectory(threading)
+add_subdirectory(filetype)
 
 add_subdirectory(rpc)
 if (UNIX)
