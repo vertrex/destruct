@@ -123,7 +123,6 @@ bool DSerializeBinary::serialize(DStream& output, DObject*  dobject)
        }
        else if (returnType == DType::DStructType)
        {
-         std::cout << "DSerializing struct " << std::endl;
          DStruct* subStruct = value.get<DStruct*>();
          if (subStruct != NULL)
            this->serialize(output, *subStruct);
@@ -242,6 +241,8 @@ DStruct* DSerializeBinary::deserialize(DStream& input)
      else
        dstruct->addAttribute(DAttribute(type, name));
   }
+  std::cout << "deserializing dstruct and registering it" << std::endl;
+  DStructs::instance().registerDStruct(dstruct); //needed for complex object that register struct and need it later to deserialize rest of file 
   return (dstruct); 
 }
 

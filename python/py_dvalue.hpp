@@ -8,6 +8,8 @@
 #include "py_dobject.hpp"
 #include "py_dmethodobject.hpp"
 #include "py_dnullobject.hpp"
+#include "py_dstruct.hpp"
+
 #include "py_dtype.hpp"
 
 class PyDInt8 : public PythonTypeModule< PyDInt8, PyIntObject, Destruct::DType::DInt8Type > 
@@ -117,6 +119,8 @@ static PythonTypeBaseModule*  DValueDispatchTable[] =
   &PyDObject::moduleInit(),
   &PyDMethodObject::moduleInit(),
   &PyDNullObject::moduleInit(),
+
+  &PyDStruct::moduleInit(),
 //&PyDUnknownType::moduleInit(), throw error unknown type 
   NULL,
 };

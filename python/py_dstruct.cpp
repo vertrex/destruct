@@ -10,8 +10,8 @@
 
 PyTypeObject*     PyDStruct::pyType(void)
 {
-    static PyTypeObject* pyType = (PyTypeObject*)malloc(sizeof(basePyType));
-    return (pyType);
+  static PyTypeObject* pyType = (PyTypeObject*)malloc(sizeof(basePyType));
+  return (pyType);
 }
 
 PyDStruct::PyDStruct()
@@ -189,4 +189,52 @@ int PyDStruct::_init(PyDStructT::DPyObject* self, PyObject* args, PyObject* kwds
    INIT_CHECK_ALLOC(self->pimpl)
 
    return (0);
+}
+
+PyObject* PyDStruct::getType(PyDStruct::DPyObject* self, PyObject* args, PyObject* kwds)
+{
+  return (PyInt_FromSize_t(Destruct::DType::DStructType));
+}
+
+PyObject* PyDStruct::typeObject()
+{
+  Py_INCREF((PyObject*)pyType);
+  return ((PyObject*)pyType);
+}
+
+Destruct::DValue PyDStruct::toDValue(PyObject* value) 
+{
+  if (PyObject_TypeCheck(value, PyDStruct::pyType()))
+     return Destruct::RealValue<Destruct::DStruct*>(((DPyObject*)value)->pimpl);
+  throw Destruct::DException("Can't cast to DMethodObject*");
+}
+
+PyObject*     PyDStruct::asDValue(Destruct::DValue const& v)
+{
+  Destruct::DStruct* value = v.get<Destruct::DStruct*>();
+
+  if (value == NULL)
+    Py_RETURN_NONE;
+  
+  PyTypeObject* pyType = PyDStruct::pyType(); 
+  Py_INCREF(pyType);
+  PyDStruct::DPyObject*  dstructObject = (PyDStruct::DPyObject*)_PyObject_New(pyType);
+  dstructObject->pimpl = value;
+
+  return ((PyObject*)dstructObject);
+}
+
+PyObject*     PyDStruct::asPyObject(PyObject* self, int32_t attributeIndex)
+{
+  Destruct::DStruct*  value = ((PyDObject::DPyObject*)self)->pimpl->getValue(attributeIndex).get<Destruct::DStruct*>();
+
+  if (value == NULL)
+    Py_RETURN_NONE;
+   
+  PyTypeObject* pyType = PyDStruct::pyType(); 
+  Py_INCREF(pyType);
+  PyDStruct::DPyObject*  dstructObject = (PyDStruct::DPyObject*)_PyObject_New(pyType);
+  dstructObject->pimpl = value;
+
+  return ((PyObject*)dstructObject);
 }

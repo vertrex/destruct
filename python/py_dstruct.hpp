@@ -6,8 +6,8 @@
 #include "destruct.hpp"
 #include "dstruct.hpp"
 
-typedef PythonModule< class PyDStruct, Destruct::DStruct> PyDStructT;
-class EXPORT PyDStruct : public PyDStructT
+typedef PythonModule<class PyDStruct, Destruct::DStruct> PyDStructT;
+class EXPORT PyDStruct : public PyDStructT, public PythonTypeBaseModule
 {
 public:
                       PyDStruct();
@@ -24,6 +24,13 @@ public:
   static PyObject*    attribute(DPyObject* self, PyObject* args, PyObject* kwds);
   static PyObject*    addAttribute(DPyObject* self, PyObject* args, PyObject* kwds);
   static PyObject*    newObject(DPyObject* self, PyObject* args, PyObject* kwds);
+
+  static PyObject*    getType(DPyObject* self, PyObject* args, PyObject* kwds);
+  PyObject*           typeObject();
+
+  Destruct::DValue    toDValue(PyObject* value); 
+  PyObject*           asDValue(Destruct::DValue const& v);
+  PyObject*           asPyObject(PyObject* _self, int32_t attributeIndex);
 };
 
 #endif

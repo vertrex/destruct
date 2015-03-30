@@ -40,8 +40,8 @@ public :
   };
   EXPORT                        PyDMethodObject();
   static PyMethodDef            pyMethods[];
+  static PyTypeObject*          pyType(void);
 
-  static PyTypeObject*  pyType(void);
   static int                    _init(DPyObject* self, PyObject* args, PyObject* kwds);
   static void                   _dealloc(DPyObject* self);
   static PyObject*              _getattr(DPyObject* self, PyObject* name); 
