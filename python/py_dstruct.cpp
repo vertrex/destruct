@@ -198,8 +198,9 @@ PyObject* PyDStruct::getType(PyDStruct::DPyObject* self, PyObject* args, PyObjec
 
 PyObject* PyDStruct::typeObject()
 {
-  Py_INCREF((PyObject*)pyType);
-  return ((PyObject*)pyType);
+  PyTypeObject* pyTypeObject = pyType();
+  Py_INCREF((PyObject*)pyTypeObject);
+  return ((PyObject*)pyTypeObject);
 }
 
 Destruct::DValue PyDStruct::toDValue(PyObject* value) 

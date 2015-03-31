@@ -14,8 +14,8 @@ using Destruct::DUnicodeString;
 
 PyTypeObject*     PyDMethodObject::pyType(void)
 {
-    static PyTypeObject* pyType = (PyTypeObject*)malloc(sizeof(basePyType));
-    return (pyType);
+  static PyTypeObject* pyType = (PyTypeObject*)malloc(sizeof(basePyType));
+  return (pyType);
 }
 
 Destruct::DValue PyDMethodObject::toDValue(PyObject* value) 
@@ -189,8 +189,9 @@ PyObject* PyDMethodObject::_repr(PyDMethodObject::DPyObject* self)
 
 PyObject* PyDMethodObject::typeObject()
 {
-  Py_INCREF((PyObject*)pyType);
-  return ((PyObject*)pyType);
+  PyTypeObject* pyTypeObject = pyType();
+  Py_INCREF((PyObject*)pyTypeObject);
+  return ((PyObject*)pyTypeObject);
 }
 
 PyObject* PyDMethodObject::getType(PyDMethodObject::DPyObject* self, PyObject* args, PyObject* kwds)

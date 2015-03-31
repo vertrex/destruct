@@ -15,6 +15,7 @@ public:
   static int          _init(DPyObject* self, PyObject* args, PyObject* kwds);
   static PyObject*    name(DPyObject* self, PyObject* args, PyObject* kwds);
   static PyObject*    dtype(DPyObject* self, PyObject* args, PyObject* kwds);
+  static PyObject*    description(DPyObject* self, PyObject* args, PyObject* kwds);
 };
 
 #endif

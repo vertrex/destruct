@@ -55,7 +55,7 @@ public:
  
   static DPyObject          pyObject;
   static PySequenceMethods* pySequenceMethods;
-  static PyMappingMethods* pyMappingMethods;
+  static PyMappingMethods*  pyMappingMethods;
 
   static FinalType& moduleInit()
   {

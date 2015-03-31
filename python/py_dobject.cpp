@@ -609,8 +609,9 @@ PyObject*  PyDObject::_dir(PyDObject::DPyObject* self, PyObject* args, PyObject 
 
 PyObject* PyDObject::typeObject()
 {
-  Py_INCREF((PyObject*)pyType);
-  return ((PyObject*)pyType);
+  PyTypeObject* pyTypeObject = pyType();
+  Py_INCREF((PyObject*)pyTypeObject);
+  return ((PyObject*)pyTypeObject);
 }
 
 PyObject* PyDObject::getType(PyDObject::DPyObject* self, PyObject* args, PyObject* kwds)

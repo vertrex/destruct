@@ -241,7 +241,6 @@ DStruct* DSerializeBinary::deserialize(DStream& input)
      else
        dstruct->addAttribute(DAttribute(type, name));
   }
-  std::cout << "deserializing dstruct and registering it" << std::endl;
   DStructs::instance().registerDStruct(dstruct); //needed for complex object that register struct and need it later to deserialize rest of file 
   return (dstruct); 
 }

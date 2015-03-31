@@ -6,10 +6,9 @@
 
 PyTypeObject*     PyDType::pyType(void)
 {
-    static PyTypeObject* pyType = (PyTypeObject*)malloc(sizeof(basePyType));
-    return (pyType);
+  static PyTypeObject* pyType = (PyTypeObject*)malloc(sizeof(basePyType));
+  return (pyType);
 }
-
 
 PyDType::PyDType()
 {
@@ -28,27 +27,71 @@ PyDType::PyDType()
   pyType->tp_init = (initproc)PyDType::_init;
   pyType->tp_new = _new;
   pyType->tp_dealloc = (destructor)_dealloc;
+  //pyType->tp_repr = (reprfunc)PyDType::_repr;
+  pyType->tp_str = (reprfunc)PyDType::_repr;
 
   if (PyType_Ready(pyType) < 0)
     throw Destruct::DException("PyType ready error");
 }
 
-PyObject* PyDType::getType(PyDType::DPyObject* self, PyObject*args, PyObject* kwds)
+PyObject* PyDType::getType(PyDType::DPyObject* self, PyObject *args, PyObject* kwds)
 {
   int typeId = self->pimpl->getType();
+  if (typeId >= Destruct::DType::DUnknownType)
+    Py_RETURN_NONE;
   return (DValueDispatchTable[typeId]->typeObject());
 }
 
-PyObject* PyDType::returnType(PyDType::DPyObject* self, PyObject*args, PyObject* kwds)
+PyObject* PyDType::returnType(PyDType::DPyObject* self, PyObject *args, PyObject* kwds)
 {
   int typeId = self->pimpl->getReturnType();
+  if (typeId >= Destruct::DType::DUnknownType)
+    Py_RETURN_NONE;
   return (DValueDispatchTable[typeId]->typeObject());
 }
 
-PyObject* PyDType::argumentType(PyDType::DPyObject* self, PyObject*args, PyObject* kwds)
+PyObject* PyDType::argumentType(PyDType::DPyObject* self, PyObject *args, PyObject* kwds)
 {
   int typeId = self->pimpl->getArgumentType();
+  if (typeId >= Destruct::DType::DUnknownType)
+    Py_RETURN_NONE;
   return (DValueDispatchTable[typeId]->typeObject());
+}
+
+PyObject* PyDType::_repr(PyDType::DPyObject* self)
+{
+  CHECK_PIMPL
+
+  Destruct::DUnicodeString fullTypeName = "";
+  Destruct::DUnicodeString returnName = self->pimpl->returnName();
+  Destruct::DUnicodeString typeName = self->pimpl->name();
+  Destruct::DUnicodeString argumentName = self->pimpl->argumentName();
+  
+  if (returnName != "DUnknown")
+     fullTypeName = returnName + " ";
+  fullTypeName += typeName;
+  if (argumentName != "DUnknown")
+    fullTypeName += " " + argumentName;
+  
+  return (PyString_FromString(fullTypeName.c_str()));
+}
+
+PyObject* PyDType::returnName(PyDType::DPyObject* self, PyObject* args, PyObject* kwds)
+{
+  CHECK_PIMPL
+  return (PyString_FromString(self->pimpl->returnName().c_str()));
+}
+
+PyObject* PyDType::name(PyDType::DPyObject* self, PyObject* args, PyObject* kwds)
+{
+  CHECK_PIMPL
+  return (PyString_FromString(self->pimpl->name().c_str()));
+}
+
+PyObject* PyDType::argumentName(PyDType::DPyObject* self, PyObject* args, PyObject* kwds)
+{
+  CHECK_PIMPL
+  return (PyString_FromString(self->pimpl->argumentName().c_str()));
 }
 
 PyMethodDef PyDType::pyMethods[] = 
@@ -56,6 +99,9 @@ PyMethodDef PyDType::pyMethods[] =
   {"getType", (PyCFunction)PyDType::getType, METH_NOARGS, "Return the type."},
   {"returnType", (PyCFunction)PyDType::returnType, METH_NOARGS, "Return method return type."},
   {"argumentType", (PyCFunction)PyDType::argumentType, METH_NOARGS, "Return method argument type."},
+  {"name", (PyCFunction)PyDType::name, METH_NOARGS, "Return the type name."},
+  {"returnName", (PyCFunction)PyDType::returnName, METH_NOARGS, "Return method return type name."},
+  {"argumentName", (PyCFunction)PyDType::argumentName, METH_NOARGS, "Return method argument type name."},
 //XXX name() add for serialization
   {NULL}
 };

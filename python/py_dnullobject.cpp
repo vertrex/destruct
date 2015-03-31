@@ -73,8 +73,9 @@ void PyDNullObject::_dealloc(PyDNullObjectT::DPyObject* self)
 
 PyObject* PyDNullObject::typeObject()
 {
-  Py_INCREF((PyObject*)pyType);
-  return ((PyObject*)pyType);
+  PyTypeObject* pyTypeObject = pyType();
+  Py_INCREF((PyObject*)pyTypeObject);
+  return ((PyObject*)pyTypeObject);
 }
 
 PyObject* PyDNullObject::getType(PyDNullObject::DPyObject* self, PyObject* args, PyObject* kwds)
