@@ -1,7 +1,6 @@
 #include "session.hpp"
 #include "dstructs.hpp"
 #include "protocol/dstream.hpp"
-#include "protocol/dserialize.hpp"
 #include "protocol/dmutableobject.hpp"
 
 Session::Session(DStruct* dstruct, DValue const& args) : DCppObject<Session>(dstruct, args), __destruct(DStructs::instance())
@@ -20,10 +19,10 @@ void    Session::save(DValue const& filePath)
   DMutableObject* arg = static_cast<DMutableObject*>(this->__destruct.generate("DMutable"));
   arg->setValueAttribute(DType::DUnicodeStringType, "filePath", filePath); 
   arg->setValueAttribute(DType::DInt8Type, "input",  RealValue<DInt8>(DStream::Output));
-  DStream* dstream = static_cast<DStream*>(this->__destruct.generate("DStream", RealValue<DObject*>(arg)));
+  DObject* stream = this->__destruct.generate("DStream", RealValue<DObject*>(arg));
+ 
   arg->destroy();
-  DSerialize* serializer = DSerializers::to("Binary");
-
+  DObject* serializer = this->__destruct.generate("SerializeBinary", RealValue<DObject*>(stream));
 
   std::cout << "Saving dstruct " << std::endl;
 
@@ -40,7 +39,9 @@ void    Session::save(DValue const& filePath)
    */
 
   //DStruct* test = localArgValue.get<DStruct*>();
-  serializer->serialize(*dstream, *localArgumentsStruct);  
+  serializer->call("DStruct", RealValue<DStruct*>(localArgumentsStruct));
+
+  //serializer->serialize(*dstream, *localArgumentsStruct);  
 
   /**
    *  Serialize vector struct
@@ -50,14 +51,17 @@ void    Session::save(DValue const& filePath)
   vectorStruct->call("push", moduleArgValue);
   vectorStruct->call("push", partitionArgValue);
 
-  serializer->serialize(*dstream, vectorStruct);
-
+  //serializer->serialize(*dstream, vectorStruct);
+  serializer->call("DObject", RealValue<DObject*>(vectorStruct));
 
   std::cout << "Saving database to file " << filePath.asUnicodeString() << std::endl; 
   //std::cout << "session deserialize" << std::endl;
-  serializer->serialize(*dstream, this->modules); //passe pas par DValue donc destroy psa this
+  serializer->call("DObject", this->modules);
+
+  //serializer->serialize(*dstream, this->modules); //passe pas par DValue donc destroy psa this
   std::cout << "Saved " << filePath.asUnicodeString() << std::endl; 
-  dstream->destroy();
-  delete serializer;
+  stream->destroy();
+  serializer->destroy();
+  //delete serializer;
   //delete dstream;
 }

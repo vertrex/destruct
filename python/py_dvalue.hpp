@@ -4,6 +4,7 @@
 #include "py_module.hpp"
 #include "dvalue.hpp"
 #include "drealvalue.hpp"
+#include "dtype.hpp"
 
 #include "py_dobject.hpp"
 #include "py_dmethodobject.hpp"

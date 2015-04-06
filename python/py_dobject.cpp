@@ -23,8 +23,8 @@ PyMappingMethods* PyDObjectT::pyMappingMethods = NULL;
 
 PyTypeObject*     PyDObject::pyType(void)
 {
-    static PyTypeObject* pyType = (PyTypeObject*)malloc(sizeof(basePyType));
-    return (pyType);
+  static PyTypeObject* pyType = (PyTypeObject*)malloc(sizeof(basePyType));
+  return (pyType);
 }
 
 Destruct::DValue PyDObject::toDValue(PyObject* value) 
@@ -64,7 +64,9 @@ PyObject*     PyDObject::asPyObject(PyObject* self, int32_t attributeIndex)
   PyTypeObject* pyType = PyDObject::pyType(); 
   Py_INCREF(pyType);
   PyDObject::DPyObject*  dobjectObject = (PyDObject::DPyObject*)_PyObject_New(pyType);
+  //incref ? // decref here 
   dobjectObject->pimpl = value; //don't addref because .get<> already add a Ref
+  //Py_DECREF(dobjectObject) //XXX ;???? destroy refcount
 
   return ((PyObject*)dobjectObject);
 }
@@ -88,10 +90,6 @@ PyDObject::PyDObject()
   pyType->tp_setattro = (setattrofunc)PyDObject::_setattr;
   pyType->tp_compare = (cmpfunc)PyDObject::_compare; 
 
-  pyType->tp_iter = (getiterfunc)PyDObject::_iter;
-  pyType->tp_iternext = (iternextfunc)PyDObject::_iternext;
-
-
   /**
    *  This cause a real problem when doing if toto.a: print 'exists'
    *  it will be  return False because object.c PyObject_IsTrue will first 
@@ -100,6 +98,9 @@ PyDObject::PyDObject()
    *  sequence and method must not be mapped if it doesn't exist in the object
    *  we rather should use __map__ __seq__ dynamically
    */
+  pyType->tp_iter = (getiterfunc)PyDObject::_iter;
+  pyType->tp_iternext = (iternextfunc)PyDObject::_iternext;
+
   pySequenceMethods = (PySequenceMethods*)malloc(sizeof(baseSequenceMethods));
   memcpy(pySequenceMethods, &baseSequenceMethods, sizeof(baseSequenceMethods)); //is empty can bzero
   pyType->tp_as_sequence = pySequenceMethods; //XXX
@@ -349,6 +350,7 @@ int PyDObject::_init(PyDObjectT::DPyObject* self, PyObject *args, PyObject *kwds
 
     return (0);
   }
+ //self incref ?
 
   std::string errorString = "Can't find " + std::string(dstructName) + " in Destruct database";
   PyErr_SetString(PyExc_RuntimeError, errorString.c_str());

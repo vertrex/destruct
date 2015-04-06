@@ -23,7 +23,7 @@ py_dvalue.cpp
 py_dobject.cpp
 py_dmethodobject.cpp
 #py_dstream.cpp
-py_dserialize.cpp
+#py_dserialize.cpp
 destructmodule.cpp
 )
 
@@ -60,4 +60,4 @@ endif(MSVC)
 configure_file(__init__.py __init__.py COPYONLY)
 include_directories("../")
 
-add_subdirectory(examples)
+#add_subdirectory(examples)

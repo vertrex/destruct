@@ -15,6 +15,8 @@ public:
   DStream&          write(const char* buff, uint32_t size);
   DStream&          seek(int64_t pos);
   int64_t           tell(void);
+  using             DStream::read;
+  using             DStream::write;
 private:
   int               __fd;
 };

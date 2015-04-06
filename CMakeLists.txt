@@ -90,15 +90,15 @@ dstructs.cpp
 dnullobject.cpp
 dexception.cpp
 dunicodestring.cpp
+dbuffer.cpp
 
 protocol/protocol.cpp
 protocol/dmutablestruct.cpp
 protocol/dmutableobject.cpp
-protocol/dserialize.cpp
-protocol/dserializetext.cpp
-protocol/dserializeraw.cpp
 protocol/dserializebinary.cpp
-protocol/dserializexml.cpp
+protocol/dserializetext.cpp
+#protocol/dserializeraw.cpp
+#protocol/dserializexml.cpp
 protocol/dstream.cpp
 protocol/traceobject.cpp
 protocol/recursivetraceobject.cpp

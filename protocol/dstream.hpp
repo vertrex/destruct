@@ -8,11 +8,76 @@
 
 #include "destruct.hpp"
 #include "dcppobject.hpp"
-#include "protocol/dstreambase.hpp"
 
 namespace Destruct
 {
 
+class DStream : public DCppObject<DStream>
+{
+public:
+  enum whence
+  {
+    Set,
+    Current,
+    End,
+  };
+
+  enum mode
+  {
+    Output,
+    Input
+  };
+
+  DStream(DStruct* dstruct, DValue const& args);
+  DStream(const DStream& copy);
+
+  DBuffer  read(DValue const& args); 
+  DInt64   write(DValue const& args);
+//  DValue  seek(DValue const& args);
+  
+  ~DStream();
+private:
+  std::fstream  __stream; 
+public:
+  RealValue<DFunctionObject* > _read;
+  RealValue<DFunctionObject* > _write;
+
+  static size_t ownAttributeCount()
+  {
+    return (2);
+  }
+
+  static DAttribute* ownAttributeBegin()
+  {
+    static DAttribute  attributes[] = 
+    {
+       DAttribute(DType::DBufferType, "read",  DType::DInt64Type), 
+       DAttribute(DType::DInt64Type,  "write", DType::DBufferType),
+    };
+    return (attributes);
+  }
+
+  static DPointer<DStream>* memberBegin()
+  {
+    static DPointer<DStream> memberPointer[] = 
+    {
+       DPointer<DStream>(&DStream::_read, &DStream::read),
+       DPointer<DStream>(&DStream::_write, &DStream::write),
+    };
+    return (memberPointer);
+  }
+
+  static DAttribute* ownAttributeEnd()
+  {
+    return (ownAttributeBegin() + ownAttributeCount());
+  }
+
+  static DPointer<DStream>*  memberEnd()
+  {
+    return (memberBegin() + ownAttributeCount());
+  } 
+
+};
 
 /*
  *  Basic stream object used for serialization test
@@ -20,7 +85,8 @@ namespace Destruct
  */
 //XXX this is dstream file interface other dont use __fstream
 //DStreamFile 
-class DStream : public DStreamBase,  public DCppObject<DStream> //DStreamFile deriver d'une DStream sans membre private
+/*
+class DStream : public DCppObject<DStream> //DStreamFile deriver d'une DStream sans membre private
 {
 public:
   enum whence
@@ -38,34 +104,35 @@ public:
 
   typedef std::basic_ostream<char, std::char_traits<char> > CoutType;
   typedef CoutType& (*StandardEndLine)(CoutType&);
+
+  EXPORT DStream(DStruct* dstruct);
   EXPORT DStream(DStruct* dstruct, DValue const& args);
   EXPORT DStream(const DStream& copy);
   
-  EXPORT virtual DStream& operator>>(DStream& output);
+  EXPORT virtual DStream& operator>>(DStream& output); 
   EXPORT virtual DStream& operator<<(DStream& input);
 
-  EXPORT virtual DStream& operator>>(DUnicodeString& val); 
-  EXPORT virtual DStream& operator<<(DUnicodeString val);
-  EXPORT virtual DStream& operator<<(char val);
+  EXPORT virtual DStream& operator>>(DUnicodeString& val);  //=0 in base
+  EXPORT virtual DStream& operator<<(DUnicodeString val); //=0 in base
+  EXPORT virtual DStream& operator<<(char val); //=0 in base
   EXPORT virtual DStream& operator<<(StandardEndLine func);
   EXPORT virtual DStream& read(char*  buff, uint32_t size);
   EXPORT virtual DStream& write(const char* buff, uint32_t size);
-  EXPORT virtual bool fail(void);
+  EXPORT virtual bool fail(void); //=0 in base
+
+  EXPORT virtual DInt64  write(Destruct::DValue const& value);// { return (0);}; //sub clas me ? => call read/write as virtual 0 (comme ds dobject) 
+  EXPORT virtual DInt64  read(Destruct::DValue const& value);// { return (0);};  //sub class me ? != can be dobject / dstruct etc not just int / string ..!
   //protected:
   EXPORT virtual ~DStream();
  // DStream(DStruct* dstruct);
 private:
   std::fstream  __fstream; //if not fd !
- /*
- *  DStruct declaration
- */ 
 public:
-  EXPORT DStream(DStruct* dstruct);
   RealValue<DFunctionObject* > _read;
   RealValue<DFunctionObject* > _write;
 
-  EXPORT virtual DInt64 write(DValue const& args);
-  EXPORT virtual DInt64 read(DValue const& args);
+  //EXPORT virtual DInt64 write(DValue const& args); //=0 in base
+  //EXPORT virtual DInt64 read(DValue const& args);  //=0 in base
 
   static size_t ownAttributeCount()
   {
@@ -76,8 +143,8 @@ public:
   {
     static DAttribute  attributes[] = 
     {
-       DAttribute(DType::DInt64Type,"read", DType::DObjectType), 
-       DAttribute(DType::DInt64Type,"write",  DType::DObjectType),
+       DAttribute(DType::DInt64Type,"read", DType::DBufferType), 
+       DAttribute(DType::DInt64Type,"write",  DType::DBufferType),
     };
     return (attributes);
   }
@@ -102,8 +169,10 @@ public:
     return (memberBegin() + ownAttributeCount());
   } 
 };
+*/
 
-class DStreamCout : public DStream //Base
+/*
+class DStreamCout : public DStream //use destruct inheritance ? ?
 {
 public:
   DStreamCout(DStruct* dstruct, DValue const &args);
@@ -119,13 +188,16 @@ protected:
   ~DStreamCout();
 };
 
-class DStreamString : public DStream //Base
+class DStreamString : public DStream //Use destruct imheritance ??
 {
 public:
   EXPORT DStreamString(DStruct* dstruct, DValue const &args);
   EXPORT DStreamString(const DStreamString& copy);
   EXPORT DStream&          read(char*  buff, uint32_t size);
   EXPORT DStream&          write(const char* buff, uint32_t size);
+
+  using DStream::write;
+  using DStream::read;
   EXPORT const std::string str(void) const;
   EXPORT void              clear(void);    
   //DStream& operator>>(std::string& val); 
@@ -137,7 +209,7 @@ public:
 private:
   std::stringstream   __stream; 
 };
-
+*/
 }
 
 #endif

@@ -9,7 +9,7 @@
 #include "py_dobject.hpp"
 #include "py_dmethodobject.hpp"
 #include "py_dnullobject.hpp"
-#include "py_dserialize.hpp"
+//#include "py_dserialize.hpp"
 
 #define DESTRUCT_ADD_MODULE(moduleType, moduleName)\
   Py_INCREF(moduleType);\
@@ -35,7 +35,7 @@ PyMODINIT_FUNC init_destruct(void)
   PyDNullObject::moduleInit();
   PyDType::moduleInit();
   //PyDStream::moduleInit();
-  PyDSerialize::moduleInit();
+  //PyDSerialize::moduleInit();
   //PyTest::moduleInit();
 
   if ((module = Py_InitModule3("_destruct", destruct_methods, "The destruct library")) == NULL)
@@ -63,7 +63,7 @@ PyMODINIT_FUNC init_destruct(void)
 //end type specialization 
 
   DESTRUCT_ADD_MODULE(PyDType::pyType(), "DType")
-  DESTRUCT_ADD_MODULE(PyDSerialize::pyType(), "DSerialize");
+  //DESTRUCT_ADD_MODULE(PyDSerialize::pyType(), "DSerialize");
   //DESTRUCT_ADD_MODULE(PyTest::pyType()(), "Test")
 }
 

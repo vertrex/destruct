@@ -7,6 +7,16 @@
 #include "destruct.hpp"
 #include "dunicodestring.hpp"
 
+typedef int8_t  DInt8;
+typedef int16_t DInt16;
+typedef int32_t DInt32;
+typedef int64_t DInt64;
+
+typedef uint8_t  DUInt8;
+typedef uint16_t DUInt16;
+typedef uint32_t DUInt32;
+typedef uint64_t DUInt64;
+
 namespace Destruct
 {
 
@@ -14,18 +24,6 @@ class FinalValue;
 
 class DObject;
 class DString;
-
-//define is not affected by namespace
-
-#define DInt8   int8_t   
-#define DInt16  int16_t
-#define DInt32  int32_t  
-#define DInt64  int64_t  
-
-#define DUInt8  uint8_t  
-#define DUInt16 uint16_t 
-#define DUInt32 uint32_t
-#define DUInt64 uint64_t 
 
 /*
  *  Enum is used as a dispatch table in python bindings so order must not be changed
@@ -53,6 +51,7 @@ public:
     DNoneType,
 
     DStructType,
+    DBufferType,
 
     DUnknownType,
   };

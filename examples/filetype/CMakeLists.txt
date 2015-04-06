@@ -11,24 +11,20 @@
 # 
 # Author(s):
 #  Solal Jacob <sja@digital-forensic.org>
-include_directories("../")
 
-add_subdirectory(loader)
-add_subdirectory(dtest)
-add_subdirectory(db)
-#add_subdirectory(refcount)
-#add_subdirectory(inheritance)
-add_subdirectory(threading)
-#add_subdirectory(filetype)
+include_directories("../../")
 
-#add_subdirectory(rpc)
-#if (UNIX)
-#add_subdirectory(registry)
-#endif (UNIX)
-
-set (test_files
-test.cpp
+set (filetype_libfiles
+datatype.cpp
+#types.cpp
 )
 
-add_executable(test_destruct ${test_files})
-target_link_libraries(test_destruct destruct destruct_test)
+add_library(destruct_filetype SHARED ${filetype_libfiles})
+target_link_libraries(destruct_filetype destruct)
+
+set (filetype_files
+filetype.cpp
+)
+
+add_executable(filetype ${filetype_files})
+target_link_libraries(filetype destruct destruct_filetype)

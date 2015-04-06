@@ -53,14 +53,16 @@ DValue    RegistryValues::deserializeRaw(DValue const& arg)
   }
 
   stream->seek(valueListOffset + 0x1000); 
-  size.unserialize(*stream);
+  //size.unserialize(*stream); //new serialization
+  stream->read(size);
 
   Destruct::DSerialize* serializer = Destruct::DSerializers::to("Raw");
   for (uint32_t index = 0; index < valueCount ; ++index)
   {
     RealValue<DUInt32> subvalueOffset;
         
-    subvalueOffset.unserialize(*stream);
+    //subvalueOffset.unserialize(*stream); // XXX new serialization
+    stream->read(subvalueOffset);
     DObject* subvalue = valueStruct->newObject();
     int64_t currentOffset = stream->tell();
     stream->seek(subvalueOffset + 0x1000);

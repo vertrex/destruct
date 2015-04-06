@@ -5,7 +5,8 @@
 #include "dobject.hpp"
 #include "dfunction.hpp"
 #include "dunicodestring.hpp"
-#include "protocol/dstreambase.hpp"
+#include "dbuffer.hpp"
+//#include "protocol/dstreambase.hpp"
 
 namespace Destruct
 {
@@ -45,8 +46,9 @@ public:
   EXPORT virtual FinalValue * clone() const = 0;
  
   EXPORT virtual DUnicodeString asUnicodeString() const = 0;
-  EXPORT virtual DStreamBase&  serialize(DStreamBase& os) const = 0;//XXX Better use an object protocol ?
-  EXPORT virtual DStreamBase&  unserialize(DStreamBase& is) = 0;   //XXX Better use an object protocol ?
+  EXPORT virtual DBuffer        asDBuffer() const = 0;
+  //EXPORT virtual DStreamBase&  serialize(DStreamBase& os) const = 0;//XXX Better use an object protocol ?
+  //EXPORT virtual DStreamBase&  unserialize(DStreamBase& is) = 0;   //XXX Better use an object protocol ?
   EXPORT virtual DValue    getFinal() const;
 protected:
   EXPORT FinalValue();
@@ -107,10 +109,11 @@ public:
   }
 
   //operator std::string();
-  EXPORT friend DStreamBase& operator<<(DStreamBase& os, DValue& value);
-  EXPORT friend DStreamBase& operator>>(DStreamBase& is, DValue& value);
+  //EXPORT friend DStreamBase& operator<<(DStreamBase& os, DValue& value);
+  //EXPORT friend DStreamBase& operator>>(DStreamBase& is, DValue& value);
   //std::ostream& serialize (std::ostream& os) const;
   EXPORT DUnicodeString asUnicodeString() const;
+  EXPORT DBuffer        asDBuffer() const;
 private:
   FinalValue*   __value;
 };

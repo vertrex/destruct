@@ -4,6 +4,7 @@
 #include "dtype.hpp"
 #include "drealvalue.hpp"
 #include "dnullobject.hpp"
+#include "dbuffer.hpp"
 
 namespace Destruct
 {
@@ -32,6 +33,7 @@ const std::string DType::__typeName[] =
  "DNone",
 
  "DStruct",
+ "DBuffer",
 
  "DUnknown"
 };
@@ -109,6 +111,7 @@ void            DType::init(void)
   __prototypes[DNoneType] = new RealValue<DObject* >(DNone);
 
   __prototypes[DStructType] = new RealValue<DStruct* >(NULL);
+  __prototypes[DBufferType] = new RealValue<DBuffer>();
 //dunknown type ? 
 }
 

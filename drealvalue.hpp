@@ -8,7 +8,8 @@
 #include "dvalue.hpp"
 #include "dnullobject.hpp"
 #include "dfunction.hpp"
-#include "protocol/dstreambase.hpp"
+#include "dbuffer.hpp"
+#include "dexception.hpp"
 
 namespace Destruct
 {
@@ -54,6 +55,13 @@ public:
     return (os.str());
   }
 
+  DBuffer       asDBuffer() const
+  {
+    DBuffer buffer((uint8_t*)&this->__val, sizeof(this->__val));    
+    return (buffer);
+  }
+
+/*
   DStreamBase& serialize(DStreamBase& os) const
   {
     os.write((char *)&this->__val, sizeof(this->__val));
@@ -65,7 +73,7 @@ public:
     is.read((char *)&this->__val, sizeof(this->__val));
     return (is);
   }
-
+*/
   operator PlainType() const
   {
     return (this->__val);
@@ -111,6 +119,13 @@ public:
     return (ref);
   }
 
+  DBuffer       asDBuffer() const
+  {
+    DBuffer buffer((uint8_t*)this->c_str(), (int64_t)this->size());
+
+    return (buffer);
+  }
+/*
   DStreamBase& serialize(DStreamBase& os) const
   {
     DUInt32 size = (uint32_t)this->size();
@@ -135,6 +150,7 @@ public:
     *this = DUnicodeString(data);
     delete[] data;
     return (is);
+*/
     /*
      //read size then string ? best place here or in deserializer encoder ?
     //XXX this is a pure implem so we will look for \x00 PascalString could be better for binary but maybe not for raw 
@@ -150,8 +166,11 @@ public:
 
     *this = buffer;
     return (is); */
+/*
   }
 
+
+*/
   operator DUnicodeString() const
   {
     return (*this);
@@ -231,6 +250,12 @@ inline DUnicodeString RealValue<DObject* >::asUnicodeString() const
     return std::string("DObject::asUnicodeString() can't get Instance of object !\n");
 }
 
+template <>
+inline DBuffer RealValue<DObject*>::asDBuffer() const
+{
+  throw DException("Can't convert DObject to DBuffer");
+}
+
 /*
  * DFunctionObject specialization
  */
@@ -289,6 +314,12 @@ inline DUnicodeString RealValue<DFunctionObject* >::asUnicodeString() const
   return ("DFunctionObject"); //throw ?
 }
 
+template<>
+inline DBuffer  RealValue<DFunctionObject* >::asDBuffer() const
+{
+  throw DException("Can't convert DFunctionObject* as DBuffer");
+}
+
 /*
  *  DUInt8 specialization (or asUnicodeString see him as char, 'c')
  */
@@ -326,8 +357,32 @@ inline DUnicodeString RealValue<DStruct* >::asUnicodeString() const
   return ("");
 }
 
-//serialize ? 
-//unserialize ?
+template<>
+inline DBuffer  RealValue<DStruct*>::asDBuffer() const
+{
+  throw DException("Can't convert DStruct as DBuffer");
+}
+
+/*
+ * DBuffer specialization
+ */
+template <>
+inline RealValue<DBuffer>::RealValue() : __val(DBuffer(NULL, 0))
+{
+}
+
+
+template <>
+inline DUnicodeString RealValue<DBuffer>::asUnicodeString() const
+{
+  return ("DBuffer[]"); //XXX size
+}
+
+template<>
+inline DBuffer RealValue<DBuffer>::asDBuffer() const
+{
+  return (*this);
+}
 
 }
 

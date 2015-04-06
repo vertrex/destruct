@@ -49,7 +49,9 @@ bool DSerializeRaw::serialize(DStream& output, DObject*  dobject)
     else
     {
       DValue value = dobject->getValue(x);
-      output << value; //write value -> this->serialize(value, type)
+      this->serialize(output, value, i->type().getType());
+
+      //output << value; //write value -> this->serialize(value, type)
     }    
   }
 
@@ -58,6 +60,8 @@ bool DSerializeRaw::serialize(DStream& output, DObject*  dobject)
 
 bool DSerializeRaw::serialize(DStream& output, DValue value, DType::Type_t type)
 {
+  //XXX
+      //output << value; //write value -> this->serialize(value, type)
   return (false);
 }
 
@@ -102,8 +106,11 @@ bool DSerializeRaw::deserialize(DStream& input, DObject* dobject)
       continue;
     else
     {
-      DValue value = dobject->getValue(x);
-      input >> value;
+      DValue value = this->deserialize(input, type);
+      //DValue value = dobject->getValue(x);
+      //input >> value;
+      //
+
       dobject->setValue(x, value); 
     }    
   }
@@ -113,7 +120,10 @@ bool DSerializeRaw::deserialize(DStream& input, DObject* dobject)
 
 DValue DSerializeRaw::deserialize(DStream& input, DType::Type_t type)
 {
-  DValue value;
+  //DValue value;
+  DValue  value = DValue(DType(type).newValue());
+
+
   return value;
 }
 

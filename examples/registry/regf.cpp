@@ -99,7 +99,9 @@ DValue RegfTime64::date(void)
 DValue RegfTime64::deserializeRaw(DValue const& value)
 {
   DStream* stream = static_cast<DStream*>(value.get<DObject*>());
-  this->timeStamp.unserialize(*stream);
+  //this->timeStamp.unserialize(*stream); //new Serialization XXX
+  stream->read(this->timeStamp);
+
   stream->destroy();
 
   return (RealValue<DUInt8>(1));

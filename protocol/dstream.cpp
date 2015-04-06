@@ -2,6 +2,71 @@
 
 namespace Destruct
 {
+
+DStream::DStream(DStruct* dstruct, DValue const& args) : DCppObject<DStream>(dstruct, args)
+{
+  this->init();
+  DObject* dargs = args.get<DObject*>();
+
+  DInt8 mode = dargs->getValue("input").get<DInt8>();
+  DUnicodeString filePath = dargs->getValue("filePath").get<DUnicodeString>();
+  dargs->destroy();
+
+  if (mode == 0)
+    this->__stream.open(filePath.c_str(), std::iostream::out | std::iostream::binary | std::iostream::trunc);
+  else
+    this->__stream.open(filePath.c_str(), std::iostream::in | std::iostream::binary);
+}
+
+DStream::DStream(const DStream& copy) : DCppObject<DStream>(copy)
+{
+  this->init();
+}
+
+DStream::~DStream()
+{
+  std::cout << "~DStream closing stream" << std::endl; 
+// IF IT"S NOT CLOSE IT WILL NOT BE FLUSHED TAKE CAREEEE
+//and it can't be read because it's not flushed too :) 
+  this->__stream.close();
+}
+
+DBuffer DStream::read(DValue const& args)
+{
+  DInt64 size = args.get<DInt64>();
+  if (size == 0)
+    return DBuffer(NULL, 0);
+
+  uint8_t* data = new uint8_t[size + 1];
+  this->__stream.read((char*)data, size);
+  data[size] = 0;
+
+  if (this->__stream.gcount() != size)
+    throw DException("Can't read all size");
+  if (this->__stream.fail())
+    throw DException("DStream::read " + args.asUnicodeString() + " fail");
+  DBuffer buffer(data, size);
+  return (buffer); //XXX new ! 
+}
+
+DInt64  DStream::write(DValue const& args)
+{
+  DBuffer buffer = args.get<DBuffer>();
+
+  const char* data = (const char*)buffer.data();
+  int64_t size = buffer.size();
+
+  if (size)
+  {
+    this->__stream.write(data, size);
+    if (this->__stream.fail())
+      throw DException("DStream::write Can't write data of size " + size);
+  }
+  return (size); //XXX check
+}
+
+
+/*
 DStream::DStream(DStruct* dstruct) : DCppObject<DStream>(dstruct, RealValue<DObject*>(DNone))
 {
   this->init();
@@ -31,7 +96,7 @@ DStream::~DStream()
   this->__fstream.close(); 
 }
 
-/* write */
+// write 
 DStream& DStream::operator<<(DUnicodeString val) 
 {
   this->__fstream << val;
@@ -56,11 +121,11 @@ DStream& DStream::write(const char* buff, uint32_t size)
   return (*this);
 } 
 
-DInt64 DStream::write(DValue const& args)
+DInt64 DStream::write(DValue const& args) //XXX
 {
  //this->__fstream >> args.getValue(buff) args.getValue(size) 
-  DUnicodeString val = args.get<DUnicodeString>();
-  this->__fstream << val;
+  DUnicodeString val = args.get<DUnicodeString>(); //XXX get DBuffer
+  this->__fstream << val;  //this->__fstream.write(buffer.data(), buffer.size())
 
   return (0);
 }
@@ -71,20 +136,20 @@ DStream& DStream::operator<<(DStream& input)
   return (*this);
 }
 
-/* read */
+// read 
 DStream& DStream::operator>>(DStream& output)
 {
   //this->__fstream >> output;
   return (*this);
 }
 
-DStream& DStream::operator>>(DUnicodeString& val) 
-{
-  this->__fstream >> val;
+//DStream& DStream::operator>>(DUnicodeString& val) 
+//{
+//this->__fstream >> val;
 
   //std::cout << "res " << this->__fstream ? << std::endl;
-  return (*this);
-}
+  //return (*this);
+  //}
 
 DStream& DStream::read(char*  buff, uint32_t size)
 {
@@ -104,9 +169,6 @@ bool DStream::fail(void)
   return (this->__fstream.fail()); 
 }
 
-/*
- * DStreamCout
-*/
 DStreamCout::DStreamCout(DStruct* dstruct, DValue const& args): DStream(dstruct)
 {
 }
@@ -166,9 +228,6 @@ bool DStreamCout::fail(void)
 }
 
 
-/**
- *  DStream string
- */
 DStreamString::DStreamString(DStruct* dstruct, DValue const& args): DStream(dstruct)
 {
   this->init();
@@ -187,7 +246,6 @@ DStreamString::DStreamString(DStruct* dstruct, DValue const& args): DStream(dstr
 DStreamString::DStreamString(const DStreamString& copy) : DStream(copy)
 {
 }
-
 
 DStreamString::~DStreamString()
 {
@@ -214,5 +272,5 @@ void DStreamString::clear(void)
 {
   this->__stream.str("");;
 }
-
+*/
 }

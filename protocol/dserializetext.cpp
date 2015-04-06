@@ -9,146 +9,126 @@
 namespace Destruct
 {
 
-DSerializeText::DSerializeText()
+SerializeText::SerializeText(DStruct* dstruct, DValue const& args) : DCppObject<SerializeText>(dstruct, args), __stream(args.get<DObject*>())
 {
+  this->init(); 
 }
 
-const DUnicodeString DSerializeText::name(void)
+SerializeText::SerializeText(SerializeText const& copy) : DCppObject<SerializeText>(copy), __stream(copy.__stream)
 {
-  return ("Text");
+  this->init();
 }
 
-DSerializeText*   DSerializeText::create(void)
+SerializeText::~SerializeText()
 {
-  return (new DSerializeText);
+  ((DObject*)__stream)->destroy();
 }
 
-/**
- * Serialization
- */
-bool DSerializeText::serialize(DStream& output, DObject*  dobject)
+void    SerializeText::sDObject(DValue const& args)
 {
-//if dstruct == null
-  output << dobject->instanceOf()->name() << std::endl << "{" << std::endl;
-  bool result = this->serialize(output, dobject, 1);
-  output << "};" << std::endl; 
- 
-  return (result);
-}
- 
-bool DSerializeText::serialize(DStream& output, DFunctionObject* value, DType::Type_t argumentType, DType::Type_t returnType)
-{
-  DException("Not implemented");
-  return (false);
-}
-
-bool DSerializeText::serialize(DStream& output, DObject* dobject, int depth)
-{
-  int x = 0;
+/*
+  DObject* dobject = args.get<DObject*>();
   DStruct const* dstruct = dobject->instanceOf();
 
-  if (dstruct == NULL)
-    throw DException("DSerializeText::serialize(DStream& output, DObject* dobject) object instance is NULL");
-
-  int32_t index = dobject->instanceOf()->findAttribute("iterator");
+  int32_t index = dobject->instanceOf()->find("iterator");
   if (index != -1)
   {
     DObject* iterator = dobject->call("iterator").get<DObject*>();
-    DType::Type_t   returnType = iterator->instanceOf()->attribute("currentItem").type().getReturnType();
+    DType::Type_t returnType = iterator->instanceOf()->attribute("currentItem").type().getReturnType();
 
     DValue count = dobject->call("size");
-
-  //  output << count.asUnicdeString(); // affiche XXX (count) ? 
-    for ( ; iterator->call("isDone").get<DInt8>() != 1; iterator->call("nextItem"))
+    
+    for (; iterator->call("isDOne").get<DInt8>() != 1; iterator->call("nextItem"))
     {
-       DValue value = iterator->call("currentItem");
-       if (returnType == DType::DObjectType)
-       {
-         DObject* subDObject = value.get<DObject*>();
-         if (subDObject != NULL)
-         {
-           output << std::string(2 * depth, ' ') << subDObject->instanceOf()->name() << " " <<  std::endl << std::string(2 * depth, ' ') << "{" <<  std::endl;
-           //output << std::string(2 * depth, ' ') << subDObject->instanceOf()->name() << " " << count or index << " = " <<  std::endl << std::string(2 * depth, ' ') << "{" <<  std::endl;
-           this->serialize(output, subDObject, depth + 1);
-           output << std::string(2 * depth, ' ') << "};" << std::endl;
-           subDObject->destroy(); //one for the get
-           subDObject->destroy(); //one for the object :) 
-         }
-         //else
-         //this->serialize(output, DNone);// afficher DNone ? 
-       }
-       else
-         output << std::string(2 * depth, ' ') << value.asUnicodeString() << "," << std::endl;
+      DValue value = iterator->call("currentItem");
+      if (returnType == DType::DObjectType)
+      {
+        DObject* subDObject = value.get<DObject*>();
+        if (subDObject)
+        {
+           std::string res = std::string(2 * this->__depth, ' ') + subDObject->instanceOf()->name() + " "+ std::endl;
+           this->sDUnicodeString(res);
+           this->__depth += 1;
+           this->sDObject(RealValue<DObject*>(subDObject));
+           this->__depth -= 1;    
+           res = std::string(2 * this->__depth, ' ') + "};" + std::endl;
+           this->sDUnicodeString(res);
+           //subDObject->destroy();
+           //subDObject->destroy();
+        }
+
+      }
+      else
+      {
+        std::string res = std::string(2 * depth, ' ') + value.asUnicodeString + "," + std::endl;
+        this->sDUnicodeString(res);
+      }    
+
     }
-    iterator->destroy();
-    iterator->destroy();
-    return (true);
+    //iterator->destroy();
+    //iterator->destroy();
+    return ;
   }
-  //else
+
   for (DStruct::DAttributeIterator i = dstruct->attributeBegin(); i != dstruct->attributeEnd(); ++i, ++x)
   {
-    if (i->type().getType() == DType::DObjectType)
-    {
-      DObject* subDObject = dobject->getValue(x).get<DObject*>();
-      if (subDObject != NULL)
-      {
-        output << std::string(2 * depth, ' ') << subDObject->instanceOf()->name() << " " << i->name() << " = " <<  std::endl << std::string(2 * depth, ' ') << "{" <<  std::endl;
-        this->serialize(output, subDObject, depth + 1);
-        subDObject->destroy();
-        output << std::string(2 * depth, ' ') << "};" << std::endl; 
-      }
-      //else serialize dnone
-    }
-    else 
-    {
-      output << std::string(2 * depth, ' ') << i->type().name() << " " << i->name() << " = " << dobject->getValue(x).asUnicodeString() << ";" << std::endl;
-    }
-  }
- 
-  return (true);
+
+  }*/
 }
 
-bool DSerializeText::serialize(DStream& output, DValue value, DType::Type_t type)
+void    SerializeText::sDStruct(DValue const& args)
 {
-  return (false);
+
 }
 
-bool DSerializeText::serialize(DStream& output, DStruct& dstruct)
+void    SerializeText::sDNone(void)
 {
-  output << dstruct.name() << std::endl;
-  output << "{" << std::endl;
-
-  for (DStruct::DAttributeIterator i = dstruct.attributeBegin(); i != dstruct.attributeEnd(); ++i)
-  {
-    output << "  " << (*i).type().name() << " " << (*i).name() << ";" << std::endl;
-  } 
-  output << "}" << std::endl;
-
-  return (true);
 }
 
-/**
- *  Deserialization
- */
-DValue DSerializeText::deserialize(DStream& input, DType::Type_t type)
+void    SerializeText::sDMethod(DValue const& args)
 {
-  DValue value;
-  return value;
+  //pass or throw ?
 }
 
-DValue DSerializeText::deserialize(DStream& input, DType::Type_t argumentType, DType::Type_t returnType)
+void    SerializeText::sDUnicodeString(DValue const& args)
 {
-  throw DException("DMethod deserialization not implemented.");
 }
 
-bool DSerializeText::deserialize(DStream& input, DObject* dobject)
+void    SerializeText::sDBuffer(DValue const& args)
 {
-  return (false);
+
 }
 
-DStruct* DSerializeText::deserialize(DStream& output)
+void    SerializeText::sDInt8(DValue const& args)
 {
-  return (NULL);
+}
+
+void    SerializeText::sDInt16(DValue const& args)
+{
+}
+
+void    SerializeText::sDInt32(DValue const& args)
+{
+}
+
+void    SerializeText::sDInt64(DValue const& args)
+{
+}
+
+void    SerializeText::sDUInt8(DValue const& args)
+{
+}
+
+void    SerializeText::sDUInt16(DValue const& args)
+{
+}
+
+void    SerializeText::sDUInt32(DValue const& args)
+{
+}
+
+void    SerializeText::sDUInt64(DValue const& args)
+{
 }
 
 }

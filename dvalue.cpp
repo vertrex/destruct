@@ -1,7 +1,6 @@
 #include "dvalue.hpp"
 #include "dobject.hpp"
-
-#include "protocol/dserialize.hpp" //for dstream ! must not include protocol
+#include "dexception.hpp"
 
 namespace Destruct
 {
@@ -88,20 +87,27 @@ DUnicodeString DValue::asUnicodeString() const
   return (DUnicodeString());
 }
 
-DStreamBase& operator<<(DStreamBase& os, DValue& value) //asRaw() ? //from raw //python binding ? Value.serialize() Value.dserialize(stream)
+DBuffer DValue::asDBuffer() const
 {
-  if (value.__value)
-    return (value.__value->serialize(os));
-  os.write(0, sizeof(uint8_t));
-//  return os << 0; //XXX ? 
-  return os;
+  if (this->__value)
+   return (this->__value->asDBuffer());
+  throw DException("Can't convert void DValue to DBuffer");
 }
 
-DStreamBase& operator>>(DStreamBase& is, DValue& value)
-{
-  if (value.__value)
-    return (value.__value->unserialize(is));
-  return (is);
-}
+//DStreamBase& operator<<(DStreamBase& os, DValue& value) //asRaw() ? //from raw //python binding ? Value.serialize() Value.dserialize(stream)
+//{
+  //if (value.__value)
+    //return (value.__value->serialize(os));
+  //os.write(0, sizeof(uint8_t));
+////  return os << 0; //XXX ? 
+  //return os;
+//}
+
+//DStreamBase& operator>>(DStreamBase& is, DValue& value)
+//{
+  //if (value.__value)
+    //return (value.__value->unserialize(is));
+  //return (is);
+//}
 
 }

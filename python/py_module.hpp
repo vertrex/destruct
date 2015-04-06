@@ -97,7 +97,7 @@ public:
 class EXPORT PythonTypeBaseModule : public PythonBaseModule
 {
 public:
-  static PyMethodDef         baseTypePyMethods[2];
+  static PyMethodDef        baseTypePyMethods[2];
 
   virtual PyObject*         asPyObject(PyObject* self, int32_t attributeIndex) = 0;
   virtual PyObject*         asDValue(Destruct::DValue const& value) = 0;

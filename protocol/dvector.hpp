@@ -4,7 +4,6 @@
 #include "protocol/dcppobject.hpp"
 #include "protocol/dcontainer.hpp"
 #include "protocol/dstream.hpp"
-#include "protocol/dserialize.hpp"
 
 namespace Destruct
 {

@@ -18,7 +18,7 @@
 //#include "protocol/diterator.hpp"
 #include "protocol/dvector.hpp"
 #include "protocol/dclassobject.hpp"
-#include "protocol/dserialize.hpp"
+//#include "protocol/dserializebinary.hpp"
 #include "protocol/dstream.hpp"
 
 using namespace Destruct;

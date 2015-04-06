@@ -17,9 +17,17 @@ public:
   bool     serialize(DStream& output, DObject* dobject); 
   bool     serialize(DStream& output, DFunctionObject* value, DType::Type_t argumentType, DType::Type_t returnType);
   bool     serialize(DStream& output, DStruct& dstruct); 
-  bool     serialize(DStream& output, DValue value, DType::Type_t type);
+  bool     serialize(DStream& output, DValue value, DType::Type_t type); //DValue const& value
 
   bool     deserialize(DStream& input, DObject* dobject);
+
+  //template<class type> 
+  //deserialize(DStream& input, type object)
+  //{
+  //write(size(of))
+  //}
+  // 
+
   DStruct* deserialize(DStream& output); 
   DValue   deserialize(DStream& input, DType::Type_t type);
   DValue   deserialize(DStream& input, DType::Type_t returnType, DType::Type_t argumentType);

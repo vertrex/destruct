@@ -127,14 +127,16 @@ PyObject* PyDMethodObject::call(PyObject* _self, PyObject* args)
   } 
   catch (Destruct::DException const& exception)
   {  
+    std::cout << exception.error() << std::endl;
+    PyEval_RestoreThread(_save); 
     PyErr_SetString(PyExc_TypeError, exception.error().c_str());
   }
   catch (std::bad_cast exception) //catch in cpp ?
   {
+    PyEval_RestoreThread(_save); 
     Destruct::DUnicodeString argumentString = "MethodObject must return a " + type.returnName();
     PyErr_SetString(PyExc_TypeError, argumentString.c_str()); 
   }
-  //PyEval_RestoreThread(_save); //block ? 
 
   return (0);
 }

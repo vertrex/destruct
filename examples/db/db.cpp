@@ -7,7 +7,6 @@
 #include "dsimpleobject.hpp"
 
 #include "protocol/dstream.hpp"
-#include "protocol/dserialize.hpp"
 #include "protocol/dmutableobject.hpp"
 
 DB::DB() : __destruct(DStructs::instance()), __session(NULL)
@@ -90,8 +89,9 @@ void            DB::declare(void)
 
 void            DB::show(DObject* object) const
 {
-  DStream* cout = static_cast<DStream*>(this->__destruct.generate("DStreamCout"));
-  DSerializers::to("Text")->serialize(*cout, object);
+  DObject* cout = this->__destruct.generate("DStreamCout");
+  DObject* serializeText = this->__destruct.generate("DeserialzeText", RealValue<DObject*>(cout));
+  serializeText->call("DObject", RealValue<DObject*>(object));
 }
 
 void            DB::load(DValue const& filePath)
@@ -102,22 +102,24 @@ void            DB::load(DValue const& filePath)
   arg->setValueAttribute(DType::DUnicodeStringType, "filePath", filePath); 
   arg->setValueAttribute(DType::DInt8Type, "input",  RealValue<DInt8>(DStream::Input));
 
-  DStream* dstream = static_cast<DStream*>(this->__destruct.generate("DStream", RealValue<DObject*>(arg)));
+  DObject* dstream = this->__destruct.generate("DStream", RealValue<DObject*>(arg));
   arg->destroy();
-  DSerialize* serializer = DSerializers::to("Binary");
+  DObject* deserializer = this->__destruct.generate("DeserializeBinary", RealValue<DObject*>(dstream));
 
-  DValue dstruct = serializer->deserialize(*dstream, DType::DStructType);
+  DValue dstruct = deserializer->call("DStruct");
+
   std::cout << "Found struct " << dstruct.get<DStruct*>()->name() << std::endl;
 
-  DObject* vectorStruct= serializer->deserialize(*dstream, DType::DObjectType).get<DObject*>();
+  DObject* vectorStruct = deserializer->call("DObject").get<DObject*>();
+
   for (DUInt64 i = 0; i < vectorStruct->call("size").get<DUInt64>(); ++i)
   {
     DStruct* dstruct = vectorStruct->call("get", RealValue<DUInt64>()).get<DStruct*>();
     std::cout << "Found " << dstruct->name() << std::endl;
   }
 
-  DValue value = serializer->deserialize(*dstream, DType::DObjectType);
-  
+  DValue value = deserializer->call("DObject");
+ 
   dstream->destroy();
 //  std::cout << "Loaded ! found first object : " << value.asUnicodeString() << std::endl; 
 

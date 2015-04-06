@@ -52,7 +52,8 @@ bool DSerializeRPC::serialize(DStream& networkStream, DValue value, DType::Type_
   else
   {
     this->__streamString.clear();
-    this->__streamString << value;
+    this->__streamString.write(value); //XXX new serialiatiuon
+    //this->__streamString << value;
     this->__networkStream << this->__streamString;
   } 
   this->__streamString.clear();
@@ -65,7 +66,9 @@ bool DSerializeRPC::serialize(DStream& networkStream, DFunctionObject* dfunction
   ServerFunctionObject* serverFunctionObject = new ServerFunctionObject(dfunctionObject, argumentType, returnType);
   RealValue<DUInt64> id(this->__functionObjects.registerObject(serverFunctionObject));
   
-  id.serialize(this->__streamString);
+  //id.serialize(this->__streamString); //new serialization
+  this->__streamString.write(id);
+
   this->__networkStream << this->__streamString;
 
   return (true);
@@ -76,8 +79,11 @@ bool DSerializeRPC::serialize(DStream& networkStream, DObject*  dobject)
   RealValue<DUnicodeString> objectName(dobject->instanceOf()->name());
   RealValue<DUInt64> id(this->__objects.registerObject(dobject));
 
-  objectName.serialize(this->__streamString);
-  id.serialize(this->__streamString);
+  //objectName.serialize(this->__streamString); //XXX new serialization
+  //id.serialize(this->__streamString); //XXX
+  this->__streamString.write(objectName);
+  this->__streamString.write(id);
+
   this->__networkStream << this->__streamString;
 
   return (true);
@@ -106,8 +112,10 @@ DValue DSerializeRPC::deserialize(DStream& networkStream, DType::Type_t type)
     RealValue<DUnicodeString> objectName("");
     RealValue<DUInt64> id;
   
-    objectName.unserialize(this->__streamString);
-    id.unserialize(this->__streamString);
+    //objectName.unserialize(this->__streamString);
+    //id.unserialize(this->__streamString);
+    this->__streamString.read(objectName);//.get<DUnicodeString>(); //new serialization
+    this->__streamString.read(id); //.get<DUInt64>();
 
     DStruct* dstruct = Destruct::DStructs::instance().find(objectName);
     if (dstruct == NULL)
@@ -120,7 +128,8 @@ DValue DSerializeRPC::deserialize(DStream& networkStream, DType::Type_t type)
   }
 
   DValue value(DType(type).newValue());
-  this->__streamString >> value;
+  //this->__streamString >> value;
+  this->__streamString.read(value); //XXX XXX new serializaiton streamString -> value this->__streamString.read?
   this->__streamString.clear();
   return (value);
 }
@@ -130,8 +139,9 @@ DValue DSerializeRPC::deserialize(DStream& input, DType::Type_t argumentType, DT
   this->__networkStream >> this->__streamString;
 
   RealValue<DUInt64> id;
-  id.unserialize(this->__streamString);
-  
+  //id.unserialize(this->__streamString);
+  this->__streamString.read(id); 
+ 
   return (RealValue<DFunctionObject*>(new ClientFunctionObject(this->__networkStream, this, id, argumentType, returnType)));
 }
 

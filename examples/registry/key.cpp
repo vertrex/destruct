@@ -107,10 +107,15 @@ DValue    Subkeys::deserializeRaw(DValue const& arg)
 
   stream->seek(subkeyListOffset + 0x1000); 
   
-  size.unserialize(*stream);
-  signature.unserialize(*stream);
-  subkeyCount.unserialize(*stream);
- 
+  //size.unserialize(*stream);
+  //signature.unserialize(*stream);
+  //subkeyCount.unserialize(*stream);
+  // 
+  //new serialization XXX
+  stream->read(size);
+  stream->read(signature);
+  stream->read(subkeyCount); 
+
   Destruct::DSerialize* serializer = Destruct::DSerializers::to("Raw");
 
   if (signature == 0x686c || signature == 0x666c || signature == 0x6972 || signature == 0x696c)
@@ -118,10 +123,12 @@ DValue    Subkeys::deserializeRaw(DValue const& arg)
     for (uint32_t index = 0; index < subkeyCount; ++index)
     {
       RealValue<DUInt32> subkeyOffset, subkeyChecksum;
-      subkeyOffset.unserialize(*stream);
+      //subkeyOffset.unserialize(*stream); //new serializaiton XXX
+      stream->read(subkeyOffset);
       if (signature == 0x686c || signature == 0x666c) //LH || LI 
       {
-        subkeyChecksum.unserialize(*stream);
+        //subkeyChecksum.unserialize(*stream);//new serialization XXX
+        stream->read(subkeyChecksum);
       }
    
       DObject* subkey = keyStruct->newObject();
