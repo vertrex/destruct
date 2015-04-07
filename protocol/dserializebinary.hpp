@@ -1,5 +1,5 @@
-#ifndef DESTRUCT_DSERIALIZE_HPP_
-#define DESTRUCT_DSERIALIZE_HPP_
+#ifndef DESTRUCT_DSERIALIZEBINARY_HPP_
+#define DESTRUCT_DSERIALIZEBINARY_HPP_
 
 #include <fstream>
 #include <iostream> 

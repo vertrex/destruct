@@ -97,8 +97,8 @@ protocol/dmutablestruct.cpp
 protocol/dmutableobject.cpp
 protocol/dserializebinary.cpp
 protocol/dserializetext.cpp
+protocol/dserializexml.cpp
 #protocol/dserializeraw.cpp
-#protocol/dserializexml.cpp
 protocol/dstream.cpp
 protocol/traceobject.cpp
 protocol/recursivetraceobject.cpp

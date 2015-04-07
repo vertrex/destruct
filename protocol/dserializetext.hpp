@@ -1,3 +1,6 @@
+#ifndef DESTRUCT_DSERIALIZETEXT_HPP_
+#define DESTRUCT_DSERIALIZETEXT_HPP_
+
 #include "dcppobject.hpp"
 
 namespace Destruct
@@ -112,3 +115,5 @@ public:
 };
 
 }
+
+#endif

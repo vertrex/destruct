@@ -10,6 +10,7 @@
 
 #include "protocol/dserializebinary.hpp"
 #include "protocol/dserializetext.hpp"
+#include "protocol/dserializexml.hpp"
 #include "protocol/dstream.hpp"
 #include "protocol/traceobject.hpp"
 #include "protocol/recursivetraceobject.hpp"
@@ -45,6 +46,7 @@ void Protocol::__registerStruct(DStructs* destruct)
   registerCpp<SerializeBinary>(destruct, "SerializeBinary");
   registerCpp<DeserializeBinary>(destruct, "DeserializeBinary");
   registerCpp<SerializeText>(destruct, "SerializeText");
+  registerCpp<SerializeXML>(destruct, "SerializeXML");
 
   //registerCpp<DStreamCout >(destruct, "DStreamCout");
   //registerCpp<DStreamString >(destruct, "DStreamString");

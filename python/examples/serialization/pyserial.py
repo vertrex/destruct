@@ -13,33 +13,42 @@ class StreamArgument(DStruct):
     self.addAttribute(DAttribute("filePath" , DUnicodeString))
     self.addAttribute(DAttribute("input", DInt8))
 
-args = StreamArgument().newObject()
+def generateSerializer(name, mode, fileName):
+  args = StreamArgument().newObject()
+  args.input = mode
+  args.filePath = os.getcwd() + "/" + fileName
+  stream = dstructs.find("DStream").newObject(args)
+  serializer = dstructs.find(name).newObject(stream)
+  return serializer
 
 # Deserialize to Bin
 def testObjectSerialization(dobject, fileName):
   ## Deserialize to Text
-  args.filePath = os.getcwd() + "/" + fileName + ".text"
-  args.input = 0
-  print "Serializing to text content of file " + args.filePath
-  streamText = dstructs.find("DStream").newObject(args)
-  serializeText = dstructs.find("SerializeText").newObject(streamText)
-  serializeText.DObject(dobject)
+  serializer = generateSerializer("SerializeText", 0, fileName + ".text")
+  serializer.DObject(dobject)
 
-  args.filePath = os.getcwd() + "/" + fileName +".bin"
-  print "Deserializing to binary content of file " + args.filePath
-  streamBin = dstructs.find("DStream").newObject(args)
-  serializeBinary = dstructs.find("SerializeBinary").newObject(streamBin)
-  serializeBinary.DObject(dobject)
-  serializeBinary = None
-  streamBin = None
+  serializer = generateSerializer("SerializeXML", 0, fileName + ".xml")
+  serializer.DObject(dobject)
 
-  args.filePath = os.getcwd() + "/" + fileName + ".bin"
-  print "Deserializing content of file " + args.filePath
-  args.input = 1
-  streamIn = dstructs.find("DStream").newObject(args)
-  deserializeBinary = dstructs.find("DeserializeBinary").newObject(streamIn)
-  dobject = deserializeBinary.DObject()
-  return dobject
+  serializer = generateSerializer("SerializeBinary", 0, fileName + ".bin")
+  serializer.DObject(dobject)
+
+  serializer = generateSerializer("DeserializeBinary", 1, fileName + ".bin")
+  return serializer.DObject()
+
+def testDStructSerialization(dstruct, fileName):
+  serializer = generateSerializer("SerializeText", 0, fileName + "Struct.text")
+  serializer.DStruct(dstruct)
+
+  serializer = generateSerializer("SerializeXML", 0, fileName + "Struct.xml")
+  serializer.DStruct(dstruct)
+
+  serializer = generateSerializer("SerializeBinary", 0, fileName + "Struct.bin")
+  serializer.DStruct(dstruct)
+
+  serializer = generateSerializer("DeserializeBinary", 1, fileName + "Struct.bin")
+  return serializer.DStruct()
+
 #
 # Vector String Test
 #
@@ -60,7 +69,6 @@ class ComplexObject(DStruct):
     self.addAttribute(DAttribute("name", DUnicodeString))
     self.addAttribute(DAttribute("number", DUInt64))
     self.addAttribute(DAttribute("object", DObject))
-dstructs.registerDStruct(ComplexObject())
 
 complex1 = ComplexObject().newObject()
 complex2 = ComplexObject().newObject()
@@ -78,6 +86,9 @@ complex3.name = "Third object"
 complex3.number = 3
 complex3.object = vectorString
 
+complexStruct = testDStructSerialization(ComplexObject(), "complex") #deserialize & register 
+print dir(complexStruct.newObject())
+
 complex = testObjectSerialization(complex1, "complex")
 print complex.name, complex.number, complex.object
 print complex.object.name, complex.object.number, complex.object.object
@@ -85,4 +96,3 @@ print complex.object.object.name, complex.object.object.number, complex.object.o
 for x in complex.object.object.object:
   print x
 
-#XXX Test Destruct deserialization
