@@ -125,9 +125,8 @@ void    SerializeBinary::sDUnicodeString(DValue const& args)
 
   DUnicodeString str = args.get<DUnicodeString>();
   RealValue<DInt64>  dsize((int64_t)str.size());
-  stream->call("write", RealValue<DBuffer>(dsize.asDBuffer()));
 
-  DBuffer buffer = args.asDBuffer();
+  stream->call("write", RealValue<DBuffer>(dsize.asDBuffer()));
   stream->call("write", RealValue<DBuffer>(args.asDBuffer()));
 }
 
