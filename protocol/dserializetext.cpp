@@ -9,12 +9,12 @@
 namespace Destruct
 {
 
-SerializeText::SerializeText(DStruct* dstruct, DValue const& args) : DCppObject<SerializeText>(dstruct, args), __stream(args.get<DObject*>())
+SerializeText::SerializeText(DStruct* dstruct, DValue const& args) : DCppObject<SerializeText>(dstruct, args), __stream(args.get<DObject*>()), __depth(0)
 {
   this->init(); 
 }
 
-SerializeText::SerializeText(SerializeText const& copy) : DCppObject<SerializeText>(copy), __stream(copy.__stream)
+SerializeText::SerializeText(SerializeText const& copy) : DCppObject<SerializeText>(copy), __stream(copy.__stream), __depth(0)
 {
   this->init();
 }
@@ -26,11 +26,15 @@ SerializeText::~SerializeText()
 
 void    SerializeText::sDObject(DValue const& args)
 {
-/*
+  int x = 0;
   DObject* dobject = args.get<DObject*>();
   DStruct const* dstruct = dobject->instanceOf();
-
-  int32_t index = dobject->instanceOf()->find("iterator");
+  //DUnicodeString output = std::string(2 * this->__depth, ' ');
+  DUnicodeString output; // = std::string(2 * this->__depth, ' ');
+  output += dobject->instanceOf()->name() + "\n" + std::string(2 * this->__depth, ' ') + "{\n";
+  this->sDUnicodeString(RealValue<DUnicodeString>(output));
+   
+  int32_t index = dobject->instanceOf()->findAttribute("iterator");
   if (index != -1)
   {
     DObject* iterator = dobject->call("iterator").get<DObject*>();
@@ -38,7 +42,7 @@ void    SerializeText::sDObject(DValue const& args)
 
     DValue count = dobject->call("size");
     
-    for (; iterator->call("isDOne").get<DInt8>() != 1; iterator->call("nextItem"))
+    for (; iterator->call("isDone").get<DInt8>() != 1; iterator->call("nextItem"))
     {
       DValue value = iterator->call("currentItem");
       if (returnType == DType::DObjectType)
@@ -46,89 +50,147 @@ void    SerializeText::sDObject(DValue const& args)
         DObject* subDObject = value.get<DObject*>();
         if (subDObject)
         {
-           std::string res = std::string(2 * this->__depth, ' ') + subDObject->instanceOf()->name() + " "+ std::endl;
-           this->sDUnicodeString(res);
+           this->sDUnicodeString(RealValue<DUnicodeString>(output));
            this->__depth += 1;
            this->sDObject(RealValue<DObject*>(subDObject));
-           this->__depth -= 1;    
-           res = std::string(2 * this->__depth, ' ') + "};" + std::endl;
-           this->sDUnicodeString(res);
+           this->__depth -= 1;
+           this->sDUnicodeString(RealValue<DUnicodeString>(output));
            //subDObject->destroy();
            //subDObject->destroy();
         }
-
       }
       else
       {
-        std::string res = std::string(2 * depth, ' ') + value.asUnicodeString + "," + std::endl;
-        this->sDUnicodeString(res);
+        output = std::string(2 * this->__depth, ' ');
+        output += value.asUnicodeString() + ",\n";
+        this->sDUnicodeString(RealValue<DUnicodeString>(output));
       }    
-
     }
     //iterator->destroy();
     //iterator->destroy();
+    output = std::string(2 * this->__depth, ' ') + "};";
+    this->sDUnicodeString(RealValue<DUnicodeString>(output));
     return ;
   }
 
   for (DStruct::DAttributeIterator i = dstruct->attributeBegin(); i != dstruct->attributeEnd(); ++i, ++x)
   {
-
-  }*/
+       DUnicodeString output = "  " + std::string(2 * this->__depth, ' ');
+       output += i->type().name(); 
+       output += " " + i->name() + " = ";
+       this->sDUnicodeString(RealValue<DUnicodeString>(output));
+       this->__depth += 1;
+       this->call(i->type().name(), dobject->getValue(x));
+       this->__depth -= 1;
+       output = std::string("\n");
+       this->sDUnicodeString(RealValue<DUnicodeString>(output));
+  }
+  output = std::string(2 * this->__depth, ' ');
+  output += "};";
+  this->sDUnicodeString(RealValue<DUnicodeString>(output));
 }
 
 void    SerializeText::sDStruct(DValue const& args)
 {
+  DStruct const* dstruct = args.get<DStruct*>();
+  DUnicodeString output = dstruct->name() + "\n{\n";
 
+  for (DStruct::DAttributeIterator i = dstruct->attributeBegin(); i != dstruct->attributeEnd(); ++i)
+    output += "  " + (*i).type().name() + " " + (*i).name() + ";\n";
+
+  output += "}\n"; 
+
+  this->sDUnicodeString(RealValue<DUnicodeString>(output)); 
 }
 
 void    SerializeText::sDNone(void)
 {
+  DUnicodeString unicodeString = RealValue<DObject*>(DNone).asUnicodeString();
+  DBuffer buffer((uint8_t*)unicodeString.c_str(), unicodeString.size());
+
+  ((DObject*)this->__stream)->call("write", RealValue<DBuffer>(buffer));
 }
 
 void    SerializeText::sDMethod(DValue const& args)
 {
-  //pass or throw ?
+  DUnicodeString unicodeString = args.asUnicodeString();
+  DBuffer buffer((uint8_t*)unicodeString.c_str(), unicodeString.size());
+
+  ((DObject*)this->__stream)->call("write", RealValue<DBuffer>(buffer));
 }
 
 void    SerializeText::sDUnicodeString(DValue const& args)
 {
+  ((DObject*)this->__stream)->call("write", RealValue<DBuffer>(args.asDBuffer()));
 }
 
 void    SerializeText::sDBuffer(DValue const& args)
 {
-
+  //stream->call("write", RealValue<DBuffer>(args);
 }
 
 void    SerializeText::sDInt8(DValue const& args)
 {
+  DUnicodeString unicodeString = args.asUnicodeString();
+  DBuffer buffer((uint8_t*)unicodeString.c_str(), unicodeString.size());
+
+  ((DObject*)this->__stream)->call("write", RealValue<DBuffer>(buffer));
 }
 
 void    SerializeText::sDInt16(DValue const& args)
 {
+  DUnicodeString unicodeString = args.asUnicodeString();
+  DBuffer buffer((uint8_t*)unicodeString.c_str(), unicodeString.size());
+
+  ((DObject*)this->__stream)->call("write", RealValue<DBuffer>(buffer));
 }
 
 void    SerializeText::sDInt32(DValue const& args)
 {
+  DUnicodeString unicodeString = args.asUnicodeString();
+  DBuffer buffer((uint8_t*)unicodeString.c_str(), unicodeString.size());
+
+  ((DObject*)this->__stream)->call("write", RealValue<DBuffer>(buffer));
 }
 
 void    SerializeText::sDInt64(DValue const& args)
 {
+  DUnicodeString unicodeString = args.asUnicodeString();
+  DBuffer buffer((uint8_t*)unicodeString.c_str(), unicodeString.size());
+
+  ((DObject*)this->__stream)->call("write", RealValue<DBuffer>(buffer));
 }
 
 void    SerializeText::sDUInt8(DValue const& args)
 {
+  DUnicodeString unicodeString = args.asUnicodeString();
+  DBuffer buffer((uint8_t*)unicodeString.c_str(), unicodeString.size());
+
+  ((DObject*)this->__stream)->call("write", RealValue<DBuffer>(buffer));
 }
 
 void    SerializeText::sDUInt16(DValue const& args)
 {
+  DUnicodeString unicodeString = args.asUnicodeString();
+  DBuffer buffer((uint8_t*)unicodeString.c_str(), unicodeString.size());
+
+  ((DObject*)this->__stream)->call("write", RealValue<DBuffer>(buffer));
 }
 
 void    SerializeText::sDUInt32(DValue const& args)
 {
+  DUnicodeString unicodeString = args.asUnicodeString();
+  DBuffer buffer((uint8_t*)unicodeString.c_str(), unicodeString.size());
+
+  ((DObject*)this->__stream)->call("write", RealValue<DBuffer>(buffer));
 }
 
 void    SerializeText::sDUInt64(DValue const& args)
 {
+  DUnicodeString unicodeString = args.asUnicodeString();
+  DBuffer buffer((uint8_t*)unicodeString.c_str(), unicodeString.size());
+
+  ((DObject*)this->__stream)->call("write", RealValue<DBuffer>(buffer));
 }
 
 }

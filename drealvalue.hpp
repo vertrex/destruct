@@ -17,7 +17,6 @@ namespace Destruct
 * implemented typedvalue who inherit final value who inherite basevalue
 * all specialize method by type must be implem here ! that's why we use template
 */
-
 template <typename PlainType>
 class RealValue : public TypedValue<PlainType>
 {
@@ -57,23 +56,11 @@ public:
 
   DBuffer       asDBuffer() const
   {
+    //copy or not // XXX delte ?
     DBuffer buffer((uint8_t*)&this->__val, sizeof(this->__val));    
     return (buffer);
   }
 
-/*
-  DStreamBase& serialize(DStreamBase& os) const
-  {
-    os.write((char *)&this->__val, sizeof(this->__val));
-    return (os);
-  }
-
-  DStreamBase& unserialize(DStreamBase& is)
-  {
-    is.read((char *)&this->__val, sizeof(this->__val));
-    return (is);
-  }
-*/
   operator PlainType() const
   {
     return (this->__val);
@@ -121,56 +108,12 @@ public:
 
   DBuffer       asDBuffer() const
   {
+                                //copy or not ? XXX delete ?
     DBuffer buffer((uint8_t*)this->c_str(), (int64_t)this->size());
 
     return (buffer);
   }
-/*
-  DStreamBase& serialize(DStreamBase& os) const
-  {
-    DUInt32 size = (uint32_t)this->size();
-    os.write((char*)&size, sizeof(size));
-    os.write(this->c_str(), (uint32_t)this->size());
 
-    //write Size then string best place here or deserializer / encoder ? 
-    //os.write((char *)this->c_str(), this->size()); // pascal string ? 00
-    //os.write("\x00", 1); //\x00\x00 in unicode 16 ? 
-    //return (os);
-    return (os);
-  }
-
-  DStreamBase& unserialize(DStreamBase& is)
-  {
-    DUInt32 size; 
-    is.read((char*)&size, sizeof(size));
-    char* data = new char[size + 1];
-    is.read(data, size);
-    data[size] = 0;
-//    *this = std::string(data);
-    *this = DUnicodeString(data);
-    delete[] data;
-    return (is);
-*/
-    /*
-     //read size then string ? best place here or in deserializer encoder ?
-    //XXX this is a pure implem so we will look for \x00 PascalString could be better for binary but maybe not for raw 
-    char c = '\xff';
-    std::string buffer;
-
-    is.read(&c, sizeof(char));
-    while (c != '\x00')
-    {  
-      buffer += c;
-      is.read(&c, sizeof(char));
-    }
-
-    *this = buffer;
-    return (is); */
-/*
-  }
-
-
-*/
   operator DUnicodeString() const
   {
     return (*this);
@@ -259,7 +202,6 @@ inline DBuffer RealValue<DObject*>::asDBuffer() const
 /*
  * DFunctionObject specialization
  */
-
 template <>
 inline RealValue<DFunctionObject* >::RealValue() : __val(0) //XXX init a 0 ? call(0) ? throw ? 
 {
@@ -342,7 +284,6 @@ inline DUnicodeString RealValue<DInt8 >::asUnicodeString() const
 /*
  * DSruct specialization
  */
-
 template <>
 inline FinalValue* RealValue<DStruct* >::clone() const
 {
@@ -370,7 +311,6 @@ template <>
 inline RealValue<DBuffer>::RealValue() : __val(DBuffer(NULL, 0))
 {
 }
-
 
 template <>
 inline DUnicodeString RealValue<DBuffer>::asUnicodeString() const

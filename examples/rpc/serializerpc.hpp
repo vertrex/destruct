@@ -1,7 +1,6 @@
 #ifndef __DSERIALIZERPC__
 #define __DSERIALIZERPC__
 
-#include "protocol/dserialize.hpp"
 #include "networkstream.hpp"
 #include "objectmanager.hpp"
 #include "serverfunctionobject.hpp"

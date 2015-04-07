@@ -30,7 +30,6 @@
 #include "protocol/dcppobject.hpp"
 #include "protocol/dmutableobject.hpp"
 #include "protocol/dstream.hpp"
-#include "protocol/dserialize.hpp"
 
 #define registerDCpp(x)\
   Destruct::DStruct* x##Struct = Destruct::makeNewDCpp<x>(#x);\

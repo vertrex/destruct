@@ -60,4 +60,4 @@ endif(MSVC)
 configure_file(__init__.py __init__.py COPYONLY)
 include_directories("../")
 
-#add_subdirectory(examples)
+add_subdirectory(examples)

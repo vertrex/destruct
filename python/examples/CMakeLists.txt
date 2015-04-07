@@ -6,9 +6,10 @@ add_subdirectory(iterator)#protocol tester
 add_subdirectory(loader)
 add_subdirectory(inheritance)
 add_subdirectory(workerpool)#must use loader
+add_subdirectory(serialization)
 
 if (UNIX)
 add_subdirectory(embedding)
 #add_subdirectory(swig)
-add_subdirectory(registry)
+#add_subdirectory(registry)
 endif (UNIX)

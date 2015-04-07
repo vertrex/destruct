@@ -9,6 +9,7 @@ public:
   DBuffer();
   DBuffer(uint8_t* data , int32_t size); 
   DBuffer(DBuffer const& copy);
+  ~DBuffer();
 
   uint8_t*      data(void);
   int32_t       size(void);
