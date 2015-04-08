@@ -6,8 +6,6 @@
 #include "drealvalue.hpp"
 #include "dsimpleobject.hpp"
 
-#include "protocol/dstream.hpp"
-#include "protocol/dserialize.hpp"
 #include "protocol/dmutableobject.hpp"
 
 Refcount::Refcount() : __destruct(Destruct::DStructs::instance())
@@ -276,8 +274,11 @@ void            Refcount::declare(void)
 
 void           Refcount ::show(Destruct::DObject* object) const
 {
-  Destruct::DStream* cout = static_cast<Destruct::DStream*>(this->__destruct.generate("DStreamCout"));
-  Destruct::DSerializers::to("Text")->serialize(*cout, object);
+  Destruct::DObject* cout = this->__destruct.generate("DStreamCout");
+  Destruct::DObject* serializer = this->__destruct.generate("DeserializeText", RealValue<DObject*>(cout));
+  serializer->call("DObject", RealValue<DObject*>(object));
+  serializer->destroy();
+  cout->destroy();
 }
 
 int     main(int argc, char** argv)

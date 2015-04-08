@@ -90,8 +90,10 @@ void            DB::declare(void)
 void            DB::show(DObject* object) const
 {
   DObject* cout = this->__destruct.generate("DStreamCout");
-  DObject* serializeText = this->__destruct.generate("DeserialzeText", RealValue<DObject*>(cout));
+  DObject* serializeText = this->__destruct.generate("SerializeText", RealValue<DObject*>(cout));
   serializeText->call("DObject", RealValue<DObject*>(object));
+  serializeText->destroy();
+  cout->destroy();
 }
 
 void            DB::load(DValue const& filePath)
@@ -123,7 +125,7 @@ void            DB::load(DValue const& filePath)
   dstream->destroy();
 //  std::cout << "Loaded ! found first object : " << value.asUnicodeString() << std::endl; 
 
-  //this->__session = static_cast<Session*>(value.get<DObject*>());
+  this->__session = static_cast<Session*>(value.get<DObject*>());
   DObject* session = value.get<DObject*>();
   std::cout << "Session load refcount " << session->refCount() << " " << session->instanceOf()->name() << std::endl;
   session->destroy(); 
@@ -144,13 +146,13 @@ int     main(int argc, char** argv)
     if (argc > 1 && std::string(argv[1]) == std::string("-l"))
     {
       db.load(RealValue<DUnicodeString>("db.sav"));
-   //   db.show(db.session());
+      db.show(db.session());
 
     }
     else if (argc > 1 && std::string(argv[1]) == std::string("-s"))
     {
       db.populateSession();
-    //  db.show(db.session());
+      db.show(db.session());
       db.session()->save(RealValue<DUnicodeString>("db.sav"));
     }
     else

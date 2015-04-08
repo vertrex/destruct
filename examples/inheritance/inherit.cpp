@@ -6,8 +6,6 @@
 #include "drealvalue.hpp"
 #include "dsimpleobject.hpp"
 
-#include "protocol/dstream.hpp"
-#include "protocol/dserialize.hpp"
 #include "protocol/dmutableobject.hpp"
 
 #include "compose.hpp"
@@ -156,7 +154,9 @@ void           Inheritance::show(DStruct* dstruct) const
 
 void           Inheritance::show(DObject* object) const
 {
-  DStream* cout = static_cast<DStream*>(this->__destruct.generate("DStreamCout"));
-  DSerializers::to("Text")->serialize(*cout, object);
+  DObject* cout = this->__destruct.generate("DStreamCout");
+  DObject* serializer = this->__destruct.generate("SerializeText", RealValue<DObject*>(cout));
+  serializer->call("DObject", RealValue<DObject*>(object));
+  serializer->destroy();
+  cout->destroy();
 }
-
