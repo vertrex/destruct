@@ -76,7 +76,59 @@ public:
   {
     return (memberBegin() + ownAttributeCount());
   } 
+};
 
+class DStreamCout : public DCppObject<DStreamCout>
+{
+public:
+  DStreamCout(DStruct* dstruct, DValue const& args);
+  DStreamCout(const DStreamCout& copy);
+
+  DBuffer  read(DValue const& args); 
+  DInt64   write(DValue const& args);
+//  DValue  seek(DValue const& args);
+  
+  ~DStreamCout();
+private:
+  std::fstream  __stream; 
+public:
+  RealValue<DFunctionObject* > _read;
+  RealValue<DFunctionObject* > _write;
+
+  static size_t ownAttributeCount()
+  {
+    return (2);
+  }
+
+  static DAttribute* ownAttributeBegin()
+  {
+    static DAttribute  attributes[] = 
+    {
+       DAttribute(DType::DBufferType, "read",  DType::DInt64Type), 
+       DAttribute(DType::DInt64Type,  "write", DType::DBufferType),
+    };
+    return (attributes);
+  }
+
+  static DPointer<DStreamCout>* memberBegin()
+  {
+    static DPointer<DStreamCout> memberPointer[] = 
+    {
+       DPointer<DStreamCout>(&DStreamCout::_read, &DStreamCout::read),
+       DPointer<DStreamCout>(&DStreamCout::_write, &DStreamCout::write),
+    };
+    return (memberPointer);
+  }
+
+  static DAttribute* ownAttributeEnd()
+  {
+    return (ownAttributeBegin() + ownAttributeCount());
+  }
+
+  static DPointer<DStreamCout>*  memberEnd()
+  {
+    return (memberBegin() + ownAttributeCount());
+  } 
 };
 
 /*
@@ -172,22 +224,6 @@ public:
 */
 
 /*
-class DStreamCout : public DStream //use destruct inheritance ? ?
-{
-public:
-  DStreamCout(DStruct* dstruct, DValue const &args);
-  DStreamCout(const DStreamCout& copy);
-  DStream& operator>>(DUnicodeString& val);
-  DStream& operator<<(DUnicodeString val);
-  DStream& operator<<(char val);
-  DStream& operator<<(StandardEndLine func);
-  DStream& read(char*  buff, uint32_t size);
-  DStream& write(const char* buff, uint32_t size);
-  bool fail(void);
-protected:
-  ~DStreamCout();
-};
-
 class DStreamString : public DStream //Use destruct imheritance ??
 {
 public:

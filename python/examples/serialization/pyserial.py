@@ -21,13 +21,24 @@ def generateSerializer(name, mode, fileName):
   serializer = dstructs.find(name).newObject(stream)
   return serializer
 
+def generateCoutSerializer(name):
+   stream = dstructs.find("DStreamCout").newObject()
+   serializer = dstructs.find(name).newObject(stream)
+   return serializer
+
 # Deserialize to Bin
 def testObjectSerialization(dobject, fileName):
   ## Deserialize to Text
   serializer = generateSerializer("SerializeText", 0, fileName + ".text")
   serializer.DObject(dobject)
 
+  serializer = generateCoutSerializer("SerializeText")
+  serializer.DObject(dobject)
+
   serializer = generateSerializer("SerializeXML", 0, fileName + ".xml")
+  serializer.DObject(dobject)
+
+  serializer = generateCoutSerializer("SerializeXML")
   serializer.DObject(dobject)
 
   serializer = generateSerializer("SerializeBinary", 0, fileName + ".bin")

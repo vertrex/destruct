@@ -68,11 +68,8 @@ void    SerializeBinary::sDObject(DValue const& args)
   for (DStruct::DAttributeIterator attribute = dstruct->attributeBegin(); attribute != dstruct->attributeEnd(); ++attribute)
   {
     DType type = attribute->type();
-    if (type.getType() == DType::DMethodType)
-      continue;
-    else if (type.getType() == DType::DNoneType)
-      continue;
-    else if (type.getType() == DType::DUnknownType)
+    DType::Type_t type_t = type.getType();
+    if (type_t == DType::DMethodType || type_t == DType::DNoneType || type_t == DType::DUnknownType)
       continue;
     else
     {

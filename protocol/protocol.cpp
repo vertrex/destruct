@@ -11,6 +11,7 @@
 #include "protocol/dserializebinary.hpp"
 #include "protocol/dserializetext.hpp"
 #include "protocol/dserializexml.hpp"
+#include "protocol/dserializeraw.hpp"
 #include "protocol/dstream.hpp"
 #include "protocol/traceobject.hpp"
 #include "protocol/recursivetraceobject.hpp"
@@ -24,7 +25,7 @@ Protocol::Protocol(DStructs* destruct)
 
 void Protocol::__registerStruct(DStructs* destruct)
 {
-  registerVector<DInt8T>(destruct, "DVectorInt8");
+  registerVector<DInt8T>(destruct, "DVectorInt8"); //Use namespace Vector.Int8
   registerVector<DUInt8T>(destruct, "DVectorUInt8");
   registerVector<DInt16T>(destruct, "DVectorInt16");
   registerVector<DUInt16T>(destruct, "DVectorUInt16");
@@ -37,22 +38,22 @@ void Protocol::__registerStruct(DStructs* destruct)
 
   registerVector<DStructT>(destruct, "DVectorStruct");
 
-  registerMap<DUnicodeStringT, DUnicodeStringT>(destruct, "DMapString");
+  registerMap<DUnicodeStringT, DUnicodeStringT>(destruct, "DMapString"); //U&se namesape Map.String
   registerMap<DObjectT, DObjectT>(destruct, "DMapObject");
   registerMap<DUInt64T, DObjectT>(destruct, "DMapUInt64Object");
 
-  registerCpp<DStream >(destruct, "DStream");
+  registerCpp<DStream>(destruct, "DStream");  //Use namespace Stream.File
+  registerCpp<DStreamCout>(destruct, "DStreamCout");  //Use namespace Stream.Cout
+  //registerCpp<DStreamString >(destruct, "DStreamString"); //Use namespace Stream.String / Buffer
 
-  registerCpp<SerializeBinary>(destruct, "SerializeBinary");
-  registerCpp<DeserializeBinary>(destruct, "DeserializeBinary");
+  registerCpp<SerializeBinary>(destruct, "SerializeBinary"); //Use namespace Serialize.Binary
+  registerCpp<DeserializeBinary>(destruct, "DeserializeBinary"); //Use namespace Deserialize.Binary
   registerCpp<SerializeText>(destruct, "SerializeText");
   registerCpp<SerializeXML>(destruct, "SerializeXML");
+  registerCpp<SerializeRaw>(destruct, "SerializeRaw");
+  registerCpp<DeserializeRaw>(destruct, "DeserializeRaw");
 
-  //registerCpp<DStreamCout >(destruct, "DStreamCout");
-  //registerCpp<DStreamString >(destruct, "DStreamString");
-  //registerCpp<DSerializeXML>(destruct, "DSerializeXML");
-
-  destruct->registerDStruct(new DStruct(NULL, "TraceObject",  TraceObject::newObject));
+  destruct->registerDStruct(new DStruct(NULL, "TraceObject",  TraceObject::newObject)); //use name space Debug.Trace
   destruct->registerDStruct(new DStruct(NULL, "RecursiveTraceObject",  RecursiveTraceObject::newObject));
   destruct->registerDStruct(static_cast<DStruct*>(new DMutableStruct(NULL, "DMutable", DMutableObject::newObject)));
 }
