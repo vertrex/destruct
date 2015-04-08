@@ -235,12 +235,10 @@ ObjectManager<ServerFunctionObject*>& Server::functionObjectManager(void)
 void            Server::showRoot(void)
 {
   Destruct::DStructs& destruct = Destruct::DStructs::instance();
-  DStruct* streamStruct = destruct.find("DStreamCout");
+  DObject* stream = destruct.generate("DStreamCout");
+  DObject* serializer = destruct.generate("SerializeText", RealValue<DObject*>(stream));
 
-  DStream* stream = new DStream(streamStruct); 
-  if (stream == NULL)
-    std::cout << "Can't find stream to output fs tree" << std::endl;
-
-  Destruct::DSerializers::to("Text")->serialize(*stream, this->__objectManager.object(0));
+  serializer->call("DObject", RealValue<DObject*>(this->__objectManager.object(0)));
+  serializer->destroy();
   stream->destroy();
 }

@@ -111,7 +111,6 @@ DInt64  DStreamCout::write(DValue const& args)
 
   if (size)
   {
-    this->__stream.write(data, size);
     std::cout.write(data, size); // << std::string(buff, size);
     if (std::cout.fail())
       throw DException("DStreamCout::write Can't write data of size " + size);
@@ -119,50 +118,66 @@ DInt64  DStreamCout::write(DValue const& args)
   return (size); //XXX check
 }
 
-/*
-DStreamString::DStreamString(DStruct* dstruct, DValue const& args): DStream(dstruct)
+/**
+ *  DStreamString
+ */
+DStreamString::DStreamString(DStruct* dstruct, DValue const& args) : DCppObject<DStreamString>(dstruct, args)
 {
   this->init();
-  //DObject* dargs = args.get<DObject*>();
-  //DInt8 _mode = dargs->getValue("input").get<DInt8>();
-
-  //std::cout << "opening stream " << std::endl;
-  //_mode = 0;
-  //filePath = "output";
-  //if (_mode == 0)
-    //this->__fstream.open(filePath.c_str(), std::iostream::out | std::iostream::binary | std::iostream::trunc);
-  //else
-    //this->__fstream.open(filePath.c_str(), std::iostream::in | std::iostream::binary);
 }
 
-DStreamString::DStreamString(const DStreamString& copy) : DStream(copy)
+DStreamString::DStreamString(const DStreamString& copy) : DCppObject<DStreamString>(copy)
 {
+  this->init();
 }
 
 DStreamString::~DStreamString()
 {
 }
 
-DStream& DStreamString::read(char*  buff, uint32_t size)
+DBuffer DStreamString::read(DValue const& args)
 {
-  this->__stream.read(buff, size);
-  return (*this);
+  DInt64 size = args.get<DInt64>();
+  if (size == 0)
+    return DBuffer(NULL, 0);
+
+  uint8_t* data = new uint8_t[size + 1]; //XXX ?
+  this->__stream.read((char*)data, size);
+  data[size] = 0; //XXX ?
+
+  if (this->__stream.gcount() != size)
+    throw DException("Can't read all size");
+  if (this->__stream.fail())
+    throw DException("DStreamString::read " + args.asUnicodeString() + " fail");
+  std::cout << std::string((const char*)data, size) << std::endl;
+  DBuffer buffer(data, size);
+  return (buffer); //XXX new ! 
 }
 
-DStream& DStreamString::write(const char* buff, uint32_t size) 
+DInt64  DStreamString::write(DValue const& args)
 {
-  this->__stream.write(buff, size);
-  return (*this);
-} 
+  DBuffer buffer = args.get<DBuffer>();
 
-const std::string DStreamString::str(void) const //seek etc ?
-{
-  return (this->__stream.str());
+  const char* data = (const char*)buffer.data();
+  int64_t size = buffer.size();
+
+  if (size)
+  {
+    this->__stream.write(data, size);
+    if (this->__stream.fail())
+      throw DException("DStreamString::write Can't write data of size " + size);
+  }
+  return (size); //XXX check
 }
 
-void DStreamString::clear(void) 
+DUnicodeString  DStreamString::str(void)//const 
+{
+  return (DUnicodeString(this->__stream.str()));
+}
+
+void    DStreamString::clear(void) //const
 {
   this->__stream.str("");;
 }
-*/
+
 }

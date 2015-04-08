@@ -5,7 +5,6 @@
 #include "dmethodobject.hpp"
 #include "dsimpleobject.hpp"
 #include "dstructs.hpp"
-#include "protocol/dserialize.hpp"
 
 DWrapper::DWrapper()
 {

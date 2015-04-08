@@ -29,8 +29,11 @@ const DUnicodeString DSerializeRPC::name(void)
  */ 
 bool DSerializeRPC::serialize(DStream& networkStream, DStruct& dstruct)
 {
-  DSerialize* binarySerializer = DSerializers::to("Binary");
-  binarySerializer->serialize(this->__streamString, dstruct);
+//  DSerialize* binarySerializer = DSerializers::to("Binary");
+//  binarySerializer->serialize(this->__streamString, dstruct);
+  DObject* serializer = DStructs::instance().generate("SerializeBinary", this->__streamString);
+  serializer->call("DStruct", RealValue<DStruct*>(dstruct)); //& to * ?
+
   this->__networkStream << this->__streamString;
 
   return (true);

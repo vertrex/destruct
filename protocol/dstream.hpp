@@ -89,8 +89,6 @@ public:
 //  DValue  seek(DValue const& args);
   
   ~DStreamCout();
-private:
-  std::fstream  __stream; 
 public:
   RealValue<DFunctionObject* > _read;
   RealValue<DFunctionObject* > _write;
@@ -131,30 +129,65 @@ public:
   } 
 };
 
-/*
-
-class DStreamString : public DStream //Use destruct imheritance ??
+class DStreamString : public DCppObject<DStreamString>
 {
 public:
-  EXPORT DStreamString(DStruct* dstruct, DValue const &args);
-  EXPORT DStreamString(const DStreamString& copy);
-  EXPORT DStream&          read(char*  buff, uint32_t size);
-  EXPORT DStream&          write(const char* buff, uint32_t size);
+  DStreamString(DStruct* dstruct, DValue const& args);
+  DStreamString(const DStreamString& copy);
 
-  using DStream::write;
-  using DStream::read;
-  EXPORT const std::string str(void) const;
-  EXPORT void              clear(void);    
-  //DStream& operator>>(std::string& val); 
-  //DStream& operator<<(std::string val);
-  //virtual DInt64 write(DValue const& args);
-  //virtual DInt64 read(DValue const& args);
-  //protected:
-  EXPORT ~DStreamString();
+  DBuffer         read(DValue const& args); 
+  DInt64          write(DValue const& args);
+  DUnicodeString  str(void);
+  void            clear(void);
+  
+  ~DStreamString();
 private:
   std::stringstream   __stream; 
+public:
+  RealValue<DFunctionObject* > _read, _write, _str, _clear;
+
+  static size_t ownAttributeCount()
+  {
+    return (4);
+  }
+
+  static DAttribute* ownAttributeBegin()
+  {
+    static DAttribute  attributes[] = 
+    {
+       DAttribute(DType::DBufferType, "read",  DType::DInt64Type),
+       DAttribute(DType::DInt64Type,  "write", DType::DBufferType),
+       //       size ->buffer size ?
+       //       seek
+       DAttribute(DType::DUnicodeStringType, "string", DType::DNoneType),
+       DAttribute(DType::DNoneType, "clear", DType::DNoneType),
+    };
+    return (attributes);
+  }
+
+  static DPointer<DStreamString>* memberBegin()
+  {
+    static DPointer<DStreamString> memberPointer[] = 
+    {
+       DPointer<DStreamString>(&DStreamString::_read, &DStreamString::read),
+       DPointer<DStreamString>(&DStreamString::_write, &DStreamString::write),
+       DPointer<DStreamString>(&DStreamString::_str, &DStreamString::str),
+       DPointer<DStreamString>(&DStreamString::_clear, &DStreamString::clear),
+    };
+    return (memberPointer);
+  }
+
+  static DAttribute* ownAttributeEnd()
+  {
+    return (ownAttributeBegin() + ownAttributeCount());
+  }
+
+  static DPointer<DStreamString>*  memberEnd()
+  {
+    return (memberBegin() + ownAttributeCount());
+  } 
 };
-*/
+
 }
 
 #endif

@@ -125,32 +125,31 @@ Destruct::DStruct* Client::remoteFind(const DUnicodeString name)
 bool    Client::print(DStruct* dstruct) const
 {
   Destruct::DStructs& destruct = Destruct::DStructs::instance();
-  DStruct* streamStruct = destruct.find("DStreamCout");
-  DStream* outStream = new DStream(streamStruct);  
-  if (outStream == NULL)
-    std::cout << "Can't find stream to output fs tree" << std::endl;
+  DObject* stream = destruct.generate("DStreamCout");
 
   if (!dstruct)
     return (false);
-  
-  Destruct::DSerializers::to("Text")->serialize(*outStream, *dstruct);
-  outStream->destroy();
+ 
+  DObject* serializer = destruct.generate("SerializeText", RealValue<DObject*>(stream));
+  serializer->call("DStruct", RealValue<DObject*>(dstruct));
+
+  serializer->destroy();
+  stream->destroy();
   return (true);
 }
 
 bool    Client::print(DObject* dobject) const
 {
   Destruct::DStructs& destruct = Destruct::DStructs::instance();
-  DStruct* streamStruct = destruct.find("DStreamCout");
-  DStream* outStream = new DStream(streamStruct);  
-  if (outStream == NULL)
-    std::cout << "Can't find stream to output fs tree" << std::endl;
-
+  DObject* stream = destruct.generate("DStreamCout");
   if (!dobject)
     return (false);
 
-  Destruct::DSerializers::to("Text")->serialize(*outStream, dobject);
-  outStream->destroy();
+  DObject serializer = destruct.generate("SerializeText", RealValue<DObject*>(stream));
+  serializer->call("DObject", RealValue<DObject*>(dobject));
+  
+  serializer->destroy();
+  stream->destroy();
   return (true);
 }
 

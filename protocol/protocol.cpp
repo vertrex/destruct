@@ -44,7 +44,7 @@ void Protocol::__registerStruct(DStructs* destruct)
 
   registerCpp<DStream>(destruct, "DStream");  //Use namespace Stream.File
   registerCpp<DStreamCout>(destruct, "DStreamCout");  //Use namespace Stream.Cout
-  //registerCpp<DStreamString >(destruct, "DStreamString"); //Use namespace Stream.String / Buffer
+  registerCpp<DStreamString>(destruct, "DStreamString"); //Use namespace Stream.String / Buffer
 
   registerCpp<SerializeBinary>(destruct, "SerializeBinary"); //Use namespace Serialize.Binary
   registerCpp<DeserializeBinary>(destruct, "DeserializeBinary"); //Use namespace Deserialize.Binary

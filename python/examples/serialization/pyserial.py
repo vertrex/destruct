@@ -107,3 +107,10 @@ print complex.object.object.name, complex.object.object.number, complex.object.o
 for x in complex.object.object.object:
   print x
 
+#test streamstring (Must implem DBuffer in python and buffer size to know how much is bufferize and seek method too
+ss = DStructs().find("DStreamString").newObject()
+st  = DStructs().find("SerializeText").newObject(ss)
+st.DObject(complex1)
+s = st.stream
+p = s.string()
+print p
