@@ -157,10 +157,10 @@ public:
     {
        DAttribute(DType::DBufferType, "read",  DType::DInt64Type),
        DAttribute(DType::DInt64Type,  "write", DType::DBufferType),
-       //       size ->buffer size ?
-       //       seek
        DAttribute(DType::DUnicodeStringType, "string", DType::DNoneType),
        DAttribute(DType::DNoneType, "clear", DType::DNoneType),
+       //       size ->buffer size ?
+       //       seek
     };
     return (attributes);
   }

@@ -14,6 +14,58 @@
 namespace Destruct 
 {
 
+NetworkStream::NetworkStream(DStruct* dstruct, DValue const& args) : DCppObject<NetworkStream>(dstruct, args)
+{
+  this->init();
+}
+
+NetworkStream::NetworkStream(const NetworkStream& copy) : DCppObject<NetworkStream>(copy)
+{
+  this->init();
+}
+
+NetworkStream::~NetworkStream()
+{
+}
+
+DBuffer NetworkStream::read(DValue const& args)
+{
+  //XXX std::cin >>
+  //DInt64 size = args.get<DInt64>();
+  //if (size == 0)
+    //return DBuffer(NULL, 0);
+
+  //uint8_t* data = new uint8_t[size + 1];
+  //this->__stream.read((char*)data, size);
+  //data[size] = 0;
+
+  //if (this->__stream.gcount() != size)
+    //throw DException("Can't read all size");
+  //if (this->__stream.fail())
+    //throw DException("NetworkStream::read " + args.asUnicodeString() + " fail");
+  //DBuffer buffer(data, size);
+  //return (buffer); //XXX new ! 
+  return DBuffer();
+}
+
+DInt64  NetworkStream::write(DValue const& args)
+{
+  DBuffer buffer = args.get<DBuffer>();
+
+  const char* data = (const char*)buffer.data();
+  int64_t size = buffer.size();
+
+  if (size)
+  {
+    std::cout.write(data, size); // << std::string(buff, size);
+    if (std::cout.fail())
+      throw DException("NetworkStream::write Can't write data of size " + size);
+  }
+  return (size); //XXX check
+}
+
+
+/*
 NetworkStream::NetworkStream(DStruct* dstruct, DValue const& args) : DStream(dstruct)
 {
   this->__socket = args.get<DInt32>();
@@ -148,6 +200,6 @@ int32_t NetworkStream::__recv(void* buff, int32_t size)
   this->__readStream.read((char*)buff, size);
   return (size);
 }
-
+*/
 
 }

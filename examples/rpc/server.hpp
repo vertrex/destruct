@@ -7,7 +7,6 @@
 
 #include "destruct.hpp"
 #include "serializerpc.hpp"
-#include "protocol/dserialize.hpp"
 
 #ifdef WIN32
 #include <winsock2.h>
@@ -102,8 +101,10 @@ private:
 #endif
   EXPORT void                           __bind(int32_t port);
   EXPORT void                           __listen(void);
-  NetworkStream*                        __networkStream;
-  DSerialize*                           __serializer;
+  DObject*                              __networkStream;
+  //NetworkStream*                        __networkStream;
+  DObject*                              __serializer;
+  //DSerialize*                           __serializer;
   ObjectManager<Destruct::DObject*>     __objectManager;
   ObjectManager<ServerFunctionObject*>  __functionObjectManager;
 };

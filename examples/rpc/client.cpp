@@ -33,7 +33,6 @@ extern "C"
   }
 }
 
-
 Client::Client(DUnicodeString const& addr, uint32_t port) : DCppObject<Client>(NULL, RealValue<DObject*>(DNone)), __networkStream(NULL), __serializeRPC(NULL)
 {
   this->__connect(addr, port);
@@ -177,4 +176,3 @@ DSerialize*     Client::serializeRPC(void) const
 {
   return (this->__serializeRPC);
 }
-

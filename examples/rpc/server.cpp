@@ -11,7 +11,6 @@
 #include <unistd.h>
 #endif
 
-
 #include "server.hpp"
 #include "serverobject.hpp"
 
@@ -25,8 +24,12 @@ Server::Server(uint32_t port) : DCppObject<Server>(NULL, RealValue<DUInt32>(port
 Server::~Server()
 {
   close(this->__connectionSocket);
-  delete this->__networkStream;
-  delete this->__serializer;
+  //delete this->__networkStream;
+  this->__networkStream->destroy(); //it's passed to serialize no need in privat emember any more
+  this->__networkStream = NULL;
+  //delete this->__serializer;
+  this->__serializer->destroy();
+  this->__serializer = NULL; //because close and relaunch ??
 }
 
 #ifdef WIN32
@@ -120,8 +123,11 @@ void			Server::__listen(void)
   std::cout << "Connection accepted" << std::endl;
   delete this->__networkStream;
   delete this->__serializer;
-  this->__networkStream = new NetworkStream(NULL, RealValue<DInt32>(this->__connectionSocket));
-  this->__serializer = new DSerializeRPC(*this->__networkStream, this->__objectManager, this->__functionObjectManager);
+//  this->__networkStream = new NetworkStream(NULL, RealValue<DInt32>(this->__connectionSocket));
+  this->__networkStream = DStructs::instance().generate("NetworkStream", RealValue<DInt32>(this->__connectionSocket));
+  this->__serializer = DStructs::instance().generate("SerializeRPC", RealValue<DObject*>(this->__networkStream)); //don't need this->__networkStream as it's passed as ARGUMENT XXX can be juste passe no need as private member !  
+   //XXX Need to serialize & deserialize with the same string need two with the same steram of them or one that can do the two things
+//  this->__serializer = new DSerializeRPC(*this->__networkStream, this->__objectManager, this->__functionObjectManager);
 }
 #else
 void            Server::__listen(void) 
@@ -137,17 +143,28 @@ void            Server::__listen(void)
     throw DException("Server::__listen accept failed");
   std::cout << "Connection accepted" << std::endl;
 
-  delete this->__networkStream;
-  delete this->__serializer;
-  this->__networkStream = new NetworkStream(NULL, RealValue<DInt32>(this->__connectionSocket));
-  this->__serializer = new DSerializeRPC(*this->__networkStream, this->__objectManager, this->__functionObjectManager);
+  //delete this->__networkStream;
+  if (this->__networkStream)
+    this->__networkStream->destroy(); //set as null to avoid probleme if already deleted in daemon mode XXX ?
+  //delete this->__serializer;
+  if (this->__serializer)
+    this->__serializer->destroy(); //set as NULL to avoid problem if alreasdy delete ?
+ //if this->__networkStream ???
+
+ //this->__networkStream = new NetworkStream(NULL, RealValue<DInt32>(this->__connectionSocket));
+ //this->__serializer = new DSerializeRPC(*this->__networkStream, this->__objectManager, this->__functionObjectManager);
+  this->__networkStream = DStructs::instance().generate("NetworkStream", RealValue<DInt32>(this->__connectionSocket));
+  this->__serializer = DStructs::instance().generate("SerializeRPC", RealValue<DObject*>(this->__networkStream)); //don't need this->__networkStream as it's passed as ARGUMENT XXX can be juste passe no need as private member ! 
+  //XXX need object manager too ! put as procol & singleton object ? 
 }
 #endif
 
 void    Server::findDStruct(void)
 {
+/* 
+  //XXX new serialization
   DUnicodeString name;
-  this->__networkStream->read(name);
+  this->__networkStream->read(name); //XXX deserialize !
 
   std::cout << "Send DStruct " << name << std::endl;
   Destruct::DStructs& destruct = Destruct::DStructs::instance();
@@ -157,13 +174,15 @@ void    Server::findDStruct(void)
 
   this->__serializer->serialize(*this->__networkStream, *dstruct);
   this->__networkStream->flush();
+*/
 }
  
 void Server::unknown(const DUnicodeString& cmd)
 {
   std::cout << "Receive unknown command : " << cmd << std::endl;
-  this->__networkStream->write("Unknown command : " + cmd);
-  this->__networkStream->flush();
+  //XXX new serialization
+  //this->__networkStream->write("Unknown command : " + cmd);
+  //this->__networkStream->flush();
 }
 
 void            Server::daemonize(void)
@@ -191,7 +210,7 @@ void            Server::serve(void)
   std::cout << "Sever::serve listen" << std::endl;
   this->__listen();
   std::cout << "Create serverObject " << std::endl;
-  ServerObject serverObject(*this->__networkStream, this->__serializer, this->__objectManager, this->__functionObjectManager);
+  ServerObject serverObject(this->__networkStream, this->__serializer, this->__objectManager, this->__functionObjectManager);
   this->initRoot(); //again? XXX
   this->showRoot();
 
@@ -199,7 +218,8 @@ void            Server::serve(void)
   {
     //std::cout << "Wait for message..." << std::endl;
     DUnicodeString msg;
-    this->__networkStream->read(msg);
+   //XXX new serialization this->serialize->DUnicodeString() ?
+    //this->__networkStream->read(msg);
 
     if (msg == "show") 
       this->showRoot();

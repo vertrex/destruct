@@ -3,7 +3,7 @@
 
 #include "networkstream.hpp"
 #include "objectmanager.hpp"
-#include "protocol/dserialize.hpp"
+//#include "protocol/dserialize.hpp"
 
 using namespace Destruct;
 
@@ -12,7 +12,8 @@ class ServerFunctionObject;
 class ServerObject
 {
 public:
-  ServerObject(Destruct::NetworkStream& networkStream, DSerialize* serializer, ObjectManager<DObject*>& objectManager, ObjectManager<ServerFunctionObject*>& functionObjectManager);
+        //ServerObject(Destruct::NetworkStream& networkStream, DObject* serializer, ObjectManager<DObject*>& objectManager, ObjectManager<ServerFunctionObject*>& functionObjectManager);
+  ServerObject(DObject* networkStream, DObject* serializer, ObjectManager<DObject*>& objectManager, ObjectManager<ServerFunctionObject*>& functionObjectManager);
 
   void                                  getValue(void);
   void                                  setValue(void);
@@ -20,10 +21,12 @@ public:
   void                                  call0(void);
   void                                  functionCall(void);
   void                                  functionCall0(void);
-  Destruct::NetworkStream&              networkStream(void);
+//  Destruct::NetworkStream&              networkStream(void);
+  DObject*                              networkStream;
 private:
-  Destruct::NetworkStream&              __networkStream;
-  DSerialize*                           __serializer;
+//  Destruct::NetworkStream&              __networkStream;
+  DObject*                              __networkStream;
+  DObject*                              __serializer;
   ObjectManager<DObject*>&              __objectManager;
   ObjectManager<ServerFunctionObject*>& __functionObjectManager;
   DObject*                              __object;

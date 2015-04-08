@@ -16,14 +16,15 @@ include_directories("../../")
 
 set (rpc_libfiles
 fsobject.cpp
-clientobject.cpp
 networkstream.cpp
-server.cpp
-client.cpp
 serializerpc.cpp
+
+server.cpp
 serverobject.cpp
-clientfunctionobject.cpp
 serverfunctionobject.cpp
+client.cpp
+clientobject.cpp
+clientfunctionobject.cpp
 )
 
 add_library(destruct_rpc SHARED ${rpc_libfiles})

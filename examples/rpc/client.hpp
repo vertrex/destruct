@@ -31,14 +31,15 @@ public:
   EXPORT DSerialize*                           serializeRPC(void) const;
   EXPORT ObjectManager<DObject*>&              objectManager(void);
   EXPORT ObjectManager<ServerFunctionObject*>& functionObjectManager(void);
+
 private:
   EXPORT void                                  __connect(DUnicodeString const& addr, uint32_t port);
   EXPORT void                                  __close(void);
-  int32_t                               __connectionSocket;
-  NetworkStream*                        __networkStream;
-  DSerialize*                           __serializeRPC; 
-  ObjectManager<DObject* >              __objectManager;
-  ObjectManager<ServerFunctionObject*>  __functionObjectManager;
+  int32_t                                      __connectionSocket;
+  NetworkStream*                               __networkStream;
+  DSerialize*                                  __serializeRPC; 
+  ObjectManager<DObject* >                     __objectManager;
+  ObjectManager<ServerFunctionObject*>         __functionObjectManager;
 
 public:
 /**

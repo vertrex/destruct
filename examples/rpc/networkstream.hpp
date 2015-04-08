@@ -5,14 +5,65 @@
 #include <iostream>
 #include <string.h>
 
-#include "destruct.hpp"
-#include "protocol/dstream.hpp"
+#include "protocol/dcppobject.hpp"
+//#include "destruct.hpp"
+//#include "protocol/dstream.hpp"
 
 namespace Destruct
 {
 
-class DValue;
+class NetworkStream : public DCppObject<NetworkStream>
+{
+public:
+  NetworkStream(DStruct* dstruct, DValue const& args);
+  NetworkStream(const NetworkStream& copy);
 
+  DBuffer  read(DValue const& args); 
+  DInt64   write(DValue const& args);
+//  DValue  seek(DValue const& args);
+  
+  ~NetworkStream();
+public:
+  RealValue<DFunctionObject* > _read;
+  RealValue<DFunctionObject* > _write;
+
+  static size_t ownAttributeCount()
+  {
+    return (2);
+  }
+
+  static DAttribute* ownAttributeBegin()
+  {
+    static DAttribute  attributes[] = 
+    {
+       DAttribute(DType::DBufferType, "read",  DType::DInt64Type), 
+       DAttribute(DType::DInt64Type,  "write", DType::DBufferType),
+    };
+    return (attributes);
+  }
+
+  static DPointer<NetworkStream>* memberBegin()
+  {
+    static DPointer<NetworkStream> memberPointer[] = 
+    {
+       DPointer<NetworkStream>(&NetworkStream::_read, &NetworkStream::read),
+       DPointer<NetworkStream>(&NetworkStream::_write, &NetworkStream::write),
+    };
+    return (memberPointer);
+  }
+
+  static DAttribute* ownAttributeEnd()
+  {
+    return (ownAttributeBegin() + ownAttributeCount());
+  }
+
+  static DPointer<NetworkStream>*  memberEnd()
+  {
+    return (memberBegin() + ownAttributeCount());
+  } 
+};
+/*
+//class DValue;
 class NetworkStream : public DStream
 {
 public:
@@ -38,7 +89,7 @@ private:
   std::stringstream __readStream;
   std::stringstream __writeStream;
 };
-
+*/
 }
 
 #endif
