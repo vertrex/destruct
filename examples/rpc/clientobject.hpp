@@ -17,7 +17,8 @@ class DSerialize;
 class ClientObject : public DObject
 {
 public:
-  EXPORT ClientObject(NetworkStream& stream, DSerialize* serializer, uint64_t id, DStruct* dstruct);
+        //EXPORT ClientObject(NetworkStream& stream, DSerialize* serializer, uint64_t id, DStruct* dstruct);
+  EXPORT ClientObject(DObject* stream, DObject* serializer, uint64_t id, DStruct* dstruct);
   EXPORT ClientObject(DStruct* dstruct, DValue const& args);
   EXPORT ClientObject(ClientObject const & rhs);
 
@@ -40,8 +41,10 @@ protected:
   EXPORT ~ClientObject();
 private:
   uint64_t              __id;
-  NetworkStream&        __networkStream;
-  DSerialize*           __serializer;
+  //NetworkStream&        __networkStream;
+  //DSerialize*           __serializer;
+  DObject*              __networkStream;
+  DObject*              __serializer;
 };
 }
 #endif

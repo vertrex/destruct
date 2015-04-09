@@ -21,8 +21,8 @@ public:
   void                                  call0(void);
   void                                  functionCall(void);
   void                                  functionCall0(void);
-//  Destruct::NetworkStream&              networkStream(void);
-  DObject*                              networkStream;
+  //Destruct::NetworkStream&              networkStream(void);
+  DObject*                              networkStream(void);
 private:
 //  Destruct::NetworkStream&              __networkStream;
   DObject*                              __networkStream;

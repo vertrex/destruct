@@ -24,8 +24,8 @@ public:
 
   enum mode
   {
-    Output,
-    Input
+    Output, //Write
+    Input   //Read
   };
 
   DStream(DStruct* dstruct, DValue const& args);

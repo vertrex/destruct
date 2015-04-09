@@ -4,6 +4,7 @@
 #include "serverobject.hpp"
 #include "clientfunctionobject.hpp"
 
+#include "dsimpleobject.hpp"
 /*
  *   DSerializeRPC 
  */

@@ -52,7 +52,7 @@ DObject* TestClient::start(void)
     throw DException("TestClient::start Directory struct not found");
 
   //0 is root server object
-  ClientObject* remote = new ClientObject(*this->networkStream(), this->serializeRPC(), 0, directoryS); 
+  ClientObject* remote = new ClientObject(this->networkStream(), this->serializeRPC(), 0, directoryS); 
   std::cout << "root name : " << remote->getValue("name").get<DUnicodeString>() << std::endl;
 
   std::cout << "Set remote value to 'rename-by-remote'" << std::endl;
@@ -60,8 +60,8 @@ DObject* TestClient::start(void)
 
   std::cout << "Root name after setValue('name') : " << remote->getValue("name").get<DUnicodeString>() << std::endl;
 
-  this->networkStream()->write("show");
-  this->networkStream()->flush();
+  //this->networkStream()->write("show"); //XXX new serializaition
+  //this->networkStream()->flush(); //XXX new serialization
   std::cout << "Root  path : " << remote->call("path").get<DUnicodeString>() << std::endl;
 
   DObject* remoteChild = remote->getValue("children").get<DObject*>();

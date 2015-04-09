@@ -2,7 +2,7 @@
 #define __CLIENT_FUNCTION_OBJECT_HPP__
 
 #include "dvalue.hpp"
-#include "protocol/dserialize.hpp"
+//#include "protocol/dserialize.hpp"
 
 #include "networkstream.hpp"
 #include "objectmanager.hpp"
@@ -17,15 +17,16 @@ using namespace Destruct;
 class ClientFunctionObject : public DFunctionObject
 {
 public:
-  ClientFunctionObject(NetworkStream& networkStream, DSerialize* serializer, uint64_t id, DType::Type_t argumentType, DType::Type_t returnType);
+        //ClientFunctionObject(NetworkStream& networkStream, DSerialize* serializer, uint64_t id, DType::Type_t argumentType, DType::Type_t returnType);
+  ClientFunctionObject(DObject* networkStream, DObject* serializer, uint64_t id, DType::Type_t argumentType, DType::Type_t returnType);
   ~ClientFunctionObject();
 
   DValue        call(void) const;
   DValue        call(DValue const& args) const;
 private:
   uint64_t       __id;
-  NetworkStream& __networkStream;
-  DSerialize*    __serializer;
+  DObject*       __networkStream;
+  DObject*       __serializer;
   DType::Type_t  __argumentType;
   DType::Type_t  __returnType;
 };

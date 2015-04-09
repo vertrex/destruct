@@ -27,8 +27,8 @@ public:
   EXPORT bool                                  print(DStruct* dstruct) const;
 
   EXPORT int32_t                               connectionSocket(void) const;
-  EXPORT NetworkStream*                        networkStream(void) const;
-  EXPORT DSerialize*                           serializeRPC(void) const;
+  EXPORT DObject*                              networkStream(void) const;
+  EXPORT DObject*                              serializeRPC(void) const;
   EXPORT ObjectManager<DObject*>&              objectManager(void);
   EXPORT ObjectManager<ServerFunctionObject*>& functionObjectManager(void);
 
@@ -36,8 +36,10 @@ private:
   EXPORT void                                  __connect(DUnicodeString const& addr, uint32_t port);
   EXPORT void                                  __close(void);
   int32_t                                      __connectionSocket;
-  NetworkStream*                               __networkStream;
-  DSerialize*                                  __serializeRPC; 
+  //NetworkStream*                               __networkStream;
+  //DSerialize*                                  __serializeRPC; 
+  DObject*                                     __networkStream;
+  DObject*                                     __serializeRPC;
   ObjectManager<DObject* >                     __objectManager;
   ObjectManager<ServerFunctionObject*>         __functionObjectManager;
 
