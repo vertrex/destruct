@@ -56,7 +56,7 @@ void    SerializeXML::sDStruct(DValue const& args)
 void    SerializeXML::sDNone(void)
 {
   DUnicodeString unicodeString = RealValue<DObject*>(DNone).asUnicodeString();
-  DBuffer buffer((uint8_t*)unicodeString.c_str(), unicodeString.size());
+  DBuffer buffer((uint8_t*)unicodeString.c_str(), (int32_t)unicodeString.size());
 
   ((DObject*)this->__stream)->call("write", RealValue<DBuffer>(buffer));
 }
@@ -64,7 +64,7 @@ void    SerializeXML::sDNone(void)
 void    SerializeXML::sDMethod(DValue const& args)
 {
   DUnicodeString unicodeString = args.asUnicodeString();
-  DBuffer buffer((uint8_t*)unicodeString.c_str(), unicodeString.size());
+  DBuffer buffer((uint8_t*)unicodeString.c_str(), (int32_t)unicodeString.size());
 
   ((DObject*)this->__stream)->call("write", RealValue<DBuffer>(buffer));
 }
@@ -82,7 +82,7 @@ void    SerializeXML::sDBuffer(DValue const& args)
 void    SerializeXML::sDInt8(DValue const& args)
 {
   DUnicodeString unicodeString = args.asUnicodeString();
-  DBuffer buffer((uint8_t*)unicodeString.c_str(), unicodeString.size());
+  DBuffer buffer((uint8_t*)unicodeString.c_str(), (int32_t)unicodeString.size());
 
   ((DObject*)this->__stream)->call("write", RealValue<DBuffer>(buffer));
 }
@@ -90,7 +90,7 @@ void    SerializeXML::sDInt8(DValue const& args)
 void    SerializeXML::sDInt16(DValue const& args)
 {
   DUnicodeString unicodeString = args.asUnicodeString();
-  DBuffer buffer((uint8_t*)unicodeString.c_str(), unicodeString.size());
+  DBuffer buffer((uint8_t*)unicodeString.c_str(), (int32_t)unicodeString.size());
 
   ((DObject*)this->__stream)->call("write", RealValue<DBuffer>(buffer));
 }
@@ -98,7 +98,7 @@ void    SerializeXML::sDInt16(DValue const& args)
 void    SerializeXML::sDInt32(DValue const& args)
 {
   DUnicodeString unicodeString = args.asUnicodeString();
-  DBuffer buffer((uint8_t*)unicodeString.c_str(), unicodeString.size());
+  DBuffer buffer((uint8_t*)unicodeString.c_str(), (int32_t)unicodeString.size());
 
   ((DObject*)this->__stream)->call("write", RealValue<DBuffer>(buffer));
 }
@@ -106,7 +106,7 @@ void    SerializeXML::sDInt32(DValue const& args)
 void    SerializeXML::sDInt64(DValue const& args)
 {
   DUnicodeString unicodeString = args.asUnicodeString();
-  DBuffer buffer((uint8_t*)unicodeString.c_str(), unicodeString.size());
+  DBuffer buffer((uint8_t*)unicodeString.c_str(), (int32_t)unicodeString.size());
 
   ((DObject*)this->__stream)->call("write", RealValue<DBuffer>(buffer));
 }
@@ -114,7 +114,7 @@ void    SerializeXML::sDInt64(DValue const& args)
 void    SerializeXML::sDUInt8(DValue const& args)
 {
   DUnicodeString unicodeString = args.asUnicodeString();
-  DBuffer buffer((uint8_t*)unicodeString.c_str(), unicodeString.size());
+  DBuffer buffer((uint8_t*)unicodeString.c_str(), (int32_t)unicodeString.size());
 
   ((DObject*)this->__stream)->call("write", RealValue<DBuffer>(buffer));
 }
@@ -122,7 +122,7 @@ void    SerializeXML::sDUInt8(DValue const& args)
 void    SerializeXML::sDUInt16(DValue const& args)
 {
   DUnicodeString unicodeString = args.asUnicodeString();
-  DBuffer buffer((uint8_t*)unicodeString.c_str(), unicodeString.size());
+  DBuffer buffer((uint8_t*)unicodeString.c_str(), (int32_t)unicodeString.size());
 
   ((DObject*)this->__stream)->call("write", RealValue<DBuffer>(buffer));
 }
@@ -130,7 +130,7 @@ void    SerializeXML::sDUInt16(DValue const& args)
 void    SerializeXML::sDUInt32(DValue const& args)
 {
   DUnicodeString unicodeString = args.asUnicodeString();
-  DBuffer buffer((uint8_t*)unicodeString.c_str(), unicodeString.size());
+  DBuffer buffer((uint8_t*)unicodeString.c_str(), (int32_t)unicodeString.size());
 
   ((DObject*)this->__stream)->call("write", RealValue<DBuffer>(buffer));
 }
@@ -138,7 +138,7 @@ void    SerializeXML::sDUInt32(DValue const& args)
 void    SerializeXML::sDUInt64(DValue const& args)
 {
   DUnicodeString unicodeString = args.asUnicodeString();
-  DBuffer buffer((uint8_t*)unicodeString.c_str(), unicodeString.size());
+  DBuffer buffer((uint8_t*)unicodeString.c_str(), (int32_t)unicodeString.size());
 
   ((DObject*)this->__stream)->call("write", RealValue<DBuffer>(buffer));
 }

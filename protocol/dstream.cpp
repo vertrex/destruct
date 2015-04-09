@@ -45,7 +45,7 @@ DBuffer DStream::read(DValue const& args)
     throw DException("Can't read all size");
   if (this->__stream.fail())
     throw DException("DStream::read " + args.asUnicodeString() + " fail");
-  DBuffer buffer(data, size);
+  DBuffer buffer(data, (int32_t)size);
   return (buffer); //XXX new ! 
 }
 
@@ -150,7 +150,7 @@ DBuffer DStreamString::read(DValue const& args)
   if (this->__stream.fail())
     throw DException("DStreamString::read " + args.asUnicodeString() + " fail");
   std::cout << std::string((const char*)data, size) << std::endl;
-  DBuffer buffer(data, size);
+  DBuffer buffer(data, (int32_t)size);
   return (buffer); //XXX new ! 
 }
 

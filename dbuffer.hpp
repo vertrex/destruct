@@ -1,9 +1,10 @@
 #ifndef __DESTRUCT_DBUFFER__
 #define __DESTRUCT_DBUFFER__
 
+#include "destruct.hpp" //export
 #include <stdint.h>
 
-class DBuffer
+class EXPORT DBuffer
 {
 public:
   DBuffer();

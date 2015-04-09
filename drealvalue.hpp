@@ -109,7 +109,7 @@ public:
   DBuffer       asDBuffer() const
   {
                                 //copy or not ? XXX delete ?
-    DBuffer buffer((uint8_t*)this->c_str(), (int64_t)this->size());
+    DBuffer buffer((uint8_t*)this->c_str(), (int32_t)this->size());
 
     return (buffer);
   }

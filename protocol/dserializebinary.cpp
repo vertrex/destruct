@@ -89,7 +89,7 @@ void    SerializeBinary::sDStruct(DValue const& args)
   this->sDUnicodeString(RealValue<DUnicodeString>(dstruct->name())); 
 
   size_t attributeCount = dstruct->attributeCount();
-  this->sDUInt32(RealValue<DUInt32>(attributeCount)); //XXX size t
+  this->sDUInt32(RealValue<DUInt32>((DUInt32)attributeCount)); //XXX size t
 
   for (DStruct::DAttributeIterator i = dstruct->attributeBegin(); i != dstruct->attributeEnd(); ++i)
   {

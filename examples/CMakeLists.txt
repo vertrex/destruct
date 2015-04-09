@@ -21,7 +21,7 @@ add_subdirectory(inheritance)
 add_subdirectory(threading)
 #add_subdirectory(filetype)
 
-add_subdirectory(rpc)
+#add_subdirectory(rpc)
 #if (UNIX)
 #add_subdirectory(registry)
 #endif (UNIX)
