@@ -29,6 +29,7 @@ public:
   EXPORT int32_t                               connectionSocket(void) const;
   EXPORT DObject*                              networkStream(void) const;
   EXPORT DObject*                              serializeRPC(void) const;
+  EXPORT DObject*                              deserializeRPC(void) const;
   EXPORT ObjectManager<DObject*>&              objectManager(void);
   EXPORT ObjectManager<ServerFunctionObject*>& functionObjectManager(void);
 
@@ -39,7 +40,8 @@ private:
   //NetworkStream*                               __networkStream;
   //DSerialize*                                  __serializeRPC; 
   DObject*                                     __networkStream;
-  DObject*                                     __serializeRPC;
+  DObject*                                     __serialize;
+  DObject*                                     __deserialize;
   ObjectManager<DObject* >                     __objectManager;
   ObjectManager<ServerFunctionObject*>         __functionObjectManager;
 

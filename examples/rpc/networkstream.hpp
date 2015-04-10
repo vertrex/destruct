@@ -20,16 +20,24 @@ public:
 
   DBuffer  read(DValue const& args); 
   DInt64   write(DValue const& args);
+  void     flush(void) ; 
 //  DValue  seek(DValue const& args);
   
   ~NetworkStream();
+private:
+  int32_t           __socket;
+//int32_t           __send(void* buff, int32_t size); 
+//int32_t           __recv(void* buff, int32_t size);
+   
+
+  std::stringstream __readStream;
+  std::stringstream __writeStream;
 public:
-  RealValue<DFunctionObject* > _read;
-  RealValue<DFunctionObject* > _write;
+  RealValue<DFunctionObject* > _read, _write, _flush;
 
   static size_t ownAttributeCount()
   {
-    return (2);
+    return (3);
   }
 
   static DAttribute* ownAttributeBegin()
@@ -38,6 +46,7 @@ public:
     {
        DAttribute(DType::DBufferType, "read",  DType::DInt64Type), 
        DAttribute(DType::DInt64Type,  "write", DType::DBufferType),
+       DAttribute(DType::DNoneType, "flush", DType::DNoneType),
     };
     return (attributes);
   }
@@ -48,6 +57,7 @@ public:
     {
        DPointer<NetworkStream>(&NetworkStream::_read, &NetworkStream::read),
        DPointer<NetworkStream>(&NetworkStream::_write, &NetworkStream::write),
+       DPointer<NetworkStream>(&NetworkStream::_flush, &NetworkStream::flush),
     };
     return (memberPointer);
   }
@@ -62,34 +72,26 @@ public:
     return (memberBegin() + ownAttributeCount());
   } 
 };
-/*
+
 //class DValue;
-class NetworkStream : public DStream
-{
-public:
-  EXPORT NetworkStream(DStruct* dstruct, DValue const& args);
-  EXPORT NetworkStream(NetworkStream const& copy);
-  EXPORT ~NetworkStream();
+//class NetworkStream : public DStream
+//{
+//public:
+  //EXPORT NetworkStream(DStruct* dstruct, DValue const& args);
+  //EXPORT NetworkStream(NetworkStream const& copy);
+  //EXPORT ~NetworkStream();
 
-  EXPORT DStream&          operator>>(DStreamString& output);
-  EXPORT int32_t           read(void* buff, int32_t size);
-  EXPORT int32_t           read(DUnicodeString& readValue);
-  EXPORT int32_t           read(uint64_t*  id);
+  //EXPORT DStream&          operator>>(DStreamString& output);
+  //EXPORT int32_t           read(void* buff, int32_t size);
+  //EXPORT int32_t           read(DUnicodeString& readValue);
+  //EXPORT int32_t           read(uint64_t*  id);
 
-  EXPORT DStream&          operator<<(DStreamString& input);
-  EXPORT int32_t           write(DUnicodeString const& str); 
-  EXPORT int32_t           write(uint64_t id) ;
+  //EXPORT DStream&          operator<<(DStreamString& input);
+  //EXPORT int32_t           write(DUnicodeString const& str); 
+  //EXPORT int32_t           write(uint64_t id) ;
 
-  EXPORT int32_t           flush(void) ; 
-private:
-  int32_t           __send(void* buff, int32_t size); 
-  int32_t           __recv(void* buff, int32_t size);
+  //};
 
-  int32_t           __socket;
-  std::stringstream __readStream;
-  std::stringstream __writeStream;
-};
-*/
 }
 
 #endif

@@ -18,7 +18,7 @@ class ClientFunctionObject : public DFunctionObject
 {
 public:
         //ClientFunctionObject(NetworkStream& networkStream, DSerialize* serializer, uint64_t id, DType::Type_t argumentType, DType::Type_t returnType);
-  ClientFunctionObject(DObject* networkStream, DObject* serializer, uint64_t id, DType::Type_t argumentType, DType::Type_t returnType);
+  ClientFunctionObject(DObject* networkStream, DObject* serializer, uint64_t id, DType::Type_t argumentType, DType::Type_t returnType); //XXX deserializer 
   ~ClientFunctionObject();
 
   DValue        call(void) const;
@@ -27,6 +27,7 @@ private:
   uint64_t       __id;
   DObject*       __networkStream;
   DObject*       __serializer;
+  DObject*       __deserializer;
   DType::Type_t  __argumentType;
   DType::Type_t  __returnType;
 };

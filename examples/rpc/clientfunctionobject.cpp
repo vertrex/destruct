@@ -20,25 +20,22 @@ DValue ClientFunctionObject::call(DValue const& args) const
   if (args.asUnicodeString() == "None *") // XXX must be able to serialize None object 
     return (this->call());
 
-  //this->__networkStream.write(std::string("functionCall"));
-  //this->__networkStream.write(this->__id);
+  this->__serializer->call("DUnicodeString", RealValue<DUnicodeString>("functionCall"));
+  this->__serializer->call("DUInt64", RealValue<DUInt64>(this->__id));
 
   ///* Send argument (object is not compatible) */
-  //this->__serializer->serialize(this->__networkStream, args, this->__argumentType);
-  //this->__networkStream.flush();
- 
+  this->__serializer->call(DType(this->__argumentType).name(), args);
+  this->__networkStream->call("flush");
+;
   /* get return value */
-  //return (this->__serializer->deserialize(this->__networkStream, this->__returnType));
-  return (DValue()); //XXX
+  return (this->__deserializer->call(DType(this->__returnType).name()));
 }
 
 DValue ClientFunctionObject::call(void) const
 {
-  //this->__networkStream.write(std::string("functionCall0"));
-  //this->__networkStream.write(this->__id);
-  //this->__networkStream.flush();
+  this->__serializer->call("DUnicodeString", RealValue<DUnicodeString>("functionCall0"));
+  this->__serializer->call("DUInt64", RealValue<DUInt64>(this->__id));
+  this->__networkStream->call("flush");
 
-  //DValue value = this->__serializer->deserialize(this->__networkStream, this->__returnType);
-  //return (value);
-  return (DValue());
+  return (this->__deserializer->call(DType(this->__returnType).name()));
 }

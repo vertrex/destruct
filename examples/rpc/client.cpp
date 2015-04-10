@@ -33,16 +33,15 @@ extern "C"
   }
 }
 
-Client::Client(DUnicodeString const& addr, uint32_t port) : DCppObject<Client>(NULL, RealValue<DObject*>(DNone)), __networkStream(NULL), __serializeRPC(NULL)
+Client::Client(DUnicodeString const& addr, uint32_t port) : DCppObject<Client>(NULL, RealValue<DObject*>(DNone)), __networkStream(NULL), __serialize(NULL), __deserialize(NULL)
 {
   this->__connect(addr, port);
-  //this->__networkStream = new NetworkStream(NULL, RealValue<DInt32>(this->__connectionSocket));
   this->__networkStream = DStructs::instance().find("NetworkStream")->newObject(RealValue<DInt32>(this->__connectionSocket));
-  //this->__serializeRPC = new DSerializeRPC(*this->__networkStream, this->__objectManager, this->__functionObjectManager);
-  this->__serializeRPC = DStructs::instance().find("SerializeRPC")->newObject(RealValue<DObject*>(this->__networkStream));
+  this->__serialize = DStructs::instance().find("SerializeRPC")->newObject(RealValue<DObject*>(this->__networkStream));
+  this->__deserialize = DStructs::instance().find("DeserializeRPC")->newObject(RealValue<DObject*>(this->__networkStream));
 }
 
-Client::Client(DStruct* dstruct, DValue const& value) : DCppObject<Client>(dstruct, value), __networkStream(NULL), __serializeRPC(NULL)
+Client::Client(DStruct* dstruct, DValue const& value) : DCppObject<Client>(dstruct, value), __networkStream(NULL), __serialize(NULL), __deserialize(NULL)
 {
   this->init();
   DObject* args = value.get<DObject*>();
@@ -50,18 +49,16 @@ Client::Client(DStruct* dstruct, DValue const& value) : DCppObject<Client>(dstru
   DUnicodeString addr = args->getValue("address").get<DUnicodeString>();
   uint32_t port = args->getValue("port").get<DUInt32>();
   this->__connect(addr, port);
-  //this->__networkStream = new NetworkStream(NULL, RealValue<DInt32>(this->__connectionSocket));
   this->__networkStream = DStructs::instance().find("NetworkStream")->newObject(RealValue<DInt32>(this->__connectionSocket));
-  //this->__serializeRPC = new DSerializeRPC(*this->__networkStream, this->__objectManager, this->__functionObjectManager);
-  this->__serializeRPC = DStructs::instance().find("SerializeRPC")->newObject(RealValue<DObject*>(this->__networkStream));
+  this->__serialize = DStructs::instance().find("SerializeRPC")->newObject(RealValue<DObject*>(this->__networkStream));
+  this->__deserialize = DStructs::instance().find("DeserializeRPC")->newObject(RealValue<DObject*>(this->__networkStream));
 }
 
 Client::~Client()
 {
-  //delete this->__networkStream;
-  //delete this->__serializeRPC;
   this->__networkStream->destroy();
-  this->__serializeRPC->destroy();
+  this->__serialize->destroy();
+  this->__deserialize->destroy();
   this->__close();
 }
 
@@ -87,20 +84,20 @@ void    Client::__close(void)
   close(this->__connectionSocket);
 }
 
-DObject*                Client::start(void)
+DObject*   Client::start(void)
 {
   throw DException("Client::start Not implemented.");
 }
 
-DValue     Client::findObject(void) //getRoot
+DValue     Client::findObject(void) //getRoot XXX ?
 {
   Destruct::DStructs& destruct = Destruct::DStructs::instance();
-//  this->__networkStream = new NetworkStream(NULL, RealValue<DInt32>(this->connectionSocket()));
   this->__networkStream = destruct.generate("NetworkStream", RealValue<DInt32>(this->connectionSocket())); 
 
   DStruct* registryS = destruct.find("Registry");
 
   //DSerialize* serializer = new DSerializeRPC(*this->__networkStream, this->objectManager(), this->functionObjectManager());
+ //why create one again ???? XXX when it s called ?
   DObject* serializer = DStructs::instance().find("SerializeRPC")->newObject(RealValue<DObject*>(this->__networkStream));
   ClientObject* root = new ClientObject(this->__networkStream, serializer, 0, registryS); 
 
@@ -110,17 +107,16 @@ DValue     Client::findObject(void) //getRoot
 Destruct::DStruct* Client::remoteFind(const DUnicodeString name)
 {
   //std::cout << "Client::_remoteFind(stream, " << name << ")" << std::endl;
-  //this->__networkStream->write(DUnicodeString("findDStruct"));
-  //this->__networkStream->write(name);
-  //this->__networkStream->flush();
-
-  //DStruct* dstruct = this->__serializeRPC->deserialize(*this->__networkStream);
-  DStruct* dstruct; //XXX new serialization plus haut
+  this->__serialize->call("DUnicodeString", RealValue<DUnicodeString>("findDStruct"));
+  this->__serialize->call("DUnicodeString", RealValue<DUnicodeString>(name));
+  this->__networkStream->call("flush");
+ 
+  DStruct* dstruct = this->__deserialize->call("DStruct").get<DStruct*>();
   if (dstruct)
   {
     Destruct::DStructs& destruct = Destruct::DStructs::instance();
     destruct.registerDStruct(dstruct);
-    //this->__print(dstruct); 
+    //this->print(dstruct); 
   } 
   else
     std::cout << "Struct " << name << " is NULL can't show content " << std::endl;
@@ -180,5 +176,10 @@ DObject*     Client::networkStream(void) const
 
 DObject*     Client::serializeRPC(void) const
 {
-  return (this->__serializeRPC);
+  return (this->__serialize);
+}
+
+DObject*     Client::deserializeRPC(void) const
+{
+  return (this->__deserialize);
 }

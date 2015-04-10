@@ -104,6 +104,7 @@ private:
   DObject*                              __networkStream;
   //NetworkStream*                        __networkStream;
   DObject*                              __serializer;
+  DObject*                              __deserializer;
   //DSerialize*                           __serializer;
   ObjectManager<Destruct::DObject*>     __objectManager;
   ObjectManager<ServerFunctionObject*>  __functionObjectManager;

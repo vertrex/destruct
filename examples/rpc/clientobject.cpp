@@ -39,75 +39,81 @@ DObject* ClientObject::newObject(DStruct* dstruct, DValue const& args)
 
 DValue ClientObject::getValue(DUnicodeString const& name) const
 {
-  //this->__networkStream.write(DUnicodeString("getValue"));
-  //this->__networkStream.write(this->__id);
-  //this->__networkStream.write(name);
-  //this->__networkStream.flush();
+  this->__serializer->call("DUnicodeString", RealValue<DUnicodeString>("getValue")); 
+  this->__serializer->call("DUInt64", RealValue<DUInt64>(this->__id)); 
+  this->__serializer->call("DUnicodeString", RealValue<DUnicodeString>(name));
+  this->__networkStream->call("flush");
 
   //NetworkStream& networkStream = const_cast<NetworkStream&>(this->__networkStream);
   DType  dtype = this->instanceOf()->attribute(name).type();
  
-  //if (dtype.getType() == DType::DMethodType)
-  //{
+  //if (dtype.getType() == DType::DMethodType) //XXX XXX how to implem it ?
+ // {
   //DValue returnValue = this->__serializer->deserialize(networkStream, dtype.getArgumentType(), dtype.getReturnType());
   //return (returnValue);
   //} 
 
   //DValue returnValue = this->__serializer->deserialize(networkStream, dtype.getType());
-  DValue returnValue; //XXX
-
-
-  return (returnValue);
+  return (this->__deserializer->call(dtype.name()));
 }
 
 void ClientObject::setValue(DUnicodeString const& name, DValue const &v)
 {
   //this->__networkStream.write(DUnicodeString("setValue"));
+  this->__serializer->call("DUnicodeString", RealValue<DUnicodeString>("setValue"));
   //this->__networkStream.write(this->__id);
+  this->__serializer->call("DUInt64", RealValue<DUInt64>(this->__id));
   //this->__networkStream.write(name);
-  
+  this->__serializer->call("DUnicodeString", RealValue<DUnicodeString>(name));
+ 
+ 
   //don't need get type if serialized in a streamstring or binary ? 
   //this->__serializer->serialize(this->__networkStream, v, this->instanceOf()->attribute(name).type().getType());
-  //this->__networkStream.flush();
+  this->__serializer->call(this->instanceOf()->attribute(name).type().name(), v);
+  this->__networkStream->call("flush");
 }
                                         
 DValue ClientObject::call(DUnicodeString const& name, DValue const &args)
 {
   DType  dtype = this->instanceOf()->attribute(name).type();
-  ////if (name == "serializeText")
-  ////{
-  ////..  newObject()
-  ////BaseValue *b = DObject::getBaseValue(this->__object, this->instanceOf()->findAttribute(name));
-  ////DValue v = b->getFinal().get<DFunctionObject* >()->call(args); 
-  ////return RealValue<DObject*>(DNone);
-  ////}
+  //if (name == "serializeText")
+  //{
+  //..  newObject()
+  //BaseValue *b = DObject::getBaseValue(this->__object, this->instanceOf()->findAttribute(name));
+  //DValue v = b->getFinal().get<DFunctionObject* >()->call(args); 
+  //return RealValue<DObject*>(DNone);
+  //}
 
   //this->__networkStream.write(DUnicodeString("call"));
+  this->__serializer->call("DUnicodeString", RealValue<DUnicodeString>("call"));
   //this->__networkStream.write(this->__id);
+  this->__serializer->call("DUInt64", RealValue<DUInt64>(this->__id));
   //this->__networkStream.write(name);
+  this->__serializer->call("DUnicodeString", RealValue<DUnicodeString>(name));
+
   /* Send argument (object is not compatible) */
   //this->__serializer->serialize(this->__networkStream, args, dtype.getArgumentType());
-  //this->__networkStream.flush();
+  this->__serializer->call(dtype.argumentName(), args);
+  this->__networkStream->call("flush");
  
   /* get return value */
-  //DValue dvalue = this->__serializer->deserialize(this->__networkStream, dtype.getReturnType());
-  DValue dvalue;
-
-  return (dvalue);
+  return (this->__deserializer->call(dtype.returnName()));
 }
 
 DValue ClientObject::call(DUnicodeString const& name)
 {
   //this->__networkStream.write(DUnicodeString("call0"));
+  this->__serializer->call("DUnicodeString", RealValue<DUnicodeString>("call0"));
   //this->__networkStream.write(this->__id);
+  this->__serializer->call("DUInt64", RealValue<DUInt64>(this->__id));
   //this->__networkStream.write(name);
-  //this->__networkStream.flush();
+  this->__serializer->call("DUnicodeString", RealValue<DUnicodeString>(name));
+
+  this->__networkStream->call("flush");
 
   DType  dtype = this->instanceOf()->attribute(name).type();
   //DValue dvalue = this->__serializer->deserialize(this->__networkStream, dtype.getReturnType());
-  DValue dvalue; //XXX
-
-  return (dvalue);
+  return (this->__deserializer->call(dtype.returnName()));
 }
 
 DValue ClientObject::getValue(size_t index) const

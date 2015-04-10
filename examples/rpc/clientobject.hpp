@@ -45,6 +45,7 @@ private:
   //DSerialize*           __serializer;
   DObject*              __networkStream;
   DObject*              __serializer;
+  DObject*              __deserializer;
 };
 }
 #endif

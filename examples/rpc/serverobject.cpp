@@ -13,83 +13,82 @@ ServerObject::ServerObject(DObject* networkStream, DObject* serializer, ObjectMa
 
 void    ServerObject::setValue(void)
 {
-  //this->__networkStream.read(&this->__id);  //XXX new serial
-  DUnicodeString name;
-  //this->__networkStream.read(name); //XXX new serial
+  this->__id = this->__deserializer->call("DUInt64").get<DUInt64>();
+  DUnicodeString name = this->__deserializer->call("DUnicodeString").get<DUnicodeString>();
 
   DObject* object = this->__objectManager.object(this->__id);
-  //Destruct::DValue value = this->__serializer->deserialize(this->__networkStream, object->instanceOf()->attribute(name).type().getType());
-  //object->setValue(name, value);
+
+  DValue value = this->__deserializer->call(object->instanceOf()->attribute(name).type().name());
+  object->setValue(name, value);
 }
 
 void    ServerObject::getValue(void)
 {
-  //this->__networkStream.read(&this->__id); // XXX new serial
+  this->__id = this->__deserializer->call("DUInt64").get<DUInt64>();
   DObject* object = this->__objectManager.object(this->__id);
-  DUnicodeString  name;
-  //this->__networkStream.read(name); //XXX new serial
+  DUnicodeString name = this->__deserializer->call("DUnicodeString").get<DUnicodeString>();
    
   Destruct::DValue value = object->getValue(name);
-
   DType type = object->instanceOf()->attribute(name).type();
   //new serial
-  //if (type.getType() == DType::DMethodType)
+  //if (type.getType() == DType::DMethodType) //XXX
   //this->__serializer->serialize(this->__networkStream, value.get<DFunctionObject*>(), type.getArgumentType(), type.getReturnType());
   //else
-  //this->__serializer->serialize(this->__networkStream, value, type.getType());
-  //this->__networkStream.flush(); 
+    //this->__serializer->serialize(this->__networkStream, value, type.getType());
+    this->__serializer->call(type.name(), value);
+
+  this->__networkStream->call("flush"); 
 }
 
 void    ServerObject::call(void)
 {
-  //this->__networkStream.read(&this->__id);  //XXX new serial
+  this->__id = this->__deserializer->call("DUInt64").get<DUInt64>();
   DObject* object = this->__objectManager.object(this->__id);
-  DUnicodeString name;
-  //this->__networkStream.read(name); //XXX new serial
+  DUnicodeString name = this->__deserializer->call("DUnicodeString").get<DUnicodeString>();
 
-  //Destruct::DValue args = this->__serializer->deserialize(this->__networkStream, object->instanceOf()->attribute(name).type().getArgumentType());
-  //Destruct::DValue value = object->call(name, args); 
+  DValue args = this->__deserializer->call(object->instanceOf()->attribute(name).type().name());
+  DValue value = object->call(name, args);
 
   DType type = object->instanceOf()->attribute(name).type();
-  //this->__serializer->serialize(this->__networkStream, value, type.getReturnType()); //XXX new serial
-  //this->__networkStream.flush();  //XXX new serial
+  this->__serializer->call(type.returnName(), value);
+  this->__networkStream->call("flush");
 }
 
 void    ServerObject::call0(void)
 {
-  //this->__networkStream.read(&this->__id); 
+  this->__id = this->__deserializer->call("DUInt64").get<DUInt64>();
   DObject* object = this->__objectManager.object(this->__id);
-  DUnicodeString name;
-  //this->__networkStream.read(name);
+  DUnicodeString name = this->__deserializer->call("DUnicodeString").get<DUnicodeString>();
 
   Destruct::DValue value = object->call(name); 
   
   DType type = object->instanceOf()->attribute(name).type();
-  //this->__serializer->serialize(this->__networkStream, value, type.getReturnType());
-  //this->__networkStream.flush(); 
+  this->__serializer->call(type.returnName(), value);
+  this->__networkStream->call("flush");
 }
 
 void    ServerObject::functionCall(void)
 {
-  //this->__networkStream.read(&this->__id); 
+  this->__id = this->__deserializer->call("DUInt64").get<DUInt64>();
   ServerFunctionObject* object = this->__functionObjectManager.object(this->__id);
 
-  //Destruct::DValue args = this->__serializer->deserialize(this->__networkStream, object->argumentType());
-  //Destruct::DValue value = object->functionObject()->call(args); 
-        
-  //this->__serializer->serialize(this->__networkStream, value, object->returnType());
-  //this->__networkStream.flush(); 
+  DValue args = this->__deserializer->call(DType(object->argumentType()).name()); //XXX create function argumentName() ! on server object
+  DValue value = object->functionObject()->call(args);
+
+  this->__serializer->call(DType(object->returnType()).name(), value); //XXX create function returnName on ServerObject
+
+  this->__networkStream->call("flush");
 }
 
 void    ServerObject::functionCall0(void)
 {
-  //this->__networkStream.read(&this->__id); 
+  this->__id = this->__deserializer->call("DUInt64").get<DUInt64>();
   ServerFunctionObject* object = this->__functionObjectManager.object(this->__id);
 
   Destruct::DValue value = object->functionObject()->call(); 
-         
-  //this->__serializer->serialize(this->__networkStream, value, object->returnType());
-  //this->__networkStream.flush(); 
+  
+  this->__serializer->call(DType(object->returnType()).name());       
+  this->__networkStream->call("flush");
 }
 
 DObject*    ServerObject::networkStream(void)

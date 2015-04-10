@@ -60,8 +60,8 @@ DObject* TestClient::start(void)
 
   std::cout << "Root name after setValue('name') : " << remote->getValue("name").get<DUnicodeString>() << std::endl;
 
-  //this->networkStream()->write("show"); //XXX new serializaition
-  //this->networkStream()->flush(); //XXX new serialization
+  this->serializeRPC()->call("DUnicodeString", RealValue<DUnicodeString>("show"));
+  this->networkStream()->call("flush"); //XXX new serialization
   std::cout << "Root  path : " << remote->call("path").get<DUnicodeString>() << std::endl;
 
   DObject* remoteChild = remote->getValue("children").get<DObject*>();

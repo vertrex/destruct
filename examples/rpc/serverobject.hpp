@@ -21,12 +21,11 @@ public:
   void                                  call0(void);
   void                                  functionCall(void);
   void                                  functionCall0(void);
-  //Destruct::NetworkStream&              networkStream(void);
   DObject*                              networkStream(void);
 private:
-//  Destruct::NetworkStream&              __networkStream;
   DObject*                              __networkStream;
   DObject*                              __serializer;
+  DObject*                              __deserializer;
   ObjectManager<DObject*>&              __objectManager;
   ObjectManager<ServerFunctionObject*>& __functionObjectManager;
   DObject*                              __object;
