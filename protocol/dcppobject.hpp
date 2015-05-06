@@ -15,7 +15,7 @@ namespace Destruct
  *  
  */
 template<typename CppClass>
-class DCppObject : public DObject// XXX inherit DDynamicObject XXX XXX XXX ZZZ plus simple que recoder ici
+class DCppObject : public DObject
 {
 public:
   DCppObject(DStruct* dstruct) : DObject(dstruct, RealValue<DObject*>(DNone)), __members(CppClass::memberBegin())
@@ -134,6 +134,55 @@ inline
 void  registerDCpp(DUnicodeString const& name)
 {
   DStructs::instance().registerDStruct(new DStruct(NULL, name, DCppObject<CppClass>::newObject, CppClass::ownAttributeBegin(), CppClass::ownAttributeEnd()));
+}
+
+
+template<typename CppClass>
+class DCppObjectSingleton : public DCppObject<CppClass>
+{
+public:
+  DCppObjectSingleton(DStruct* dstruct) : DCppObject<CppClass>(dstruct)
+  {
+  }
+
+  DCppObjectSingleton(DStruct* dstruct, DValue const& args) : DCppObject<CppClass>(dstruct, args)
+  {
+  }
+
+  DCppObjectSingleton(DCppObjectSingleton const& copy) : DCppObject<CppClass>(copy)
+  {
+//    this->copy(this, copy); //must copy all attributes // or let's do it in CppClass constructor ?
+  }
+
+  static DObject* newObject(DStruct* dstruct, DValue const& args)
+  { 
+    static DObject* object = new CppClass(dstruct, args);
+    object->addRef();
+
+    return (object);
+  }
+
+  virtual DObject* clone() const
+  {
+    DObject* object = static_cast<DObject*>(static_cast<CppClass*>(const_cast<DCppObjectSingleton<CppClass >* >(this)));
+    object->addRef();
+
+    return (object);
+  }
+};
+
+template <typename CppClass>
+inline 
+DStruct*  makeNewDCppSingleton(DUnicodeString const& name)
+{
+  return (new DStruct(NULL, name, DCppObjectSingleton<CppClass>::newObject, CppClass::ownAttributeBegin(), CppClass::ownAttributeEnd()));
+}
+
+template <typename CppClass>
+inline 
+void  registerDCppSingleton(DUnicodeString const& name)
+{
+  DStructs::instance().registerDStruct(new DStruct(NULL, name, DCppObjectSingleton<CppClass>::newObject, CppClass::ownAttributeBegin(), CppClass::ownAttributeEnd()));
 }
 
 }

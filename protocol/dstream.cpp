@@ -65,6 +65,11 @@ DInt64  DStream::write(DValue const& args)
   return (size); //XXX check
 }
 
+void    DStream::flush(void)
+{
+  this->__stream.flush();
+}
+
 /**
  *  DStreamCout
  */
