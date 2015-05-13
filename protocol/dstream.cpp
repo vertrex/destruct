@@ -70,6 +70,19 @@ void    DStream::flush(void)
   this->__stream.flush();
 }
 
+void    DStream::seek(DValue const& args)
+{
+  DUInt64 pos = args.get<DUInt64>();
+//if input
+  this->__stream.seekg(pos);
+}
+
+DUInt64 DStream::size(DValue const& args)
+{
+//if input
+  return (this->__stream.tellg());
+}
+
 /**
  *  DStreamCout
  */
