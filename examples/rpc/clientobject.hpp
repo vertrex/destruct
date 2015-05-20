@@ -14,35 +14,32 @@ class DSerialize;
 /**
  * Client Object proxy 
  */
-class ClientObject : public DObject
+class EXPORT ClientObject : public DObject
 {
 public:
-        //EXPORT ClientObject(NetworkStream& stream, DSerialize* serializer, uint64_t id, DStruct* dstruct);
-  EXPORT ClientObject(DObject* stream, DObject* serializer, uint64_t id, DStruct* dstruct);
-  EXPORT ClientObject(DStruct* dstruct, DValue const& args);
-  EXPORT ClientObject(ClientObject const & rhs);
+  ClientObject(DObject* stream, DObject* serializer, DObject* deserializer, uint64_t id, DStruct* dstruct);
+  ClientObject(DStruct* dstruct, DValue const& args);
+  ClientObject(ClientObject const & rhs);
 
-  EXPORT static DObject*       newObject(DStruct* dstruct, DValue const& args);
-  EXPORT DObject*              clone() const;
+  static DObject*       newObject(DStruct* dstruct, DValue const& args);
+  DObject*              clone() const;
 
-  EXPORT DValue                getValue(DUnicodeString const& name) const;
-  EXPORT void                  setValue(DUnicodeString const& name, DValue const &);
+  DValue                getValue(DUnicodeString const& name) const;
+  void                  setValue(DUnicodeString const& name, DValue const &);
                                         
-  EXPORT DValue                call(DUnicodeString const& name, DValue const &);
-  EXPORT DValue                call(DUnicodeString const& name);
+  DValue                call(DUnicodeString const& name, DValue const &);
+  DValue                call(DUnicodeString const& name);
 
-  EXPORT DValue                getValue(size_t index) const;
-  EXPORT void                  setValue(size_t idx, DValue const &);
-  EXPORT DValue                call(size_t index, DValue const &);
+  DValue                getValue(size_t index) const;
+  void                  setValue(size_t idx, DValue const &);
+  DValue                call(size_t index, DValue const &);
 
-  EXPORT BaseValue*            getBaseValue(size_t index);
-  EXPORT BaseValue const*      getBaseValue(size_t index) const;
+  BaseValue*            getBaseValue(size_t index);
+  BaseValue const*      getBaseValue(size_t index) const;
 protected:
-  EXPORT ~ClientObject();
+  ~ClientObject();
 private:
   uint64_t              __id;
-  //NetworkStream&        __networkStream;
-  //DSerialize*           __serializer;
   DObject*              __networkStream;
   DObject*              __serializer;
   DObject*              __deserializer;

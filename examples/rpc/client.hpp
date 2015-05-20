@@ -8,42 +8,44 @@
 #include "networkstream.hpp" 
 #include "objectmanager.hpp"
 #include "serializerpc.hpp"
+
 using namespace Destruct;
 
 class ServerFunctionObject;
 
-class Client : public DCppObject<Client>
+extern "C" {
+void declare(void);
+}
+
+//bind other function & use inheritance in other examples & python
+class EXPORT Client : public DCppObject<Client>
 {
 public:
-  EXPORT Client(DUnicodeString const& addr, uint32_t port);
-  EXPORT Client(DStruct* dstruct, DValue const& args);
-  EXPORT ~Client();
+  Client(DUnicodeString const& addr, uint32_t port);
+  Client(DStruct* dstruct, DValue const& args);
+  ~Client();
 
-  EXPORT virtual DObject*                      start(void);
-  EXPORT DValue                                findObject(void); ///XXX:
+  virtual DObject*                      start(void);
+  DValue                                findObject(void); ///XXX:
 
-  EXPORT Destruct::DStruct*                    remoteFind(const DUnicodeString name);
-  EXPORT bool                                  print(DObject* dobject) const;
-  EXPORT bool                                  print(DStruct* dstruct) const;
+  Destruct::DStruct*                    remoteFind(const DUnicodeString name);
+  bool                                  print(DObject* dobject) const;
+  bool                                  print(DStruct* dstruct) const;
 
-  EXPORT int32_t                               connectionSocket(void) const;
-  EXPORT DObject*                              networkStream(void) const;
-  EXPORT DObject*                              serializeRPC(void) const;
-  EXPORT DObject*                              deserializeRPC(void) const;
-  EXPORT ObjectManager<DObject*>&              objectManager(void);
-  EXPORT ObjectManager<ServerFunctionObject*>& functionObjectManager(void);
+  int32_t                               connectionSocket(void) const;
+  DObject*                              networkStream(void) const;
+  DObject*                              serializeRPC(void) const;
+  DObject*                              deserializeRPC(void) const;
 
 private:
-  EXPORT void                                  __connect(DUnicodeString const& addr, uint32_t port);
-  EXPORT void                                  __close(void);
-  int32_t                                      __connectionSocket;
-  //NetworkStream*                               __networkStream;
-  //DSerialize*                                  __serializeRPC; 
-  DObject*                                     __networkStream;
-  DObject*                                     __serialize;
-  DObject*                                     __deserialize;
-  ObjectManager<DObject* >                     __objectManager;
-  ObjectManager<ServerFunctionObject*>         __functionObjectManager;
+  void                                  __connect(DUnicodeString const& addr, uint32_t port);
+  void                                  __close(void);
+  int32_t                               __connectionSocket;
+  //NetworkStream*                      __networkStream;
+  //DSerialize*                         __serializeRPC; 
+  DObject*                              __networkStream;
+  DObject*                              __serialize;
+  DObject*                              __deserialize;
 
 public:
 /**

@@ -8,6 +8,7 @@
 RPC::RPC()
 {
   Destruct::DType::init();
+  declare();
 }
 
 RPC::~RPC()
@@ -52,7 +53,7 @@ DObject* TestClient::start(void)
     throw DException("TestClient::start Directory struct not found");
 
   //0 is root server object
-  ClientObject* remote = new ClientObject(this->networkStream(), this->serializeRPC(), 0, directoryS); 
+  ClientObject* remote = new ClientObject(this->networkStream(), this->serializeRPC(), this->deserializeRPC(),  0, directoryS); 
   std::cout << "root name : " << remote->getValue("name").get<DUnicodeString>() << std::endl;
 
   std::cout << "Set remote value to 'rename-by-remote'" << std::endl;
@@ -65,9 +66,10 @@ DObject* TestClient::start(void)
   std::cout << "Root  path : " << remote->call("path").get<DUnicodeString>() << std::endl;
 
   DObject* remoteChild = remote->getValue("children").get<DObject*>();
-  std::cout << "Iterating on child " << std::endl;
+  std::cout << "Iterating on child " << remoteChild->instanceOf()->name() << std::endl;
   DUInt64 size = remoteChild->call("size").get<DUInt64>();
- 
+
+  std::cout << "get children size " << size << std::endl; 
   for (DUInt64 i = 0; i < size; ++i)
   { 
     for (DUInt64 x = 0; x < 10; ++x) 
@@ -111,7 +113,7 @@ void            TestServer::initRoot(void)
   dstruct.registerDStruct(directoryStruct);
 
   DObject* root = directoryStruct->newObject();
-  this->objectManager().registerObject(root);
+  this->objectManager()->call("registerObject", RealValue<DObject*>(root));
   DObject* children =  root->getValue("children").get<DObject*>();
  
   DObject* file1 = fileStruct->newObject();
@@ -133,7 +135,7 @@ void            TestServer::initRoot(void)
   */
 
   File* file3 = new File(fileStruct, RealValue<DObject*>(DNone));  
-  this->objectManager().registerObject(file3);
+  this->objectManager()->call("registerObject", RealValue<DObject*>(file3));
   file3->name = "File3"; 
   d1children->call("push", RealValue<DObject*>(file3));
 }

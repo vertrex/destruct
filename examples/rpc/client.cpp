@@ -15,14 +15,26 @@
 
 #include "dsimpleobject.hpp"
 #include "server.hpp"
+#include "objectmanager.hpp"
+#include "serverfunctionobject.hpp"
+
 extern "C"
 {
   void  declare(void)
   {
     Destruct::DStructs& destruct = Destruct::DStructs::instance();
-   
+    destruct.registerDStruct(makeNewDCpp<NetworkStream>("NetworkStream"));
+    destruct.registerDStruct(makeNewDCpp<SerializeRPC>("SerializeRPC"));
+    destruct.registerDStruct(makeNewDCpp<DeserializeRPC>("DeserializeRPC"));
+
+    destruct.registerDStruct(makeNewDCppSingleton<ObjectManager<DObject*, DType::DObjectType> >("ObjectManager"));
+     //destruct.registerDStruct(makeNewDCpp<ObjectManager<DFunctionObject*, DType::DMethodType> >("FunctionObjectManager");
+    destruct.registerDStruct(makeNewDCpp<ServerFunctionObject>("ServerFunctionObject"));
+
+
     DStruct* dstruct = makeNewDCpp<Server>("Server"); 
     destruct.registerDStruct(dstruct);
+
     dstruct = makeNewDCpp<Client>("Client");
     destruct.registerDStruct(dstruct);
 
@@ -35,6 +47,7 @@ extern "C"
 
 Client::Client(DUnicodeString const& addr, uint32_t port) : DCppObject<Client>(NULL, RealValue<DObject*>(DNone)), __networkStream(NULL), __serialize(NULL), __deserialize(NULL)
 {
+  this->init();
   this->__connect(addr, port);
   this->__networkStream = DStructs::instance().find("NetworkStream")->newObject(RealValue<DInt32>(this->__connectionSocket));
   this->__serialize = DStructs::instance().find("SerializeRPC")->newObject(RealValue<DObject*>(this->__networkStream));
@@ -96,10 +109,10 @@ DValue     Client::findObject(void) //getRoot XXX ?
 
   DStruct* registryS = destruct.find("Registry");
 
-  //DSerialize* serializer = new DSerializeRPC(*this->__networkStream, this->objectManager(), this->functionObjectManager());
  //why create one again ???? XXX when it s called ?
   DObject* serializer = DStructs::instance().find("SerializeRPC")->newObject(RealValue<DObject*>(this->__networkStream));
-  ClientObject* root = new ClientObject(this->__networkStream, serializer, 0, registryS); 
+  DObject* deserializer = DStructs::instance().find("DeserializeRPC")->newObject(RealValue<DObject*>(this->__networkStream));
+  ClientObject* root = new ClientObject(this->__networkStream, serializer, deserializer, 0, registryS); 
 
   return (RealValue<DObject*>(root));
 }
@@ -157,16 +170,6 @@ bool    Client::print(DObject* dobject) const
 int32_t Client::connectionSocket(void) const
 {
   return (this->__connectionSocket);
-}
-
-ObjectManager<DObject*>&  Client::objectManager(void)
-{
-  return (this->__objectManager);
-}
-
-ObjectManager<ServerFunctionObject*>&  Client::functionObjectManager(void)
-{
-  return (this->__functionObjectManager);
 }
 
 DObject*     Client::networkStream(void) const

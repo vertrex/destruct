@@ -3,22 +3,11 @@
 /**
  * ServerFunctionObject
  */
-ServerFunctionObject::ServerFunctionObject(DFunctionObject* functionObject, DType::Type_t argumentType,
- DType::Type_t returnType) : __functionObject(functionObject), __argumentType(argumentType), __returnType(returnType)
+ServerFunctionObject::ServerFunctionObject(DStruct* dstruct, DValue const& args) : DCppObject<ServerFunctionObject>(dstruct, args)
 {
 }
 
-DType::Type_t ServerFunctionObject::argumentType(void) const
+ServerFunctionObject::ServerFunctionObject(ServerFunctionObject const& copy) : DCppObject<ServerFunctionObject>(copy)
 {
-  return (this->__argumentType);
 }
 
-DType::Type_t ServerFunctionObject::returnType(void) const
-{
-  return (this->__returnType);
-}
-
-DFunctionObject* ServerFunctionObject::functionObject(void) const
-{
-  return (this->__functionObject);
-}

@@ -13,35 +13,35 @@
 #include <ws2tcpip.h>
 #endif
 
-class Server : public DCppObject<Server>
+class EXPORT Server : public DCppObject<Server>
 {
 public:
-  EXPORT Server(uint32_t port);
+  Server(uint32_t port);
 
-  EXPORT Server(DStruct* dstruct, DValue const& args) : DCppObject<Server>(dstruct, args), __connectionSocket(), __networkStream(NULL), __serializer(NULL) 
+  Server(DStruct* dstruct, DValue const& args) : DCppObject<Server>(dstruct, args), __connectionSocket(), __networkStream(NULL), __serializer(NULL) 
   {
     this->init();
     this->__bind(args.get<DUInt32>());
   }
 
-  EXPORT ~Server();
+  ~Server();
 
-  EXPORT virtual void                          initRoot(void) //setRoot(DValue object);
+  virtual void                          initRoot(void) //setRoot(DValue object);
   {
     //throw DException("Not implemented");
     std::cout << "Server::initRoot not implemented" << std::endl;
   }
 
-  EXPORT virtual void                          addRoot(RealValue<DObject*> root)
+  virtual void                          addRoot(RealValue<DObject*> root)
   {
-    this->objectManager().registerObject(root);
+    this->__objectManager->call("registerObject", root);
   }
 
-  EXPORT virtual void                          serve();
-  EXPORT void                                  daemonize(void);
+  virtual void                          serve();
+  void                                  daemonize(void);
 
-  EXPORT ObjectManager<ServerFunctionObject*>& functionObjectManager(void);
-  EXPORT ObjectManager<Destruct::DObject*>&    objectManager(void);
+  //DObject*                              functionObjectManager(void);
+  DObject*                              objectManager(void);
 
   RealValue<DFunctionObject*>   _addRoot, _serve, _daemonize;
 
@@ -102,12 +102,11 @@ private:
   EXPORT void                           __bind(int32_t port);
   EXPORT void                           __listen(void);
   DObject*                              __networkStream;
-  //NetworkStream*                        __networkStream;
   DObject*                              __serializer;
   DObject*                              __deserializer;
-  //DSerialize*                           __serializer;
-  ObjectManager<Destruct::DObject*>     __objectManager;
-  ObjectManager<ServerFunctionObject*>  __functionObjectManager;
+  DObject*                              __objectManager;
+  //ObjectManager<Destruct::DObject*>     __objectManager;
+  //ObjectManager<ServerFunctionObject*>  __functionObjectManager;
 };
 
 #endif

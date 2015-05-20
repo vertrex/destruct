@@ -4,26 +4,24 @@
 #include "networkstream.hpp"
 #include "serializerpc.hpp"
 #include "clientobject.hpp"
-
+#include "clientfunctionobject.hpp"
 
 namespace Destruct {
 
 /**
  *  ClientObject Proxy object that handle transparent remote communication and let you use your object as a local object
  */
-        //ClientObject::ClientObject(NetworkStream& stream, DSerialize* serializer, uint64_t id, DStruct* dstruct) : DObject(dstruct, RealValue<DObject*>(DNone)), __id(id), __networkStream(stream), __serializer(serializer)
-ClientObject::ClientObject(DObject* stream, DObject* serializer, uint64_t id, DStruct* dstruct) : DObject(dstruct, RealValue<DObject*>(DNone)), __id(id), __networkStream(stream), __serializer(serializer)
+ClientObject::ClientObject(DObject* stream, DObject* serializer, DObject* deserializer, uint64_t id, DStruct* dstruct) : DObject(dstruct, RealValue<DObject*>(DNone)), __id(id), __networkStream(stream), __serializer(serializer), __deserializer(deserializer)
 {
   //this->init(this);
 }
 
-//ClientObject::ClientObject(DStruct* dstruct, DValue const& args) : DObject(dstruct, args), __id(-1), __networkStream(*(new NetworkStream(NULL, RealValue<DInt32>(0)))), __serializer(NULL)
-ClientObject::ClientObject(DStruct* dstruct, DValue const& args) : DObject(dstruct, args), __id(-1), __networkStream(DNone), __serializer(DNone)
+ClientObject::ClientObject(DStruct* dstruct, DValue const& args) : DObject(dstruct, args), __id(-1), __networkStream(DNone), __serializer(DNone), __deserializer(DNone)
 {
   //this->init(this);
 }
 
-ClientObject::ClientObject(ClientObject const & rhs) : DObject(rhs), __id(rhs.__id),  __networkStream(rhs.__networkStream), __serializer(rhs.__serializer)
+ClientObject::ClientObject(ClientObject const & rhs) : DObject(rhs), __id(rhs.__id),  __networkStream(rhs.__networkStream), __serializer(rhs.__serializer), __deserializer(rhs.__serializer)
 {
   //this->copy(this, rhs);
 }
@@ -44,28 +42,23 @@ DValue ClientObject::getValue(DUnicodeString const& name) const
   this->__serializer->call("DUnicodeString", RealValue<DUnicodeString>(name));
   this->__networkStream->call("flush");
 
-  //NetworkStream& networkStream = const_cast<NetworkStream&>(this->__networkStream);
   DType  dtype = this->instanceOf()->attribute(name).type();
  
-  //if (dtype.getType() == DType::DMethodType) //XXX XXX how to implem it ?
- // {
-  //DValue returnValue = this->__serializer->deserialize(networkStream, dtype.getArgumentType(), dtype.getReturnType());
-  //return (returnValue);
-  //} 
+  if (dtype.getType() == DType::DMethodType) //XXX XXX how to implem it ?
+  {
+    DUInt64 id = this->__deserializer->call("DUInt64").get<DUInt64>();
 
-  //DValue returnValue = this->__serializer->deserialize(networkStream, dtype.getType());
+    return (RealValue<DFunctionObject*>(new ClientFunctionObject(this->__networkStream, this->__serializer, this->__deserializer, id, dtype.getArgumentType(), dtype.getReturnType())));
+  } 
+
   return (this->__deserializer->call(dtype.name()));
 }
 
 void ClientObject::setValue(DUnicodeString const& name, DValue const &v)
 {
-  //this->__networkStream.write(DUnicodeString("setValue"));
   this->__serializer->call("DUnicodeString", RealValue<DUnicodeString>("setValue"));
-  //this->__networkStream.write(this->__id);
   this->__serializer->call("DUInt64", RealValue<DUInt64>(this->__id));
-  //this->__networkStream.write(name);
   this->__serializer->call("DUnicodeString", RealValue<DUnicodeString>(name));
- 
  
   //don't need get type if serialized in a streamstring or binary ? 
   //this->__serializer->serialize(this->__networkStream, v, this->instanceOf()->attribute(name).type().getType());
@@ -84,15 +77,11 @@ DValue ClientObject::call(DUnicodeString const& name, DValue const &args)
   //return RealValue<DObject*>(DNone);
   //}
 
-  //this->__networkStream.write(DUnicodeString("call"));
   this->__serializer->call("DUnicodeString", RealValue<DUnicodeString>("call"));
-  //this->__networkStream.write(this->__id);
   this->__serializer->call("DUInt64", RealValue<DUInt64>(this->__id));
-  //this->__networkStream.write(name);
   this->__serializer->call("DUnicodeString", RealValue<DUnicodeString>(name));
 
   /* Send argument (object is not compatible) */
-  //this->__serializer->serialize(this->__networkStream, args, dtype.getArgumentType());
   this->__serializer->call(dtype.argumentName(), args);
   this->__networkStream->call("flush");
  
@@ -102,17 +91,13 @@ DValue ClientObject::call(DUnicodeString const& name, DValue const &args)
 
 DValue ClientObject::call(DUnicodeString const& name)
 {
-  //this->__networkStream.write(DUnicodeString("call0"));
   this->__serializer->call("DUnicodeString", RealValue<DUnicodeString>("call0"));
-  //this->__networkStream.write(this->__id);
   this->__serializer->call("DUInt64", RealValue<DUInt64>(this->__id));
-  //this->__networkStream.write(name);
   this->__serializer->call("DUnicodeString", RealValue<DUnicodeString>(name));
 
   this->__networkStream->call("flush");
 
   DType  dtype = this->instanceOf()->attribute(name).type();
-  //DValue dvalue = this->__serializer->deserialize(this->__networkStream, dtype.getReturnType());
   return (this->__deserializer->call(dtype.returnName()));
 }
 

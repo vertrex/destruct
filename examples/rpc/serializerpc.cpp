@@ -11,12 +11,14 @@
 namespace Destruct
 {
 
-SerializeRPC::SerializeRPC(DStruct* dstruct, DValue const& args) : DCppObject<SerializeRPC>(dstruct, args), __stream(args.get<DObject*>())
+SerializeRPC::SerializeRPC(DStruct* dstruct, DValue const& args) : DCppObject<SerializeRPC>(dstruct, args), __stream(args.get<DObject*>())// objects(objects), __functionObjects(functionObjects), treamString(DStreamString())
 {
+
   this->init(); 
+  this->__objectManager = DStructs::instance().find("ObjectManager")->newObject();
 }
 
-SerializeRPC::SerializeRPC(SerializeRPC const& copy) : DCppObject<SerializeRPC>(copy), __stream(copy.__stream)
+SerializeRPC::SerializeRPC(SerializeRPC const& copy) : DCppObject<SerializeRPC>(copy), __objectManager(copy.__objectManager), __stream(copy.__stream)
 {
   this->init();
 }
@@ -29,51 +31,11 @@ SerializeRPC::~SerializeRPC()
 void    SerializeRPC::sDObject(DValue const& args)
 {
   DObject* dobject = args.get<DObject*>();
-  if (dobject == NULL) //XXX XXX ct fait avant mais ca faisait quoi ? :)
-    return (this->sDNone());
-  
+  RealValue<DUInt64> id = this->__objectManager->call("registerObject", args);  
+   
 
-  DStruct const* dstruct = dobject->instanceOf(); 
-  if (dstruct == NULL)
-    throw DException("SerializeRPCBinary::sDObject(DValue) object instance is NULL");
-  this->sDUnicodeString(RealValue<DUnicodeString>(dstruct->name()));
-
-  /*
-   *  We follow special serialization and iterable method first 
-   */
-  int32_t index = dstruct->findAttribute("iterator");
-  if (index != -1)
-  {
-    DObject* iterator = dobject->call("iterator").get<DObject*>();
-    DType returnType = DType(iterator->instanceOf()->attribute("currentItem").type().getReturnType());
-
-    DValue count = dobject->call("size");   
-    this->sDUInt64(count);
- 
-    for ( ;iterator->call("isDone").get<DInt8>() != 1; iterator->call("nextItem"))
-    {
-      DValue value = iterator->call("currentItem");
-      this->call(returnType.name(), value);
-    }
-    //iterator->destroy(); //destroy get<DObject*> instance
-    //iterator->destroy(); //Destroy "call" instance
-    //dobject->destroy();
-    return ;
-  }
-  
-  for (DStruct::DAttributeIterator attribute = dstruct->attributeBegin(); attribute != dstruct->attributeEnd(); ++attribute)
-  {
-    DType type = attribute->type();
-    DType::Type_t type_t = type.getType();
-    if (type_t == DType::DMethodType || type_t == DType::DNoneType || type_t == DType::DUnknownType)
-      continue;
-    else
-    {
-      DValue value = dobject->getValue((*attribute).name());
-      this->call(type.name(), value);
-    }
-  }
-  //dobject->destroy();
+  this->sDUnicodeString(RealValue<DUnicodeString>(dobject->instanceOf()->name()));
+  this->sDUInt64(id);
 }
 
 
@@ -111,6 +73,8 @@ void    SerializeRPC::sDNone(void)
 void    SerializeRPC::sDMethod(DValue const& args)
 {
   //pass or throw ?
+  //in serverObject
+  std::cout << "SERIALIZERPC::sDMethod" << std::endl;
 }
 
 void    SerializeRPC::sDUnicodeString(DValue const& args)
@@ -201,80 +165,18 @@ DeserializeRPC::~DeserializeRPC()
 
 DObject*        DeserializeRPC::dDObject(DValue const& value)
 {
-  DStruct* dstruct = NULL;
-  DObject* dobject = value.get<DObject*>();
- 
-  if (dobject == DNone)
+  DUnicodeString objectName = this->dDUnicodeString();
+  DUInt64 id = this->dDUInt64();
+
+  DStruct* dstruct = Destruct::DStructs::instance().find(objectName);
+  if (dstruct == NULL)
   {
-    DStructs& dstructs = DStructs::instance();
-    DUnicodeString structName = this->call("DUnicodeString").get<DUnicodeString>();
-
-    if (structName == "None")
-      return (RealValue<DObject*>(DNone));
-
-    dstruct = dstructs.find(structName);
-    if (dstruct == NULL)
-      throw DException("Can't find struct : '" + structName + "' in destruct database.");
-    dobject = dstruct->newObject();
+    std::cout << "DSerializeRPC Can't deserialize object not find in base must get struct named :  " << objectName << std::endl;
+    return (DNone);
   }
-  else
-    dstruct = dobject->instanceOf();
   
-  
-  int32_t index = dstruct->findAttribute("iterator");
-  int32_t hasNewItem = dstruct->findAttribute("newItem");
-  if (index != -1)
-  {
-    DType::Type_t   returnType = dstruct->attribute("get").type().getReturnType();
-    DUInt64 count = this->call("DUInt64").get<DUInt64>();
-   
-    if (hasNewItem != -1)
-    {
-      for (DUInt64 index = 0; index < count; index++)
-      {
-         DUnicodeString structName = this->call("DUnicodeString").get<DUnicodeString>(); 
-         DObject* item = dobject->call("newItem").get<DObject*>();
-         this->call("DObject", RealValue<DObject*>(item));
-         dobject->call("setItem", RealValue<DObject*>(item));
-         //item->destroy();
-         //item->destroy();
-      }
-    }
-    else
-    {
-      for (DUInt64 index = 0; index < count; index++) 
-      {
-         
-         DValue value = this->call(DType(returnType).name());
-         dobject->call("push", value);
-         //if (returnType == DType::DObjectType)
-         //{
-         //DObject* obj = value.get<DObject*>();
-         //obj->destroy();
-         //obj->destroy();
-         //}
-      }
-    }
-    return (dobject);
-  }
-
-  for (DStruct::DAttributeIterator attribute = dstruct->attributeBegin(); attribute != dstruct->attributeEnd(); ++attribute)
-  {
-    DType type = attribute->type();
-    if (type.getType() == DType::DMethodType)
-      continue;
-    else if (type.getType() == DType::DUnknownType)
-      continue;
-    else
-    {
-      DValue value = this->call(type.name());
-      dobject->setValue((*attribute).name(), value);
-    }
-    //if type un dobject
-    //obj->destroy() * 2 ?
-  }
-
-  return (dobject);
+  DObject* serializer = DStructs::instance().find("SerializeRPC")->newObject(RealValue<DObject*>(this->__stream)); //XXX XXX new object each time XXX XXX fix me ;
+  return (new ClientObject(this->__stream, serializer, this, id, dstruct));
 }
 
 DStruct*        DeserializeRPC::dDStruct(void)
@@ -311,6 +213,16 @@ DObject*        DeserializeRPC::dDNone(void)
 
 DFunctionObject* DeserializeRPC::dDMethod(void)
 {
+  std::cout << "DESERIALIZE::RPC dMETHOD !" << std::endl; //in ClientObject
+  //this->__networkStream >> this->__streamString;
+  
+
+  //RealValue<DUInt64> id;
+  //id.unserialize(this->__streamString);
+  //this->__streamString.read(id); 
+ 
+  //return (RealValue<DFunctionObject*>(new ClientFunctionObject(this->__networkStream, this, id, argumentType, returnType)));
+
   return (NULL);
 }
 
@@ -409,64 +321,47 @@ DUInt64         DeserializeRPC::dDUInt64(void)
 
 
 
-/*
-
-
-DSerializeRPC::DSerializeRPC(NetworkStream& stream, ObjectManager<DObject*>& objects, ObjectManager<ServerFunctionObject*>& functionObjects) : __networkStream(stream), __objects(objects), __functionObjects(functionObjects), __streamString(DStreamString(DStructs::instance().find("DStreamString"), RealValue<DObject*>(DNone)))
-{
-}
-
-DSerializeRPC*   DSerializeRPC::create(void)
-{
-  return (new DSerializeRPC(this->__networkStream, this->__objects, this->__functionObjects));
-}
-
-const DUnicodeString DSerializeRPC::name(void)
-{
-  return ("RPC");
-}
-
-
 //   Serialization
+//bool DSerializeRPC::serialize(DStream& networkStream, DStruct& dstruct)
+//{
+////  DSerialize* binarySerializer = DSerializers::to("Binary");
+////  binarySerializer->serialize(this->__streamString, dstruct);
+  //DObject* serializer = DStructs::instance().generate("SerializeBinary", this->__streamString);
+  //serializer->call("DStruct", RealValue<DStruct*>(dstruct)); //& to * ?
 
- 
-bool DSerializeRPC::serialize(DStream& networkStream, DStruct& dstruct)
-{
-//  DSerialize* binarySerializer = DSerializers::to("Binary");
-//  binarySerializer->serialize(this->__streamString, dstruct);
-  DObject* serializer = DStructs::instance().generate("SerializeBinary", this->__streamString);
-  serializer->call("DStruct", RealValue<DStruct*>(dstruct)); //& to * ?
+  //this->__networkStream << this->__streamString;
 
-  this->__networkStream << this->__streamString;
+  //return (true);
+//}
 
-  return (true);
-}
+//bool DSerializeRPC::serialize(DStream& networkStream, DValue value, DType::Type_t type)
+//{
+  //if (type == DType::DNoneType)
+    //return (true);
+  //else if (type == DType::DObjectType)
+  //{
+    //DObject* dobject = value.get<DObject*>();
+    //this->serialize(this->__networkStream, dobject);
+  //}
+  //else if (type == DType::DMethodType)
+  //{
+    //DException("DFunctionType serialization not implemented");
+  //}
+  //else
+  //{
+    //this->__streamString.clear();
+    //this->__streamString.write(value); //XXX new serialiatiuon
+    ////this->__streamString << value;
+    //this->__networkStream << this->__streamString;
+  //} 
+  //this->__streamString.clear();
 
-bool DSerializeRPC::serialize(DStream& networkStream, DValue value, DType::Type_t type)
-{
-  if (type == DType::DNoneType)
-    return (true);
-  else if (type == DType::DObjectType)
-  {
-    DObject* dobject = value.get<DObject*>();
-    this->serialize(this->__networkStream, dobject);
-  }
-  else if (type == DType::DMethodType)
-  {
-    DException("DFunctionType serialization not implemented");
-  }
-  else
-  {
-    this->__streamString.clear();
-    this->__streamString.write(value); //XXX new serialiatiuon
-    //this->__streamString << value;
-    this->__networkStream << this->__streamString;
-  } 
-  this->__streamString.clear();
+  //return (true);
+//}
 
-  return (true);
-}
-
+//* ???
+// XXX XXX XXX not implem yet
+/*
 bool DSerializeRPC::serialize(DStream& networkStream, DFunctionObject* dfunctionObject, DType::Type_t argumentType, DType::Type_t returnType)
 {
   ServerFunctionObject* serverFunctionObject = new ServerFunctionObject(dfunctionObject, argumentType, returnType);
@@ -479,67 +374,69 @@ bool DSerializeRPC::serialize(DStream& networkStream, DFunctionObject* dfunction
 
   return (true);
 }
+*/
+//bool DSerializeRPC::serialize(DStream& networkStream, DObject*  dobject) 
+//{
+  //RealValue<DUnicodeString> objectName(dobject->instanceOf()->name());
+  //RealValue<DUInt64> id(this->__objects.registerObject(dobject));
 
-bool DSerializeRPC::serialize(DStream& networkStream, DObject*  dobject) 
-{
-  RealValue<DUnicodeString> objectName(dobject->instanceOf()->name());
-  RealValue<DUInt64> id(this->__objects.registerObject(dobject));
+  ////objectName.serialize(this->__streamString); //XXX new serialization
+  ////id.serialize(this->__streamString); //XXX
+  //this->__streamString.write(objectName);
+  //this->__streamString.write(id);
 
-  //objectName.serialize(this->__streamString); //XXX new serialization
-  //id.serialize(this->__streamString); //XXX
-  this->__streamString.write(objectName);
-  this->__streamString.write(id);
+  //this->__networkStream << this->__streamString;
 
-  this->__networkStream << this->__streamString;
-
-  return (true);
-}
+  //return (true);
+//}
 
 
  //  Deserialization
- 
-DStruct* DSerializeRPC::deserialize(DStream& input)
-{ 
-  this->__networkStream >> this->__streamString;
-  DSerialize* binarySerializer = DSerializers::to("Binary");
-  DStruct* dstruct = binarySerializer->deserialize(this->__streamString);
+//DStruct* DSerializeRPC::deserialize(DStream& input)
+//{ 
+  //this->__networkStream >> this->__streamString;
+  //DSerialize* binarySerializer = DSerializers::to("Binary");
+  //DStruct* dstruct = binarySerializer->deserialize(this->__streamString);
 
-  return (dstruct);
-}
+  //return (dstruct);
+//}
 
-DValue DSerializeRPC::deserialize(DStream& networkStream, DType::Type_t type)
-{
-  if (type == DType::DNoneType)
-    return (RealValue<DObject*>(DNone));
+//DValue DSerializeRPC::deserialize(DStream& networkStream, DType::Type_t type)
+//{
+  //if (type == DType::DNoneType)
+    //return (RealValue<DObject*>(DNone));
 
-  this->__networkStream >> this->__streamString;
-  if (type == DType::DObjectType)
-  {
-    RealValue<DUnicodeString> objectName("");
-    RealValue<DUInt64> id;
+  //this->__networkStream >> this->__streamString;
+  //if (type == DType::DObjectType)
+  //{
+    //RealValue<DUnicodeString> objectName("");
+    //RealValue<DUInt64> id;
   
-    //objectName.unserialize(this->__streamString);
-    //id.unserialize(this->__streamString);
-    this->__streamString.read(objectName);//.get<DUnicodeString>(); //new serialization
-    this->__streamString.read(id); //.get<DUInt64>();
+    ////objectName.unserialize(this->__streamString);
+    ////id.unserialize(this->__streamString);
+    //this->__streamString.read(objectName);//.get<DUnicodeString>(); //new serialization
+    //this->__streamString.read(id); //.get<DUInt64>();
 
-    DStruct* dstruct = Destruct::DStructs::instance().find(objectName);
-    if (dstruct == NULL)
-    {
-      std::cout << "DSerializeRPC Can't deserialize object not find in base must get struct named :  " << objectName << std::endl;
-      return RealValue<DObject*>(DNone);
-    }
+    //DStruct* dstruct = Destruct::DStructs::instance().find(objectName);
+    //if (dstruct == NULL)
+    //{
+      //std::cout << "DSerializeRPC Can't deserialize object not find in base must get struct named :  " << objectName << std::endl;
+      //return RealValue<DObject*>(DNone);
+    //}
 
-    return RealValue<DObject*>(new ClientObject(this->__networkStream, this, id, dstruct));
-  }
+    //return RealValue<DObject*>(new ClientObject(this->__networkStream, this, id, dstruct));
+  //}
 
-  DValue value(DType(type).newValue());
-  //this->__streamString >> value;
-  this->__streamString.read(value); //XXX XXX new serializaiton streamString -> value this->__streamString.read?
-  this->__streamString.clear();
-  return (value);
-}
+  //DValue value(DType(type).newValue());
+  ////this->__streamString >> value;
+  //this->__streamString.read(value); //XXX XXX new serializaiton streamString -> value this->__streamString.read?
+  //this->__streamString.clear();
+  //return (value);
+//}
 
+
+//XXX XXX XXX XXX XXX implement it ! function obj
+/*
 DValue DSerializeRPC::deserialize(DStream& input, DType::Type_t argumentType, DType::Type_t returnType)
 {
   this->__networkStream >> this->__streamString;
@@ -549,11 +446,6 @@ DValue DSerializeRPC::deserialize(DStream& input, DType::Type_t argumentType, DT
   this->__streamString.read(id); 
  
   return (RealValue<DFunctionObject*>(new ClientFunctionObject(this->__networkStream, this, id, argumentType, returnType)));
-}
-
-bool DSerializeRPC::deserialize(DStream& input, DObject* dobject) //UNUSED //XXX must return a DObject can't construct it before !
-{
- return (false);
 }
 */
 }

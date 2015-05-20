@@ -38,6 +38,7 @@ public:
   void       sDStruct(DValue const& args);
   void       sDBuffer(DValue const& args);
 
+  DObject*   __objectManager; //RV 
 protected:
   ~SerializeRPC();
 
@@ -226,20 +227,12 @@ public:
 };
 
 /*
-class DSerializeRPC : public DCppObject<DSerializeRPC>// : public DSerialize
-{
-public:
-
-};
-
 
 class DSerializeRPC : public DSerialize
 {
 public:
   DSerializeRPC(NetworkStream& networkStream, ObjectManager<DObject*>& objects, ObjectManager<ServerFunctionObject*>& functionObjects);
-  DSerializeRPC*        create(void);
 
-  const DUnicodeString  name(void); 
   bool                  serialize(DStream& output, DStruct& dstruct); 
   bool                  serialize(DStream& output, DValue value, DType::Type_t type);
   bool                  serialize(DStream& output, DValue value, DType::Type_t argumentType, DType::Type_t returnType);

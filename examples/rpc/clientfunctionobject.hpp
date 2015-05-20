@@ -17,8 +17,7 @@ using namespace Destruct;
 class ClientFunctionObject : public DFunctionObject
 {
 public:
-        //ClientFunctionObject(NetworkStream& networkStream, DSerialize* serializer, uint64_t id, DType::Type_t argumentType, DType::Type_t returnType);
-  ClientFunctionObject(DObject* networkStream, DObject* serializer, uint64_t id, DType::Type_t argumentType, DType::Type_t returnType); //XXX deserializer 
+  ClientFunctionObject(DObject* networkStream, DObject* serializer, DObject* deserializer,  uint64_t id, DType::Type_t argumentType, DType::Type_t returnType);
   ~ClientFunctionObject();
 
   DValue        call(void) const;

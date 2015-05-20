@@ -120,7 +120,6 @@ void			Server::__listen(void)
     WSACleanup();
 	throw DException("Server::__listen accept failed");
   }
-  std::cout << "Connection accepted" << std::endl;
   //delete this->__networkStream;
   this->__networkStream->destroy();
   //delete this->__serializer;
@@ -132,6 +131,9 @@ void			Server::__listen(void)
   this->__deserializer = DStructs::instance().generate("DeserializeRPC", RealValue<DObject*>(this->__networkStream)); //don't need this->__networkStream as it's passed as ARGUMENT XXX can be juste passe no need as private member !  
    //XXX Need to serialize & deserialize with the same string need two with the same steram of them or one that can do the two things
 //  this->__serializer = new DSerializeRPC(*this->__networkStream, this->__objectManager, this->__functionObjectManager);
+ 
+  std::cout << "Server::__listen generate object Manager" << std::endl; 
+  this->__objectManager = DStructs::instance().generate("ObjectManager");
 }
 #else
 void            Server::__listen(void) 
@@ -145,7 +147,6 @@ void            Server::__listen(void)
   this->__connectionSocket = accept(this->__listenSocket, (sockaddr *)&client, (socklen_t*)&c);//XXX windows
   if (this->__connectionSocket < 0)
     throw DException("Server::__listen accept failed");
-  std::cout << "Connection accepted" << std::endl;
 
   if (this->__networkStream)
     this->__networkStream->destroy(); //set as null to avoid probleme if already deleted in daemon mode XXX ?
@@ -156,6 +157,7 @@ void            Server::__listen(void)
   this->__serializer = DStructs::instance().generate("SerializeRPC", RealValue<DObject*>(this->__networkStream)); //don't need this->__networkStream as it's passed as ARGUMENT XXX can be juste passe no need as private member ! 
   this->__deserializer = DStructs::instance().generate("DeserializeRPC", RealValue<DObject*>(this->__networkStream)); //don't need this->__networkStream as it's passed as ARGUMENT XXX can be juste passe no need as private member !  
   //XXX need object manager too ! put as procol & singleton object ? 
+  this->__objectManager = DStructs::instance().generate("ObjectManager");
 }
 #endif
 
@@ -206,7 +208,7 @@ void            Server::serve(void)
   std::cout << "Sever::serve listen" << std::endl;
   this->__listen();
   std::cout << "Create serverObject " << std::endl;
-  ServerObject serverObject(this->__networkStream, this->__serializer, this->__objectManager, this->__functionObjectManager);
+  ServerObject serverObject(this->__networkStream, this->__serializer, this->__deserializer);
   this->initRoot(); //again? XXX
   this->showRoot();
 
@@ -236,15 +238,15 @@ void            Server::serve(void)
   }
 }
 
-ObjectManager<DObject*>& Server::objectManager(void) 
+DObject* Server::objectManager(void) 
 {
   return (this->__objectManager);
 }
 
-ObjectManager<ServerFunctionObject*>& Server::functionObjectManager(void) 
-{
-  return (this->__functionObjectManager);
-}
+//ObjectManager<ServerFunctionObject*>& Server::functionObjectManager(void) 
+//{
+//return (this->__functionObjectManager);
+//}
 
 void            Server::showRoot(void)
 {
@@ -252,7 +254,7 @@ void            Server::showRoot(void)
   DObject* stream = destruct.generate("DStreamCout");
   DObject* serializer = destruct.generate("SerializeText", RealValue<DObject*>(stream));
 
-  serializer->call("DObject", RealValue<DObject*>(this->__objectManager.object(0)));
+  serializer->call("DObject", RealValue<DObject*>(this->__objectManager->call("object", RealValue<DUInt64>(0))));
   serializer->destroy();
   stream->destroy();
 }

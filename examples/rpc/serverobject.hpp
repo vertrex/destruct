@@ -12,8 +12,7 @@ class ServerFunctionObject;
 class ServerObject
 {
 public:
-        //ServerObject(Destruct::NetworkStream& networkStream, DObject* serializer, ObjectManager<DObject*>& objectManager, ObjectManager<ServerFunctionObject*>& functionObjectManager);
-  ServerObject(DObject* networkStream, DObject* serializer, ObjectManager<DObject*>& objectManager, ObjectManager<ServerFunctionObject*>& functionObjectManager);
+  ServerObject(DObject* networkStream, DObject* serializer, DObject* deserializer);
 
   void                                  getValue(void);
   void                                  setValue(void);
@@ -26,10 +25,10 @@ private:
   DObject*                              __networkStream;
   DObject*                              __serializer;
   DObject*                              __deserializer;
-  ObjectManager<DObject*>&              __objectManager;
-  ObjectManager<ServerFunctionObject*>& __functionObjectManager;
+  DObject*                              __objectManager;
+  //DObject*                              __functionObjectManager;
   DObject*                              __object;
-  uint64_t                              __id;
+  RealValue<DUInt64>                    __id;
 };
 
 #endif
