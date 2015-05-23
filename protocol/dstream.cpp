@@ -77,7 +77,13 @@ void    DStream::seek(DValue const& args)
   this->__stream.seekg(pos);
 }
 
-DUInt64 DStream::size(DValue const& args)
+DUInt64 DStream::size(void)
+{
+//if input
+  return (this->__stream.tellg());
+}
+
+DUInt64 DStream::tell(void)
 {
 //if input
   return (this->__stream.tellg());

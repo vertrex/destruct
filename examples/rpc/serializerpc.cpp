@@ -31,9 +31,9 @@ SerializeRPC::~SerializeRPC()
 void    SerializeRPC::sDObject(DValue const& args)
 {
   DObject* dobject = args.get<DObject*>();
-  RealValue<DUInt64> id = this->__objectManager->call("registerObject", args);  
-   
 
+  RealValue<DUInt64> id = this->__objectManager->call("registerObject", args);  
+ 
   this->sDUnicodeString(RealValue<DUnicodeString>(dobject->instanceOf()->name()));
   this->sDUInt64(id);
 }
@@ -67,14 +67,14 @@ void    SerializeRPC::sDStruct(DValue const& args)
 
 void    SerializeRPC::sDNone(void)
 {
-  this->sDObject(RealValue<DObject*>(DNone)); 
+  //Do nothing //it's ok for none method return type but for object return none could be necesseray to inform the client
 }
 
 void    SerializeRPC::sDMethod(DValue const& args)
 {
   //pass or throw ?
   //in serverObject
-  std::cout << "SERIALIZERPC::sDMethod" << std::endl;
+  //std::cout << "SERIALIZERPC::sDMethod" << std::endl;
 }
 
 void    SerializeRPC::sDUnicodeString(DValue const& args)
@@ -208,12 +208,13 @@ DStruct*        DeserializeRPC::dDStruct(void)
 
 DObject*        DeserializeRPC::dDNone(void)
 {
+  //do nothing
   return (DNone);
 }
 
 DFunctionObject* DeserializeRPC::dDMethod(void)
 {
-  std::cout << "DESERIALIZE::RPC dMETHOD !" << std::endl; //in ClientObject
+  //std::cout << "DESERIALIZE::RPC dMETHOD !" << std::endl; //in ClientObject
   //this->__networkStream >> this->__streamString;
   
 

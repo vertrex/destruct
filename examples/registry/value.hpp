@@ -61,7 +61,7 @@ public:
   RealValue<DObject*>          name, data;
   RealValue<DFunctionObject*>  _valueTypeName;
 
-  attributeCount(RegistryValue, 11)
+  attributeCount(RegistryValue, 12)
   attributeList(
                 attribute(DInt32, size)
                 attribute(DUInt16, signature)
@@ -74,7 +74,7 @@ public:
                 attribute(DObject, name)
                 attribute(DObject, data)
                 function(DUnicodeString, valueTypeName, DNone)
-                //function(DUInt8, deserializeRaw, DObject)
+                function(DUInt8, deserializeRaw, DObject)
                )
 
   memberList(RegistryValue, 
@@ -89,7 +89,7 @@ public:
              member(RegistryValue, name)
              member(RegistryValue, data)
              method(RegistryValue, valueTypeName)
-             //method(RegistryValue, deserializeRaw)
+             method(RegistryValue, deserializeRaw)
              //method(RegistryValue, deserializeRaw)
             )
 private:

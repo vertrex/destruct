@@ -21,9 +21,9 @@ public:
   EXPORT DValue           call(DUnicodeString const& name, DValue const& value);
 
 protected:
-  BaseValue*       getBaseValue(size_t index);
-  BaseValue const* getBaseValue(size_t index) const;
-  void             destroy(); //singleton must avoid to call ~DNullObject who use a recuring template pattern
+  BaseValue*              getBaseValue(size_t index);
+  BaseValue const*        getBaseValue(size_t index) const;
+  void                    destroy(); //singleton must avoid to call ~DNullObject who use a recuring template pattern
 
 private:
   static DStruct*  __dstructInstance();

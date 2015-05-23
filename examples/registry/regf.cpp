@@ -98,13 +98,10 @@ DValue RegfTime64::date(void)
 
 DValue RegfTime64::deserializeRaw(DValue const& value)
 {
-  DStream* stream = static_cast<DStream*>(value.get<DObject*>());
-  //this->timeStamp.unserialize(*stream); //new Serialization XXX
-  stream->read(this->timeStamp);
+  DObject* deserializer = value.get<DObject*>();
+  this->timeStamp = deserializer->call("DUInt64");
 
-  stream->destroy();
-
-  return (RealValue<DUInt8>(1));
+  return RealValue<DObject*>(this);
 }
 
 /**
@@ -121,11 +118,11 @@ RegfName::~RegfName(void)
 
 DValue    RegfName::deserializeRaw(DValue const& arg)
 {
-  DStream* stream = static_cast<DStream*>(arg.get<DObject*>());
+  DObject* deserializer = arg.get<DObject*>();
+  DObject* stream = deserializer->getValue("stream").get<DObject*>();
 
-  char fileNameBuff[60];
-  stream->read(fileNameBuff, 60);
-  stream->destroy();
+  DBuffer buffer = stream->call("read", RealValue<DInt64>(60)).get<DBuffer>();
+  uint8_t* fileNameBuff = buffer.data();
 
   uint32_t i = 0;
   for (; i < 58; ++i)
@@ -135,7 +132,7 @@ DValue    RegfName::deserializeRaw(DValue const& arg)
          break;
   }
   if (i < 58)
-    this->fileName = DUnicodeString(std::string(fileNameBuff, i));
+    this->fileName = DUnicodeString(std::string((char*)fileNameBuff, i));
 
-  return (RealValue<DUInt8>(1));
+  return RealValue<DObject*>(this);
 }

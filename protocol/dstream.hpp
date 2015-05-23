@@ -35,18 +35,20 @@ public:
   DInt64   write(DValue const& args);
   void     flush(void);
   void     seek(DValue const& args);
-  DUInt64  size(DValue const& args);
+  DUInt64  size(void);
+  DUInt64  tell(void);
 //  DValue  seek(DValue const& args);
-  
+  //tell implement for regf  
+ 
   ~DStream();
 private:
   std::fstream  __stream; 
 public:
-  RealValue<DFunctionObject* > _read, _write, _flush, _seek, _size;
+  RealValue<DFunctionObject* > _read, _write, _flush, _seek, _size, _tell;
 
   static size_t ownAttributeCount()
   {
-    return (3);
+    return (6);
   }
 
   static DAttribute* ownAttributeBegin()
@@ -58,6 +60,7 @@ public:
        DAttribute(DType::DNoneType, "flush", DType::DNoneType),
        DAttribute(DType::DUInt64Type, "size", DType::DUInt64Type),
        DAttribute(DType::DNoneType, "seek", DType::DUInt64Type),
+       DAttribute(DType::DUInt64Type, "tell", DType::DNoneType),
     };
     return (attributes);
   }
@@ -71,6 +74,7 @@ public:
        DPointer<DStream>(&DStream::_flush, &DStream::flush),
        DPointer<DStream>(&DStream::_size, &DStream::size),
        DPointer<DStream>(&DStream::_seek, &DStream::seek),
+       DPointer<DStream>(&DStream::_tell, &DStream::tell),
     };
     return (memberPointer);
   }

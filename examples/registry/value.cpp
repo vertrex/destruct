@@ -41,42 +41,41 @@ RegistryValues::~RegistryValues(void)
 
 DValue    RegistryValues::deserializeRaw(DValue const& arg)
 {
-  StreamFile* stream = static_cast<StreamFile*>(arg.get<DObject*>());
+  DObject* deserializer = arg.get<DObject*>();
+
   DStruct* valueStruct = Destruct::DStructs::instance().find("RegistryValue"); 
 
   DUInt32 valueCount = ((DObject*)this->parent)->getValue("valueCount").get<DUInt32>();
   DUInt32 valueListOffset = ((DObject*)this->parent)->getValue("valueListOffset").get<DUInt32>();
   if (valueCount == 0 || valueListOffset == 0xffffffff)
   {
-    stream->destroy();   
-    return (RealValue<DUInt8>(1));
+    deserializer->destroy();
+    return (RealValue<DObject*>(this)); 
   }
 
-  stream->seek(valueListOffset + 0x1000); 
-  //size.unserialize(*stream); //new serialization
-  stream->read(size);
+  DObject* stream = deserializer->getValue("stream").get<DObject*>();
+  stream->call("seek", RealValue<DUInt64>(valueListOffset + 0x1000)); 
 
-  Destruct::DSerialize* serializer = Destruct::DSerializers::to("Raw");
+  size = deserializer->call("DInt32");
+
   for (uint32_t index = 0; index < valueCount ; ++index)
   {
-    RealValue<DUInt32> subvalueOffset;
+    RealValue<DUInt32> subvalueOffset = deserializer->call("DUInt32");
         
-    //subvalueOffset.unserialize(*stream); // XXX new serialization
-    stream->read(subvalueOffset);
     DObject* subvalue = valueStruct->newObject();
-    int64_t currentOffset = stream->tell();
-    stream->seek(subvalueOffset + 0x1000);
-    serializer->deserialize(*stream, subvalue);
-    stream->seek(currentOffset);
 
-    
+    DUInt64 currentOffset = stream->call("tell").get<DUInt64>();
+    stream->call("seek", RealValue<DUInt64>(subvalueOffset + 0x1000));
+
+    deserializer->call("DObject", RealValue<DObject*>(subvalue));
+    stream->call("seek", RealValue<DUInt64>((DUInt64)currentOffset));
     ((DObject*)this->list)->call("push", RealValue<DObject*>(subvalue)); 
   }
 
   stream->destroy();
-  delete serializer;
+  deserializer->destroy();
 
-  return (RealValue<DUInt8>(1));
+  return (RealValue<DObject*>(this));
 }
 
 /**
@@ -103,8 +102,7 @@ DValue    RegistryValue::deserializeRaw(DValue const& arg)
   //Destruct::DStructs& destruct = Destruct::DStructs::instance();
 
   //destruct.generate(this->dataTypeName[this->dataType]);
-
-  return (RealValue<DUInt8>(1));
+  return (RealValue<DObject*>(this));
 }
 
 DValue  RegistryValue::valueTypeName(void)
@@ -127,5 +125,5 @@ RegistryValueData::~RegistryValueData(void)
 
 DValue    RegistryValueData::deserializeRaw(DValue const& arg)
 {
-  return (RealValue<DUInt8>(1));
+  return (RealValue<DObject*>(this));
 }

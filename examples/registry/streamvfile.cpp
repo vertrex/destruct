@@ -5,8 +5,10 @@
 #include <fcntl.h>
 
 using namespace Destruct;
+// OLD 
 
-StreamFile::StreamFile(DStruct* dstruct, DValue const& args): DStream(dstruct), __fd(-1)
+//XXX XXX OLD compatible with new stream ??
+StreamFile::StreamFile(DStruct* dstruct, DValue const& args): DStream(dstruct, RealValue<DObject*>(DNone)), __fd(-1)
 {
   this->init();
   DUnicodeString filePath = args.get<DUnicodeString>();

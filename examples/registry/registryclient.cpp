@@ -15,8 +15,9 @@ DObject* RegistryClient::start(void)
 
   DStruct* registryS = destruct.find("Registry");
 
-  DSerialize* serializer = new DSerializeRPC(*this->__networkStream, this->objectManager(), this->functionObjectManager());
-  ClientObject* root = new ClientObject(*this->__networkStream, serializer, 0, registryS); 
+  //DSerialize* serializer = new DSerializeRPC(*this->__networkStream, this->objectManager(), this->functionObjectManager()); old
+  //ClientObject* root = new ClientObject(*this->__networkStream, serializer, 0, registryS);  old
+  ClientObject* root = new ClientObject(this->networkStream(), this->serializeRPC(), this->deserializeRPC(), 0, registryS);
 
   return (root);
 

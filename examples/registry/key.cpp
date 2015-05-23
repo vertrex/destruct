@@ -61,17 +61,15 @@ NameLength::~NameLength(void)
 
 DValue    NameLength::deserializeRaw(DValue const& arg)
 {
-  DStream* stream = static_cast<DStream*>(arg.get<DObject*>());
+  DObject* deserializer = arg.get<DObject*>();
 
   DUInt16 size = ((DObject*)this->parent)->getValue(this->attributeKeyName).get<DUInt16>();
 
-  char keyNameBuff[size];
-  stream->read(keyNameBuff, size);
-  stream->destroy();
+  DBuffer buffer = deserializer->getValue("stream").get<DObject*>()->call("read", RealValue<DInt64>((DInt64)size)).get<DBuffer>();
+  
+  this->keyName = DUnicodeString(std::string((char*)buffer.data(), size));
 
-  this->keyName = DUnicodeString(std::string(keyNameBuff, size));
-
-  return (RealValue<DUInt8>(1));
+  return RealValue<DObject*>(this);
 }
 
 
@@ -93,7 +91,9 @@ Subkeys::~Subkeys(void)
 
 DValue    Subkeys::deserializeRaw(DValue const& arg)
 {
-  StreamFile* stream = static_cast<StreamFile*>(arg.get<DObject*>());
+  DObject* deserializer = arg.get<DObject*>();
+  DObject* stream = deserializer->getValue("stream").get<DObject*>();
+
   DStruct* keyStruct = Destruct::DStructs::instance().find("RegistryKey"); 
 
   //XXX IF SUBKEY COUNT IN PARENT ?
@@ -101,41 +101,32 @@ DValue    Subkeys::deserializeRaw(DValue const& arg)
   DUInt32 subkeyListOffset = ((DObject*)this->parent)->getValue("subkeyListOffset").get<DUInt32>();
   if (parentSubkeyCount == 0 || subkeyListOffset == 0xffffffff)
   {
-    stream->destroy();    
-    return (RealValue<DUInt8>(1));
+      deserializer->destroy();
+      stream->destroy();
+      return  RealValue<DObject*>(this);
   }
 
-  stream->seek(subkeyListOffset + 0x1000); 
+  stream->call("seek", RealValue<DUInt64>(subkeyListOffset + 0x1000)); 
   
-  //size.unserialize(*stream);
-  //signature.unserialize(*stream);
-  //subkeyCount.unserialize(*stream);
-  // 
-  //new serialization XXX
-  stream->read(size);
-  stream->read(signature);
-  stream->read(subkeyCount); 
-
-  Destruct::DSerialize* serializer = Destruct::DSerializers::to("Raw");
+  size = deserializer->call("DInt32");
+  signature = deserializer->call("DUInt16");
+  subkeyCount = deserializer->call("DUInt16");
 
   if (signature == 0x686c || signature == 0x666c || signature == 0x6972 || signature == 0x696c)
   {
     for (uint32_t index = 0; index < subkeyCount; ++index)
     {
       RealValue<DUInt32> subkeyOffset, subkeyChecksum;
-      //subkeyOffset.unserialize(*stream); //new serializaiton XXX
-      stream->read(subkeyOffset);
+      subkeyOffset = deserializer->call("DUInt32");   
+
       if (signature == 0x686c || signature == 0x666c) //LH || LI 
-      {
-        //subkeyChecksum.unserialize(*stream);//new serialization XXX
-        stream->read(subkeyChecksum);
-      }
+        subkeyChecksum = deserializer->call("DUInt32");
    
       DObject* subkey = keyStruct->newObject();
-      int64_t currentOffset = stream->tell();
-      stream->seek(subkeyOffset + 0x1000);
-      serializer->deserialize(*stream, subkey);
-      stream->seek(currentOffset);
+      DUInt64 currentOffset = stream->call("tell").get<DUInt64>();
+      stream->call("seek", RealValue<DUInt64>(subkeyOffset + 0x1000));
+      deserializer->call("DObject", RealValue<DObject*>(subkey));
+      stream->call("seek", RealValue<DUInt64>(currentOffset));
 
       ((DObject*)this->list)->call("push", RealValue<DObject*>(subkey)); 
     }
@@ -149,8 +140,8 @@ DValue    Subkeys::deserializeRaw(DValue const& arg)
   }
 
   stream->destroy();
-  delete serializer;
+  deserializer->destroy();
 
-  return (RealValue<DUInt8>(1));
+  return (RealValue<DObject*>(this));
 }
 

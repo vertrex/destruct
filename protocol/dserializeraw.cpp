@@ -160,7 +160,7 @@ DObject*        DeserializeRaw::dDObject(DValue const& value)
 
   int32_t index = dobject->instanceOf()->findAttribute("deserializeRaw");
   if (index != -1)
-    return (dobject->call(index, value).get<DObject*>());
+    return (dobject->call(index, RealValue<DObject*>(this)).get<DObject*>());
 
   for (DStruct::DAttributeIterator i = dstruct->attributeBegin(); i != dstruct->attributeEnd(); ++i, ++x)
   {
@@ -168,6 +168,10 @@ DObject*        DeserializeRaw::dDObject(DValue const& value)
     DType::Type_t type_t = type.getType();
     if (type_t == DType::DNoneType || type_t == DType::DMethodType || type_t == DType::DUnknownType)
       continue;
+    else if (type_t == DType::DObjectType)
+    {
+      this->call(type.name(), dobject->getValue(x));
+    }
     else
     {
       DValue value = this->call(type.name());

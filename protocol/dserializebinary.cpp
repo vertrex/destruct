@@ -39,7 +39,7 @@ void    SerializeBinary::sDObject(DValue const& args)
 
   DStruct const* dstruct = dobject->instanceOf(); 
   if (dstruct == NULL)
-    throw DException("SerializeBinaryBinary::sDObject(DValue) object instance is NULL");
+    throw DException("SerializeBinary::sDObject(DValue) object instance is NULL");
   this->sDUnicodeString(RealValue<DUnicodeString>(dstruct->name()));
 
   /*
@@ -221,8 +221,8 @@ DObject*        DeserializeBinary::dDObject(DValue const& value)
   }
   else
     dstruct = dobject->instanceOf();
-  
-  
+   
+ 
   int32_t index = dstruct->findAttribute("iterator");
   int32_t hasNewItem = dstruct->findAttribute("newItem");
   if (index != -1)

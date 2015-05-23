@@ -20,7 +20,7 @@ set(registry_libfiles
   registry.cpp
   registryopt.cpp
   regf.cpp
-  streamvfile.cpp
+  #streamvfile.cpp
   key.cpp
   value.cpp
   registryrpc.cpp
