@@ -17,8 +17,10 @@
 #include "registry.hpp"
 #include "registryopt.hpp"
 #include "regf.hpp"
-#include "key.hpp"
-#include "value.hpp"
+#include "subkeys.hpp"
+#include "values.hpp"
+#include "namedkey.hpp"
+#include "valuekey.hpp"
 #include "protocol/traceobject.hpp"
 
 #include "streamvfile.hpp"
@@ -43,10 +45,10 @@ void    Registry::declare(void)
   registerDCpp(Regf)
   registerDCpp(RegfName)
   registerDCpp(RegfTime64)
-  registerDCpp(RegistryKey)
+  registerDCpp(NamedKey)
   registerDCpp(NameLength)
   registerDCpp(Subkeys)
-  registerDCpp(RegistryValue)
+  registerDCpp(ValueKey)
   registerDCpp(RegistryValues)
   registerDCpp(RegistryValueData)
 }
@@ -82,10 +84,10 @@ DValue Registry::open(DValue const& args)
   else
     std::cout << "Registry file is invalid" << std::endl;
 
-  RegistryKey* rkey = new RegistryKey(this->__destruct.find("RegistryKey"), RealValue<DObject*>(DNone));
+  NamedKey* rkey = new NamedKey(this->__destruct.find("NamedKey"), RealValue<DObject*>(DNone));
   DObject* key = rkey;
 
-  DUInt64 x = 0x1000 + regf->keyrecord;
+  DUInt64 x = 0x1000 + regf->keyrecord; //XXX put in Regf 
   streamVFile->call("seek", RealValue<DUInt64>(x));
   deserializer->call("DObject", RealValue<DObject*>(rkey));
   regf->key = key;

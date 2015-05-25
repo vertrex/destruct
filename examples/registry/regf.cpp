@@ -34,6 +34,7 @@ Regf::Regf(DStruct* dstruct, DValue const& args) : DCppObject<Regf>(dstruct, arg
 
   ((DObject*)this->regfName)->addRef();
   ((DObject*)this->timestamp)->addRef();
+  //XXX  keyrecord get root key here
 }
 
 Regf::~Regf(void)

@@ -21,8 +21,10 @@ set(registry_libfiles
   registryopt.cpp
   regf.cpp
   #streamvfile.cpp
-  key.cpp
-  value.cpp
+  subkeys.cpp
+  values.cpp
+  namedkey.cpp
+  valuekey.cpp
   registryrpc.cpp
   registryserver.cpp
   registryclient.cpp

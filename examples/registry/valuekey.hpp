@@ -1,57 +1,15 @@
-/*
- * DFF -- An Open Source Digital Forensics Framework
- * Copyright (C) 2009-2011 ArxSys
- * This program is free software, distributed under the terms of
- * the GNU General Public License Version 2. See the LICENSE file
- * at the top of the source tree.
- *  
- * See http: *www.digital-forensic.org for more information about this
- * project. Please do not directly contact any of the maintainers of
- * DFF for assistance; the project provides a web site, mailing lists
- * and IRC channels for your use.
- * 
- * Author(s):
- *  Solal Jacob <sja@digital-forensic.org>
- */
-
-#ifndef __value_hh__
-#define __value_hh__
+#ifndef __valuekey_hh__
+#define __valuekey_hh__
 
 #include "registry_common.hpp"
 
 using namespace Destruct;
 
-class RegistryValues : public DCppObject<RegistryValues>
+class ValueKey : public DCppObject<ValueKey>
 {
 public:
-          RegistryValues(DStruct* dstruct, DValue const& args);
-          ~RegistryValues();
-  DValue  deserializeRaw(DValue const& stream);
+  ValueKey(DStruct* dstruct, DValue const& args);
 
-
-  RealValue<DInt32>          size;
-  RealValue<DObject*>        parent, list;
-
-  attributeCount(RegistryValues, 3)
-  attributeList(attribute(DInt32, size)
-                attribute(DObject, list)
-                function(DUInt8, deserializeRaw, DObject)
-               )
-  memberList(RegistryValues, 
-             member(RegistryValues, size)
-             member(RegistryValues, list)
-             method(RegistryValues, deserializeRaw)
-            )
-private:
-  uint64_t                           __size;
-  RealValue<DFunctionObject*>        _deserializeRaw;
-};
-
-class RegistryValue : public DCppObject<RegistryValue>
-{
-public:
-          RegistryValue(DStruct* dstruct, DValue const& args);
-          ~RegistryValue();
   DValue  deserializeRaw(DValue const& stream);
   DValue  valueTypeName(void);
  
@@ -62,7 +20,7 @@ public:
   RealValue<DObject*>          name, data;
   RealValue<DFunctionObject*>  _valueTypeName;
 
-  attributeCount(RegistryValue, 11)
+  attributeCount(ValueKey, 11)
   attributeList(
                 attribute(DInt32, size)
                 attribute(DUInt16, signature)
@@ -78,20 +36,23 @@ public:
                 //function(DUInt8, deserializeRaw, DObject)
                )
 
-  memberList(RegistryValue, 
-             member(RegistryValue, size)
-             member(RegistryValue, signature)
-             member(RegistryValue, nameLength)
-             member(RegistryValue, dataLength)
-             member(RegistryValue, dataOffset)
-             member(RegistryValue, dataType)
-             member(RegistryValue, valueType)
-             member(RegistryValue, unknown1)
-             member(RegistryValue, name)
-             member(RegistryValue, data)
-             method(RegistryValue, valueTypeName)
-             //method(RegistryValue, deserializeRaw)
+  memberList(ValueKey, 
+             member(ValueKey, size)
+             member(ValueKey, signature)
+             member(ValueKey, nameLength)
+             member(ValueKey, dataLength)
+             member(ValueKey, dataOffset)
+             member(ValueKey, dataType)
+             member(ValueKey, valueType)
+             member(ValueKey, unknown1)
+             member(ValueKey, name)
+             member(ValueKey, data)
+             method(ValueKey, valueTypeName)
+             //method(ValueKey, deserializeRaw)
             )
+
+protected:
+  ~ValueKey();
 private:
   uint64_t                           __size;
   RealValue<DFunctionObject*>        _deserializeRaw;
@@ -115,7 +76,6 @@ private:
     return registryType[dataType]; 
   }
 };
-
 
 class RegistryValueData : public DCppObject<RegistryValueData>
 {

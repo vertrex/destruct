@@ -15,12 +15,9 @@
  */
 #include <iostream>
 
-#include "key.hpp"
-#include "value.hpp"
-//#include "regf.hpp"
-
-#include "streamvfile.hpp"
 #include "registry.hpp"
+#include "values.hpp"
+
 
 using namespace Destruct;
 
@@ -43,7 +40,7 @@ DValue    RegistryValues::deserializeRaw(DValue const& arg)
 {
   DObject* deserializer = arg.get<DObject*>();
 
-  DStruct* valueStruct = Destruct::DStructs::instance().find("RegistryValue"); 
+  DStruct* valueStruct = Destruct::DStructs::instance().find("ValueKey"); 
 
   DUInt32 valueCount = ((DObject*)this->parent)->getValue("valueCount").get<DUInt32>();
   DUInt32 valueListOffset = ((DObject*)this->parent)->getValue("valueListOffset").get<DUInt32>();
@@ -78,52 +75,3 @@ DValue    RegistryValues::deserializeRaw(DValue const& arg)
   return (RealValue<DObject*>(this));
 }
 
-/**
- * RegistryValues
- */
-RegistryValue::RegistryValue(DStruct* dstruct, DValue const& args) : DCppObject<RegistryValue>(dstruct, args), __size(0)
-{
-  this->init();
-  this->name = new NameLength(Destruct::DStructs::instance().find("NameLength"), RealValue<DObject*>(this));
-  ((DObject*)this->name)->setValue("attributeKeyName", RealValue<DUnicodeString>("nameLength"));
-  ((DObject*)this->name)->addRef();
-  
-  this->data = new RegistryValueData(Destruct::DStructs::instance().find("RegistryValueData"), RealValue<DObject*>(this));
-  ((DObject*)this->data)->addRef();
-}
-
-
-RegistryValue::~RegistryValue(void)
-{
-}
-
-DValue    RegistryValue::deserializeRaw(DValue const& arg)
-{
-  //Destruct::DStructs& destruct = Destruct::DStructs::instance();
-
-  //destruct.generate(this->dataTypeName[this->dataType]);
-  return (RealValue<DObject*>(this));
-}
-
-DValue  RegistryValue::valueTypeName(void)
-{
-  return (RealValue<DUnicodeString>(RegistryValue::registryType(this->dataType)));
-}
-/**
- * RegistryValueData
- */
-RegistryValueData::RegistryValueData(DStruct* dstruct, DValue const& args) : DCppObject<RegistryValueData>(dstruct, args)
-{
-
-  this->init();
-}
-
-RegistryValueData::~RegistryValueData(void)
-{
-}
-
-
-DValue    RegistryValueData::deserializeRaw(DValue const& arg)
-{
-  return (RealValue<DObject*>(this));
-}

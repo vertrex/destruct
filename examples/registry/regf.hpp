@@ -21,11 +21,11 @@
 
 using namespace Destruct;
 
-class Regf : public DCppObject<Regf>
+class Regf : public DCppObject<Regf> //header REGF
 {
 public:
-  RealValue<DUInt32>  regf, sequence1, sequence2, major, minor, unknown1, unknown2,
-                                keyrecord, lasthbin, unknown3;
+  RealValue<DUInt32>  regf, sequence1, sequence2, major, minor, fileType, unknown1,
+                                keyrecord, lasthbin, unknown2;
   RealValue<DObject*> regfName, timestamp, key;
 
   Regf(DStruct* dstruct, DValue const& args);
@@ -40,16 +40,18 @@ public:
 
   attributeList(attribute(DUInt32, regf)
                 attribute(DUInt32, sequence1)
-                attribute(DUInt32, sequence2)
-                attribute(DObject, timestamp)
-                attribute(DUInt32, major)
+                attribute(DUInt32, sequence2) //sequence1 == sequence2 if sync properly
+                attribute(DObject, timestamp) //FILETIME UTC
+                attribute(DUInt32, major) 
                 attribute(DUInt32, minor)
+                attribute(DUInt32, fileType) //0x0 normal 0x1 transaction log
                 attribute(DUInt32, unknown1)
+                attribute(DUInt32, keyrecord) //root key offset
+                attribute(DUInt32, lasthbin)  //hive bins data size
                 attribute(DUInt32, unknown2)
-                attribute(DUInt32, keyrecord)
-                attribute(DUInt32, lasthbin)
-                attribute(DUInt32, unknown3)
-                attribute(DObject, regfName)
+                attribute(DObject, regfName)  //UTF-16 LE sometime reg name size == 64
+                //attribute(Dbuffer, padding) 396 bytes
+                //attribute(DUInt32, checksum) xor-32 of previous 508 bytes
                 function(DUnicodeString, name, DNone)
                 function(DUnicodeString, time, DNone)
                 function(DUnicodeString, version, DNone)
@@ -64,11 +66,11 @@ public:
              member(Regf, timestamp)
              member(Regf, major)
              member(Regf, minor)
+             member(Regf, fileType)
              member(Regf, unknown1)
-             member(Regf, unknown2)
              member(Regf, keyrecord)
              member(Regf, lasthbin)
-             member(Regf, unknown3)
+             member(Regf, unknown2)
              member(Regf, regfName)
              method(Regf, name)
              method(Regf, time)

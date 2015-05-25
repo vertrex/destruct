@@ -15,62 +15,10 @@
  */
 #include <iostream>
 
-#include "key.hpp"
-#include "value.hpp"
+#include "subkeys.hpp"
 #include "regf.hpp"
 
-#include "streamvfile.hpp"
-
 using namespace Destruct;
-
-/**
- *  RegistryKey
- */
-RegistryKey::RegistryKey(DStruct* dstruct, DValue const& args) : DCppObject<RegistryKey>(dstruct, args)
-{
-  this->init();
-  
-  this->timestamp = new RegfTime64(Destruct::DStructs::instance().find("RegfTime64"), RealValue<DObject*>(DNone));
-  this->keyName = new NameLength(Destruct::DStructs::instance().find("NameLength"), RealValue<DObject*>(this));
-  ((DObject*)this->keyName)->setValue("attributeKeyName", RealValue<DUnicodeString>("keyNameLength"));
-
-  this->subkeys = new Subkeys(Destruct::DStructs::instance().find("Subkeys"), RealValue<DObject*>(this));
-  this->values = new RegistryValues(Destruct::DStructs::instance().find("RegistryValues"), RealValue<DObject*>(this));
-  ((DObject*)this->timestamp)->addRef();
-  ((DObject*)this->keyName)->addRef();
-  ((DObject*)this->subkeys)->addRef();
-  ((DObject*)this->values)->addRef();
-}
-
-RegistryKey::~RegistryKey(void)
-{
-}
-
-/**
- * NameLength 
- */
-NameLength::NameLength(DStruct* dstruct, DValue const& args) : DCppObject<NameLength>(dstruct, args), __size(0)
-{
-  this->init();
-  this->parent = args.get<DObject* >();
-}
-
-NameLength::~NameLength(void)
-{
-}
-
-DValue    NameLength::deserializeRaw(DValue const& arg)
-{
-  DObject* deserializer = arg.get<DObject*>();
-
-  DUInt16 size = ((DObject*)this->parent)->getValue(this->attributeKeyName).get<DUInt16>();
-
-  DBuffer buffer = deserializer->getValue("stream").get<DObject*>()->call("read", RealValue<DInt64>((DInt64)size)).get<DBuffer>();
-  
-  this->keyName = DUnicodeString(std::string((char*)buffer.data(), size));
-
-  return RealValue<DObject*>(this);
-}
 
 
 /**
@@ -94,9 +42,9 @@ DValue    Subkeys::deserializeRaw(DValue const& arg)
   DObject* deserializer = arg.get<DObject*>();
   DObject* stream = deserializer->getValue("stream").get<DObject*>();
 
-  DStruct* keyStruct = Destruct::DStructs::instance().find("RegistryKey"); 
+  DStruct* keyStruct = Destruct::DStructs::instance().find("NamedKey"); 
 
-  //XXX IF SUBKEY COUNT IN PARENT ?
+  //XXX IF SUBKEY COUNT IN PARENT ? //if nk only ? 
   DUInt32 parentSubkeyCount = ((DObject*)this->parent)->getValue("subkeyCount").get<DUInt32>();
   DUInt32 subkeyListOffset = ((DObject*)this->parent)->getValue("subkeyListOffset").get<DUInt32>();
   if (parentSubkeyCount == 0 || subkeyListOffset == 0xffffffff)
@@ -107,14 +55,16 @@ DValue    Subkeys::deserializeRaw(DValue const& arg)
   }
 
   stream->call("seek", RealValue<DUInt64>(subkeyListOffset + 0x1000)); 
-  
+ 
+
+  //XXX hbin cell  (multi form can't know yet)
   size = deserializer->call("DInt32");
   signature = deserializer->call("DUInt16");
+  //e
 
                    //"lh"                 //"lf"                  "ri"                  "li"
   if (signature == 0x686c || signature == 0x666c || signature == 0x6972 || signature == 0x696c)
   { 
-
     subkeyCount = deserializer->call("DUInt16");
     for (uint32_t index = 0; index < subkeyCount; ++index)
     {
@@ -138,12 +88,12 @@ DValue    Subkeys::deserializeRaw(DValue const& arg)
   else if (signature == 0x6b6e) // "nk" named key
   {
     //TODO
-    std::cout << "signature nk " << std::endl;
-    if (size < 1)
-      size = size * -1;
-    DUInt64 pos = stream->call("tell").get<DUInt64>() + size - 8;
-    std::cout << "seek to " << pos << std::endl;
-    stream->call("seek", RealValue<DUInt64>(pos)); //substract size and signature from size
+    //std::cout << "signature nk " << std::endl;
+    //if (size < 1)
+    //size = size * -1;
+    //DUInt64 pos = stream->call("tell").get<DUInt64>() + size - 8;
+    //std::cout << "seek to " << pos << std::endl;
+    //stream->call("seek", RealValue<DUInt64>(pos)); //substract size and signature from size
   }
   //else if (signature == 0x6b73) //"sk" security key
   //{
