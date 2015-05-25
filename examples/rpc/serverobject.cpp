@@ -83,30 +83,26 @@ void    ServerObject::call0(void)
 
 void    ServerObject::functionCall(void)
 {
-  std::cout << "FUNCTION CALL XXX" << std::endl;
   this->__id = this->__deserializer->call("DUInt64").get<DUInt64>();
-  //ServerFunctionObject* object = this->__functionObjectManager->call("object", this->__id).get<DFunctionObject*>(); //XXX XXX XXX
 
-  //DValue args = this->__deserializer->call(DType(object->argumentType()).name()); //XXX create function argumentName() ! on server object
-  //DValue value = object->functionObject()->call(args);
-  //
-  //this->__serializer->call(DType(object->returnType()).name(), value); //XXX create function returnName on ServerObject
-  //
-  //this->__networkStream->call("flush");
-  std::cout << "HE WRITE DFUNCTION OBJECT MANAGER " << std::endl;
+  ServerFunctionObject* object = static_cast<ServerFunctionObject*>(this->__objectManager->call("object", this->__id).get<DObject*>());
+  DValue args = this->__deserializer->call(DType((DType::Type_t)(DUInt64)object->argumentType).name()); //XXX get name directly ? 
+  DValue value = ((DFunctionObject*)object->functionObject)->call(args);
+  this->__serializer->call(DType((DType::Type_t)(DUInt64)object->returnType).name(), value); 
+
+  this->__networkStream->call("flush");
 }
 
 void    ServerObject::functionCall0(void)
 {
-  std::cout << "FUNCTION CALL 0 XXX" << std::endl;
   this->__id = this->__deserializer->call("DUInt64").get<DUInt64>();
-  //ServerFunctionObject* object = this->__functionObjectManager->call("object", this->__id).get<DFunctionObject*>(); //XXX XXX XXX
 
-  //Destruct::DValue value = object->functionObject()->call(); 
-  // 
-  //this->__serializer->call(DType(object->returnType()).name());       
-  //this->__networkStream->call("flush");
-  std::cout << "HE WRITE DFUNCTION OBJECT MANAGER " << std::endl;
+  ServerFunctionObject* object = static_cast<ServerFunctionObject*>(this->__objectManager->call("object", this->__id).get<DObject*>());
+
+  DValue value = ((DFunctionObject*)object->functionObject)->call();
+  this->__serializer->call(DType((DType::Type_t)(DUInt64)object->returnType).name(), value); 
+
+  this->__networkStream->call("flush");
 }
 
 DObject*    ServerObject::networkStream(void)
