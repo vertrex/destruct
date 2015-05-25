@@ -22,7 +22,7 @@ public:
 
   attributeCount(NamedKey, 24)
   attributeList(
-      attribute(DInt32, size)
+      attribute(DInt32, size) //hbin size
       attribute(DUInt16, signature)
       attribute(DUInt16, keyType)
       attribute(DObject, timestamp)
@@ -40,7 +40,7 @@ public:
       attribute(DUInt32, subkeyClassNameMaximumLength)
       attribute(DUInt32, valueNameMaximumLength)
       attribute(DUInt32, valueDataMaximumSize)
-      attribute(DUInt32, unknown2)
+      attribute(DUInt32, unknown2) //security cell index ??
       attribute(DUInt16, keyNameLength)
       attribute(DUInt16, classNameLength)
       attribute(DObject, keyName)
@@ -49,7 +49,7 @@ public:
       )
 
   memberList(NamedKey, 
-      member(NamedKey, size)
+      member(NamedKey, size) //??
       member(NamedKey, signature)
       member(NamedKey, keyType)
       member(NamedKey, timestamp)

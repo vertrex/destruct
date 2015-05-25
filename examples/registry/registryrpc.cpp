@@ -38,6 +38,7 @@ void RegistryRPC::local(const std::string filePath)
 
   std::string fileName(filePath, filePath.rfind("/") + 1);
   Registry::toFile(fileName + ".bin", regf, "Binary");
+  Registry::toFile(fileName + ".raw", regf, "Raw");
   Registry::toFile(fileName + "registry.text", regf, "Text");
   //Registry::show(regf); 
 }

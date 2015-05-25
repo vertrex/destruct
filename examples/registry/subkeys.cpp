@@ -42,7 +42,6 @@ DValue    Subkeys::deserializeRaw(DValue const& arg)
   DObject* deserializer = arg.get<DObject*>();
   DObject* stream = deserializer->getValue("stream").get<DObject*>();
 
-  DStruct* keyStruct = Destruct::DStructs::instance().find("NamedKey"); 
 
   //XXX IF SUBKEY COUNT IN PARENT ? //if nk only ? 
   DUInt32 parentSubkeyCount = ((DObject*)this->parent)->getValue("subkeyCount").get<DUInt32>();
@@ -63,6 +62,7 @@ DValue    Subkeys::deserializeRaw(DValue const& arg)
   //e
 
                    //"lh"                 //"lf"                  "ri"                  "li"
+  DStruct* namedKeyStruct = Destruct::DStructs::instance().find("NamedKey"); 
   if (signature == 0x686c || signature == 0x666c || signature == 0x6972 || signature == 0x696c)
   { 
     subkeyCount = deserializer->call("DUInt16");
@@ -71,42 +71,31 @@ DValue    Subkeys::deserializeRaw(DValue const& arg)
       RealValue<DUInt32> subkeyOffset, subkeyChecksum;
       subkeyOffset = deserializer->call("DUInt32");   
 
-      if (signature == 0x686c || signature == 0x666c) //LH || LI 
+      if (signature == 0x686c || signature == 0x666c) //LH || LF
         subkeyChecksum = deserializer->call("DUInt32");
-   
+  
+      
       DUInt64 currentOffset = stream->call("tell").get<DUInt64>();
-
-      DObject* subkey = keyStruct->newObject();
       stream->call("seek", RealValue<DUInt64>(subkeyOffset + 0x1000));
-      deserializer->call("DObject", RealValue<DObject*>(subkey));
-      ((DObject*)this->list)->call("push", RealValue<DObject*>(subkey)); 
 
+      DUInt32 subHbinSize = deserializer->call("DUInt32").get<DUInt32>();
+      DUInt16 subKeySignature = deserializer->call("DUInt16").get<DUInt16>();
+
+      if (subKeySignature == 0x6b6e) //nk
+      { 
+        stream->call("seek", RealValue<DUInt64>(subkeyOffset + 0x1000));
+        DObject* subkey = namedKeyStruct->newObject();
+        deserializer->call("DObject", RealValue<DObject*>(subkey)); //throw if not nk ?
+        ((DObject*)this->list)->call("push", RealValue<DObject*>(subkey)); 
+      }
+      else 
+        std::cout << "found subkey signature " << subKeySignature << std::endl; 
+      //strange sometime is lh but that's all !
       stream->call("seek", RealValue<DUInt64>(currentOffset));
     }
-
   }
-  else if (signature == 0x6b6e) // "nk" named key
-  {
-    //TODO
-    //std::cout << "signature nk " << std::endl;
-    //if (size < 1)
-    //size = size * -1;
-    //DUInt64 pos = stream->call("tell").get<DUInt64>() + size - 8;
-    //std::cout << "seek to " << pos << std::endl;
-    //stream->call("seek", RealValue<DUInt64>(pos)); //substract size and signature from size
-  }
-  //else if (signature == 0x6b73) //"sk" security key
-  //{
-    //TODO
-    // 
-    //}
-    //else if (signature == 0x6264) //"db" data block key
-    //{
-    ////TODO
-    //}
   else
   {
-     std::cout << "Bad signature n key " << subkeyCount << " size " << size << std::endl;
      std::ios::fmtflags flags(std::cout.flags()); 
      std::cout << "Key bad signature" << std::hex << signature << std::endl;
      std::cout.flags(flags);
