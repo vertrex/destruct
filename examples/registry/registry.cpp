@@ -22,6 +22,8 @@
 #include "protocol/traceobject.hpp"
 
 #include "streamvfile.hpp"
+#include "client.hpp"
+
 
 extern "C"
 {

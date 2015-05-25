@@ -4,8 +4,8 @@
 
 PyTypeObject*     PyRegistryRPC::pyType(void)
 {
-    static PyTypeObject* pyType = (PyTypeObject*)malloc(sizeof(basePyType));
-    return (pyType);
+  static PyTypeObject* pyType = (PyTypeObject*)malloc(sizeof(basePyType));
+  return (pyType);
 }
 
 PyRegistryRPC::PyRegistryRPC()

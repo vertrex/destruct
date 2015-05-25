@@ -8,7 +8,7 @@
 RPC::RPC()
 {
   Destruct::DType::init();
-  declare();
+  Client::declare();
 }
 
 RPC::~RPC()

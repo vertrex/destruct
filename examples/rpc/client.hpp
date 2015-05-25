@@ -13,10 +13,6 @@ using namespace Destruct;
 
 class ServerFunctionObject;
 
-extern "C" {
-void declare(void);
-}
-
 //bind other function & use inheritance in other examples & python
 class EXPORT Client : public DCppObject<Client>
 {
@@ -25,6 +21,7 @@ public:
   Client(DStruct* dstruct, DValue const& args);
   ~Client();
 
+  static void                           declare(void);
   virtual DObject*                      start(void);
   DValue                                findObject(void); ///XXX:
 

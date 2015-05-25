@@ -22,29 +22,34 @@
 
 extern "C"
 {
-  void  declare(void)
+  void declare()
   {
-    Destruct::DStructs& destruct = Destruct::DStructs::instance();
-    destruct.registerDStruct(makeNewDCpp<NetworkStream>("NetworkStream"));
-    destruct.registerDStruct(makeNewDCpp<SerializeRPC>("SerializeRPC"));
-    destruct.registerDStruct(makeNewDCpp<DeserializeRPC>("DeserializeRPC"));
-
-    destruct.registerDStruct(makeNewDCppSingleton<ObjectManager<DObject*, DType::DObjectType> >("ObjectManager"));
-     //destruct.registerDStruct(makeNewDCpp<ObjectManager<DFunctionObject*, DType::DMethodType> >("FunctionObjectManager");
-    destruct.registerDStruct(makeNewDCpp<ServerFunctionObject>("ServerFunctionObject"));
-
-
-    DStruct* dstruct = makeNewDCpp<Server>("Server"); 
-    destruct.registerDStruct(dstruct);
-
-    dstruct = makeNewDCpp<Client>("Client");
-    destruct.registerDStruct(dstruct);
-
-    dstruct = new DStruct(NULL, "ClientArgument", DSimpleObject::newObject);
-    dstruct->addAttribute(DAttribute(DType::DUInt32Type, "port"));
-    dstruct->addAttribute(DAttribute(DType::DUnicodeStringType, "address"));
-    destruct.registerDStruct(dstruct); 
+    Client::declare();
   }
+}
+
+void    Client::declare(void)
+{
+  Destruct::DStructs& destruct = Destruct::DStructs::instance();
+  destruct.registerDStruct(makeNewDCpp<NetworkStream>("NetworkStream"));
+  destruct.registerDStruct(makeNewDCpp<SerializeRPC>("SerializeRPC"));
+  destruct.registerDStruct(makeNewDCpp<DeserializeRPC>("DeserializeRPC"));
+
+  destruct.registerDStruct(makeNewDCppSingleton<ObjectManager<DObject*, DType::DObjectType> >("ObjectManager"));
+  //destruct.registerDStruct(makeNewDCpp<ObjectManager<DFunctionObject*, DType::DMethodType> >("FunctionObjectManager");
+  destruct.registerDStruct(makeNewDCpp<ServerFunctionObject>("ServerFunctionObject"));
+
+
+  DStruct* dstruct = makeNewDCpp<Server>("Server"); 
+  destruct.registerDStruct(dstruct);
+
+  dstruct = makeNewDCpp<Client>("Client");
+  destruct.registerDStruct(dstruct);
+
+  dstruct = new DStruct(NULL, "ClientArgument", DSimpleObject::newObject);
+  dstruct->addAttribute(DAttribute(DType::DUInt32Type, "port"));
+  dstruct->addAttribute(DAttribute(DType::DUnicodeStringType, "address"));
+  destruct.registerDStruct(dstruct); 
 }
 
 Client::Client(DUnicodeString const& addr, uint32_t port) : DCppObject<Client>(NULL, RealValue<DObject*>(DNone)), __networkStream(NULL), __serialize(NULL), __deserialize(NULL)
@@ -87,8 +92,7 @@ void    Client::__connect(DUnicodeString const& addr, uint32_t port)
     
   int on = 1;
   if (setsockopt(this->__connectionSocket, IPPROTO_TCP, TCP_NODELAY, (const char *)&on, sizeof(on)) == -1)
-    throw DException("Server::__bind Can't set socket options");
-
+  throw DException("Server::__bind Can't set socket options");
  
   server.sin_addr.s_addr = inet_addr(addr.c_str());
   server.sin_family = AF_INET;

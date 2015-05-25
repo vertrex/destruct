@@ -7,6 +7,7 @@
 #include "destructmodule.hpp"
 #include "registry.hpp"
 #include "registryclient.hpp"
+#include "client.hpp"
 
 #define DESTRUCT_ADD_MODULE(moduleType, moduleName)\
   Py_INCREF(moduleType);\
@@ -19,6 +20,7 @@ public:
   PyRegistryClient()
   {
     Destruct::DType::init();
+    Client::declare();
     Registry::declare();
   };
 
@@ -30,8 +32,8 @@ public:
 
   DObject* connect(std::string const& address, uint32_t port)
   {
-    RegistryClient client(address, port);
-    return (client.start());
+    RegistryClient* client = new RegistryClient(address, port); //XXX register and use it directly now wrapper needed anymore !
+    return (client->start());
   }
 };
 

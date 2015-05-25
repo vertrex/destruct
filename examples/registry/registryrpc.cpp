@@ -17,7 +17,7 @@ RegistryRPC::RegistryRPC()
 {
   Destruct::DType::init();
   Registry::declare();
-  declare(); //XXX client::declare or load via loader 
+  Client::declare();
 }
 
 RegistryRPC::~RegistryRPC()
