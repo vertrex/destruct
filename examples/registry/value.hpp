@@ -55,13 +55,14 @@ public:
   DValue  deserializeRaw(DValue const& stream);
   DValue  valueTypeName(void);
  
-  RealValue<DUInt8>            unknown;
-  RealValue<DUInt16>           signature, nameLength, named, unknown1, unknown2, valueType;
-  RealValue<DInt32>            size, dataOffset, dataLength, dataType;
+  //RealValue<DUInt8>            unknown;
+  RealValue<DUInt16>           signature, nameLength, unknown1, valueType;//named, unkown2
+  RealValue<DInt32>            size;
+  RealValue<DUInt32>           dataOffset, dataLength, dataType;
   RealValue<DObject*>          name, data;
   RealValue<DFunctionObject*>  _valueTypeName;
 
-  attributeCount(RegistryValue, 12)
+  attributeCount(RegistryValue, 11)
   attributeList(
                 attribute(DInt32, size)
                 attribute(DUInt16, signature)
@@ -74,7 +75,7 @@ public:
                 attribute(DObject, name)
                 attribute(DObject, data)
                 function(DUnicodeString, valueTypeName, DNone)
-                function(DUInt8, deserializeRaw, DObject)
+                //function(DUInt8, deserializeRaw, DObject)
                )
 
   memberList(RegistryValue, 
@@ -89,7 +90,6 @@ public:
              member(RegistryValue, name)
              member(RegistryValue, data)
              method(RegistryValue, valueTypeName)
-             method(RegistryValue, deserializeRaw)
              //method(RegistryValue, deserializeRaw)
             )
 private:

@@ -88,8 +88,8 @@ RegistryValue::RegistryValue(DStruct* dstruct, DValue const& args) : DCppObject<
   ((DObject*)this->name)->setValue("attributeKeyName", RealValue<DUnicodeString>("nameLength"));
   ((DObject*)this->name)->addRef();
   
- this->data = new RegistryValueData(Destruct::DStructs::instance().find("RegistryValueData"), RealValue<DObject*>(this));
- ((DObject*)this->data)->addRef();
+  this->data = new RegistryValueData(Destruct::DStructs::instance().find("RegistryValueData"), RealValue<DObject*>(this));
+  ((DObject*)this->data)->addRef();
 }
 
 

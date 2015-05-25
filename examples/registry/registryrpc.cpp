@@ -57,14 +57,14 @@ void RegistryRPC::connect(std::string const& filePath, std::string const& addr, 
   DValue regfv = registry->call("open", RealValue<DUnicodeString>(filePath));
   DObject* regf = regfv.get<DObject*>();
  
-  std::string fileName(filePath, filePath.rfind("/") + 1);
-  Registry::toFile(fileName + "registry-rpc.text", regf, "Text");
+  //std::string fileName(filePath, filePath.rfind("/") + 1);
+  //Registry::toFile(fileName + "registry-rpc.text", regf, "Text");
 
-/*
+
   DObject* rootKey = regf->getValue("key").get<DObject*>();
 
   client.printKey(rootKey);
-*/
+
   return ;
 /*
   DObject* subKeys = rootKey->getValue("subkeys").get<DObject*>();
