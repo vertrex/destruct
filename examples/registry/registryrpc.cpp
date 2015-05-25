@@ -9,12 +9,15 @@
 #include "registryclient.hpp"
 //#include "dtype.hpp"
 
+#include "client.hpp"
+
 using namespace Destruct;
 
 RegistryRPC::RegistryRPC()
 {
   Destruct::DType::init();
   Registry::declare();
+  declare(); //XXX client::declare or load via loader 
 }
 
 RegistryRPC::~RegistryRPC()
@@ -51,11 +54,17 @@ void RegistryRPC::connect(std::string const& filePath, std::string const& addr, 
   RegistryClient client(addr, port);
   DObject* registry = client.start();
 
-  DValue regfv = registry->call("open", RealValue<DUnicodeString>(filePath)); 
+  DValue regfv = registry->call("open", RealValue<DUnicodeString>(filePath));
   DObject* regf = regfv.get<DObject*>();
+ 
+  std::string fileName(filePath, filePath.rfind("/") + 1);
+  Registry::toFile(fileName + "registry-rpc.text", regf, "Text");
+
+/*
   DObject* rootKey = regf->getValue("key").get<DObject*>();
 
   client.printKey(rootKey);
+*/
   return ;
 /*
   DObject* subKeys = rootKey->getValue("subkeys").get<DObject*>();

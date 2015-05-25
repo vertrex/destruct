@@ -35,7 +35,6 @@ void   RegistryClient::printKey(DObject* key)
  DObject* subKeysList = subKeys->getValue("list").get<DObject*>();
  DUInt64  subKeysListSize = subKeysList->call("size").get<DUInt64>();
 
- std::cout << "get size " << std::endl;
  std::cout << "Key : "  << std::endl
            << "      name : " << name->getValue("keyName").get<DUnicodeString>() << std::endl;
 
