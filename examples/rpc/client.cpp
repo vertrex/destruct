@@ -3,6 +3,8 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+
+#include <netinet/tcp.h>
 #endif
 
 
@@ -79,10 +81,15 @@ void    Client::__connect(DUnicodeString const& addr, uint32_t port)
 {
   sockaddr_in server;
 
-  this->__connectionSocket = socket(AF_INET , SOCK_STREAM , 0);
+  this->__connectionSocket = socket(AF_INET , SOCK_STREAM, 0);
   if (this->__connectionSocket == -1)
     throw DException("Client::__connect Could not create socket");
-     
+    
+  int on = 1;
+  if (setsockopt(this->__connectionSocket, IPPROTO_TCP, TCP_NODELAY, (const char *)&on, sizeof(on)) == -1)
+    throw DException("Server::__bind Can't set socket options");
+
+ 
   server.sin_addr.s_addr = inet_addr(addr.c_str());
   server.sin_family = AF_INET;
   server.sin_port = htons(port);

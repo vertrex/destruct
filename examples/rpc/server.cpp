@@ -8,6 +8,7 @@
 #else
 #include <sys/socket.h>
 #include <arpa/inet.h>
+#include <netinet/tcp.h>
 #include <unistd.h>
 #endif
 
@@ -85,6 +86,10 @@ void            Server::__bind(int32_t port)
     throw DException("Sever::__bind Can't create socket. ");
 
   int on = 1;
+  if (setsockopt(this->__listenSocket, IPPROTO_TCP, TCP_NODELAY, (const char *)&on, sizeof(on)) == -1)
+    throw DException("Server::__bind Can't set socket options");
+
+  //int on = 1;
   if (setsockopt(this->__listenSocket, SOL_SOCKET, SO_REUSEADDR, (const char *)&on, sizeof(on)) == -1)
     throw DException("Server::__bind Can't set socket options");
   if (this->__listenSocket == -1)
