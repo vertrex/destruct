@@ -107,6 +107,22 @@ protocol/recursivetraceobject.cpp
 configure_file(__init__.py __init__.py COPYONLY)
 add_library(destruct SHARED ${destruct_source_files})
 
+file(RELATIVE_PATH rpath ${CMAKE_BINARY_DIR} ${CMAKE_CURRENT_BINARY_DIR})
+if ( CMAKE_GENERATOR MATCHES "Visual Studio")
+  set_target_properties (destruct PROPERTIES
+    SUFFIX ".dll"
+    RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_CURRENT_BINARY_DIR}/python"
+    RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_CURRENT_BINARY_DIR}/python"
+    RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO "${CMAKE_CURRENT_BINARY_DIR}/python"
+    )
+  file(APPEND "${CMAKE_BINARY_DIR}/installed_files.log" "${rpath}/destruct.dll\n")
+elseif (UNIX)
+  file(APPEND "${CMAKE_BINARY_DIR}/installed_files.log" "${rpath}/libdestruct.so\n")
+endif()
+
+file(APPEND "${CMAKE_BINARY_DIR}/installed_files.log" "${rpath}/__init__.py\n")
+
+
 add_subdirectory(examples)
 add_subdirectory(python)
-#add_subdirectory(doc)
+add_subdirectory(doc)

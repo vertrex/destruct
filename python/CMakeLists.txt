@@ -48,14 +48,22 @@ add_library(_destruct SHARED ${pydestruct_files})
 
 set_target_properties(_destruct PROPERTIES PREFIX "")
 
+file(RELATIVE_PATH rpath ${CMAKE_BINARY_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 if (MSVC)
   target_link_libraries(_destruct destruct ${PYTHON_LIBRARY})
-set_target_properties(_destruct
-    PROPERTIES
-    SUFFIX ".pyd")
+  set_target_properties (_destruct PROPERTIES
+    SUFFIX ".pyd"
+    RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_CURRENT_BINARY_DIR}"
+    RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_CURRENT_BINARY_DIR}"
+    RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO "${CMAKE_CURRENT_BINARY_DIR}"
+    )
+  file(APPEND "${CMAKE_BINARY_DIR}/installed_files.log" "${rpath}/_destruct.pyd\n")
 else(MSVC)
   target_link_libraries(_destruct destruct python2.7)
+  file(APPEND "${CMAKE_BINARY_DIR}/installed_files.log" "${rpath}/_destruct.so\n")
 endif(MSVC)
+
+file(APPEND "${CMAKE_BINARY_DIR}/installed_files.log" "${rpath}/__init__.py\n")
 
 configure_file(__init__.py __init__.py COPYONLY)
 include_directories("../")
