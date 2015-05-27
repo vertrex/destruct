@@ -9,12 +9,11 @@ RegistryClient::RegistryClient(std::string const& addr, uint32_t port) : Client(
 DObject* RegistryClient::start(void)
 {
   std::cout << "connect to host" << std::endl;
-  this->__networkStream = new NetworkStream(NULL, RealValue<DInt32>(this->connectionSocket()));
-
   Destruct::DStructs& destruct = Destruct::DStructs::instance();
+  this->__networkStream = destruct.find("NetworkStream")->newObject(RealValue<DInt32>(this->connectionSocket())); //XXX doublon init in client?
 
   DStruct* registryS = destruct.find("Registry");
-
+  
   //DSerialize* serializer = new DSerializeRPC(*this->__networkStream, this->objectManager(), this->functionObjectManager()); old
   //ClientObject* root = new ClientObject(*this->__networkStream, serializer, 0, registryS);  old
   ClientObject* root = new ClientObject(this->networkStream(), this->serializeRPC(), this->deserializeRPC(), 0, registryS);

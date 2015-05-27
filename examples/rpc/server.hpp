@@ -13,10 +13,10 @@
 #include <ws2tcpip.h>
 #endif
 
-class EXPORT Server : public DCppObject<Server>
+class Server : public DCppObject<Server>
 {
 public:
-  Server(uint32_t port);
+  EXPORT Server(uint32_t port);
 
   Server(DStruct* dstruct, DValue const& args) : DCppObject<Server>(dstruct, args), __connectionSocket(), __networkStream(NULL), __serializer(NULL) 
   {
@@ -24,7 +24,6 @@ public:
     this->__bind(args.get<DUInt32>());
   }
 
-  ~Server();
 
   virtual void                          initRoot(void) //setRoot(DValue object);
   {
@@ -37,11 +36,11 @@ public:
     this->__objectManager->call("registerObject", root);
   }
 
-  virtual void                          serve();
-  void                                  daemonize(void);
+  EXPORT virtual void                   serve();
+  EXPORT void                           daemonize(void);
 
   //DObject*                              functionObjectManager(void);
-  DObject*                              objectManager(void);
+  EXPORT DObject*                       objectManager(void);
 
   RealValue<DFunctionObject*>   _addRoot, _serve, _daemonize;
 
@@ -87,6 +86,10 @@ public:
   {
     return (memberBegin() + ownAttributeCount());
   }
+
+protected:
+  EXPORT								~Server();
+
 private:
   void                                  findDStruct(void);
   void                                  unknown(const DUnicodeString& cmd);
@@ -99,8 +102,8 @@ private:
   int                                   __listenSocket;
   int32_t                               __connectionSocket;
 #endif
-  EXPORT void                           __bind(int32_t port);
-  EXPORT void                           __listen(void);
+  void									__bind(int32_t port);
+  void									__listen(void);
   DObject*                              __networkStream;
   DObject*                              __serializer;
   DObject*                              __deserializer;

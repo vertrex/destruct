@@ -63,7 +63,7 @@ DBuffer NetworkStream::read(DValue const& args) //passer un buffer comme ca c de
 
   this->__readStream.read((char*)buff, size);
 
-  return DBuffer(buff, size);
+  return DBuffer(buff, (DInt32)size);
 }
 
 //int32_t NetworkStream::__send(void* buff, int32_t size) 
@@ -93,7 +93,7 @@ DInt64  NetworkStream::write(DValue const& args)
 
 void NetworkStream::flush(void)// const
 {
-  int32_t size = this->__writeStream.tellp() - this->__writeStream.tellg();
+  int32_t size = (int32_t) (this->__writeStream.tellp() - this->__writeStream.tellg());
   char* buff = new char[size];
   this->__writeStream.read(buff, size); //size shouldn't be too big 
 

@@ -27,7 +27,7 @@ using namespace Destruct;
 class Registry : public Destruct::DCppObject<Registry>
 {
 public:
-  static void           declare(void);
+  EXPORT static void	declare(void);
   Registry(DStruct* dstruct, const Destruct::DValue&);
   Registry(Registry const&);
   ~Registry();
@@ -38,7 +38,7 @@ public:
   Destruct::DValue      save(void) const;
 
   static void           show(DObject* object);
-  static void           toFile(std::string fileName, DObject* object, std::string type);
+  EXPORT static void    toFile(std::string fileName, DObject* object, std::string type);
 
   attributeCount(Registry, 1)
 

@@ -14,25 +14,25 @@ using namespace Destruct;
 class ServerFunctionObject;
 
 //bind other function & use inheritance in other examples & python
-class EXPORT Client : public DCppObject<Client>
+class Client : public DCppObject<Client>
 {
 public:
-  Client(DUnicodeString const& addr, uint32_t port);
+  EXPORT Client(DUnicodeString const& addr, uint32_t port);
   Client(DStruct* dstruct, DValue const& args);
-  ~Client();
 
-  static void                           declare(void);
-  virtual DObject*                      start(void);
-  DValue                                findObject(void); ///XXX:
 
-  Destruct::DStruct*                    remoteFind(const DUnicodeString name);
-  bool                                  print(DObject* dobject) const;
-  bool                                  print(DStruct* dstruct) const;
+  EXPORT static void                    declare(void);
+  EXPORT virtual DObject*               start(void);
+  EXPORT DValue                         findObject(void); ///XXX:
 
-  int32_t                               connectionSocket(void) const;
-  DObject*                              networkStream(void) const;
-  DObject*                              serializeRPC(void) const;
-  DObject*                              deserializeRPC(void) const;
+  EXPORT DStruct*			            remoteFind(const DUnicodeString name);
+  EXPORT bool                           print(DObject* dobject) const;
+  EXPORT bool                           print(DStruct* dstruct) const;
+
+  EXPORT int32_t                        connectionSocket(void) const;
+  EXPORT DObject*                       networkStream(void) const;
+  EXPORT DObject*                       serializeRPC(void) const;
+  EXPORT DObject*                       deserializeRPC(void) const;
 
 private:
   void                                  __connect(DUnicodeString const& addr, uint32_t port);
@@ -44,6 +44,8 @@ private:
   DObject*                              __serialize;
   DObject*                              __deserialize;
 
+protected:
+  EXPORT								~Client();
 public:
 /**
  *  Destruct definition

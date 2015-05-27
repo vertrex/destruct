@@ -84,16 +84,45 @@ Client::~Client()
 
 void    Client::__connect(DUnicodeString const& addr, uint32_t port)
 {
-  sockaddr_in server;
+#ifdef WIN32
+  struct addrinfo *result = NULL;
+  struct addrinfo hints;
+  WSADATA wsaData;
 
-  this->__connectionSocket = socket(AF_INET , SOCK_STREAM, 0);
+  if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
+    throw DException("WSAStartup failed");
+
+  ZeroMemory(&hints, sizeof (hints));
+  hints.ai_family = AF_INET;
+  hints.ai_socktype = SOCK_STREAM;
+  hints.ai_protocol = IPPROTO_TCP;
+  hints.ai_flags = AI_PASSIVE;
+
+// Resolve the local address and port to be used by the server
+  char sport[6];
+  ZeroMemory(&sport, sizeof(char)*6);
+  _itoa_s(port, sport, 10);
+  if (getaddrinfo(NULL, sport, &hints, &result) != 0)
+  {
+    WSACleanup();
+	throw DException("Server::__bind getaddrinfo failed.");
+  }
+  this->__connectionSocket = (DInt32)INVALID_SOCKET;
+
+  std::cout << "createsocket port " << sport << std::endl;
+  this->__connectionSocket = (DInt32)socket(result->ai_family, result->ai_socktype, result->ai_protocol);  
+#else
+
+  this->__connectionSocket = (DInt32)socket(AF_INET , SOCK_STREAM, 0);
+#endif
   if (this->__connectionSocket == -1)
     throw DException("Client::__connect Could not create socket");
-    
+
   int on = 1;
   if (setsockopt(this->__connectionSocket, IPPROTO_TCP, TCP_NODELAY, (const char *)&on, sizeof(on)) == -1)
   throw DException("Server::__bind Can't set socket options");
  
+    sockaddr_in server;
   server.sin_addr.s_addr = inet_addr(addr.c_str());
   server.sin_family = AF_INET;
   server.sin_port = htons(port);
@@ -105,7 +134,12 @@ void    Client::__connect(DUnicodeString const& addr, uint32_t port)
 
 void    Client::__close(void)
 {
+#ifdef WIN32
+  closesocket(this->__connectionSocket);
+#else
   close(this->__connectionSocket);
+#endif
+ 
 }
 
 DObject*   Client::start(void)

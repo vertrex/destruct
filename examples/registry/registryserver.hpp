@@ -10,7 +10,7 @@
 class RegistryServer : public Server
 {
 public:
-                        RegistryServer(int32_t port);
+  EXPORT                RegistryServer(int32_t port);
   virtual void          initRoot(void);
 };
 

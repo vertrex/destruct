@@ -10,12 +10,12 @@
 class RegistryClient : public Client
 {
 public:
-                        RegistryClient(std::string const& addr, uint32_t port);
-  virtual DObject*      start(void);
-  void                  printKey(DObject* key);
-  void                  printValue(DObject* key);
+  EXPORT					RegistryClient(std::string const& addr, uint32_t port);
+  EXPORT virtual DObject*   start(void);
+  EXPORT void				printKey(DObject* key);
+  EXPORT void				printValue(DObject* key);
 private: 
-  NetworkStream*        __networkStream;
+  DObject*					__networkStream; //XXX ?? already in client
 };
 
 #endif
