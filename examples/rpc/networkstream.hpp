@@ -6,8 +6,6 @@
 #include <string.h>
 
 #include "protocol/dcppobject.hpp"
-//#include "destruct.hpp"
-//#include "protocol/dstream.hpp"
 
 namespace Destruct
 {
@@ -15,49 +13,18 @@ namespace Destruct
 class StreamBuffer
 {
 public:
-	StreamBuffer() : buffer(new char[4096]), currentRead(0), currentWrite(0), __maxSize(4096)
-	{
-	}
+  StreamBuffer(); 
+  StreamBuffer(const StreamBuffer& copy);
 
-	//copy constructor
-
-	void	write(const char* inbuff, uint32_t size)
-	{
-	   if (currentWrite + size > this->__maxSize) //maxSize > realloc until some size ?
-	   {
-	     std::cout << "Write overflow " << currentWrite + size << " > " << this->__maxSize << std::endl;
-		 throw DException("StreamBuffer::WriteOverflow");
-	   }
-	   memcpy(this->buffer + currentWrite, inbuff, size);
-	   currentWrite += size;
-	}
-
-	void	read(char* inbuff, uint32_t size)
-	{
-	   if (currentRead + size > this->__maxSize)
-	   {
-		 std::cout << "Read overflow " << currentRead + size << " > " << this->__maxSize << std::endl;
-	     throw DException("StreamBuffer::ReadOverflow");
-	   }
-	   memcpy(inbuff, this->buffer + currentRead, size);
-	   currentRead += size;
-	}
-
-	uint32_t	toRead(void)
-	{
-	   return (this->currentWrite - this->currentRead);
-	}
-
-	void		reset(void)
-	{
-	  currentRead = 0;
-	  currentWrite = 0;
-	}
+  void          write(const char* inbuff, uint32_t size);
+  void          read(char* inbuff, uint32_t size);
+  uint32_t	toRead(void);
+  void          reset(void);
 private:
-	char*		buffer;
-	uint32_t	currentRead;
-	uint32_t	currentWrite;
-	uint32_t	__maxSize;
+  char*		__buffer;
+  uint32_t	__currentRead;
+  uint32_t	__currentWrite;
+  uint32_t	__maxSize;
 };
 
 class NetworkStream : public DCppObject<NetworkStream>
@@ -73,14 +40,10 @@ public:
   
   ~NetworkStream();
 private:
-  int32_t           __socket;
-//int32_t           __send(void* buff, int32_t size); 
-//int32_t           __recv(void* buff, int32_t size);
+  int32_t       __socket;
    
-  StreamBuffer		__readStream;
-  StreamBuffer		__writeStream;
-  //std::stringstream __readStream;
-  //std::stringstream __writeStream;
+  StreamBuffer	__readStream;
+  StreamBuffer	__writeStream;
 public:
   RealValue<DFunctionObject* > _read, _write, _flush;
 

@@ -95,4 +95,49 @@ void NetworkStream::flush(void)// const
   return ;
 }
 
+/**
+ *  StreamBuffer
+ */
+StreamBuffer::StreamBuffer() : __buffer(new char[4096]), __currentRead(0), __currentWrite(0), __maxSize(4096)
+{
+}
+
+StreamBuffer::StreamBuffer(const StreamBuffer& copy) : __buffer(new char[copy.__maxSize]), __currentRead(copy.__currentRead), __currentWrite(copy.__currentWrite), __maxSize(copy.__maxSize)
+{
+  memcpy(__buffer, copy.__buffer, copy.__maxSize);
+}
+
+void    StreamBuffer::write(const char* inbuff, uint32_t size)
+{
+  if (this->__currentWrite + size > this->__maxSize) //maxSize > realloc until some size ?
+  {
+    //std::cout << "Write overflow " << currentWrite + size << " > " << this->__maxSize << std::endl;
+    throw DException("StreamBuffer::WriteOverflow");
+  }
+  memcpy(this->__buffer + this->__currentWrite, inbuff, size);
+  this->__currentWrite += size;
+}
+
+void    StreamBuffer::read(char* inbuff, uint32_t size)
+{
+  if (this->__currentRead + size > this->__maxSize)
+  {
+    //std::cout << "Read overflow " << currentRead + size << " > " << this->__maxSize << std::endl;
+    throw DException("StreamBuffer::ReadOverflow");
+  }
+  memcpy(inbuff, this->__buffer + this->__currentRead, size);
+  this->__currentRead += size;
+}
+
+uint32_t        StreamBuffer::toRead(void)
+{
+  return (this->__currentWrite - this->__currentRead);
+}
+
+void            StreamBuffer::reset(void)
+{
+  this->__currentRead = 0;
+  this->__currentWrite = 0;
+}
+
 }

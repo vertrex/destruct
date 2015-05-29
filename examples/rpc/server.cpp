@@ -17,7 +17,7 @@
 
 using namespace Destruct;
 
-Server::Server(uint32_t port) : DCppObject<Server>(NULL, RealValue<DUInt32>(port)), __connectionSocket(), __networkStream(NULL), __deserializer(NULL), __serializer(NULL)
+Server::Server(uint32_t port) : DCppObject<Server>(NULL, RealValue<DUInt32>(port)), __connectionSocket(), __networkStream(NULL), __serializer(NULL), __deserializer(NULL)
 {
   this->__bind(port);
 }
