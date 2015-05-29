@@ -12,6 +12,54 @@
 namespace Destruct
 {
 
+class StreamBuffer
+{
+public:
+	StreamBuffer() : buffer(new char[4096]), currentRead(0), currentWrite(0), __maxSize(4096)
+	{
+	}
+
+	//copy constructor
+
+	void	write(const char* inbuff, uint32_t size)
+	{
+	   if (currentWrite + size > this->__maxSize) //maxSize > realloc until some size ?
+	   {
+	     std::cout << "Write overflow " << currentWrite + size << " > " << this->__maxSize << std::endl;
+		 throw DException("StreamBuffer::WriteOverflow");
+	   }
+	   memcpy(this->buffer + currentWrite, inbuff, size);
+	   currentWrite += size;
+	}
+
+	void	read(char* inbuff, uint32_t size)
+	{
+	   if (currentRead + size > this->__maxSize)
+	   {
+		 std::cout << "Read overflow " << currentRead + size << " > " << this->__maxSize << std::endl;
+	     throw DException("StreamBuffer::ReadOverflow");
+	   }
+	   memcpy(inbuff, this->buffer + currentRead, size);
+	   currentRead += size;
+	}
+
+	uint32_t	toRead(void)
+	{
+	   return (this->currentWrite - this->currentRead);
+	}
+
+	void		reset(void)
+	{
+	  currentRead = 0;
+	  currentWrite = 0;
+	}
+private:
+	char*		buffer;
+	uint32_t	currentRead;
+	uint32_t	currentWrite;
+	uint32_t	__maxSize;
+};
+
 class NetworkStream : public DCppObject<NetworkStream>
 {
 public:
@@ -29,9 +77,10 @@ private:
 //int32_t           __send(void* buff, int32_t size); 
 //int32_t           __recv(void* buff, int32_t size);
    
-
-  std::stringstream __readStream;
-  std::stringstream __writeStream;
+  StreamBuffer		__readStream;
+  StreamBuffer		__writeStream;
+  //std::stringstream __readStream;
+  //std::stringstream __writeStream;
 public:
   RealValue<DFunctionObject* > _read, _write, _flush;
 
@@ -72,25 +121,6 @@ public:
     return (memberBegin() + ownAttributeCount());
   } 
 };
-
-//class DValue;
-//class NetworkStream : public DStream
-//{
-//public:
-  //EXPORT NetworkStream(DStruct* dstruct, DValue const& args);
-  //EXPORT NetworkStream(NetworkStream const& copy);
-  //EXPORT ~NetworkStream();
-
-  //EXPORT DStream&          operator>>(DStreamString& output);
-  //EXPORT int32_t           read(void* buff, int32_t size);
-  //EXPORT int32_t           read(DUnicodeString& readValue);
-  //EXPORT int32_t           read(uint64_t*  id);
-
-  //EXPORT DStream&          operator<<(DStreamString& input);
-  //EXPORT int32_t           write(DUnicodeString const& str); 
-  //EXPORT int32_t           write(uint64_t id) ;
-
-  //};
 
 }
 
