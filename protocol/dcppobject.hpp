@@ -164,7 +164,8 @@ public:
 
   virtual DObject* clone() const
   {
-    DObject* object = static_cast<DObject*>(static_cast<CppClass*>(const_cast<DCppObjectSingleton<CppClass >* >(this)));
+
+	DObject* object = const_cast<DObject*>(static_cast<const DObject* >(const_cast<const DCppObjectSingleton<CppClass> *>(this)));
     object->addRef();
 
     return (object);
