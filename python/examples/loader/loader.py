@@ -92,6 +92,8 @@ if __name__ == "__main__":
   pathname = [("dtest", "destruct_test",),
 	      ("threading", "dthreading",),
 	      ("inheritance", "destruct_inherit",),
+              ("rpc", "destruct_rpc",),
+              ("registry", "registry",),
 	     ]
 
 #           "/destruct/examples/registry/libregistry.so",
@@ -118,3 +120,8 @@ if sa.object1:
   print 'sa.object1 exists'
 else:
   print 'sa.object1 is none'
+
+
+vs = DStructs().find("DVectorString").newObject()
+server = DStructs().find("Server").newObject(DUInt32(3583))
+server.addRoot(vs)
