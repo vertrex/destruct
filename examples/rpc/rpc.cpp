@@ -70,8 +70,9 @@ DObject* TestClient::start(void)
   DUInt64 size = remoteChild->call("size").get<DUInt64>();
 
   std::cout << "get children size " << size << std::endl; 
-  for (DUInt64 i = 0; i < size; ++i)
-  { 
+  //for (DUInt64 i = 0; i < size; ++i)
+  //{ 
+    DUInt64 i = 0;
     for (DUInt64 x = 0; x < 10; ++x) 
     {
       Destruct::DObject* child = remoteChild->call("get", RealValue<DUInt64>(i)).get<DObject*>();
@@ -80,8 +81,8 @@ DObject* TestClient::start(void)
               << " is of type : " <<  child->instanceOf()->name() 
               << std::endl;
 
-     } break;
-  }
+     }// break;
+  //}
 
   this->print(remote);
   std::cout << "done !" << std::endl;

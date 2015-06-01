@@ -107,6 +107,11 @@ StreamBuffer::StreamBuffer(const StreamBuffer& copy) : __buffer(new char[copy.__
   memcpy(__buffer, copy.__buffer, copy.__maxSize);
 }
 
+StreamBuffer::~StreamBuffer()
+{
+  delete __buffer;
+}
+
 void    StreamBuffer::write(const char* inbuff, uint32_t size)
 {
   if (this->__currentWrite + size > this->__maxSize) //maxSize > realloc until some size ?

@@ -176,7 +176,7 @@ PyObject* PyDObject::getValue(PyDObject::DPyObject* self, PyObject* attributeObj
   }
 
   size_t typeId = self->pimpl->instanceOf()->attribute(attributeIndex).type().getType();
-  if ((typeId > Destruct::DType::DUnknownType) || (DValueDispatchTable[typeId] == NULL))
+  if ((typeId >= Destruct::DType::DUnknownType) || (DValueDispatchTable[typeId] == NULL))
   { 
     PyErr_SetString(PyExc_RuntimeError, "Bad type id value");
     return (0);
@@ -245,7 +245,7 @@ PyObject*  PyDObject::setValue(PyDObject::DPyObject* self, int32_t attributeInde
   size_t typeId = self->pimpl->instanceOf()->attribute(attributeIndex).type().getType();
   try
   {
-    if ((typeId > Destruct::DType::DUnknownType) || (DValueDispatchTable[typeId] == NULL))
+    if ((typeId >= Destruct::DType::DUnknownType) || (DValueDispatchTable[typeId] == NULL))
     { 
       PyErr_SetString(PyExc_RuntimeError, "Bad type id value");
       return (0);

@@ -17,17 +17,25 @@
 
 using namespace Destruct;
 
-Server::Server(uint32_t port) : DCppObject<Server>(NULL, RealValue<DUInt32>(port)), __connectionSocket(), __networkStream(NULL), __serializer(NULL), __deserializer(NULL)
+Server::Server(uint32_t port) : DCppObject<Server>(NULL, RealValue<DUInt32>(port)), __connectionSocket(), __networkStream(NULL), __serializer(NULL), __deserializer(NULL), __objectManager(NULL)
 {
   this->__bind(port);
+}
+
+Server::Server(DStruct* dstruct, DValue const& args) : DCppObject<Server>(dstruct, args), __connectionSocket(), __networkStream(NULL), __serializer(NULL), __deserializer(NULL), __objectManager(NULL) 
+{
+  this->init();
+  this->__bind(args.get<DUInt32>());
 }
 
 Server::~Server()
 {
 #ifdef WIN32
   closesocket(this->__connectionSocket);
+  closesocket(this->__listenSocket);
 #else
   close(this->__connectionSocket);
+  close(this->__listenSocket);
 #endif
   this->__networkStream->destroy(); //it's passed to serialize no need in privat emember any more
   this->__networkStream = NULL;
@@ -37,8 +45,20 @@ Server::~Server()
   this->__serializer = NULL; //because close and relaunch ??
 }
 
+void    Server::initRoot(void) //setRoot(DValue object);
+{
+  //throw DException("Not implemented");
+  std::cout << "Server::initRoot not implemented" << std::endl;
+}
+
+void    Server::addRoot(RealValue<DObject*> root)
+{
+  this->__objectManager->call("registerObject", root);
+}
+
+
 #ifdef WIN32
-void			Server::__bind(int32_t port)
+void    Server::__bind(int32_t port)
 {
   struct addrinfo *result = NULL;
   struct addrinfo hints;
@@ -61,7 +81,7 @@ void			Server::__bind(int32_t port)
   if (getaddrinfo(NULL, sport, &hints, &result) != 0)
   {
     WSACleanup();
-	throw DException("Server::__bind getaddrinfo failed.");
+    throw DException("Server::__bind getaddrinfo failed.");
   }
   this->__listenSocket = INVALID_SOCKET;
 
@@ -69,9 +89,9 @@ void			Server::__bind(int32_t port)
   this->__listenSocket = socket(result->ai_family, result->ai_socktype, result->ai_protocol);  
   if (this->__listenSocket == INVALID_SOCKET) 
   {
-	freeaddrinfo(result);
+    freeaddrinfo(result);
     WSACleanup();
-	throw DException("Server::__bind Could not create socket");
+    throw DException("Server::__bind Could not create socket");
   }
   int on = 1;
   if (setsockopt(this->__listenSocket, IPPROTO_TCP, TCP_NODELAY, (const char *)&on, sizeof(on)) == -1)
@@ -92,7 +112,7 @@ void			Server::__bind(int32_t port)
 
 }
 #else
-void            Server::__bind(int32_t port)
+void    Server::__bind(int32_t port)
 {
   this->__listenSocket = socket(AF_INET , SOCK_STREAM, 0);
   if (this->__listenSocket == -1)
@@ -120,23 +140,23 @@ void            Server::__bind(int32_t port)
 #endif
 
 #ifdef WIN32
-void			Server::__listen(void)
+void    Server::__listen(void)
 {
   std::cout << "Waiting for incoming connections ..." << std::endl;
   if (listen(this->__listenSocket, SOMAXCONN) == SOCKET_ERROR)
   {
-	printf( "Listen failed with error: %ld\n", WSAGetLastError() );
-	closesocket(this->__listenSocket);
+    printf( "Listen failed with error: %ld\n", WSAGetLastError() );
+    closesocket(this->__listenSocket);
     WSACleanup();
-	throw DException("Server::__listen failed");
+    throw DException("Server::__listen failed");
   }
 
   this->__connectionSocket = accept(this->__listenSocket, NULL, NULL);
   if (this->__connectionSocket == INVALID_SOCKET) 
   {
-	closesocket(this->__listenSocket);
+    closesocket(this->__listenSocket);
     WSACleanup();
-	throw DException("Server::__listen accept failed");
+    throw DException("Server::__listen accept failed");
   }
   
   if (this->__networkStream)
@@ -154,7 +174,7 @@ void			Server::__listen(void)
  
 }
 #else
-void            Server::__listen(void) 
+void    Server::__listen(void) 
 {
   int c;
   struct sockaddr_in client;
@@ -195,7 +215,7 @@ void    Server::findDStruct(void)
 
 }
  
-void Server::unknown(const DUnicodeString& cmd)
+void    Server::unknown(const DUnicodeString& cmd)
 {
   std::cout << "Receive unknown command : " << cmd << std::endl;
 
@@ -203,7 +223,7 @@ void Server::unknown(const DUnicodeString& cmd)
   this->__networkStream->call("flush");
 }
 
-void            Server::daemonize(void)
+void    Server::daemonize(void)
 {
   while (1)
   {
@@ -223,7 +243,7 @@ void            Server::daemonize(void)
   }
 }
 
-void            Server::serve(void)
+void    Server::serve(void)
 {
   std::cout << "Sever::serve listen" << std::endl;
   this->__listen();
@@ -268,7 +288,7 @@ DObject* Server::objectManager(void)
 //return (this->__functionObjectManager);
 //}
 
-void            Server::showRoot(void)
+void    Server::showRoot(void)
 {
   Destruct::DStructs& destruct = Destruct::DStructs::instance();
   DObject* stream = destruct.generate("DStreamCout");

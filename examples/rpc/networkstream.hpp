@@ -15,11 +15,13 @@ class StreamBuffer
 public:
   StreamBuffer(); 
   StreamBuffer(const StreamBuffer& copy);
+  ~StreamBuffer();
 
   void          write(const char* inbuff, uint32_t size);
   void          read(char* inbuff, uint32_t size);
   uint32_t	toRead(void);
   void          reset(void);
+
 private:
   char*		__buffer;
   uint32_t	__currentRead;

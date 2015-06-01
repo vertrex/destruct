@@ -17,25 +17,10 @@ class Server : public DCppObject<Server>
 {
 public:
   EXPORT Server(uint32_t port);
+  Server(DStruct* dstruct, DValue const& args);
 
-  Server(DStruct* dstruct, DValue const& args) : DCppObject<Server>(dstruct, args), __connectionSocket(), __networkStream(NULL), __serializer(NULL) 
-  {
-    this->init();
-    this->__bind(args.get<DUInt32>());
-  }
-
-
-  virtual void                          initRoot(void) //setRoot(DValue object);
-  {
-    //throw DException("Not implemented");
-    std::cout << "Server::initRoot not implemented" << std::endl;
-  }
-
-  virtual void                          addRoot(RealValue<DObject*> root)
-  {
-    this->__objectManager->call("registerObject", root);
-  }
-
+  virtual void                          initRoot(void); //setRoot(DValue object);
+  virtual void                          addRoot(RealValue<DObject*> root);
   EXPORT virtual void                   serve();
   EXPORT void                           daemonize(void);
 

@@ -44,7 +44,6 @@ public:
                                _DUInt8, _DUInt16, _DUInt32, _DUInt64;
 
   RealValue<DObject*>         __stream;
-  DUInt32                     __depth;
 
   static size_t ownAttributeCount()
   {

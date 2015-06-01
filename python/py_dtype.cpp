@@ -115,7 +115,7 @@ int PyDType::_init(PyDTypeT::DPyObject *self, PyObject *args, PyObject *kwds)
     return (-1);
   }
 
-  if ((typeId > Destruct::DType::DUnknownType) || (DValueDispatchTable[typeId] == NULL))
+  if ((typeId >= Destruct::DType::DUnknownType) || (DValueDispatchTable[typeId] == NULL))
   { 
     PyErr_SetString(PyExc_RuntimeError, "Bad type id value");
     return (0);
