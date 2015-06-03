@@ -16,7 +16,7 @@
 class PyDInt8 : public PythonTypeModule< PyDInt8, PyIntObject, Destruct::DType::DInt8Type > 
 {
 public:
-  EXPORT		   PyDInt8();
+  EXPORT           PyDInt8();
   PyObject*        asPyObject(PyObject* self, int32_t attributeIndex);
   PyObject*        asDValue(Destruct::DValue const& value);
   Destruct::DValue toDValue(PyObject* value);
@@ -26,7 +26,7 @@ typedef  PythonTypeModule< PyDInt8, PyIntObject, Destruct::DType::DInt8Type > Py
 class PyDInt16 : public PythonTypeModule< PyDInt16, PyIntObject, Destruct::DType::DInt16Type >
 {
 public:
-  EXPORT		   PyDInt16();
+  EXPORT           PyDInt16();
   PyObject*        asPyObject(PyObject* self, int32_t attributeIndex);
   PyObject*        asDValue(Destruct::DValue const& value);
   Destruct::DValue toDValue(PyObject* value); 
@@ -36,7 +36,7 @@ typedef  PythonTypeModule< PyDInt16, PyIntObject, Destruct::DType::DInt16Type > 
 class PyDInt32 : public  PythonTypeModule< PyDInt32, PyIntObject, Destruct::DType::DInt32Type >
 {
 public:
-  EXPORT		   PyDInt32();
+  EXPORT           PyDInt32();
   PyObject*        asPyObject(PyObject* self, int32_t attributeIndex);
   PyObject*        asDValue(Destruct::DValue const& value);
   Destruct::DValue toDValue(PyObject* value); 
@@ -103,6 +103,15 @@ public:
 };
 typedef  PythonTypeModule< PyDUnicodeString, PyStringObject, Destruct::DType::DUnicodeStringType > PyDUnicodeStringT;
 
+                                                      //XXX? PyBuffer
+class PyDBuffer : public PythonTypeModule< PyDBuffer, PyObject, Destruct::DType::DBufferType>
+{
+public:
+  EXPORT           PyDBuffer();
+  Destruct::DValue toDValue(PyObject* value);
+  PyObject*        asDValue(Destruct::DValue const& value);
+  PyObject*        asPyObject(PyObject* self, int32_t attributeIndex);
+};
 
 static PythonTypeBaseModule*  DValueDispatchTable[] =
 {
@@ -122,7 +131,9 @@ static PythonTypeBaseModule*  DValueDispatchTable[] =
   &PyDNullObject::moduleInit(),
 
   &PyDStruct::moduleInit(),
-//&PyDUnknownType::moduleInit(), throw error unknown type 
+  &PyDBuffer::moduleInit(),
+
+  //&PyDUnknownType::moduleInit(), throw error unknown type 
   NULL,
 };
 

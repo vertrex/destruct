@@ -10,10 +10,7 @@ ValueKey::ValueKey(DStruct* dstruct, DValue const& args) : DCppObject<ValueKey>(
   this->init();
   this->name = Destruct::DStructs::instance().find("NameLength")->newObject(RealValue<DObject*>(this));
   ((DObject*)this->name)->setValue("attributeKeyName", RealValue<DUnicodeString>("nameLength"));
-  //((DObject*)this->name)->addRef();
-  
   this->data = Destruct::DStructs::instance().find("RegistryValueData")->newObject(RealValue<DObject*>(this));
-  //((DObject*)this->data)->addRef();
 }
 
 
@@ -21,34 +18,44 @@ ValueKey::~ValueKey(void)
 {
 }
 
-DValue    ValueKey::deserializeRaw(DValue const& arg)
+DObject*       ValueKey::deserializeRaw(DValue const& arg)
 {
   //Destruct::DStructs& destruct = Destruct::DStructs::instance();
+  //DObject* serializer = arg.get<DObject*>();
 
   //destruct.generate(this->dataTypeName[this->dataType]);
-  return (RealValue<DObject*>(this));
+  //return (RealValue<DObject*>(this));
+  return (this);
 }
 
-DValue  ValueKey::valueTypeName(void)
+DUnicodeString  ValueKey::valueTypeName(void)
 {
-  return (RealValue<DUnicodeString>(ValueKey::registryType(this->dataType)));
+ return (ValueKey::registryType(this->dataType));
 }
 
 /**
  * RegistryValueData
  */
+//RegistryNone::Registry
+//{}
+
 RegistryValueData::RegistryValueData(DStruct* dstruct, DValue const& args) : DCppObject<RegistryValueData>(dstruct, args)
 {
-
   this->init();
+  this->parent = args.get<DObject*>();
+  DUInt16 typeName = ((DObject*)this->parent)->getValue("dataType").get<DUInt16>();
+  
+  Destruct::DStructs& destruct = Destruct::DStructs::instance();
+
+  //if (typeName == 1)
+  //this->dataObject = destruct.find("RegistryString")->newObject(RealValue<DObject*>(this));
 }
 
 RegistryValueData::~RegistryValueData(void)
 {
 }
 
-
-DValue    RegistryValueData::deserializeRaw(DValue const& arg)
+DObject*        RegistryValueData::data(void)
 {
-  return (RealValue<DObject*>(this));
+  return (this->dataObject); 
 }

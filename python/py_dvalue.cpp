@@ -433,3 +433,64 @@ PyObject*     PyDUnicodeString::asPyObject(PyObject* self, int32_t attributeInde
   return (PyObject_CallObject((PyObject*)PyDUnicodeString::pyType  , Py_BuildValue("(O)", PyString_FromStringAndSize(value.c_str(), value.size()))));
 #endif
 }
+
+/**
+ *  PyDBuffer
+ */
+PyDBuffer::PyDBuffer()
+{
+  PyTypeObject* pyType = PyDBuffer::pyType();
+  memcpy(pyType , &basePyType , sizeof(basePyType));
+
+  PyMethodDef* pyMethods = (PyMethodDef*)malloc(sizeof(baseTypePyMethods));
+  memcpy(pyMethods , &baseTypePyMethods , sizeof(baseTypePyMethods));
+  pyMethods[0].ml_meth = (PyCFunction)this->getType;
+
+  pyType->tp_base = &PyBuffer_Type; //?
+  pyType->tp_name = "destruct.DBuffer";
+  pyType->tp_basicsize = sizeof(DPyObject);
+  pyType->tp_init = (initproc)(PyDBuffer::_init);
+  pyType->tp_methods = pyMethods;
+  if (PyType_Ready(pyType) < 0)
+    throw Destruct::DException("PyType ready error");
+}
+
+Destruct::DValue PyDBuffer::toDValue(PyObject* value) 
+{
+//  if (PyBuffer_Check(value))
+  if (PyObject_CheckReadBuffer(value))
+  {
+    const void*  data;
+    Py_ssize_t   size;
+
+        //PyObject_AsCharBuffer ? abstract.h
+    if (PyObject_AsReadBuffer(value, &data, &size) == 0)
+    {
+      Destruct::DBuffer fvalue((uint8_t*)data, (DInt32)size);
+      return Destruct::RealValue<Destruct::DBuffer>(fvalue);
+    }
+  }
+
+  throw Destruct::DException("Can't cast to DBuffer");
+}
+
+PyObject*     PyDBuffer::asDValue(Destruct::DValue const& v)
+{
+  Destruct::DBuffer value = v.get<Destruct::DBuffer>();
+#ifdef FAST_CONVERSION
+  return (PyBuffer_FromMemory(value.data(), value.size()));
+#else
+  return (PyObject_CallObject((PyObject*)PyDBuffer::pyType  , Py_BuildValue("(O)", PyBuffer_FromMemory(value.data(), value.size()))));
+#endif
+}
+
+PyObject*     PyDBuffer::asPyObject(PyObject* self, int32_t attributeIndex)
+{
+#ifdef FAST_CONVERSION
+  Destruct::DBuffer value = ((PyDObject::DPyObject*)self)->pimpl->getValue(attributeIndex).get<Destruct::DBuffer>();
+  return (PyBuffer_FromMemory(value.data(), value.size()));
+#else
+  return (PyObject_CallObject((PyObject*)PyDBuffer::pyType, Py_BuildValue("(O)", PyBuffer_FromMemory(value.data(), value.size()))));
+#endif
+ 
+}

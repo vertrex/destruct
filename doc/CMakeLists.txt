@@ -1,7 +1,7 @@
 # Author(s):
 #  Solal Jacob <sja@digital-forensic.org>
 
-option(DOC_GENERATE "Generate documentation" ON)
+option(DOC_GENERATE "Generate documentation" OFF)
 
 if (DOC_GENERATE)
   add_custom_target(destruct_doc)

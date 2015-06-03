@@ -34,9 +34,6 @@ PyMODINIT_FUNC init_destruct(void)
   PyDMethodObject::moduleInit();
   PyDNullObject::moduleInit();
   PyDType::moduleInit();
-  //PyDStream::moduleInit();
-  //PyDSerialize::moduleInit();
-  //PyTest::moduleInit();
 
   if ((module = Py_InitModule3("_destruct", destruct_methods, "The destruct library")) == NULL)
     return;    
@@ -56,6 +53,8 @@ PyMODINIT_FUNC init_destruct(void)
   DESTRUCT_ADD_MODULE(PyDUInt32::pyType(), "DUInt32")
   DESTRUCT_ADD_MODULE(PyDUInt64::pyType(), "DUInt64")
   DESTRUCT_ADD_MODULE(PyDUnicodeString::pyType(), "DUnicodeString")
+  DESTRUCT_ADD_MODULE(PyDBuffer::pyType(), "DBuffer")
+
 
   DESTRUCT_ADD_MODULE(PyDObject::pyType(), "DObject")
   DESTRUCT_ADD_MODULE(PyDMethodObject::pyType(), "DMethod")
@@ -63,8 +62,6 @@ PyMODINIT_FUNC init_destruct(void)
 //end type specialization 
 
   DESTRUCT_ADD_MODULE(PyDType::pyType(), "DType")
-  //DESTRUCT_ADD_MODULE(PyDSerialize::pyType(), "DSerialize");
-  //DESTRUCT_ADD_MODULE(PyTest::pyType()(), "Test")
 }
 
 int PythonBaseModule::pyTracebackInternalAsString(PyTracebackObject* tb, std::string& errorMessage, long limit)

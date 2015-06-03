@@ -26,6 +26,10 @@
 class EXPORT PythonBaseModule
 {
 public:
+  PythonBaseModule()
+  {
+  }
+
   static PyTypeObject        basePyType; 
 
   static PySequenceMethods   baseSequenceMethods;
@@ -38,9 +42,6 @@ public:
 
   static int pyTracebackInternalAsString(PyTracebackObject* tb, std::string& errorMessage, long limit);
   static int pyTracebackAsString(PyObject* tb, std::string& errorMessage);
-  PythonBaseModule()
-  {
-  };
 };
 
 template < typename FinalType, typename PlainType >
@@ -61,7 +62,7 @@ public:
   {
     static FinalType instance;
     return (instance);
-  };
+  }
 
   static PyObject*    _new(PyTypeObject* type, PyObject* args, PyObject* kwds) 
   {
@@ -91,7 +92,7 @@ public:
       self->pimpl = NULL;
     }
     self->ob_type->tp_free((PyObject*)self);
-  };
+  }
 };
 
 class EXPORT PythonTypeBaseModule : public PythonBaseModule
@@ -111,7 +112,7 @@ class EXPORT PythonTypeModule : public PythonTypeBaseModule
 public:
   struct DPyObject 
   {
-     PythonObject  __base;
+    PythonObject  __base;
   };
 
   static DPyObject     pyObject;
@@ -121,6 +122,7 @@ public:
     static PyTypeObject* pyType = (PyTypeObject*)malloc(sizeof(basePyType));
     return (pyType);
   }
+
   static int    _init(PyObject* self, PyObject* args, PyObject* kwds)
   {
     PyTypeObject* pyType = PythonTypeModule<FinalType, PythonObject, __typeId>::pyType();
@@ -133,7 +135,7 @@ public:
   {
     static FinalType instance;
     return (instance);
-  };
+  }
  
   PyObject* typeObject(void)
   {

@@ -10,15 +10,16 @@ class ValueKey : public DCppObject<ValueKey>
 public:
   ValueKey(DStruct* dstruct, DValue const& args);
 
-  DValue  deserializeRaw(DValue const& stream);
-  DValue  valueTypeName(void);
+  DObject*              deserializeRaw(DValue const& stream);
+  DUnicodeString        valueTypeName(void);
+  //DObject*              data(void);
  
   //RealValue<DUInt8>            unknown;
   RealValue<DUInt16>           signature, nameLength, unknown1, valueType;//named, unkown2
   RealValue<DInt32>            size;
   RealValue<DUInt32>           dataOffset, dataLength, dataType;
   RealValue<DObject*>          name, data;
-  RealValue<DFunctionObject*>  _valueTypeName;
+  RealValue<DFunctionObject*>  _valueTypeName;//, _data;
 
   attributeCount(ValueKey, 11)
   attributeList(
@@ -80,18 +81,23 @@ private:
 class RegistryValueData : public DCppObject<RegistryValueData>
 {
 public:
-          RegistryValueData(DStruct* dstruct, DValue const& args);
-          ~RegistryValueData();
+  RegistryValueData(DStruct* dstruct, DValue const& args);
+  ~RegistryValueData();
 
-  DValue  deserializeRaw(DValue const& stream);
+  RealValue<DObject*> parent, dataObject;
+  RealValue<DFunctionObject*> _data;
 
+  //DObject* deserializeRaw(DValue const& stream);
+  DObject* data(void);
 
   attributeCount(RegistryValueData, 1)
   attributeList(
-                function(DUInt8, deserializeRaw, DObject)
+                  //function(DUInt8, deserializeRaw, DObject)
+                function(DObject, data, DNone)
                )
   memberList(RegistryValueData, 
-             method(RegistryValueData, deserializeRaw)
+                  //method(RegistryValueData, deserializeRaw)
+               method(RegistryValueData, data)
             )
 private:
   RealValue<DFunctionObject*>        _deserializeRaw; 

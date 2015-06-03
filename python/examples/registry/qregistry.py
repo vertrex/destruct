@@ -62,9 +62,10 @@ class KeyTreeView(QTreeWidget):
 class ValuesTableWidget(QTableWidget):
   def __init__(self, parent):
     super(ValuesTableWidget, self).__init__(parent)
-    self.setColumnCount(2)
+    self.setColumnCount(3)
     self.setHorizontalHeaderItem(0, QTableWidgetItem("Name"))
     self.setHorizontalHeaderItem(1, QTableWidgetItem("Type"))    
+    self.setHorizontalHeaderItem(2, QTableWidgetItem("Data"))    
     self.verticalHeader().hide() 
     self.setShowGrid(False) 
  
@@ -76,6 +77,7 @@ class ValuesTableWidget(QTableWidget):
       value = valuesList.get(index)
       self.setItem(index, 0, QTableWidgetItem(value.name.keyName))
       self.setItem(index, 1, QTableWidgetItem(value.valueTypeName()))
+      self.setItem(index, 2, QTableWidgetItem(str(value.data())))
 
     self.resizeColumnsToContents()
     self.resizeRowsToContents()

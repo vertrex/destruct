@@ -4,6 +4,9 @@
 #include "destruct.hpp" //export
 #include <stdint.h>
 
+namespace Destruct
+{
+
 class EXPORT DBuffer
 {
 public:
@@ -18,5 +21,7 @@ private:
   uint8_t*      __data;
   int32_t       __size;
 };
+
+}
 
 #endif

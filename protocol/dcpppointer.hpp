@@ -12,7 +12,6 @@ namespace Destruct
  *  TargetType : the result type to which a pointer-to-member points
  *  a base class of TargetType
  */
-
 template <typename CPPClass>
 class DPointerBase
 {

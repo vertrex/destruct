@@ -172,7 +172,8 @@ DObject*        DeserializeRPC::dDObject(DValue const& value)
   DStruct* dstruct = Destruct::DStructs::instance().find(objectName);
   if (dstruct == NULL)
   {
-    std::cout << "DSerializeRPC Can't deserialize object not find in base must get struct named :  " << objectName << std::endl;
+    if (objectName != "None")
+      std::cout << "DSerializeRPC Can't deserialize object not find in base must get struct named :  " << objectName << std::endl;
     return (DNone);
   }
   

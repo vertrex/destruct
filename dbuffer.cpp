@@ -3,6 +3,9 @@
 #include <string>
 #include <iostream> 
 
+namespace Destruct
+{
+
 DBuffer::DBuffer() : __data(0), __size(0)
 {
 }
@@ -32,4 +35,6 @@ uint8_t*        DBuffer::data(void)
 int32_t         DBuffer::size(void)
 {
   return (this->__size);
+}
+
 }
