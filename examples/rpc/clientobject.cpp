@@ -44,7 +44,7 @@ DValue ClientObject::getValue(DUnicodeString const& name) const
 
   DType  dtype = this->instanceOf()->attribute(name).type();
  
-  if (dtype.getType() == DType::DMethodType) //XXX XXX how to implem it ?
+  if (dtype.getType() == DType::DMethodType)
   {
     DUInt64 id = this->__deserializer->call("DUInt64").get<DUInt64>();
 
@@ -60,8 +60,6 @@ void ClientObject::setValue(DUnicodeString const& name, DValue const &v)
   this->__serializer->call("DUInt64", RealValue<DUInt64>(this->__id));
   this->__serializer->call("DUnicodeString", RealValue<DUnicodeString>(name));
  
-  //don't need get type if serialized in a streamstring or binary ? 
-  //this->__serializer->serialize(this->__networkStream, v, this->instanceOf()->attribute(name).type().getType());
   this->__serializer->call(this->instanceOf()->attribute(name).type().name(), v);
   this->__networkStream->call("flush");
 }
@@ -116,7 +114,7 @@ void ClientObject::setValue(size_t index, DValue const &value)
 DValue ClientObject::call(size_t index, DValue const &value)
 {
   DUnicodeString name = this->instanceOf()->attribute(index).name();
-  return (this->call(name, value));  //use call 0 ? 
+  return (this->call(name, value));
 }
 
 DObject* ClientObject::clone() const

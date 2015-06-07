@@ -37,11 +37,7 @@ void    Session::save(DValue const& filePath)
   /**
    *  serialize struct
    */
-
-  //DStruct* test = localArgValue.get<DStruct*>();
   serializer->call("DStruct", RealValue<DStruct*>(localArgumentsStruct));
-
-  //serializer->serialize(*dstream, *localArgumentsStruct);  
 
   /**
    *  Serialize vector struct
@@ -51,17 +47,13 @@ void    Session::save(DValue const& filePath)
   vectorStruct->call("push", moduleArgValue);
   vectorStruct->call("push", partitionArgValue);
 
-  //serializer->serialize(*dstream, vectorStruct);
   serializer->call("DObject", RealValue<DObject*>(vectorStruct));
+  vectorStruct->destroy();
 
   std::cout << "Saving database to file " << filePath.asUnicodeString() << std::endl; 
-  //std::cout << "session deserialize" << std::endl;
   serializer->call("DObject", this->modules);
 
-  //serializer->serialize(*dstream, this->modules); //passe pas par DValue donc destroy psa this
   std::cout << "Saved " << filePath.asUnicodeString() << std::endl; 
   stream->destroy();
   serializer->destroy();
-  //delete serializer;
-  //delete dstream;
 }

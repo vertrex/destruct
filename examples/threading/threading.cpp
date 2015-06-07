@@ -4,7 +4,8 @@
 
 int main(int argc, char** argv)
 {
-  DUInt64 count = 1000000;
+  //DUInt64 count = 1000000;
+  DUInt64 count = 100;
 
   try 
   {

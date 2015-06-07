@@ -21,7 +21,9 @@ class TestServer : public Server
 {
 public:
   TestServer(uint32_t port);
-  virtual void  initRoot(void);
+
+  static void  declare(void);
+  void         initRoot(void);
 };
 
 class RPC

@@ -221,7 +221,7 @@ inline RealValue<DFunctionObject* >::operator DFunctionObject*() const
 }
 
 template <>
-inline RealValue<DFunctionObject*>::RealValue(RealValue<DFunctionObject*> const & rhs) :  __val(rhs)
+inline RealValue<DFunctionObject*>::RealValue(const RealValue<DFunctionObject*>& rhs) :  __val(rhs)
 {
   if (this->__val)
     this->__val->addRef();

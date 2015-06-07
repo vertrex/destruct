@@ -10,7 +10,7 @@ ValueKey::ValueKey(DStruct* dstruct, DValue const& args) : DCppObject<ValueKey>(
   this->init();
   this->name = Destruct::DStructs::instance().find("NameLength")->newObject(RealValue<DObject*>(this));
   ((DObject*)this->name)->setValue("attributeKeyName", RealValue<DUnicodeString>("nameLength"));
-  this->data = Destruct::DStructs::instance().find("RegistryValueData")->newObject(RealValue<DObject*>(this));
+  //this->data = Destruct::DStructs::instance().find("RegistryValueData")->newObject(RealValue<DObject*>(this));
 }
 
 

@@ -20,12 +20,28 @@ using namespace Destruct;
 Server::Server(uint32_t port) : DCppObject<Server>(NULL, RealValue<DUInt32>(port)), __connectionSocket(), __networkStream(NULL), __serializer(NULL), __deserializer(NULL), __objectManager(NULL)
 {
   this->__bind(port);
+  this->__objectManager = DStructs::instance().generate("ObjectManager");
 }
 
 Server::Server(DStruct* dstruct, DValue const& args) : DCppObject<Server>(dstruct, args), __connectionSocket(), __networkStream(NULL), __serializer(NULL), __deserializer(NULL), __objectManager(NULL) 
 {
   this->init();
   this->__bind(args.get<DUInt32>());
+  this->__objectManager = DStructs::instance().generate("ObjectManager");
+}
+
+void  Server::initObject(void)
+{
+  if (this->__networkStream)
+    this->__networkStream->destroy();
+  if (this->__serializer)
+    this->__serializer->destroy();
+  if (this->__deserializer)
+    this->__deserializer->destroy();
+
+  this->__networkStream = DStructs::instance().generate("NetworkStream", RealValue<DInt32>((DInt32)this->__connectionSocket));
+  this->__serializer = DStructs::instance().generate("SerializeRPC", RealValue<DObject*>(this->__networkStream)); //don't need this->__networkStream as it's passed as ARGUMENT XXX can be juste passe no need as private member !  
+  this->__deserializer = DStructs::instance().generate("DeserializeRPC", RealValue<DObject*>(this->__networkStream)); //don't need this->__networkStream as it's passed as ARGUMENT XXX can be juste passe no need as private member !  
 }
 
 Server::~Server()
@@ -37,25 +53,19 @@ Server::~Server()
   close(this->__connectionSocket);
   close(this->__listenSocket);
 #endif
-  this->__networkStream->destroy(); //it's passed to serialize no need in privat emember any more
-  this->__networkStream = NULL;
-  this->__deserializer->destroy();
-  this->__deserializer = NULL;
-  this->__serializer->destroy();
-  this->__serializer = NULL; //because close and relaunch ??
+  this->__objectManager->destroy();
+  if (this->__networkStream)
+    this->__networkStream->destroy();
+  if (this->__serializer)
+    this->__serializer->destroy();
+  if (this->__deserializer)
+    this->__deserializer->destroy();
 }
 
-void    Server::initRoot(void) //setRoot(DValue object);
-{
-  //throw DException("Not implemented");
-  std::cout << "Server::initRoot not implemented" << std::endl;
-}
-
-void    Server::addRoot(RealValue<DObject*> root)
+void    Server::setRoot(RealValue<DObject*> root)
 {
   this->__objectManager->call("registerObject", root);
 }
-
 
 #ifdef WIN32
 void    Server::__bind(int32_t port)
@@ -158,20 +168,7 @@ void    Server::__listen(void)
     WSACleanup();
     throw DException("Server::__listen accept failed");
   }
-  
-  if (this->__networkStream)
-    this->__networkStream->destroy();
-  if (this->__serializer)
-    this->__serializer->destroy();
-  if (this->__deserializer)
-    this->__deserializer->destroy();
-
-  this->__networkStream = DStructs::instance().generate("NetworkStream", RealValue<DInt32>((DInt32)this->__connectionSocket));
-  this->__serializer = DStructs::instance().generate("SerializeRPC", RealValue<DObject*>(this->__networkStream)); //don't need this->__networkStream as it's passed as ARGUMENT XXX can be juste passe no need as private member !  
-  this->__deserializer = DStructs::instance().generate("DeserializeRPC", RealValue<DObject*>(this->__networkStream)); //don't need this->__networkStream as it's passed as ARGUMENT XXX can be juste passe no need as private member !  
-
-  this->__objectManager = DStructs::instance().generate("ObjectManager");
- 
+  this->initObject();
 }
 #else
 void    Server::__listen(void) 
@@ -186,18 +183,7 @@ void    Server::__listen(void)
   if (this->__connectionSocket < 0)
     throw DException("Server::__listen accept failed");
 
-  if (this->__networkStream)
-    this->__networkStream->destroy(); //set as null to avoid probleme if already deleted in daemon mode XXX ?
-  if (this->__serializer)
-    this->__serializer->destroy(); //set as NULL to avoid problem if alreasdy delete ?
-  if (this->__deserializer)
-    this->__deserializer->destroy();
-
-  this->__networkStream = DStructs::instance().generate("NetworkStream", RealValue<DInt32>(this->__connectionSocket));
-  this->__serializer = DStructs::instance().generate("SerializeRPC", RealValue<DObject*>(this->__networkStream)); //don't need this->__networkStream as it's passed as ARGUMENT XXX can be juste passe no need as private member ! 
-  this->__deserializer = DStructs::instance().generate("DeserializeRPC", RealValue<DObject*>(this->__networkStream)); //don't need this->__networkStream as it's passed as ARGUMENT XXX can be juste passe no need as private member !  
- 
-  this->__objectManager = DStructs::instance().generate("ObjectManager");
+  this->initObject();
 }
 #endif
 
@@ -249,7 +235,6 @@ void    Server::serve(void)
   this->__listen();
   std::cout << "Create serverObject " << std::endl;
   ServerObject serverObject(this->__networkStream, this->__serializer, this->__deserializer);
-  this->initRoot(); //again? XXX
   this->showRoot();
 
   while (true)

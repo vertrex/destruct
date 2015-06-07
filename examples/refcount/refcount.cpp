@@ -8,15 +8,17 @@
 
 #include "protocol/dmutableobject.hpp"
 
-Refcount::Refcount() : __destruct(Destruct::DStructs::instance())
+using namespace Destruct;
+
+Refcount::Refcount() : __destruct(DStructs::instance())
 {
-  Destruct::DType::init();
+  DType::init();
   this->declare();
 }
 
 Refcount::~Refcount()
 {
-  Destruct::DType::clean();
+  DType::clean();
 }
 
 void Refcount::test(void)
@@ -35,21 +37,21 @@ void Refcount::test(void)
 
   std::cout << "----create vector by realvalue()" << std::endl;
   {
-  Destruct::DObject* object = this->__destruct.generate(testObjectName);
-  RealValue<Destruct::DObject*> v2(object);
+  DObject* object = this->__destruct.generate(testObjectName);
+  RealValue<DObject*> v2(object);
   object->destroy();
   }
 
   std::cout << "----create vector by realvalue<> = " << std::endl;
   {
-  Destruct::DObject* object = this->__destruct.generate(testObjectName);
-  RealValue<Destruct::DObject*> v = object;
+  DObject* object = this->__destruct.generate(testObjectName);
+  RealValue<DObject*> v = object;
   object->destroy();
   }
 
   std::cout << "-----------test 4 ------" << std::endl;
   {
-  Destruct::DObject* object(this->__destruct.generate(testObjectName));
+  DObject* object(this->__destruct.generate(testObjectName));
   object->destroy();
   }
 
@@ -111,23 +113,23 @@ void Refcount::test(void)
 
   std::cout << "------test11-----" << std::endl;
   {
-    Destruct::DValue value(RealValue<DObject*>(this->__destruct.generate(testObjectName)));
+    DValue value(RealValue<DObject*>(this->__destruct.generate(testObjectName)));
     DObject* obj = value.get<DObject*>();
     obj->destroy();
     obj->destroy();
   }
   std::cout << "----test12------" << std::endl;
   {
-    Destruct::DValue value(RealValue<DObject*>(this->__destruct.generate(testObjectName)));
+    DValue value(RealValue<DObject*>(this->__destruct.generate(testObjectName)));
     DObject* object = value.get<DObject*>(); //DRealValue = ...
     object->destroy(); //destroy get ! 
     object->destroy(); //destroy original object !
   }
   std::cout << "-----test13----" << std::endl;
   {
-    Destruct::DValue value(RealValue<DObject*>(this->__destruct.generate(testObjectName)));
-    Destruct::DValue value2(value); //XXX delete 2 x segfault !  
-    Destruct::DValue value3(value); //XXX delete 2 x segfault !  
+    DValue value(RealValue<DObject*>(this->__destruct.generate(testObjectName)));
+    DValue value2(value); //XXX delete 2 x segfault !  
+    DValue value3(value); //XXX delete 2 x segfault !  
     DObject* object = value.get<DObject*>(); //DRealValue = ...
     object->destroy(); //delete get
     object->destroy(); //delete newObject
@@ -145,28 +147,29 @@ void Refcount::test(void)
   std::cout << "----test: RealValue func(RealValue) 2--" << std::endl;
   {
   DObject* object = this->__destruct.generate(testObjectName);
-  RealValue<Destruct::DObject*> ret =  this->testRVRV(object);
+  RealValue<DObject*> ret =  this->testRVRV(object);
   DObject* r = ret;
   r->destroy();
   }
   std::cout << "----test: RealValue func(RealValue) 3--" << std::endl;
   {
           //DObject* object = this->__destruct.generate(testObjectName);
-  RealValue<Destruct::DObject*> ret =  this->testRVRV(RealValue<Destruct::DObject*>(this->__destruct.generate(testObjectName)));
+  RealValue<DObject*> ret =  this->testRVRV(RealValue<DObject*>(this->__destruct.generate(testObjectName)));
   DObject* r = ret;
   r->destroy();
   }
   std::cout << "----test: RealValue func(RealValue) 4--" << std::endl;
   {
           //DObject* object = this->__destruct.generate(testObjectName);
-  RealValue<Destruct::DObject*> ret =  this->testRVRV(this->__destruct.generate(testObjectName));
+  RealValue<DObject*> ret =  this->testRVRV(this->__destruct.generate(testObjectName));
   DObject* r = ret;
   r->destroy();
   }
   std::cout << "----test: RealValue DValue const& object--" << std::endl;
   {
     DObject* object = this->__destruct.generate(testObjectName);
-    DValue v = this->testDVCRefDV(RealValue<Destruct::DObject*>(object)); //const& ok :) 
+    DValue v = this->testDVCRefDV(RealValue<DObject*>(object)); //const& ok :) 
+    std::cout << "Object refcount " << object->refCount() << std::endl;
     DObject* res = v.get<DObject*>();
     res->destroy();
     res->destroy(); //== object->destroy()
@@ -174,7 +177,7 @@ void Refcount::test(void)
   std::cout << "----test: RealValue DValue & object--" << std::endl;
   {
     DObject* object = this->__destruct.generate(testObjectName);
-    DValue i = RealValue<Destruct::DObject*>(object); //non const ref must copy in temp dvalue ! ? 
+    DValue i = RealValue<DObject*>(object); //non const ref must copy in temp dvalue ! ? 
     DValue v = this->testDVRefDV(i);
     DObject* res = v.get<DObject*>();
     res->destroy();
@@ -183,7 +186,7 @@ void Refcount::test(void)
   std::cout << "test: DValue testDVDV(DValue value)" << std::endl;
   {
     DObject* object = this->__destruct.generate(testObjectName);
-    DValue i = RealValue<Destruct::DObject*>(object);
+    DValue i = RealValue<DObject*>(object);
     DValue v = this->testDVRefDV(i);
     DObject* res = v.get<DObject*>();
     res->destroy();
@@ -197,6 +200,57 @@ void Refcount::test(void)
     object->destroy();
   }
 
+  std::cout << "test : DCppRefCount returnObject" << std::endl;
+  {
+    DObject* cppRefCount = this->__destruct.generate("DCppRefCount");
+    DObject* retObject = cppRefCount->call("returnObject").get<DObject*>();
+    std::cout << "retObject ref count " << retObject->refCount() << std::endl;
+  }
+ 
+  std::cout << "test : DCppRefCount returnObjectAsDvalue" << std::endl;
+  {
+    DObject* cppRefCount = this->__destruct.generate("DCppRefCount");
+    DObject* retObject = cppRefCount->call("returnObjectAsDValue").get<DObject*>();
+    std::cout << "retObjectAsValue ref count " << retObject->refCount() << std::endl;
+  }
+
+  std::cout << "test : voidDVCref " << std::endl;
+  {
+    DObject* object = this->__destruct.generate(testObjectName);
+    std::cout << "voidDVCref ref before " << object->refCount() << std::endl;
+    voidDVCRef(RealValue<DObject*>(object));
+    std::cout << "object ref after " << object->refCount() << std::endl;
+  }
+
+  std::cout << "test : setDobject " << std::endl;
+  {
+    DObject* cppRefCount = this->__destruct.generate("DCppRefCount");
+    std::cout << "setObject ref count " << cppRefCount->refCount() << std::endl;
+    cppRefCount->call("setDObject", RealValue<DObject*>(cppRefCount));
+    std::cout << "setObject ret ref count " << cppRefCount->refCount() << std::endl;
+  }
+
+  //test vector object :
+  std::cout << "test : vectorObject" << std::endl;
+  {
+    DObject* vectorObject = this->__destruct.generate("DVectorObject");
+    DObject* cppRefCount = this->__destruct.generate("DCppRefCount");
+
+    vectorObject->call("push", RealValue<DObject*>(cppRefCount));
+    vectorObject->call("push", RealValue<DObject*>(cppRefCount));
+    vectorObject->call("push", RealValue<DObject*>(cppRefCount));
+    vectorObject->call("push", RealValue<DObject*>(cppRefCount));
+
+
+    DValue v = vectorObject->call("get", RealValue<DUInt64>(0));
+    DValue iv = vectorObject->call("get", RealValue<DUInt64>(0));
+    DValue ve = vectorObject->call("get", RealValue<DUInt64>(0));
+    DValue vr = vectorObject->call("get", RealValue<DUInt64>(0));
+  
+    cppRefCount->destroy();
+    vectorObject->destroy();
+   
+  }
 
   std::cout << "========END TEST FUNC ===================="<< std::endl;
 }
@@ -258,24 +312,27 @@ DObject*              Refcount::testObjRV(RealValue<DObject*> object)
 
 void            Refcount::declare(void)
 {
-  Destruct::DStruct*  argumentStruct = new Destruct::DStruct(0, "ModuleArguments", Destruct::DSimpleObject::newObject);
-  argumentStruct->addAttribute(Destruct::DAttribute(Destruct::DType::DUnicodeStringType, "moduleName"));
-  argumentStruct->addAttribute(Destruct::DAttribute(Destruct::DType::DObjectType, "arguments"));// DList<DObject*>()
+  DStruct*  argumentStruct = new DStruct(0, "ModuleArguments", DSimpleObject::newObject);
+  argumentStruct->addAttribute(DAttribute(DType::DUnicodeStringType, "moduleName"));
+  argumentStruct->addAttribute(DAttribute(DType::DObjectType, "arguments"));// DList<DObject*>()
   this->__destruct.registerDStruct(argumentStruct);
 
-  Destruct::DStruct*  localArgumentsStruct = new Destruct::DStruct(0, "LocalArguments", Destruct::DSimpleObject::newObject);
-  localArgumentsStruct->addAttribute(Destruct::DAttribute(Destruct::DType::DObjectType, "path")); 
+  DStruct*  localArgumentsStruct = new DStruct(0, "LocalArguments", DSimpleObject::newObject);
+  localArgumentsStruct->addAttribute(DAttribute(DType::DObjectType, "path")); 
   this->__destruct.registerDStruct(localArgumentsStruct);
 
-  Destruct::DStruct* partitionArgumentsStruct = new Destruct::DStruct(0, "PartitionArguments", Destruct::DSimpleObject::newObject);
-  partitionArgumentsStruct->addAttribute(Destruct::DAttribute(Destruct::DType::DUnicodeStringType, "file")); 
-  this->__destruct.registerDStruct(partitionArgumentsStruct); 
+  DStruct* partitionArgumentsStruct = new DStruct(0, "PartitionArguments", DSimpleObject::newObject);
+  partitionArgumentsStruct->addAttribute(DAttribute(DType::DUnicodeStringType, "file")); 
+  this->__destruct.registerDStruct(partitionArgumentsStruct);
+
+  DStruct* dcppRefCount = makeNewDCpp<DCppRefCount>("DCppRefCount");
+  this->__destruct.registerDStruct(dcppRefCount);
 }
 
-void           Refcount ::show(Destruct::DObject* object) const
+void           Refcount ::show(DObject* object) const
 {
-  Destruct::DObject* cout = this->__destruct.generate("DStreamCout");
-  Destruct::DObject* serializer = this->__destruct.generate("DeserializeText", RealValue<DObject*>(cout));
+  DObject* cout = this->__destruct.generate("DStreamCout");
+  DObject* serializer = this->__destruct.generate("DeserializeText", RealValue<DObject*>(cout));
   serializer->call("DObject", RealValue<DObject*>(object));
   serializer->destroy();
   cout->destroy();
@@ -289,7 +346,7 @@ int     main(int argc, char** argv)
   {
     rc.test();
   }
-  catch (Destruct::DException const& exception)
+  catch (DException const& exception)
   {
     std::cout << "Error : " << std::endl << exception.error() << std::endl; 
   }

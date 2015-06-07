@@ -6,35 +6,65 @@
 namespace Destruct
 {
 
-DBuffer::DBuffer() : __data(0), __size(0)
+/*
+ *  RealBuffer
+ */
+
+RealBuffer::RealBuffer() : data(NULL), size(0)
 {
 }
 
-DBuffer::DBuffer(uint8_t* data , int32_t size) : __data(data), __size(size)
+RealBuffer::RealBuffer(int32_t size_) : data(new uint8_t[size_]), size(size_)
 {
-  //std::cout << "DBuffer::DBuffer(data, size)" << std::endl;
-  //must be refcounted or new / memcpy data then delete at end !
 }
 
-DBuffer::DBuffer(DBuffer const& copy) : __data(copy.__data), __size(copy.__size)
+RealBuffer::RealBuffer(uint8_t* data_, int32_t size_) : data(new uint8_t[size_]), size(size_)
 {
-  //std::cout << "DBuffer::DBuffer(copy)" << std::endl;
+  memcpy(data, data_, size);
+}
+
+RealBuffer::RealBuffer(RealBuffer const& copy) : data(copy.data), size(copy.size)
+{
+}
+
+RealBuffer::~RealBuffer()
+{
+  delete[] data;
+}
+ 
+/**
+ *  DBuffer
+ */
+DBuffer::DBuffer() : __realBuffer(new RealBuffer()) //must not be used
+{
+}
+
+DBuffer::DBuffer(int32_t size) : __realBuffer(new RealBuffer(size)) //allocate buff for reuse
+{
+}
+
+DBuffer::DBuffer(uint8_t* data , int32_t size) : __realBuffer(new RealBuffer(data, size))
+{
+}
+
+DBuffer::DBuffer(DBuffer const& copy) : __realBuffer(copy.__realBuffer)
+{
+  this->__realBuffer->addRef();
 }
 
 DBuffer::~DBuffer()
 {
-  //std::cout << "DBuffer::~DBuffer" << std::endl;
-  //delete[] data or big leak will occur 
+  this->__realBuffer->destroy();
 }
 
 uint8_t*        DBuffer::data(void)
 {
-  return (this->__data);
+    return (this->__realBuffer->data);
 }
 
 int32_t         DBuffer::size(void)
 {
-  return (this->__size);
+  return (this->__realBuffer->size);
 }
 
 }

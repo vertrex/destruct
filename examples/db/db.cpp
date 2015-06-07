@@ -17,12 +17,8 @@ DB::DB() : __destruct(DStructs::instance()), __session(NULL)
 
 DB::~DB()
 {
-  std::cout << "~DB" << std::endl;
   if (this->__session)
-  {
-  std::cout << "destroy session " << std::endl;
-  this->__session->destroy();
-  }
+    this->__session->destroy();
   DType::clean();
 }
 
@@ -54,17 +50,16 @@ DObject*  DB::populateSession(void)
   DObject* partition = this->__destruct.generate("PartitionArguments");
   partition->setValue("file", RealValue<DUnicodeString>("cfreds.raw.raw/Partitons 1"));
 
-  //modules->destroy();
   this->__session->modules = modules;
 
   moduleArguments = this->__destruct.generate("ModuleArguments");
   moduleArguments->setValue("moduleName", RealValue<DUnicodeString>("partition"));
   moduleArguments->setValue("arguments", RealValue<DObject*>(partition));
   ((DObject*)this->__session->modules)->call("push", RealValue<DObject*>(moduleArguments));
+
   partition->destroy();
   moduleArguments->destroy();
 
-  //throw std::string("abc");
   return (this->__session); 
 }
 
@@ -119,16 +114,15 @@ void            DB::load(DValue const& filePath)
     DStruct* dstruct = vectorStruct->call("get", RealValue<DUInt64>()).get<DStruct*>();
     std::cout << "Found " << dstruct->name() << std::endl;
   }
+  vectorStruct->destroy();
 
   DValue value = deserializer->call("DObject");
  
   dstream->destroy();
-//  std::cout << "Loaded ! found first object : " << value.asUnicodeString() << std::endl; 
+  deserializer->destroy();
 
   this->__session = static_cast<Session*>(value.get<DObject*>());
   DObject* session = value.get<DObject*>();
-  std::cout << "Session load refcount " << session->refCount() << " " << session->instanceOf()->name() << std::endl;
-  session->destroy(); 
   session->destroy(); 
 }
 

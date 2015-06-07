@@ -1,4 +1,4 @@
-#!/usr/bin/python -i
+#!/usr/bin/python 
 import sys
 
 sys.path.append('../../')

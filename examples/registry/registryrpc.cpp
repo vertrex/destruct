@@ -47,6 +47,7 @@ void RegistryRPC::local(const std::string filePath)
 void RegistryRPC::serve(uint32_t port)
 {
  RegistryServer  server(port);
+ server.initRoot();
  server.daemonize();
 }
 

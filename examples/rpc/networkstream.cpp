@@ -55,12 +55,11 @@ DBuffer NetworkStream::read(DValue const& args) //passer un buffer comme ca c de
         throw DException("NetworkStream::recv error");
     } while (readed == 4096 || readed == -1);
   }
-  
-  uint8_t* buff = new uint8_t[size];
-  
-  this->__readStream.read((char*)buff, (uint32_t)size);
 
-  return DBuffer(buff, (DInt32)size);
+  DBuffer buffer(size);
+  
+  this->__readStream.read((char*)buffer.data(), (uint32_t)size);
+  return (buffer);
 }
 
 DInt64  NetworkStream::write(DValue const& args)
@@ -114,7 +113,7 @@ StreamBuffer::~StreamBuffer()
 
 void    StreamBuffer::write(const char* inbuff, uint32_t size)
 {
-  if (this->__currentWrite + size > this->__maxSize) //maxSize > realloc until some size ?
+  if (this->__currentWrite + size > this->__maxSize) //XXX maxSize > realloc until some size ?
   {
     //std::cout << "Write overflow " << currentWrite + size << " > " << this->__maxSize << std::endl;
     throw DException("StreamBuffer::WriteOverflow");

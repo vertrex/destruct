@@ -33,7 +33,7 @@ void    SerializeText::sDObject(DValue const& args)
   DUnicodeString output; // = std::string(2 * this->__depth, ' ');
   output += dobject->instanceOf()->name() + "\n" + std::string(2 * this->__depth, ' ') + "{\n";
   this->sDUnicodeString(RealValue<DUnicodeString>(output));
-   
+  
   int32_t index = dobject->instanceOf()->findAttribute("iterator");
   if (index != -1)
   {
@@ -55,8 +55,7 @@ void    SerializeText::sDObject(DValue const& args)
            this->sDObject(RealValue<DObject*>(subDObject));
            this->__depth -= 1;
            this->sDUnicodeString(RealValue<DUnicodeString>(output));
-           //subDObject->destroy();
-           //subDObject->destroy();
+           subDObject->destroy();
         }
       }
       else
@@ -66,10 +65,10 @@ void    SerializeText::sDObject(DValue const& args)
         this->sDUnicodeString(RealValue<DUnicodeString>(output));
       }    
     }
-    //iterator->destroy();
-    //iterator->destroy();
+    iterator->destroy();
     output = std::string(2 * this->__depth, ' ') + "};";
     this->sDUnicodeString(RealValue<DUnicodeString>(output));
+    dobject->destroy();
     return ;
   }
 
@@ -88,6 +87,7 @@ void    SerializeText::sDObject(DValue const& args)
   output = std::string(2 * this->__depth, ' ');
   output += "};";
   this->sDUnicodeString(RealValue<DUnicodeString>(output));
+  dobject->destroy();
 }
 
 void    SerializeText::sDStruct(DValue const& args)
@@ -126,6 +126,7 @@ void    SerializeText::sDUnicodeString(DValue const& args)
 
 void    SerializeText::sDBuffer(DValue const& args)
 {
+  //XXX implement me
   //stream->call("write", RealValue<DBuffer>(args);
 }
 

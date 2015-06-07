@@ -35,8 +35,7 @@ void    Client::declare(void)
   destruct.registerDStruct(makeNewDCpp<SerializeRPC>("SerializeRPC"));
   destruct.registerDStruct(makeNewDCpp<DeserializeRPC>("DeserializeRPC"));
 
-  destruct.registerDStruct(makeNewDCppSingleton<ObjectManager<DObject*, DType::DObjectType> >("ObjectManager"));
-  //destruct.registerDStruct(makeNewDCpp<ObjectManager<DFunctionObject*, DType::DMethodType> >("FunctionObjectManager");
+  destruct.registerDStruct(makeNewDCppSingleton<ObjectManager >("ObjectManager"));
   destruct.registerDStruct(makeNewDCpp<ServerFunctionObject>("ServerFunctionObject"));
 
 
@@ -164,7 +163,6 @@ DValue     Client::findObject(void) //getRoot XXX ?
 
 Destruct::DStruct* Client::remoteFind(const DUnicodeString name)
 {
-  //std::cout << "Client::_remoteFind(stream, " << name << ")" << std::endl;
   this->__serialize->call("DUnicodeString", RealValue<DUnicodeString>("findDStruct"));
   this->__serialize->call("DUnicodeString", RealValue<DUnicodeString>(name));
   this->__networkStream->call("flush");
@@ -173,7 +171,10 @@ Destruct::DStruct* Client::remoteFind(const DUnicodeString name)
   if (dstruct)
   {
     Destruct::DStructs& destruct = Destruct::DStructs::instance();
-    destruct.registerDStruct(dstruct);
+    if (destruct.find(dstruct->name()) == NULL) //XXX don't need to find again
+      destruct.registerDStruct(dstruct);
+    else
+      std::cout << dstruct->name() << " already registered" << std::endl;
     //this->print(dstruct); 
   } 
   else

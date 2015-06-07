@@ -33,6 +33,7 @@ public:
 
   ~DIterator()
   {
+    ((DObject*)container)->destroy();
   }
 
   void  next(void)

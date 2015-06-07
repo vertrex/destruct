@@ -50,18 +50,6 @@ def showStructs():
   for x in range(0, DStructs().count()):
     print DStructs().find(x)
 
-
-def serve():
-  print "create server" 
-  server = DStructs().find("Server").newObject(DUInt32(3583))
-  registry = DStructs().find("Registry").newObject()
-
-  #print "create registry object tree"
-  #regf = registry.open("/home/vertrex/dump/registry/system")
-  #init etc..
-  print dir(server)
-  server.addRoot(registry)
-  server.daemonize()
   
 def connect():
   print "connecting"
@@ -69,20 +57,18 @@ def connect():
   arg.port = 3583
   arg.address = "127.0.0.1"
   client = DStructs().find("Client").newObject(arg)
-  print client
 
-  print "client.findObject"
   registry = client.findObject() #registry ? #root 0
 
   print dir(registry)
   print "opening registry"
   regf = registry.open("/home/vertrex/dump/registry/system")
+  print 'regf', regf
   return regf
 
 
-if __name__ == "__main__":
+def load():
   loader = Loader()
-
   paths = ["/home/vertrex/destruct/examples/dtest/libdestruct_test.so",
            "/home/vertrex/destruct/examples/registry/libregistry.so",
            "/home/vertrex/destruct/examples/threading/libdthreading.so",
@@ -92,6 +78,9 @@ if __name__ == "__main__":
   for path in paths:
     loader.loadFile(path)
 
-  #serve()
+
+if __name__ == "__main__":
+  load()
   regf = connect()
+  print dir(regf)
   print regf.name()

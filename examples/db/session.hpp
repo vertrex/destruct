@@ -27,7 +27,6 @@ class Session : public DCppObject<Session>
 {
 public:
                                 Session(Destruct::DStruct* dstruct, Destruct::DValue const& args);
-                                ~Session();
   void                          save(Destruct::DValue const& filePath);
   RealValue<DObject*>           modules;
   RealValue<DFunctionObject* >  _save;
@@ -71,7 +70,9 @@ public:
   static DPointer<Session >*  memberEnd()
   {
     return (memberBegin() + ownAttributeCount());
-  } 
+  }
+protected: 
+  ~Session();
 private:
   Destruct::DStructs&    __destruct;
 };

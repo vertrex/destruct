@@ -10,7 +10,6 @@ using namespace Destruct;
 ServerObject::ServerObject(DObject* networkStream, DObject* serializer, DObject* deserializer)  : __networkStream(networkStream), __serializer(serializer), __deserializer(deserializer), __object(NULL), __id(-1)
 {
   this->__objectManager = DStructs::instance().find("ObjectManager")->newObject();
-  //this->__functionObjectManager = DStruct().find("FunctionObjectManager").newObject();
 }
 
 void    ServerObject::setValue(void)
@@ -26,20 +25,16 @@ void    ServerObject::setValue(void)
 
 void    ServerObject::getValue(void)
 {
-  //std::cout << "ServerObject::getValue(void)" << std::endl;
   this->__id = this->__deserializer->call("DUInt64").get<DUInt64>();
   DObject* object = this->__objectManager->call("object", this->__id).get<DObject*>();
   DUnicodeString name = this->__deserializer->call("DUnicodeString").get<DUnicodeString>();
-  //std::cout << "ServerObject::getValue(void) " << object->instanceOf()->name() << "->getValue(" << name  << ")" << std::endl;
   
   Destruct::DValue value = object->getValue(name);
 
   DType type = object->instanceOf()->attribute(name).type();
-  //std::cout << "ServerObject::getValue(void) return " << value.asUnicodeString() << " type " << type.name() << std::endl;
   //new serial
   if (type.getType() == DType::DMethodType) //XXX
   {
-    //std::cout << "ServerObject::getValue DMethodType" << std::endl;
     ServerFunctionObject* serverFunctionObject = static_cast<ServerFunctionObject*>(DStructs::instance().find("ServerFunctionObject")->newObject());
     serverFunctionObject->argumentType = type.getArgumentType();
     serverFunctionObject->returnType = type.getReturnType();

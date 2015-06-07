@@ -19,15 +19,14 @@ public:
   EXPORT Server(uint32_t port);
   Server(DStruct* dstruct, DValue const& args);
 
-  virtual void                          initRoot(void); //setRoot(DValue object);
-  virtual void                          addRoot(RealValue<DObject*> root);
-  EXPORT virtual void                   serve();
+  void                                  setRoot(RealValue<DObject*> root);
+  EXPORT void                           serve();
   EXPORT void                           daemonize(void);
 
-  //DObject*                              functionObjectManager(void);
   EXPORT DObject*                       objectManager(void);
+  EXPORT void                           initObject(void);
 
-  RealValue<DFunctionObject*>   _addRoot, _serve, _daemonize;
+  RealValue<DFunctionObject*>   _setRoot, _serve, _daemonize;
 
 /**
  *  Destruct definition
@@ -42,7 +41,7 @@ public:
   {
     static DAttribute attributes[] = 
     {
-      DAttribute(DType::DNoneType, "addRoot", DType::DObjectType), 
+      DAttribute(DType::DNoneType, "setRoot", DType::DObjectType), 
       DAttribute(DType::DNoneType, "serve", DType::DNoneType), 
       DAttribute(DType::DNoneType, "daemonize", DType::DNoneType), 
     };
@@ -54,7 +53,7 @@ public:
   {
      static DPointer<Server> memberPointer[] =
      {
-       DPointer<Server>(&Server::_addRoot, &Server::addRoot),
+       DPointer<Server>(&Server::_setRoot, &Server::setRoot),
        DPointer<Server>(&Server::_serve,    &Server::serve),
        DPointer<Server>(&Server::_daemonize, &Server::daemonize),
      };
@@ -73,13 +72,12 @@ public:
   }
 
 protected:
-  EXPORT								~Server();
-
+  EXPORT			        ~Server();
 private:
   void                                  findDStruct(void);
   void                                  unknown(const DUnicodeString& cmd);
   void                                  showRoot(void);
-
+  void                                  initOject();
 #ifdef WIN32
   SOCKET			        __listenSocket;
   SOCKET			        __connectionSocket;
@@ -87,14 +85,12 @@ private:
   int                                   __listenSocket;
   int32_t                               __connectionSocket;
 #endif
-  void									__bind(int32_t port);
-  void									__listen(void);
+  void                                  __bind(int32_t port);
+  void                                  __listen(void);
   DObject*                              __networkStream;
   DObject*                              __serializer;
   DObject*                              __deserializer;
   DObject*                              __objectManager;
-  //ObjectManager<Destruct::DObject*>     __objectManager;
-  //ObjectManager<ServerFunctionObject*>  __functionObjectManager;
 };
 
 #endif

@@ -15,9 +15,6 @@ class NameSpace;
 class DStructs
 {
 public:
-  typedef std::vector<DStruct* >  Container;
-  typedef Container::iterator     Iterator;
-
   EXPORT static DStructs& instance(void);
 
   EXPORT size_t        count(void);
@@ -28,12 +25,12 @@ public:
   EXPORT bool          unregister(DStruct* dstruct);
   EXPORT DObject*      generate(DUnicodeString const& name);
   EXPORT DObject*      generate(DUnicodeString const& name, DValue const& args);
+                       ~DStructs();
 private:
-  DStructs();
-  ~DStructs();
-  DStructs(const DStructs&);
-  DStructs&                 operator=(DStructs&);
-  NameSpace*                 __nameSpace; //NameSpace("")
+                       DStructs();
+                       DStructs(const DStructs&);
+  DStructs&            operator=(DStructs&);
+  NameSpace*           __nameSpace;
 };
 
 class NameSpace
@@ -42,31 +39,29 @@ public:
   NameSpace(DUnicodeString const& name);
   ~NameSpace(void);
  
- 
   const DUnicodeString  name(void) const;
-  size_t             count(void) const;
+  size_t                count(void) const;
 
   /**
    *  return __function
    */
-  DStruct*           dstruct(const size_t index);
-  DStruct*           dstruct(DUnicodeString const& name);
-  NameSpace*         nameSpace(DUnicodeString const& name) const;
+  DStruct*              dstruct(const size_t index);
+  DStruct*              dstruct(DUnicodeString const& name);
+  NameSpace*            nameSpace(DUnicodeString const& name) const;
 
   /**
    * recursive function
    */
+  NameSpace*            create(DUnicodeString const& nameSpaces);
 
-  NameSpace*         create(DUnicodeString const& nameSpaces);
+  DStruct*              findDStruct(size_t index); //return __structures[index] recursively
+  DStruct*              findDStruct(DUnicodeString const& name);//return __structures[name] recurrsively
 
-  DStruct*           findDStruct(size_t index); //return __structures[index] recursively
-  DStruct*           findDStruct(DUnicodeString const& name);//return __structures[name] recurrsively
-
-  void               addStructure(DStruct* dstruct);
+  void                  addStructure(DStruct* dstruct);
 private:
   const DUnicodeString      __name;
   std::vector<DStruct*>     __structures;
-  std::vector<NameSpace* >  __nameSpaces;  
+  std::vector<NameSpace*>   __nameSpaces;  
 };
 
 }

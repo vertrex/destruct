@@ -33,9 +33,8 @@ SerializeBinary::~SerializeBinary()
 void    SerializeBinary::sDObject(DValue const& args)
 {
   DObject* dobject = args.get<DObject*>();
-  if (dobject == NULL) //XXX XXX ct fait avant mais ca faisait quoi ? :)
-    return (this->sDNone());
-  
+  //if (dobject == NULL)
+  //return (this->sDNone());
 
   DStruct const* dstruct = dobject->instanceOf(); 
   if (dstruct == NULL)
@@ -59,9 +58,8 @@ void    SerializeBinary::sDObject(DValue const& args)
       DValue value = iterator->call("currentItem");
       this->call(returnType.name(), value);
     }
-    //iterator->destroy(); //destroy get<DObject*> instance
-    //iterator->destroy(); //Destroy "call" instance
-    //dobject->destroy();
+    iterator->destroy(); 
+    dobject->destroy();
     return ;
   }
   
@@ -77,7 +75,7 @@ void    SerializeBinary::sDObject(DValue const& args)
       this->call(type.name(), value);
     }
   }
-  //dobject->destroy();
+  dobject->destroy();
 }
 
 void    SerializeBinary::sDStruct(DValue const& args)
@@ -129,6 +127,7 @@ void    SerializeBinary::sDUnicodeString(DValue const& args)
 
 void    SerializeBinary::sDBuffer(DValue const& args)
 {
+  //XXX implement me
   DObject* stream = this->__stream;
   //write size
   //write buffer data ? (for other only write data or do it for each so it self contained ??) 
@@ -218,6 +217,7 @@ DObject*        DeserializeBinary::dDObject(DValue const& value)
     if (dstruct == NULL)
       throw DException("Can't find struct : '" + structName + "' in destruct database.");
     dobject = dstruct->newObject();
+    dobject->addRef();
   }
   else
     dstruct = dobject->instanceOf();
@@ -238,25 +238,17 @@ DObject*        DeserializeBinary::dDObject(DValue const& value)
          DObject* item = dobject->call("newItem").get<DObject*>();
          this->call("DObject", RealValue<DObject*>(item));
          dobject->call("setItem", RealValue<DObject*>(item));
-         //item->destroy();
-         //item->destroy();
       }
     }
     else
     {
       for (DUInt64 index = 0; index < count; index++) 
       {
-         
          DValue value = this->call(DType(returnType).name());
          dobject->call("push", value);
-         //if (returnType == DType::DObjectType)
-         //{
-         //DObject* obj = value.get<DObject*>();
-         //obj->destroy();
-         //obj->destroy();
-         //}
       }
     }
+    dobject->destroy();
     return (dobject);
   }
 
@@ -272,10 +264,8 @@ DObject*        DeserializeBinary::dDObject(DValue const& value)
       DValue value = this->call(type.name());
       dobject->setValue((*attribute).name(), value);
     }
-    //if type un dobject
-    //obj->destroy() * 2 ?
   }
-
+  dobject->destroy();
   return (dobject);
 }
 
@@ -323,11 +313,6 @@ DUnicodeString  DeserializeBinary::dDUnicodeString(void)
   DInt64  size = this->call("DInt64").get<DInt64>(); 
   DBuffer buffer = stream->call("read", RealValue<DInt64>(size)).get<DBuffer>();
 
-  //char* data = new char[size + 1];
-  //is.read(data, size);
-  //data[size] = 0;
-  //delete[] data;
-
   std::string str((const char*)buffer.data(), buffer.size()); //DUnicodeString constructor XXX
   //DUnicodeString string(dbuffer.data(), size);
   //delete DBuffer->data;
@@ -337,6 +322,7 @@ DUnicodeString  DeserializeBinary::dDUnicodeString(void)
 
 DBuffer         DeserializeBinary::dDBuffer(void)
 {
+  //XXX implement me
   //DObject* stream = this->__stream;
   //stream->call("write", args);
   //read buffer size

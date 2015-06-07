@@ -9,7 +9,7 @@
 #include "dnullobject.hpp"
 
 /*
- *  This is an abstract interface class to implement different CPP member oointer function object
+ *  This is an abstract interface class to implement different CPP member pointer function object
  */
 namespace Destruct
 {
@@ -49,6 +49,29 @@ public:
 private:
   CPPClass* __self;
   RealReturnType (CPPClass::* __member) (ArgumentType);
+};
+
+
+//DObject* specialization for refcount /XXX implement same for const method ...
+template<typename CPPClass, typename ArgumentType>
+class DMethodObjectTyped<DObject*, CPPClass, ArgumentType> : public DMethodObjectBase
+{
+public:
+  explicit DMethodObjectTyped(CPPClass* self, DObject* (CPPClass::* member) (ArgumentType)) : __self(self), __member(member)
+  {
+  }
+ 
+  DValue call(const DValue& args)
+  {
+    DObject* returnObject = (__self->*__member)(args);
+    DValue value = RealValue<DObject*>(returnObject);
+    returnObject->destroy();
+
+    return (value);
+  }
+private:
+  CPPClass* __self;
+  DObject* (CPPClass::* __member) (ArgumentType);
 };
 
 template<typename CPPClass, typename ArgumentType>
@@ -111,6 +134,32 @@ private:
   RealReturnType (CPPClass::* __member) (void);
 };
 
+//DObject* specialization for refcount implement same for const
+template<typename CPPClass>
+class DMethodObjectTyped<DObject*, CPPClass, void > : public DMethodObjectBase
+{
+public:
+  DMethodObjectTyped(CPPClass* self, DObject* (CPPClass::* member) (void)) : __self(self), __member(member)
+  {
+  }
+ 
+  DValue call(const DValue& args)
+  {
+    if (args.get<DObject*>() != DNone)
+      throw DException("Non DNone argument passed to function(void)");
+
+    DObject* returnObject = (__self->*__member)();
+    DValue value = RealValue<DObject*>(returnObject);
+    returnObject->destroy();
+
+    return (value);
+  }
+private:
+  CPPClass* __self;
+  DObject* (CPPClass::* __member) (void);
+};
+
+//DValue specialization
 template<typename CPPClass>
 class DMethodObjectTyped<DValue , CPPClass, void > : public DMethodObjectBase
 {
@@ -221,7 +270,7 @@ public:
     delete __methodBase; 
   }
 
-  DValue call(DValue const& args) const
+  DValue call(const DValue& args) const
   {
     try 
     {

@@ -37,16 +37,15 @@ DBuffer DStream::read(DValue const& args)
   if (size == 0)
     return DBuffer(NULL, 0);
 
-  uint8_t* data = new uint8_t[size + 1];
-  this->__stream.read((char*)data, size);
-  data[size] = 0;
+ 
+  DBuffer buffer((int32_t)size);
+  this->__stream.read((char*)buffer.data(), size);
 
   if (this->__stream.gcount() != size)
     throw DException("Can't read all size");
   if (this->__stream.fail())
     throw DException("DStream::read " + args.asUnicodeString() + " fail");
-  DBuffer buffer(data, (int32_t)size);
-  return (buffer); //XXX new ! 
+  return (buffer);
 }
 
 DInt64  DStream::write(DValue const& args)
@@ -165,16 +164,14 @@ DBuffer DStreamString::read(DValue const& args)
   if (size == 0)
     return DBuffer(NULL, 0);
 
-  uint8_t* data = new uint8_t[size + 1]; //XXX ?
-  this->__stream.read((char*)data, size);
-  data[size] = 0; //XXX ?
-
+  DBuffer buffer((int32_t)size);
+  this->__stream.read((char*)buffer.data(), size);
+ 
   if (this->__stream.gcount() != size)
     throw DException("Can't read all size");
   if (this->__stream.fail())
     throw DException("DStreamString::read " + args.asUnicodeString() + " fail");
-  std::cout << std::string((const char*)data, size) << std::endl;
-  DBuffer buffer(data, (int32_t)size);
+  //std::cout << std::string((const char*)buffer.data(), size) << std::endl;
   return (buffer); //XXX new ! 
 }
 

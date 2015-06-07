@@ -17,13 +17,23 @@ DStructs::DStructs() : __nameSpace(new NameSpace(""))
 DStructs::~DStructs()
 {
   delete this->__nameSpace;
-//XXX FIX BECAUSE SOME struct are registred twice 
-//std::vector<DStruct* >::const_iterator dstruct = this->__structures.begin();
- //for (; dstruct != this->__structures.end(); ++dstruct)
- //delete (*dstruct);
- //this->__structures.clear();
+}
 
- //this->__nameSpace.clear();
+bool DStructs::unregister(DStruct* dstructDef)
+{
+  //for (Iterator c = this->__structures.begin(); c != this->__structures.end(); ++c)
+  //{
+    //if (*c == dstructDef)
+    //{
+        //this->__structures.erase(c);
+        //*c = NULL;
+        //return true;
+    //}
+  //}
+  //unregister module /namespace
+  //XXX
+
+  return (false);
 }
 
 DStructs&     DStructs::instance()
@@ -42,23 +52,6 @@ void DStructs::registerDStruct(const DUnicodeString& nameSpaceName, DStruct* dst
 {
   NameSpace* nameSpace = this->__nameSpace->create(nameSpaceName);
   nameSpace->addStructure(dstruct);
-}
-
-bool DStructs::unregister(DStruct* dstructDef)
-{
-  //for (Iterator c = this->__structures.begin(); c != this->__structures.end(); ++c)
-  //{
-    //if (*c == dstructDef)
-    //{
-        //this->__structures.erase(c);
-        //*c = NULL;
-        //return true;
-    //}
-  //}
-  //unregister module /namespace
-  //XXX
-
-  return (false);
 }
 
 /**
@@ -89,13 +82,13 @@ DStruct*       DStructs::find(DUnicodeString const & dstructPath)
 */
 }
                         //rename newObject(name)
-DObject *       DStructs::generate(DUnicodeString const& name)
+DObject*       DStructs::generate(DUnicodeString const& name)
 {
   return (this->generate(name, RealValue<DObject*>(DNone)));
 } 
 
                         //rename newObject(name)
-DObject *       DStructs::generate(DUnicodeString const& name, DValue const& args)
+DObject*       DStructs::generate(DUnicodeString const& name, DValue const& args)
 {
   return (this->find(name)->newObject(args));
 } 
@@ -109,7 +102,18 @@ NameSpace::NameSpace(DUnicodeString const& name) : __name(name)
 
 NameSpace::~NameSpace(void)
 {
-  //std::cout << DUnicodeString("Unloading NameSpace ") << this->__name << std::endl;
+//XXX FIX BECAUSE SOME struct are registred twice 
+  std::vector<DStruct* >::const_iterator dstruct = this->__structures.begin();
+  for (; dstruct != this->__structures.end(); ++dstruct)
+   delete (*dstruct);
+ 
+  this->__structures.clear();
+ 
+  std::vector<NameSpace* >::const_iterator nameSpace = this->__nameSpaces.begin();
+  for (; nameSpace != this->__nameSpaces.end(); ++nameSpace)
+   delete (*nameSpace);
+ 
+  this->__nameSpaces.clear();
 }
 
 const DUnicodeString NameSpace::name(void) const

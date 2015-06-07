@@ -632,7 +632,6 @@ PyObject* PyDObject::_iter(PyDObject::DPyObject* self)
       return ((PyObject*)self);
     }
     Destruct::DObject* iterator = self->pimpl->call("iterator").get<Destruct::DObject*>();
-    iterator->destroy(); //destroy get<ref> but have an other one add by call()
   
     PyDObject::DPyObject*  dobjectObject = (PyDObject::DPyObject*)_PyObject_New(PyDObject::pyType());
     dobjectObject->pimpl = iterator;

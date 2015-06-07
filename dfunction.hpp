@@ -11,7 +11,7 @@ class DFunctionObject : public RefcountPolicy<DFunctionObject>
 {
 public:
   virtual DValue call(void)               const = 0;
-  virtual DValue call(DValue const& args) const = 0;
+  virtual DValue call(const DValue& args) const = 0;
   virtual ~DFunctionObject()
   {
   }

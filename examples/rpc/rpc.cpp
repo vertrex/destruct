@@ -20,8 +20,10 @@ void RPC::serve(uint32_t port)
 {
   std::cout << "create TesterServer" << std::endl;
   TestServer  server(port);
+  server.initRoot(); 
   std::cout << "Daemonize server " << std::endl;
-  server.daemonize();
+  //server.daemonize();
+  server.serve();
 }
 
 void RPC::connect(std::string const& addr, uint32_t port)
@@ -94,6 +96,7 @@ DObject* TestClient::start(void)
  */
 TestServer::TestServer(uint32_t port) : Server(port)
 {
+ TestServer::declare();
  std::cout << "TestServer::TestServer() " << std::endl;
 }
 
@@ -104,7 +107,7 @@ TestServer::TestServer(uint32_t port) : Server(port)
        File2
        Directory1/File3 
 */
-void            TestServer::initRoot(void)
+void            TestServer::declare(void)
 {
   DStruct* fileStruct = makeNewDCpp<File>("File");
   DStruct* directoryStruct = makeNewDCpp<Directory>("Directory");
@@ -112,6 +115,13 @@ void            TestServer::initRoot(void)
 
   dstruct.registerDStruct(fileStruct);
   dstruct.registerDStruct(directoryStruct);
+}
+
+void            TestServer::initRoot(void)
+{
+  Destruct::DStructs& dstruct = Destruct::DStructs::instance();
+  DStruct* fileStruct = dstruct.find("File");
+  DStruct* directoryStruct = dstruct.find("Directory");
 
   DObject* root = directoryStruct->newObject();
   this->objectManager()->call("registerObject", RealValue<DObject*>(root));
