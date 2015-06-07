@@ -13,6 +13,7 @@ class ServerObject
 {
 public:
   ServerObject(DObject* networkStream, DObject* serializer, DObject* deserializer);
+  ~ServerObject();
 
   void                                  getValue(void);
   void                                  setValue(void);
@@ -26,7 +27,6 @@ private:
   DObject*                              __serializer;
   DObject*                              __deserializer;
   DObject*                              __objectManager;
-  //DObject*                              __functionObjectManager;
   DObject*                              __object;
   RealValue<DUInt64>                    __id;
 };

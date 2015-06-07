@@ -28,6 +28,12 @@ DStruct const * const DObject::base(void) const
   return (this->__dstruct->base());
 }
 
+DObject::~DObject()
+{
+ //if (this->__baseObject)
+   //this->__baseObject->destroy();
+}
+
 DObject* DObject::baseObject(void) const
 {
   return (this->__baseObject);

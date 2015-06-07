@@ -12,6 +12,20 @@ ServerObject::ServerObject(DObject* networkStream, DObject* serializer, DObject*
   this->__objectManager = DStructs::instance().find("ObjectManager")->newObject();
 }
 
+ServerObject::~ServerObject()
+{
+  //if (this->__networkStream)
+  //this->__networkStream->destroy();
+  //if (this->__serializer)
+  //this->__serializer->destroy();
+  //if (this->__deserializer)
+  //this->__deserializer->destroy();
+  if (this->__objectManager)
+    this->__objectManager->destroy();
+  if (this->__object)
+    this->__object->destroy();
+}
+
 void    ServerObject::setValue(void)
 {
   this->__id = this->__deserializer->call("DUInt64").get<DUInt64>();
@@ -35,7 +49,7 @@ void    ServerObject::getValue(void)
   //new serial
   if (type.getType() == DType::DMethodType) //XXX
   {
-    ServerFunctionObject* serverFunctionObject = static_cast<ServerFunctionObject*>(DStructs::instance().find("ServerFunctionObject")->newObject());
+    ServerFunctionObject* serverFunctionObject = static_cast<ServerFunctionObject*>(DStructs::instance().find("ServerFunctionObject")->newObject()); //DStruct get ?
     serverFunctionObject->argumentType = type.getArgumentType();
     serverFunctionObject->returnType = type.getReturnType();
     serverFunctionObject->functionObject = value.get<DFunctionObject*>();

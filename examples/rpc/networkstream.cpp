@@ -40,10 +40,10 @@ DBuffer NetworkStream::read(DValue const& args) //passer un buffer comme ca c de
     char tmp[4096];
     int32_t readed;
     
-	int64_t remaining = this->__readStream.toRead();
+    int64_t remaining = this->__readStream.toRead();
     if (remaining == 0 || size < remaining)
     {
-	  this->__readStream.reset(); // size < remaining ???
+      this->__readStream.reset(); // size < remaining ???
     }
     
     do 
@@ -108,7 +108,7 @@ StreamBuffer::StreamBuffer(const StreamBuffer& copy) : __buffer(new char[copy.__
 
 StreamBuffer::~StreamBuffer()
 {
-  delete __buffer;
+  delete[] __buffer;
 }
 
 void    StreamBuffer::write(const char* inbuff, uint32_t size)

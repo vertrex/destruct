@@ -44,9 +44,7 @@ protected:
   //virtual BaseValue const* getBaseValue(size_t index) const = 0;
   //static  BaseValue* getBaseValue(DObject*, size_t index);
   //static  BaseValue const* getBaseValue(DObject const*, size_t idx);
-  virtual ~DObject()
-  {
-  }
+  virtual ~DObject();
 private:
   DStruct* const __dstruct;
   DObject*       __baseObject;

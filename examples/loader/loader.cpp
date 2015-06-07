@@ -10,6 +10,17 @@ Loader::Loader(void) : __destruct(Destruct::DStructs::instance())
 {
 }
 
+Loader::~Loader(void)
+{
+//ifdef win32
+#ifndef WIN32
+  std::vector<void*>::iterator library = this->__libraries.begin();
+
+  for (; library != this->__libraries.end(); ++library)
+    dlclose(*library); 
+#endif
+}
+
 bool    Loader::loadFile(const std::string& filePath)
 {
   std::cout << "Loading file : " << filePath << std::endl;
@@ -17,11 +28,13 @@ bool    Loader::loadFile(const std::string& filePath)
   //found x struct :
 #ifndef WIN32
   void* library = dlopen(filePath.c_str(), RTLD_LAZY);
+  dlerror();
   if (!library)
   {
     std::cout << "Can't load libray " << filePath << std::endl;
     return (false);
   }
+  this->__libraries.push_back(library);
 #else
   HMODULE library = LoadLibrary(filePath.c_str());
   if (library == NULL) 
@@ -34,10 +47,11 @@ bool    Loader::loadFile(const std::string& filePath)
   std::cout << "Loading symbol from libray " << filePath << std::endl;
 #ifndef WIN32
   void* declare = dlsym(library, "declare");//must better return a list of struct that we register so we now about them and can unload them if the module is unloaded and closed
+  dlerror();
   if (!declare)
   {
     std::cout << "No method declare found in " << filePath << std::endl;
-    dlclose(library);
+    //dlclose(library); if close remove from __libraries
     return (false);
   }
 #else
@@ -48,7 +62,6 @@ bool    Loader::loadFile(const std::string& filePath)
     return (false);
   }
 #endif
-  
   //typedef std::vector<Destruct::DStruct*> (*declareFunc)(void);
   typedef void (*declareFunc)(void);
 

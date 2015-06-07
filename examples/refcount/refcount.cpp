@@ -205,6 +205,8 @@ void Refcount::test(void)
     DObject* cppRefCount = this->__destruct.generate("DCppRefCount");
     DObject* retObject = cppRefCount->call("returnObject").get<DObject*>();
     std::cout << "retObject ref count " << retObject->refCount() << std::endl;
+    retObject->destroy();
+    cppRefCount->destroy();
   }
  
   std::cout << "test : DCppRefCount returnObjectAsDvalue" << std::endl;
@@ -212,6 +214,9 @@ void Refcount::test(void)
     DObject* cppRefCount = this->__destruct.generate("DCppRefCount");
     DObject* retObject = cppRefCount->call("returnObjectAsDValue").get<DObject*>();
     std::cout << "retObjectAsValue ref count " << retObject->refCount() << std::endl;
+    retObject->destroy();
+    retObject->destroy();
+    cppRefCount->destroy();
   }
 
   std::cout << "test : voidDVCref " << std::endl;
@@ -220,6 +225,7 @@ void Refcount::test(void)
     std::cout << "voidDVCref ref before " << object->refCount() << std::endl;
     voidDVCRef(RealValue<DObject*>(object));
     std::cout << "object ref after " << object->refCount() << std::endl;
+    object->destroy();
   }
 
   std::cout << "test : setDobject " << std::endl;
@@ -228,6 +234,7 @@ void Refcount::test(void)
     std::cout << "setObject ref count " << cppRefCount->refCount() << std::endl;
     cppRefCount->call("setDObject", RealValue<DObject*>(cppRefCount));
     std::cout << "setObject ret ref count " << cppRefCount->refCount() << std::endl;
+    cppRefCount->destroy();
   }
 
   //test vector object :

@@ -28,6 +28,13 @@ ClientObject::ClientObject(ClientObject const & rhs) : DObject(rhs), __id(rhs.__
 
 ClientObject::~ClientObject()
 {
+  //XXX XXX XXX fix me ! must be destroyed to avoid memleak (see serializerpc 180
+  //if (this->__networkStream)
+    //this->__networkStream->destroy();
+  //if (this->__serializer)
+   //this->__serializer->destroy();
+  //if (this->__deserializer)
+   //this->__deserializer->destroy();
 }
 
 DObject* ClientObject::newObject(DStruct* dstruct, DValue const& args)

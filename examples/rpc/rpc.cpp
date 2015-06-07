@@ -82,10 +82,11 @@ DObject* TestClient::start(void)
               << "'" << child->getValue("name").get<DUnicodeString>() << "'"
               << " is of type : " <<  child->instanceOf()->name() 
               << std::endl;
-
+      child->destroy();
      }// break;
   //}
 
+  remoteChild->destroy();
   this->print(remote);
   std::cout << "done !" << std::endl;
   return (remote);

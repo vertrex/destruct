@@ -14,7 +14,6 @@ class SerializeRPC : public DCppObject<SerializeRPC>
 {
 
 public:
-//  DSerializeRPC(NetworkStream& networkStream, ObjectManager<DObject*>& objects, ObjectManager<ServerFunctionObject*>& functionObjects);
   SerializeRPC(DStruct* dstruct, DValue const& args);
   SerializeRPC(SerializeRPC const& copy);
 
@@ -226,32 +225,6 @@ public:
   } 
 };
 
-/*
-
-class DSerializeRPC : public DSerialize
-{
-public:
-  DSerializeRPC(NetworkStream& networkStream, ObjectManager<DObject*>& objects, ObjectManager<ServerFunctionObject*>& functionObjects);
-
-  bool                  serialize(DStream& output, DStruct& dstruct); 
-  bool                  serialize(DStream& output, DValue value, DType::Type_t type);
-  bool                  serialize(DStream& output, DValue value, DType::Type_t argumentType, DType::Type_t returnType);
-  bool                  serialize(DStream& output, DObject* dobject); 
-  bool                  serialize(DStream& output, DFunctionObject* dfunctionObject, DType::Type_t argumentType, DType::Type_t returnType);
-  
-  DStruct*              deserialize(DStream& input);
-  DValue                deserialize(DStream& input, DType::Type_t type);
-  DValue                deserialize(DStream& input, DType::Type_t argumentType, DType::Type_t returnType);
-  bool                  deserialize(DStream& input, DObject* dobject);
-protected:
-  virtual               ~DSerializeRPC() {};
-private:
-  NetworkStream&                          __networkStream;
-  ObjectManager<DObject*>&                __objects;
-  ObjectManager<ServerFunctionObject*>&   __functionObjects;
-  DStreamString                           __streamString;
-};
-*/
 }
 
 #endif

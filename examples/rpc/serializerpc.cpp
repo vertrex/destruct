@@ -11,7 +11,7 @@
 namespace Destruct
 {
 
-SerializeRPC::SerializeRPC(DStruct* dstruct, DValue const& args) : DCppObject<SerializeRPC>(dstruct, args), __stream(args.get<DObject*>())// objects(objects), __functionObjects(functionObjects), treamString(DStreamString())
+SerializeRPC::SerializeRPC(DStruct* dstruct, DValue const& args) : DCppObject<SerializeRPC>(dstruct, args), __stream(args.get<DObject*>())
 {
 
   this->init(); 

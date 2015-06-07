@@ -90,6 +90,7 @@ void Inheritance::test(void)
   simpleB->setValue("text3", RealValue<DUnicodeString>("text3"));
 
   this->show(simpleB);
+  simpleB->destroy();
   //this->testComposition(simpleB);
 
   //std::cout << "==== ComposableObject ====" << std::endl;
@@ -103,11 +104,12 @@ void Inheritance::test(void)
   std::cout << "==== Inherit CppACppB ====" << std::endl;
   DObject* composition = this->__destruct.generate("CppACppB");
   this->testComposition(composition);
-
+  composition->destroy();
   std::cout << "==== Inherit SimpleACppB ===" << std::endl;
   composition = this->__destruct.generate("SimpleACppB");
  
   this->testComposition(composition);
+  composition->destroy();
 }
 
 void           Inheritance::testComposition(DObject* composition) const

@@ -69,6 +69,7 @@ protected:
     //delete object->second;
       object->second->destroy();
     }
+    this->__objectsID.clear();
   }
 
 public:
