@@ -11,3 +11,6 @@ ServerFunctionObject::ServerFunctionObject(ServerFunctionObject const& copy) : D
 {
 }
 
+ServerFunctionObject::~ServerFunctionObject()
+{
+}

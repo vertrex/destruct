@@ -47,16 +47,11 @@ void    SerializeText::sDObject(DValue const& args)
       DValue value = iterator->call("currentItem");
       if (returnType == DType::DObjectType)
       {
-        DObject* subDObject = value.get<DObject*>();
-        if (subDObject)
-        {
-           this->sDUnicodeString(RealValue<DUnicodeString>(output));
-           this->__depth += 1;
-           this->sDObject(RealValue<DObject*>(subDObject));
-           this->__depth -= 1;
-           this->sDUnicodeString(RealValue<DUnicodeString>(output));
-           subDObject->destroy();
-        }
+        this->sDUnicodeString(RealValue<DUnicodeString>(output));
+        this->__depth += 1;
+        this->sDObject(RealValue<DObject*>(value));
+        this->__depth -= 1;
+        this->sDUnicodeString(RealValue<DUnicodeString>(output));
       }
       else
       {
@@ -74,15 +69,15 @@ void    SerializeText::sDObject(DValue const& args)
 
   for (DStruct::DAttributeIterator i = dstruct->attributeBegin(); i != dstruct->attributeEnd(); ++i, ++x)
   {
-       DUnicodeString output = "  " + std::string(2 * this->__depth, ' ');
-       output += i->type().name(); 
-       output += " " + i->name() + " = ";
-       this->sDUnicodeString(RealValue<DUnicodeString>(output));
-       this->__depth += 1;
-       this->call(i->type().name(), dobject->getValue(x));
-       this->__depth -= 1;
-       output = std::string("\n");
-       this->sDUnicodeString(RealValue<DUnicodeString>(output));
+    DUnicodeString output = "  " + std::string(2 * this->__depth, ' ');
+    output += i->type().name(); 
+    output += " " + i->name() + " = ";
+    this->sDUnicodeString(RealValue<DUnicodeString>(output));
+    this->__depth += 1;
+    this->call(i->type().name(), dobject->getValue(x));
+    this->__depth -= 1;
+    output = std::string("\n");
+    this->sDUnicodeString(RealValue<DUnicodeString>(output));
   }
   output = std::string(2 * this->__depth, ' ');
   output += "};";

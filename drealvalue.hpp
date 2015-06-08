@@ -215,13 +215,18 @@ inline RealValue<DFunctionObject* >::RealValue(DFunctionObject* val) : __val(val
 }
 
 template <>
+inline RealValue<DFunctionObject*>::RealValue(DValue value) : __val(value.get<DFunctionObject*>())
+{
+}
+
+template <>
 inline RealValue<DFunctionObject* >::operator DFunctionObject*() const
 {
   return (this->__val);
 }
 
 template <>
-inline RealValue<DFunctionObject*>::RealValue(const RealValue<DFunctionObject*>& rhs) :  __val(rhs)
+inline RealValue<DFunctionObject*>::RealValue(RealValue<DFunctionObject*> const & rhs) :  __val(rhs)
 {
   if (this->__val)
     this->__val->addRef();
@@ -245,9 +250,7 @@ template <>
 inline RealValue<DFunctionObject* >::~RealValue()
 {
   if (this->__val)
-  {
     this->__val->destroy();
-  }
 }
 
 template <>
@@ -315,7 +318,7 @@ inline RealValue<DBuffer>::RealValue() : __val(DBuffer(NULL, 0))
 template <>
 inline DUnicodeString RealValue<DBuffer>::asUnicodeString() const
 {
-  return ("DBuffer[]"); //XXX size
+  return ("DBuffer[]"); //XXX size return DUnicodeString(buff, size) ?
 }
 
 template<>

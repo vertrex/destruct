@@ -17,35 +17,22 @@
 
 using namespace Destruct;
 
-Server::Server(uint32_t port) : DCppObject<Server>(NULL, RealValue<DUInt32>(port)), __connectionSocket(), __networkStream(NULL), __serializer(NULL), __deserializer(NULL), __objectManager(NULL)
+Server::Server(uint32_t port) : DCppObject<Server>(NULL, RealValue<DUInt32>(port)), __connectionSocket(), __objectManager(NULL)
 {
   this->__bind(port);
   this->__objectManager = DStructs::instance().generate("ObjectManager");
 }
 
-Server::Server(DStruct* dstruct, DValue const& args) : DCppObject<Server>(dstruct, args), __connectionSocket(), __networkStream(NULL), __serializer(NULL), __deserializer(NULL), __objectManager(NULL) 
+Server::Server(DStruct* dstruct, DValue const& args) : DCppObject<Server>(dstruct, args), __connectionSocket(), __objectManager(NULL) 
 {
   this->init();
   this->__bind(args.get<DUInt32>());
   this->__objectManager = DStructs::instance().generate("ObjectManager");
 }
 
-void  Server::initObject(void)
-{
-  if (this->__networkStream)
-    this->__networkStream->destroy();
-  if (this->__serializer)
-    this->__serializer->destroy();
-  if (this->__deserializer)
-    this->__deserializer->destroy();
-
-  this->__networkStream = DStructs::instance().generate("NetworkStream", RealValue<DInt32>((DInt32)this->__connectionSocket));
-  this->__serializer = DStructs::instance().generate("SerializeRPC", RealValue<DObject*>(this->__networkStream)); //don't need this->__networkStream as it's passed as ARGUMENT XXX can be juste passe no need as private member !  
-  this->__deserializer = DStructs::instance().generate("DeserializeRPC", RealValue<DObject*>(this->__networkStream)); //don't need this->__networkStream as it's passed as ARGUMENT XXX can be juste passe no need as private member !  
-}
-
 Server::~Server()
 {
+  std::cout << "~Server" << std::endl;
 #ifdef WIN32
   closesocket(this->__connectionSocket);
   closesocket(this->__listenSocket);
@@ -53,13 +40,8 @@ Server::~Server()
   close(this->__connectionSocket);
   close(this->__listenSocket);
 #endif
+  this->__objectManager->call("clear");
   this->__objectManager->destroy();
-  if (this->__networkStream)
-    this->__networkStream->destroy();
-  if (this->__serializer)
-    this->__serializer->destroy();
-  if (this->__deserializer)
-    this->__deserializer->destroy();
 }
 
 void    Server::setRoot(RealValue<DObject*> root)
@@ -144,7 +126,7 @@ void    Server::__bind(int32_t port)
   server.sin_port = htons(port);
   memset(&server.sin_zero, 0, sizeof(server.sin_zero));
 
-  if(bind(this->__listenSocket,(sockaddr *)&server , sizeof(server)) < 0)
+  if (bind(this->__listenSocket,(sockaddr *)&server , sizeof(server)) < 0)
     throw DException("Server::__bind bind failed. Error");
 }
 #endif
@@ -168,7 +150,6 @@ void    Server::__listen(void)
     WSACleanup();
     throw DException("Server::__listen accept failed");
   }
-  this->initObject();
 }
 #else
 void    Server::__listen(void) 
@@ -182,32 +163,8 @@ void    Server::__listen(void)
   this->__connectionSocket = accept(this->__listenSocket, (sockaddr *)&client, (socklen_t*)&c);//XXX windows
   if (this->__connectionSocket < 0)
     throw DException("Server::__listen accept failed");
-
-  this->initObject();
 }
 #endif
-
-void    Server::findDStruct(void)
-{
-  DUnicodeString name = this->__deserializer->call("DUnicodeString").get<DUnicodeString>(); 
-  std::cout << "Send DStruct " << name << std::endl;
-  Destruct::DStructs& destruct = Destruct::DStructs::instance();
-  DStruct* dstruct = destruct.find(name);
-  if (!dstruct)
-   throw DException("Server::findDStruct DStruct not found");
-
-  this->__serializer->call("DStruct", RealValue<DStruct*>(dstruct));
-  this->__networkStream->call("flush");
-
-}
- 
-void    Server::unknown(const DUnicodeString& cmd)
-{
-  std::cout << "Receive unknown command : " << cmd << std::endl;
-
-  this->__serializer->call("DUnicodeString", RealValue<DUnicodeString>("Unknown command : " + cmd));
-  this->__networkStream->call("flush");
-}
 
 void    Server::daemonize(void)
 {
@@ -215,7 +172,7 @@ void    Server::daemonize(void)
   {
     try
     {
-	  std::cout << "Daemonize this->Server()" << std::endl;
+      std::cout << "Daemonize this->Server()" << std::endl;
       this->serve();
     }
     catch (DException const& exception)
@@ -234,18 +191,18 @@ void    Server::serve(void)
   std::cout << "Sever::serve listen" << std::endl;
   this->__listen();
   std::cout << "Create serverObject " << std::endl;
-  ServerObject serverObject(this->__networkStream, this->__serializer, this->__deserializer);
+  ServerObject serverObject(RealValue<DInt32>(this->__connectionSocket));
   this->showRoot();
 
   while (true)
   {
     //std::cout << "Wait for message..." << std::endl;
-    DUnicodeString msg = this->__deserializer->call("DUnicodeString").get<DUnicodeString>();
+    DUnicodeString msg = serverObject.cmd();
 
     if (msg == "show") 
       this->showRoot();
     else if (msg == "findDStruct")
-      this->findDStruct();
+      serverObject.findDStruct();
     else if(msg == "setValue")
       serverObject.setValue();
     else if(msg == "getValue")
@@ -259,7 +216,7 @@ void    Server::serve(void)
     else if(msg == "functionCall0")
       serverObject.functionCall0();
     else
-      this->unknown(msg);
+      serverObject.unknown(msg);
   }
 }
 
@@ -268,18 +225,13 @@ DObject* Server::objectManager(void)
   return (this->__objectManager);
 }
 
-//ObjectManager<ServerFunctionObject*>& Server::functionObjectManager(void) 
-//{
-//return (this->__functionObjectManager);
-//}
-
 void    Server::showRoot(void)
 {
   Destruct::DStructs& destruct = Destruct::DStructs::instance();
   DObject* stream = destruct.generate("DStreamCout");
   DObject* serializer = destruct.generate("SerializeText", RealValue<DObject*>(stream));
 
-  serializer->call("DObject", RealValue<DObject*>(this->__objectManager->call("object", RealValue<DUInt64>(0))));
+  serializer->call("DObject", this->__objectManager->call("object", RealValue<DUInt64>(0)));
   serializer->destroy();
   stream->destroy();
 }

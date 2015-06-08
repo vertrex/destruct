@@ -30,8 +30,7 @@ public:
 
 /**
  *  Destruct definition
- */ 
-
+ */
   static size_t ownAttributeCount()
   {
     return (3);
@@ -72,12 +71,9 @@ public:
   }
 
 protected:
-  EXPORT			        ~Server();
+  EXPORT                                virtual ~Server();
 private:
-  void                                  findDStruct(void);
-  void                                  unknown(const DUnicodeString& cmd);
-  void                                  showRoot(void);
-  void                                  initOject();
+   void                                 showRoot(void);
 #ifdef WIN32
   SOCKET			        __listenSocket;
   SOCKET			        __connectionSocket;
@@ -87,9 +83,6 @@ private:
 #endif
   void                                  __bind(int32_t port);
   void                                  __listen(void);
-  DObject*                              __networkStream;
-  DObject*                              __serializer;
-  DObject*                              __deserializer;
   DObject*                              __objectManager;
 };
 

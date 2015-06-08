@@ -32,7 +32,7 @@ NetworkStream::~NetworkStream()
 {
 }
 
-DBuffer NetworkStream::read(DValue const& args) //passer un buffer comme ca c deja allouer et c a eux de le delete ?
+DBuffer NetworkStream::read(DValue const& args)
 {
   DInt64 size = args.get<DInt64>(); //DUInt32 ? 
   if (!this->__readStream.toRead()) 
@@ -66,11 +66,9 @@ DInt64  NetworkStream::write(DValue const& args)
 {
   DBuffer buffer = args.get<DBuffer>();
 
-  const char* data = (const char*)buffer.data();
-  int64_t size = buffer.size();
+  this->__writeStream.write((const char*)buffer.data(), (uint32_t)buffer.size());
 
-  this->__writeStream.write(data, (uint32_t)size);
-  return (size); //XXX check
+  return (buffer.size()); //XXX check
 }
 
 void NetworkStream::flush(void)// const

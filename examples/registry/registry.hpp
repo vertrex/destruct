@@ -32,7 +32,7 @@ public:
   Registry(Registry const&);
   ~Registry();
 
-  Destruct::DValue      open(DValue const& args);
+  DObject*              open(DValue const& args);
   //void                setStateInfo(const std::string&);
   bool                  load(Destruct::DValue value);
   Destruct::DValue      save(void) const;

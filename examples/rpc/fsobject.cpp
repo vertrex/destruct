@@ -34,6 +34,10 @@ Directory::Directory(DStruct* dstruct, DValue const& args) : DCppObject<Director
   this->children = vectorStruct->newObject();
 }
 
+Directory::~Directory()
+{
+}
+
 DUnicodeString        Directory::path(DValue const& args)
 {
   return DUnicodeString("/home/destruct/");

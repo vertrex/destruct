@@ -20,37 +20,34 @@ public:
   EXPORT Client(DUnicodeString const& addr, uint32_t port);
   Client(DStruct* dstruct, DValue const& args);
 
+  static void                   declare(void);
+  virtual DObject*              start(void);
+  DValue                        findObject(void); ///XXX:
 
-  EXPORT static void                    declare(void);
-  EXPORT virtual DObject*               start(void);
-  EXPORT DValue                         findObject(void); ///XXX:
+  DStruct*	                remoteFind(const DUnicodeString name);
+  bool                          print(DObject* dobject) const;
+  bool                          print(DStruct* dstruct) const;
 
-  EXPORT DStruct*			            remoteFind(const DUnicodeString name);
-  EXPORT bool                           print(DObject* dobject) const;
-  EXPORT bool                           print(DStruct* dstruct) const;
-
-  EXPORT int32_t                        connectionSocket(void) const;
-  EXPORT DObject*                       networkStream(void) const;
-  EXPORT DObject*                       serializeRPC(void) const;
-  EXPORT DObject*                       deserializeRPC(void) const;
+  int32_t                       connectionSocket(void) const;
+  DObject*                      networkStream(void) const;
+  DObject*                      serializeRPC(void) const;
+  DObject*                      deserializeRPC(void) const;
 
 private:
-  void                                  __connect(DUnicodeString const& addr, uint32_t port);
-  void                                  __close(void);
-  int32_t                               __connectionSocket;
-  //NetworkStream*                      __networkStream;
-  //DSerialize*                         __serializeRPC; 
-  DObject*                              __networkStream;
-  DObject*                              __serialize;
-  DObject*                              __deserialize;
+  void                          __connect(DUnicodeString const& addr, uint32_t port);
+  void                          __close(void);
+  int32_t                       __connectionSocket;
+  DObject*                      __networkStream;
+  DObject*                      __serialize;
+  DObject*                      __deserialize;
 
 protected:
-  EXPORT								~Client();
+  ~Client();
 public:
 /**
  *  Destruct definition
  */
-  RealValue<DFunctionObject*>         _findObject;
+  RealValue<DFunctionObject*>   _findObject;
  
   static size_t ownAttributeCount()
   {

@@ -2,7 +2,6 @@
 #define __CLIENT_FUNCTION_OBJECT_HPP__
 
 #include "dvalue.hpp"
-//#include "protocol/dserialize.hpp"
 
 #include "networkstream.hpp"
 #include "objectmanager.hpp"
@@ -18,10 +17,11 @@ class ClientFunctionObject : public DFunctionObject
 {
 public:
   ClientFunctionObject(DObject* networkStream, DObject* serializer, DObject* deserializer,  uint64_t id, DType::Type_t argumentType, DType::Type_t returnType);
-  ~ClientFunctionObject();
 
   DValue        call(void) const;
   DValue        call(DValue const& args) const;
+protected:
+  virtual ~ClientFunctionObject();
 private:
   uint64_t       __id;
   DObject*       __networkStream;

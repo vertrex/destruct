@@ -125,7 +125,8 @@ TraceFunctionObject::TraceFunctionObject(DFunctionObject* functionObject) : __fu
 
 TraceFunctionObject::~TraceFunctionObject()
 {
-  delete __functionObject;
+//delete this->__functionObject; //XXX
+  this->__functionObject->destroy();
 }
 
 DValue          TraceFunctionObject::call(void) const

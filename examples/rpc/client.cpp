@@ -20,6 +20,10 @@
 #include "objectmanager.hpp"
 #include "serverfunctionobject.hpp"
 
+
+/**
+ *  Client & Server Destruct Declaration
+ */
 extern "C"
 {
   void declare()
@@ -51,6 +55,9 @@ void    Client::declare(void)
   destruct.registerDStruct(dstruct); 
 }
 
+/**
+ *  Client
+ */
 Client::Client(DUnicodeString const& addr, uint32_t port) : DCppObject<Client>(NULL, RealValue<DObject*>(DNone)), __networkStream(NULL), __serialize(NULL), __deserialize(NULL)
 {
   this->init();
@@ -149,14 +156,10 @@ DObject*   Client::start(void)
 DValue     Client::findObject(void) //getRoot XXX ?
 {
   Destruct::DStructs& destruct = Destruct::DStructs::instance();
-  this->__networkStream = destruct.generate("NetworkStream", RealValue<DInt32>(this->connectionSocket())); 
 
   DStruct* registryS = destruct.find("Registry");
 
- //why create one again ???? XXX when it s called ?
-  DObject* serializer = DStructs::instance().find("SerializeRPC")->newObject(RealValue<DObject*>(this->__networkStream));
-  DObject* deserializer = DStructs::instance().find("DeserializeRPC")->newObject(RealValue<DObject*>(this->__networkStream));
-  ClientObject* root = new ClientObject(this->__networkStream, serializer, deserializer, 0, registryS); 
+  ClientObject* root = new ClientObject(RealValue<DObject*>(this->__networkStream), RealValue<DObject*>(this->__serialize), RealValue<DObject*>(this->__deserialize), 0, registryS); 
 
   return (RealValue<DObject*>(root));
 }

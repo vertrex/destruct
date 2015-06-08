@@ -11,9 +11,8 @@
 namespace Destruct
 {
 
-SerializeRPC::SerializeRPC(DStruct* dstruct, DValue const& args) : DCppObject<SerializeRPC>(dstruct, args), __stream(args.get<DObject*>())
+SerializeRPC::SerializeRPC(DStruct* dstruct, DValue const& args) : DCppObject<SerializeRPC>(dstruct, args), __stream(args)
 {
-
   this->init(); 
   this->__objectManager = DStructs::instance().find("ObjectManager")->newObject();
 }
@@ -25,7 +24,7 @@ SerializeRPC::SerializeRPC(SerializeRPC const& copy) : DCppObject<SerializeRPC>(
 
 SerializeRPC::~SerializeRPC()
 {
-  ((DObject*)__stream)->destroy();
+  this->__objectManager->destroy();
 }
 
 void    SerializeRPC::sDObject(DValue const& args)
@@ -36,6 +35,7 @@ void    SerializeRPC::sDObject(DValue const& args)
  
   this->sDUnicodeString(RealValue<DUnicodeString>(dobject->instanceOf()->name()));
   this->sDUInt64(id);
+  dobject->destroy();
 }
 
 
@@ -72,9 +72,7 @@ void    SerializeRPC::sDNone(void)
 
 void    SerializeRPC::sDMethod(DValue const& args)
 {
-  //pass or throw ?
-  //in serverObject
-  //std::cout << "SERIALIZERPC::sDMethod" << std::endl;
+  //to implement
 }
 
 void    SerializeRPC::sDUnicodeString(DValue const& args)
@@ -149,7 +147,7 @@ void    SerializeRPC::sDUInt64(DValue const& args)
  *  Deserialize RPC
  */
 
-DeserializeRPC::DeserializeRPC(DStruct* dstruct, DValue const& args) : DCppObject<DeserializeRPC>(dstruct, args), __stream(args.get<DObject*>())
+DeserializeRPC::DeserializeRPC(DStruct* dstruct, DValue const& args) : DCppObject<DeserializeRPC>(dstruct, args), __stream(args)
 {
   this->init(); 
 }
@@ -161,7 +159,6 @@ DeserializeRPC::DeserializeRPC(DeserializeRPC const& copy) : DCppObject<Deserial
 
 DeserializeRPC::~DeserializeRPC()
 {
-  ((DObject*)__stream)->destroy();
 }
 
 DObject*        DeserializeRPC::dDObject(DValue const& value)
@@ -177,8 +174,11 @@ DObject*        DeserializeRPC::dDObject(DValue const& value)
     return (DNone);
   }
   
-  DObject* serializer = DStructs::instance().find("SerializeRPC")->newObject(RealValue<DObject*>(this->__stream)); //XXX XXX new object each time XXX XXX fix me ;
-  return (new ClientObject(this->__stream, serializer, this, id, dstruct));
+  DObject* serializer = DStructs::instance().find("SerializeRPC")->newObject(RealValue<DObject*>(this->__stream)); //XXX new object each time  -> slow 
+  DObject* clientObject = new ClientObject(RealValue<DObject*>(this->__stream), RealValue<DObject*>(serializer), RealValue<DObject*>(this), id, dstruct);
+  serializer->destroy(); 
+ 
+  return (clientObject);
 }
 
 DStruct*        DeserializeRPC::dDStruct(void)
@@ -216,16 +216,7 @@ DObject*        DeserializeRPC::dDNone(void)
 
 DFunctionObject* DeserializeRPC::dDMethod(void)
 {
-  //std::cout << "DESERIALIZE::RPC dMETHOD !" << std::endl; //in ClientObject
-  //this->__networkStream >> this->__streamString;
-  
-
-  //RealValue<DUInt64> id;
-  //id.unserialize(this->__streamString);
-  //this->__streamString.read(id); 
- 
-  //return (RealValue<DFunctionObject*>(new ClientFunctionObject(this->__networkStream, this, id, argumentType, returnType)));
-
+  //Implemented in ClientObject
   return (NULL);
 }
 
@@ -236,17 +227,14 @@ DUnicodeString  DeserializeRPC::dDUnicodeString(void)
   DInt64  size = this->call("DInt64").get<DInt64>();
   if (size == 0)
     return ("");
+
   DBuffer buffer = stream->call("read", RealValue<DInt64>(size)).get<DBuffer>();
-
-  std::string str((const char*)buffer.data(), buffer.size()); //DUnicodeString constructor XXX
-  //DUnicodeString string(dbuffer.data(), size);
- // //delete DBuffer->data;
-
-  return (str);
+  return (std::string((const char*)buffer.data(), buffer.size()));
 }
 
 DBuffer         DeserializeRPC::dDBuffer(void)
 {
+  //XXX implement me 
   //DObject* stream = this->__stream;
   //stream->call("write", args);
   //read buffer size

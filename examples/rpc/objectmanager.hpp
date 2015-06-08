@@ -10,72 +10,30 @@
 
 using namespace Destruct;
 
-//pu besoin de templater c du dobject everywhere 
 class ObjectManager : public DCppObjectSingleton<ObjectManager>
 {
 public:
   typedef typename std::map<uint64_t, DObject* > mapType;
   typedef typename std::map<uint64_t, DObject* >::const_iterator mapIterator;
 
-  ObjectManager(DStruct* dstruct, DValue const& args) : DCppObjectSingleton<ObjectManager>(dstruct, args),  __currentID(0) 
-  {
-    this->init();
-  }
-
-  ObjectManager(ObjectManager const& copy) : DCppObjectSingleton<ObjectManager>(copy),  __currentID(copy.__currentID), __objectsID(copy.__objectsID)
-  {
-    this->init();
-  }
+  ObjectManager(DStruct* dstruct, DValue const& args);
+  ObjectManager(ObjectManager const& copy);
 
   DUInt64       __currentID;
-  RealValue     <DFunctionObject*>      _registerObject, _object;
+  RealValue     <DFunctionObject*>      _registerObject, _object, _clear;
 
 
-  DUInt64       registerObject(DValue const& arg)
-  {
-    DObject* object = arg.get<DObject*>();
-    mapIterator i = this->__objectsID.begin();
-    for (; i != this->__objectsID.end(); ++i)
-      if (i->second == object)
-        return i->first;
-
-    DUInt64 id = this->__currentID;
-    this->__objectsID[id] = object;
-    this->__currentID++;
-    return (id);
-  }
-
-  DObject*      object(DValue const& arg) 
-  {
-    DUInt64 id = arg.get<DUInt64>();
-    mapIterator object = this->__objectsID.find(id);
-    if (object != this->__objectsID.end())
-    {   
-      object->second->addRef();
-      return (object->second);
-    }
-    return (DNone);
-  }
-
+  DUInt64       registerObject(DValue const& arg);
+  DObject*      object(DValue const& arg);
+  void          clear(void);
 private:
-  mapType               __objectsID;
-
+  mapType        __objectsID;
 protected:
-  ~ObjectManager()
-  {
-    mapIterator object = this->__objectsID.begin();
-    for (; object != this->__objectsID.end(); ++object)
-    {
-    //delete object->second;
-      object->second->destroy();
-    }
-    this->__objectsID.clear();
-  }
-
+  ~ObjectManager(); //singleton / virt
 public:
   static size_t ownAttributeCount()
   {
-    return (2);
+    return (3);
   }
 
   static DAttribute* ownAttributeBegin()
@@ -84,6 +42,7 @@ public:
     {
       DAttribute(DType::DUInt64Type, "registerObject", DType::DObjectType), 
       DAttribute(DType::DObjectType, "object", DType::DUInt64Type), 
+      DAttribute(DType::DNoneType, "clear", DType::DNoneType), 
     };
 
     return (attributes);
@@ -95,6 +54,7 @@ public:
      {
        DPointer<ObjectManager>(&ObjectManager::_registerObject, &ObjectManager::registerObject),
        DPointer<ObjectManager>(&ObjectManager::_object, &ObjectManager::object),
+       DPointer<ObjectManager>(&ObjectManager::_clear, &ObjectManager::clear),
      };
 
     return (memberPointer);

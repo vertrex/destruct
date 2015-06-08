@@ -12,7 +12,7 @@ class ServerFunctionObject;
 class ServerObject
 {
 public:
-  ServerObject(DObject* networkStream, DObject* serializer, DObject* deserializer);
+  ServerObject(DValue const& args);
   ~ServerObject();
 
   void                                  getValue(void);
@@ -21,14 +21,14 @@ public:
   void                                  call0(void);
   void                                  functionCall(void);
   void                                  functionCall0(void);
-  DObject*                              networkStream(void);
+  void                                  findDStruct(void);
+  void                                  unknown(const DUnicodeString& cmd);
+  DUnicodeString                        cmd(void);
 private:
   DObject*                              __networkStream;
   DObject*                              __serializer;
   DObject*                              __deserializer;
   DObject*                              __objectManager;
-  DObject*                              __object;
-  RealValue<DUInt64>                    __id;
 };
 
 #endif

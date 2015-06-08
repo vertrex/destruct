@@ -265,11 +265,6 @@ public:
   {
   }
 
-  ~DMethodObject()
-  {
-    delete __methodBase; 
-  }
-
   DValue call(const DValue& args) const
   {
     try 
@@ -292,6 +287,12 @@ public:
     {
       throw DException("DMethodObject::call(args) : Bad cast");
     }
+  }
+
+protected:
+  ~DMethodObject()
+  {
+    delete __methodBase; 
   }
 private:
   DMethodObjectBase*  __methodBase;

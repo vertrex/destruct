@@ -17,6 +17,8 @@ public:
   RealValue<DUInt64>            argumentType;
   RealValue<DUInt64>            returnType;
   RealValue<DFunctionObject*>   functionObject;
+protected:
+  ~ServerFunctionObject();
 public:
   static size_t ownAttributeCount()
   {

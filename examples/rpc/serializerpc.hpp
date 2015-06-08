@@ -17,8 +17,6 @@ public:
   SerializeRPC(DStruct* dstruct, DValue const& args);
   SerializeRPC(SerializeRPC const& copy);
 
-  DObject*   stream(void);
-
   void       sDInt8(DValue const& args);
   void       sDInt16(DValue const& args);
   void       sDInt32(DValue const& args);
@@ -124,8 +122,6 @@ class DeserializeRPC : public DCppObject<DeserializeRPC>
 public:
   DeserializeRPC(DStruct* dstruct, DValue const& args);
   DeserializeRPC(DeserializeRPC const& copy);
-
-  DObject*           stream(void);
 
   DInt8              dDInt8(void);
   DInt16             dDInt16(void);

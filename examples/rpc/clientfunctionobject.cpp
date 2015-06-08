@@ -6,12 +6,10 @@
  */
 ClientFunctionObject::ClientFunctionObject(DObject* stream, DObject* serialize, DObject* deserialize, uint64_t id, DType::Type_t argumentType, DType::Type_t returnType) : DFunctionObject(), __id(id), __networkStream(stream), __serializer(serialize), __deserializer(deserialize), __argumentType(argumentType), __returnType(returnType)
 {
-
 }
 
 ClientFunctionObject::~ClientFunctionObject()
 {
-  //server delref // remove from manager
 }
 
 DValue ClientFunctionObject::call(DValue const& args) const

@@ -38,8 +38,9 @@ public:
   DBuffer  read(DValue const& args); 
   DInt64   write(DValue const& args);
   void     flush(void) ; 
-//  DValue  seek(DValue const& args);
-  
+//DValue  seek(DValue const& args);
+ 
+protected: 
   ~NetworkStream();
 private:
   int32_t       __socket;

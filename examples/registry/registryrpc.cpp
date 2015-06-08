@@ -1,13 +1,10 @@
 #include "registryrpc.hpp"
 #include "registry.hpp"
-//#include <iostream>
 
-//#include "rpc.hpp"
 #include "server.hpp"
 #include "client.hpp"
 #include "registryserver.hpp"
 #include "registryclient.hpp"
-//#include "dtype.hpp"
 
 #include "client.hpp"
 
@@ -48,7 +45,8 @@ void RegistryRPC::serve(uint32_t port)
 {
  RegistryServer  server(port);
  server.initRoot();
- server.daemonize();
+ //server.daemonize();
+ server.serve();
 }
 
 void RegistryRPC::connect(std::string const& filePath, std::string const& addr, uint32_t port)
@@ -61,8 +59,6 @@ void RegistryRPC::connect(std::string const& filePath, std::string const& addr, 
  
   //std::string fileName(filePath, filePath.rfind("/") + 1);
   //Registry::toFile(fileName + "registry-rpc.text", regf, "Text");
-
-
   DObject* rootKey = regf->getValue("key").get<DObject*>();
 
   client.printKey(rootKey);

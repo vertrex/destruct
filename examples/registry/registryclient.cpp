@@ -14,10 +14,9 @@ DObject* RegistryClient::start(void)
 
   DStruct* registryS = destruct.find("Registry");
   
-  ClientObject* root = new ClientObject(this->networkStream(), this->serializeRPC(), this->deserializeRPC(), 0, registryS);
+  ClientObject* root = new ClientObject(RealValue<DObject*>(this->networkStream()), RealValue<DObject*>(this->serializeRPC()), RealValue<DObject*>(this->deserializeRPC()), 0, registryS);
 
   return (root);
-
 }
 
 void   RegistryClient::printKey(DObject* key)

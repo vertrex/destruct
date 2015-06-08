@@ -67,7 +67,7 @@ Registry::~Registry()
 {
 }
 
-DValue Registry::open(DValue const& args)
+DObject*        Registry::open(DValue const& args)
 {
   Regf* regf = new Regf(this->__destruct.find("Regf"), RealValue<DObject*>(DNone));
   
@@ -75,6 +75,7 @@ DValue Registry::open(DValue const& args)
   arg->setValueAttribute(DType::DUnicodeStringType, "filePath", args); 
   arg->setValueAttribute(DType::DInt8Type, "input",  RealValue<DInt8>(DStream::Input));
   DObject* streamVFile = this->__destruct.find("DStream")->newObject(RealValue<DObject*>(arg));
+  arg->destroy();
 
   DObject* deserializer = this->__destruct.find("DeserializeRaw")->newObject(RealValue<DObject*>(streamVFile));
   deserializer->call("DObject", RealValue<DObject*>(regf));
@@ -84,16 +85,17 @@ DValue Registry::open(DValue const& args)
   else
     std::cout << "Registry file is invalid" << std::endl;
 
-  NamedKey* rkey = new NamedKey(this->__destruct.find("NamedKey"), RealValue<DObject*>(DNone));
-  DObject* key = rkey;
+  NamedKey* key = new NamedKey(this->__destruct.find("NamedKey"), RealValue<DObject*>(DNone));
 
   DUInt64 x = 0x1000 + regf->keyrecord; //XXX put in Regf 
   streamVFile->call("seek", RealValue<DUInt64>(x));
-  deserializer->call("DObject", RealValue<DObject*>(rkey));
+  deserializer->call("DObject", RealValue<DObject*>(key));
   regf->key = key;
 
+  key->destroy();  
   deserializer->destroy();
-  return (RealValue<DObject* >(regf));
+  streamVFile->destroy();
+  return (regf);
 }
 
 void            Registry::toFile(std::string filePath, DObject* object, std::string type)

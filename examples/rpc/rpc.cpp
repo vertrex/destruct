@@ -22,16 +22,16 @@ void RPC::serve(uint32_t port)
   TestServer  server(port);
   server.initRoot(); 
   std::cout << "Daemonize server " << std::endl;
-  //server.daemonize();
+//  server.daemonize();
   server.serve();
 }
 
 void RPC::connect(std::string const& addr, uint32_t port)
 {
   TestClient client(addr, port);
-  client.start();//getRootObject()
+  DObject* root = client.start();
+  root->destroy();
 }
-
 
 /**
  *  TestClient
@@ -55,7 +55,7 @@ DObject* TestClient::start(void)
     throw DException("TestClient::start Directory struct not found");
 
   //0 is root server object
-  ClientObject* remote = new ClientObject(this->networkStream(), this->serializeRPC(), this->deserializeRPC(),  0, directoryS); 
+  ClientObject* remote = new ClientObject(RealValue<DObject*>(this->networkStream()), RealValue<DObject*>(this->serializeRPC()), RealValue<DObject*>(this->deserializeRPC()),  0, directoryS); 
   std::cout << "root name : " << remote->getValue("name").get<DUnicodeString>() << std::endl;
 
   std::cout << "Set remote value to 'rename-by-remote'" << std::endl;
@@ -64,7 +64,7 @@ DObject* TestClient::start(void)
   std::cout << "Root name after setValue('name') : " << remote->getValue("name").get<DUnicodeString>() << std::endl;
 
   this->serializeRPC()->call("DUnicodeString", RealValue<DUnicodeString>("show"));
-  this->networkStream()->call("flush"); //XXX new serialization
+  this->networkStream()->call("flush");
   std::cout << "Root  path : " << remote->call("path").get<DUnicodeString>() << std::endl;
 
   DObject* remoteChild = remote->getValue("children").get<DObject*>();
@@ -97,8 +97,7 @@ DObject* TestClient::start(void)
  */
 TestServer::TestServer(uint32_t port) : Server(port)
 {
- TestServer::declare();
- std::cout << "TestServer::TestServer() " << std::endl;
+  TestServer::declare();
 }
 
 /**
@@ -126,20 +125,26 @@ void            TestServer::initRoot(void)
 
   DObject* root = directoryStruct->newObject();
   this->objectManager()->call("registerObject", RealValue<DObject*>(root));
-  DObject* children =  root->getValue("children").get<DObject*>();
+
+  DObject* children = root->getValue("children").get<DObject*>();
+  root->destroy();
  
   DObject* file1 = fileStruct->newObject();
 
   file1->setValue("name", RealValue<DUnicodeString>("File1"));
   children->call("push", RealValue<DObject*>(file1));
+  file1->destroy();
 
   File* file2 = new File(fileStruct, RealValue<DObject*>(DNone)); 
   file2->name = "File2"; 
   children->call("push", RealValue<DObject*>(file2));
+  file2->destroy();
 
   DObject* directory1 = directoryStruct->newObject();
   children->call("push", RealValue<DObject*>(directory1));
   DObject* d1children = directory1->getValue("children").get<DObject*>();
+  directory1->destroy();
+  children->destroy();
 /*  
   Directory* directory1 = new Directory(directoryStruct, RealValue<DObject*>(DNone));
   directory1->name = "Directory1";
@@ -150,6 +155,8 @@ void            TestServer::initRoot(void)
   this->objectManager()->call("registerObject", RealValue<DObject*>(file3));
   file3->name = "File3"; 
   d1children->call("push", RealValue<DObject*>(file3));
+  d1children->destroy();
+  file3->destroy();
 }
 
 
@@ -171,10 +178,10 @@ int main(int argc, char** argv)
     else if (std::string(argv[1]) == std::string("-c"))
       rpc.connect(std::string(argv[2]), 0xdff);
     else
-	{
+    {
       std::cout << "Launch server : -d" << std::endl
                 << "Launch client : -c" << std::endl;       
-	}
+    }
   }
   catch (Destruct::DException const& exception)
   {
@@ -184,5 +191,4 @@ int main(int argc, char** argv)
   {
      std::cout << "Error : " << std::endl << error << std::endl;
   }
-  std::cout << "end " << std::endl;
 }

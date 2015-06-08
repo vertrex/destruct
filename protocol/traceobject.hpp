@@ -14,10 +14,11 @@ class TraceFunctionObject : public DFunctionObject
 {
 public:
   TraceFunctionObject(DFunctionObject* functionObject); 
-  ~TraceFunctionObject();
 
   virtual DValue call(void) const;
   virtual DValue call(DValue const& args) const;
+protected:
+  ~TraceFunctionObject(); 
 private:
   DFunctionObject*      __functionObject;
 };

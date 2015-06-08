@@ -18,10 +18,10 @@ set (rpc_libfiles
 fsobject.cpp
 networkstream.cpp
 serializerpc.cpp
-
 server.cpp
 serverobject.cpp
 serverfunctionobject.cpp
+objectmanager.cpp
 client.cpp
 clientobject.cpp
 clientfunctionobject.cpp

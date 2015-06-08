@@ -9,12 +9,16 @@ using namespace Destruct;
 class File : public DCppObject<File>
 {
 public:
-  EXPORT                         File(DStruct* dstruct, DValue const& args);
-  EXPORT                         ~File();
+  EXPORT                        File(DStruct* dstruct, DValue const& args);
+
   RealValue<DUnicodeString >    name;
   RealValue<DUInt64 >           size;
   RealValue<DFunctionObject* >  _path;
+
   DUnicodeString                path(DValue const& args);
+protected:
+  EXPORT                        ~File();
+public:
   /*
    *  DStruct declaration
    */
@@ -65,7 +69,9 @@ public:
   RealValue<DObject* >          children;
   RealValue<DFunctionObject* >  _path;
   DUnicodeString                path(DValue const& args);
-
+protected:
+  ~Directory();
+public:
   /*
    *  DStruct declaration
    */ 
