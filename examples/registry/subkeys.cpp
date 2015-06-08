@@ -28,9 +28,7 @@ Subkeys::Subkeys(DStruct* dstruct, DValue const& args) : DCppObject<Subkeys>(dst
 {
   this->init();
   this->parent = args.get<DObject* >();
-  ((DObject*)this->parent)->addRef();
   this->list = Destruct::DStructs::instance().generate("DVectorObject");
-  ((DObject*)list)->addRef();
 }
 
 Subkeys::~Subkeys(void)

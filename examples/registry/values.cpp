@@ -29,7 +29,6 @@ RegistryValues::RegistryValues(DStruct* dstruct, DValue const& args) : DCppObjec
   this->init();
   this->parent = args.get<DObject* >();
   this->list = Destruct::DStructs::instance().generate("DVectorObject");
-  ((DObject*)list)->addRef();
 }
 
 RegistryValues::~RegistryValues(void)

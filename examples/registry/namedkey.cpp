@@ -31,10 +31,6 @@ NamedKey::NamedKey(DStruct* dstruct, DValue const& args) : DCppObject<NamedKey>(
 
   this->subkeys = Destruct::DStructs::instance().find("Subkeys")->newObject(RealValue<DObject*>(this));
   this->values = Destruct::DStructs::instance().find("RegistryValues")->newObject(RealValue<DObject*>(this));
-  //((DObject*)this->timestamp)->addRef(); //XXX ?
-  //((DObject*)this->keyName)->addRef();  //XXX ?
-  //((DObject*)this->subkeys)->addRef();  //XXX ?
-  //((DObject*)this->values)->addRef();  //XXX ?
 }
 
 NamedKey::~NamedKey(void)

@@ -32,7 +32,6 @@ Server::Server(DStruct* dstruct, DValue const& args) : DCppObject<Server>(dstruc
 
 Server::~Server()
 {
-  std::cout << "~Server" << std::endl;
 #ifdef WIN32
   closesocket(this->__connectionSocket);
   closesocket(this->__listenSocket);

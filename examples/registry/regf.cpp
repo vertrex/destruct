@@ -31,9 +31,6 @@ Regf::Regf(DStruct* dstruct, DValue const& args) : DCppObject<Regf>(dstruct, arg
 
   this->regfName = new RegfName(Destruct::DStructs::instance().find("RegfName"), RealValue<DObject*>(DNone));
   this->timestamp = new RegfTime64(Destruct::DStructs::instance().find("RegfTime64"), RealValue<DObject*>(DNone));
-
-  ((DObject*)this->regfName)->addRef();
-  ((DObject*)this->timestamp)->addRef();
   //XXX  keyrecord get root key here
 }
 
