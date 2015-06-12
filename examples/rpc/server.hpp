@@ -17,9 +17,9 @@ class Server : public DCppObject<Server>
 {
 public:
   EXPORT Server(uint32_t port);
-  Server(DStruct* dstruct, DValue const& args);
+  EXPORT Server(DStruct* dstruct, DValue const& args);
 
-  void                                  setRoot(RealValue<DObject*> root);
+  EXPORT void                           setRoot(RealValue<DObject*> root);
   EXPORT void                           serve();
   EXPORT void                           daemonize(void);
 

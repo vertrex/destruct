@@ -190,7 +190,7 @@ void    Server::serve(void)
   std::cout << "Sever::serve listen" << std::endl;
   this->__listen();
   std::cout << "Create serverObject " << std::endl;
-  ServerObject serverObject(RealValue<DInt32>(this->__connectionSocket));
+  ServerObject serverObject(RealValue<DInt32>((DInt32)this->__connectionSocket));
   this->showRoot();
 
   while (true)

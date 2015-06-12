@@ -14,15 +14,15 @@
 #include <dlfcn.h>
 #endif
 
-class EXPORT Loader // CLoader / PyLoader inherit CLoader
+class Loader // CLoader / PyLoader inherit CLoader
 {
 public:
-  Loader(void);
-  ~Loader();
+  EXPORT Loader(void);
+  EXPORT ~Loader();
 
-  bool  loadFile(const std::string& filePath);
-  bool  loadDirectory(const std::string& directoryPath);
-  void  registerDStructs(std::vector<Destruct::DStruct*>&);
+  EXPORT bool  loadFile(const std::string& filePath);
+  EXPORT bool  loadDirectory(const std::string& directoryPath);
+  EXPORT void  registerDStructs(std::vector<Destruct::DStruct*>&);
 private:
   void  __showDestruct(void) const;
   Destruct::DStructs&  __destruct;

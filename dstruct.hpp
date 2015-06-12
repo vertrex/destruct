@@ -16,7 +16,7 @@ class DObject;
 class DValue;
 class DAttribute;
 
-class EXPORT DStruct : public RefcountPolicy<DStruct> 
+class DStruct : public RefcountPolicy<DStruct> 
 {
 public:
   typedef std::vector<DAttribute> DAttributeContainer;
@@ -24,39 +24,39 @@ public:
   typedef DObject* (*CreateObjectFunction)(DStruct *, DValue const& args);
 
   template<typename Iterator> 
-  DStruct(DStruct const* baseClass, const DUnicodeString& name, CreateObjectFunction createObjectFunction, Iterator attributeBegin, Iterator attributeEnd) : __ownAttributes(attributeBegin, attributeEnd), __baseClass(baseClass) ,  __name(name),  __createObject(createObjectFunction), __definitionFix(false), __defaultObject(0)
+  EXPORT DStruct(DStruct const* baseClass, const DUnicodeString& name, CreateObjectFunction createObjectFunction, Iterator attributeBegin, Iterator attributeEnd) : __ownAttributes(attributeBegin, attributeEnd), __baseClass(baseClass) ,  __name(name),  __createObject(createObjectFunction), __definitionFix(false), __defaultObject(0)
   {
     this->__baseInit();
     this->__effectiveAttributes.insert(this->__effectiveAttributes.end(), this->__ownAttributes.begin(), this->__ownAttributes.end());
   }
 
-  DStruct(DStruct const* base, const DUnicodeString& name, CreateObjectFunction objectFunction);
+  EXPORT DStruct(DStruct const* base, const DUnicodeString& name, CreateObjectFunction objectFunction);
 
-  virtual                       ~DStruct();
+  EXPORT virtual                       ~DStruct();
 
-  virtual void                  addAttribute(const DAttribute&);
-  DUnicodeString                name() const;
-  DStruct const * const         base() const;
+  EXPORT virtual void                  addAttribute(const DAttribute&);
+  EXPORT DUnicodeString                name() const;
+  EXPORT DStruct const * const         base() const;
 
   //DObject*                    newObject() const;
-  DObject*                      newObject(); 
-  virtual DObject*              newObject(DValue const& args); //for mutable
+  EXPORT DObject*                      newObject(); 
+  EXPORT virtual DObject*              newObject(DValue const& args); //for mutable
  
-  DObject const*                defaultDObject() const;//not serialized, could be usefull for destruct to set default value 
-  void                          setDefault(DObject const *);
+  EXPORT DObject const*                defaultDObject() const;//not serialized, could be usefull for destruct to set default value 
+  EXPORT void                          setDefault(DObject const *);
 
-  DAttribute const&             attribute(size_t index) const;
-  DAttribute const&             attribute(DUnicodeString const& name) const; //virtual ??XXX
-  size_t                        attributeCount() const;
-  int32_t                       findAttribute(DUnicodeString const& name) const;
+  EXPORT DAttribute const&             attribute(size_t index) const;
+  EXPORT DAttribute const&             attribute(DUnicodeString const& name) const; //virtual ??XXX
+  EXPORT size_t                        attributeCount() const;
+  EXPORT int32_t                       findAttribute(DUnicodeString const& name) const;
 
-  DAttributeIterator            attributeBegin() const;
-  DAttributeIterator            attributeEnd() const;
+  EXPORT DAttributeIterator            attributeBegin() const;
+  EXPORT DAttributeIterator            attributeEnd() const;
 protected:
   DAttributeContainer           __ownAttributes;
   DAttributeContainer           __effectiveAttributes;
 private:
-  void                          __baseInit();
+  EXPORT void                   __baseInit();
   DStruct const * const         __baseClass;
   const DUnicodeString          __name;
   const CreateObjectFunction    __createObject;

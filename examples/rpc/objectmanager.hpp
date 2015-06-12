@@ -13,8 +13,8 @@ using namespace Destruct;
 class ObjectManager : public DCppObjectSingleton<ObjectManager>
 {
 public:
-  typedef typename std::map<uint64_t, DObject* > mapType;
-  typedef typename std::map<uint64_t, DObject* >::const_iterator mapIterator;
+  typedef std::map<uint64_t, DObject* > mapType;
+  typedef std::map<uint64_t, DObject* >::const_iterator mapIterator;
 
   ObjectManager(DStruct* dstruct, DValue const& args);
   ObjectManager(ObjectManager const& copy);
