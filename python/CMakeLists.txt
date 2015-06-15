@@ -22,6 +22,8 @@ py_dtype.cpp
 py_dvalue.cpp
 py_dobject.cpp
 py_dmethodobject.cpp
+#py_dstream.cpp
+#py_dserialize.cpp
 destructmodule.cpp
 )
 
@@ -65,5 +67,9 @@ file(APPEND "${CMAKE_BINARY_DIR}/installed_files.log" "${rpath}/__init__.py\n")
 
 configure_file(__init__.py __init__.py COPYONLY)
 include_directories("../")
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/__init__.py DESTINATION ${INSTALL_FILE_DESTINATION}/${rpath})
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/_destruct.pyd DESTINATION ${INSTALL_FILE_DESTINATION}/${rpath})
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/destruct.dll DESTINATION ${INSTALL_FILE_DESTINATION}/${rpath})
 
 add_subdirectory(examples)

@@ -122,6 +122,7 @@ endif()
 
 file(APPEND "${CMAKE_BINARY_DIR}/installed_files.log" "${rpath}/__init__.py\n")
 
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/__init__.py DESTINATION ${INSTALL_FILE_DESTINATION}/${rpath})
 
 add_subdirectory(examples)
 add_subdirectory(python)
