@@ -76,7 +76,8 @@ DValue    Subkeys::deserializeRaw(DValue const& arg)
       DUInt64 currentOffset = stream->call("tell").get<DUInt64>();
       stream->call("seek", RealValue<DUInt64>(subkeyOffset + 0x1000));
 
-      DUInt32 subHbinSize = deserializer->call("DUInt32").get<DUInt32>();
+      //DUInt32 subHbinSize = deserializer->call("DUInt32").get<DUInt32>();
+      deserializer->call("DUInt32").get<DUInt32>();
       DUInt16 subKeySignature = deserializer->call("DUInt16").get<DUInt16>();
 
       if (subKeySignature == 0x6b6e) //nk

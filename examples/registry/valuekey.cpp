@@ -43,7 +43,7 @@ RegistryValueData::RegistryValueData(DStruct* dstruct, DValue const& args) : DCp
 {
   this->init();
   this->parent = args.get<DObject*>();
-  DUInt16 typeName = ((DObject*)this->parent)->getValue("dataType").get<DUInt16>();
+  //DUInt16 typeName = ((DObject*)this->parent)->getValue("dataType").get<DUInt16>();
   
   Destruct::DStructs& destruct = Destruct::DStructs::instance();
 
