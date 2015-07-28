@@ -59,7 +59,7 @@ DBuffer::~DBuffer()
 
 uint8_t*        DBuffer::data(void)
 {
-    return (this->__realBuffer->data);
+  return (this->__realBuffer->data);
 }
 
 int32_t         DBuffer::size(void)

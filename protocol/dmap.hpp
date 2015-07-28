@@ -48,12 +48,15 @@ public:
   }
 
   DObject*    setItem(DValue const& args)
-  {
+  { 
     DObject*  argumentsObject = args.get<DObject*>();
     KeyType   key = argumentsObject->getValue("index").get<KeyType>();
     ValueType value = argumentsObject->getValue("value").get<ValueType>();
+    //value / key dobject->destroy
 
     this->__map[key] = value;
+
+    argumentsObject->destroy();
  
     return (DNone);
   }

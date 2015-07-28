@@ -54,6 +54,7 @@ void    Session::save(DValue const& filePath)
   serializer->call("DObject", this->modules);
 
   std::cout << "Saved " << filePath.asUnicodeString() << std::endl; 
+
   stream->destroy();
   serializer->destroy();
 }

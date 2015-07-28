@@ -204,7 +204,7 @@ DObject*        DeserializeBinary::dDObject(DValue const& value)
 {
   DStruct* dstruct = NULL;
   DObject* dobject = value.get<DObject*>();
- 
+
   if (dobject == DNone)
   {
     DStructs& dstructs = DStructs::instance();
@@ -222,7 +222,6 @@ DObject*        DeserializeBinary::dDObject(DValue const& value)
   else
     dstruct = dobject->instanceOf();
    
- 
   int32_t index = dstruct->findAttribute("iterator");
   int32_t hasNewItem = dstruct->findAttribute("newItem");
   if (index != -1)
@@ -234,10 +233,12 @@ DObject*        DeserializeBinary::dDObject(DValue const& value)
     {
       for (DUInt64 index = 0; index < count; index++)
       {
-         DUnicodeString structName = this->call("DUnicodeString").get<DUnicodeString>(); 
-         DObject* item = dobject->call("newItem").get<DObject*>();
-         this->call("DObject", RealValue<DObject*>(item));
-         dobject->call("setItem", RealValue<DObject*>(item));
+       DUnicodeString structName = this->call("DUnicodeString").get<DUnicodeString>(); //deserialize type
+       DObject* item = dobject->call("newItem").get<DObject*>(); //usefull ??? if registered why not used registered type because it'swritten
+       item->addRef(); //because we destroy object ref after
+       this->call("DObject", RealValue<DObject*>(item));
+       dobject->call("setItem", RealValue<DObject*>(item));
+       item->destroy();
       }
     }
     else

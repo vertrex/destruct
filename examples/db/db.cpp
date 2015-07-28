@@ -60,6 +60,23 @@ DObject*  DB::populateSession(void)
   partition->destroy();
   moduleArguments->destroy();
 
+  //Save a DMapString
+
+  DObject* stringMap = this->__destruct.generate("DMapString");
+
+  DObject* item = stringMap->call("newItem").get<DObject*>();
+  item->setValue("index", RealValue<DUnicodeString>("1"));
+  item->setValue("value", RealValue<DUnicodeString>("a"));
+  stringMap->call("setItem", RealValue<DObject*>(item)); 
+
+  item->setValue("index", RealValue<DUnicodeString>("2"));
+  item->setValue("value", RealValue<DUnicodeString>("b"));
+  stringMap->call("setItem", RealValue<DObject*>(item));
+  item->destroy();
+
+  //((DObject*)this->__session->modules)->call("push", RealValue<DObject*>(stringMap)); //leak or serial leak
+  stringMap->destroy();
+ 
   return (this->__session); 
 }
 

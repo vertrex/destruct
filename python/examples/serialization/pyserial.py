@@ -114,3 +114,16 @@ st.DObject(complex1)
 s = st.stream
 p = s.string()
 print p
+
+stringMap = DStructs().find("DMapString").newObject()
+
+for x in range(0, 20):
+  stringMap[str(x)] = 'r' + str(x)
+
+#for item in stringMap:
+  #print item.index, item.value
+
+
+r = testObjectSerialization(stringMap, "dictionary")
+print r
+print dir(r)

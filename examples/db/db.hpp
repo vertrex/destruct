@@ -21,7 +21,7 @@ public:
   void                  load(DValue const& filePath);
   Session*              session(void);
 private:
-  DStructs&   __destruct;
+  DStructs&             __destruct;
   Session*              __session;
 };
 
