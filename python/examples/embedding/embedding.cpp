@@ -18,79 +18,34 @@ PythonInterpreter::~PythonInterpreter(void)
   Py_Finalize();
 }
 
-void PythonInterpreter::loadModule(std::string path)
+void PythonInterpreter::loadModule(void)
 {
-        //std::cout << "Loading python module" << std::endl;
-        //PyRun_SimpleString("from pyembedding import *\nembed = Embed()\nembed.run()");
-        //std::cout << "Loading finish " << std::endl;
-}
+  std::cout << "Loading python module" << std::endl;
+  PyRun_SimpleString("import sys");
+  PyRun_SimpleString("sys.path.append('../loader/')");
+  PyRun_SimpleString("from loader import loadPath");
 
-void PythonInterpreter::registerStructures(void)
-{
-        //typedef Destruct::DVector<Destruct::DUnicodeString, Destruct::DType::DUnicodeStringType> DVectorString;
-        //Destruct::DStruct* dstructvectors = Destruct::makeNewDClass < DVectorString >(NULL, "DVectorString");
-        //Destruct::DStructs::instance().registerDStruct(dstructvectors);
+  std::string path = "[('dtest', 'destruct_test',),\
+	      ('threading', 'dthreading',),\
+	      ('inheritance', 'destruct_inherit',),\
+              ('rpc', 'destruct_rpc',),\
+              ('registry', 'registry',),\
+	     ]";
+
+  std::string cmd = "loadPath(" + path + ")";
+
+  PyRun_SimpleString(cmd.c_str());
+  std::cout << "Loading finish " << std::endl;
+
+  std::cout << "Destructs total struct" << Destruct::DStructs::instance().count() << std::endl;
 }
 
 int main(int argc, char **argv)
 {
-
   PythonInterpreter     pythonInterpreter;
 
-  pythonInterpreter.registerStructures();
-  pythonInterpreter.loadModule(".");
-
+  pythonInterpreter.loadModule();
  
-  //std::cout << "--- Showing destruct database --- " << std::endl; 
-  //Destruct::DStructs&  destruct = Destruct::DStructs::instance(); //::instance();
-  //for (size_t i = 0; i < destruct.count() ; i++)
-  //std::cout << destruct.find(i)->name() << std::endl;
-
-         
   return (0); 
 }
-/*
-TaskManager::TaskManager
-{
-  cmd = exec("module arguments")
-  sched.add(cmd)
-}
 
-
-class loader()
-{
- load(path)  
-
-}
-
-class PythonLoader() : loader()
-{
- PyInitialize()
-
- loadpythonmodule("python/")
-  addModule(module)
-}
-
-
-
-class cmd
-{
-  DFunction __function;
-  DObject   __arguments;
-  exec()
-  {
-    function->(argument);
-  }
-}
-
-Scheduler::Scheduler
-{
-  DList<cmd>; 
-
-
-  for cmd in cmds:
-  {
-    worker = pool_getworker()
-    worker.execute(cmd)
-  }
-}*/

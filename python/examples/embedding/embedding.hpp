@@ -6,9 +6,9 @@ class PythonInterpreter
 {
 public:
   PythonInterpreter();
-  void loadModule(std::string path);
-  void registerStructures(void);
   ~PythonInterpreter();
+
+  void loadModule(void);
 };
 
 #endif
