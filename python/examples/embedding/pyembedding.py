@@ -1,11 +1,22 @@
+import sys
+sys.path.append("../../")
 from _destruct import *
-from pyterator import PyIterator
 
-class Embed(object):
+class PythonDStruct(DStruct):
   def __init__(self):
-    print 'embdeing start'
+    DStruct.__init__(self, DNone, "PythonDStruct")
+    self.addAttribute(DAttribute("size", DInt64))
+    self.addAttribute(DAttribute("name", DUnicodeString))
 
-  def run(self):
-     s = PyIterator()
-     print 'running ' + str(dir(Destruct))
-     Test().run()
+def getPythonObject():
+  struct = PythonDStruct()
+  DStructs().registerDStruct(struct)
+  dobject = struct.newObject()
+  dobject.name = "Python object"
+  dobject.size = 64
+  return dobject
+
+def showObject(dobject):
+  print 'python show object of type ' + str(dobject)
+  print 'dobject.name => ', dobject.name
+  print 'dobject.size => ', dobject.size

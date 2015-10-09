@@ -2,8 +2,10 @@
 #include <iostream>
 
 #include "dstructs.hpp"
+#include "dexception.hpp"
 
 #include "embedding.hpp"
+#include "py_dobject.hpp"
 
 PythonInterpreter::PythonInterpreter(void)
 {
@@ -15,37 +17,79 @@ PythonInterpreter::PythonInterpreter(void)
 
 PythonInterpreter::~PythonInterpreter(void)
 {
+  if (this->__pyModule)
+    Py_DECREF(this->__pyModule);
   Py_Finalize();
 }
 
-void PythonInterpreter::loadModule(void)
+void    PythonInterpreter::import(void)
 {
-  std::cout << "Loading python module" << std::endl;
   PyRun_SimpleString("import sys");
-  PyRun_SimpleString("sys.path.append('../loader/')");
-  PyRun_SimpleString("from loader import loadPath");
+  PyRun_SimpleString("sys.path.append('.')");
 
-  std::string path = "[('dtest', 'destruct_test',),\
-	      ('threading', 'dthreading',),\
-	      ('inheritance', 'destruct_inherit',),\
-              ('rpc', 'destruct_rpc',),\
-              ('registry', 'registry',),\
-	     ]";
+  PyObject* moduleName = PyString_FromString("pyembedding");
+  this->__pyModule = PyImport_Import(moduleName);
+  Py_DECREF(moduleName);
 
-  std::string cmd = "loadPath(" + path + ")";
+  if (this->__pyModule == NULL)
+    throw Destruct::DException("Can't load module pyembedding"); 
+}
 
-  PyRun_SimpleString(cmd.c_str());
-  std::cout << "Loading finish " << std::endl;
+PyObject*   PythonInterpreter::getPythonObject(void)
+{
+  PyObject* pyObject = NULL;
+  PyObject* getPythonObject = PyObject_GetAttrString(this->__pyModule, "getPythonObject");
 
-  std::cout << "Destructs total struct" << Destruct::DStructs::instance().count() << std::endl;
+  if (getPythonObject && PyCallable_Check(getPythonObject)) 
+    pyObject = PyObject_CallObject(getPythonObject, NULL);
+ 
+  if (getPythonObject)
+    Py_DECREF(getPythonObject);
+
+  return (pyObject);
+}
+
+void    PythonInterpreter::showObject(PyObject* dobject)
+{
+  PyObject* pyShowObject = PyObject_GetAttrString(this->__pyModule, "showObject");
+
+  if (pyShowObject && PyCallable_Check(pyShowObject)) 
+  {
+    Py_INCREF(dobject);
+    PyObject* argument = Py_BuildValue("(O)", dobject);
+    PyObject_CallObject(pyShowObject, argument);
+    Py_DECREF(pyShowObject);
+    Py_DECREF(argument);
+  }
+}
+
+void showObject(Destruct::DObject* dobject)
+{
+  std::cout << "showing object of type " << dobject->instanceOf()->name() << std::endl;
+  std::cout << "object->name " << dobject->getValue("name").get<Destruct::DUnicodeString>() << std::endl;
+  std::cout << "object->size " << dobject->getValue("size").get<DInt64>() << std::endl;
+}
+
+void setPythonObject(Destruct::DObject* dobject)
+{
+  dobject->setValue("name", Destruct::RealValue<Destruct::DUnicodeString>("cpp name"));
+  dobject->setValue("size", Destruct::RealValue<DInt64>(512));
 }
 
 int main(int argc, char **argv)
 {
   PythonInterpreter     pythonInterpreter;
 
-  pythonInterpreter.loadModule();
- 
+  pythonInterpreter.import();
+  PyObject* pyObject = pythonInterpreter.getPythonObject();
+
+  Destruct::DObject* dobject = ((PyDObject::DPyObject*)pyObject)->pimpl;
+  showObject(dobject);
+  setPythonObject(dobject);
+
+  pythonInterpreter.showObject(pyObject);
+  Py_DECREF(pyObject);
+
   return (0); 
 }
 
