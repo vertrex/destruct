@@ -48,6 +48,11 @@ public:
     return (this->__vector.size());
   }
 
+  void  clear(void)
+  {
+     this->__vector.clear();
+  }
+
   DObject*    setItem(DValue const& args)
   {
     DObject*     argumentsObject = args.get<DObject*>();
@@ -70,15 +75,14 @@ public:
     return (DStructs::instance().generate(iteratorname, RealValue<DObject*>(this))); 
   }
 
-  RealValue<DFunctionObject* >  _serializeText;
-  RealValue<DFunctionObject* >  _push;
+  RealValue<DFunctionObject* >  _push, _clear;
 
   /*
    *  DStruct declaration
    */ 
   static size_t ownAttributeCount()
   {
-    return (5);
+    return (6);
   }
 
   static DAttribute* ownAttributeBegin()
@@ -90,6 +94,7 @@ public:
       DAttribute(DType::DUInt64Type,"size", DType::DNoneType),
       DAttribute(DType::DNoneType, "setItem", DType::DObjectType),
       DAttribute(DType::DObjectType, "iterator", DType::DNoneType),
+      DAttribute(DType::DNoneType, "clear", DType::DNoneType),
     };
     return (attributes);
   }
@@ -103,6 +108,7 @@ public:
       DPointer<DVectorType>(&DVectorType::_size, &DVectorType::size),
       DPointer<DVectorType>(&DVectorType::_setItem, &DVectorType::setItem),
       DPointer<DVectorType>(&DVectorType::_iterator, &DVectorType::iterator),
+      DPointer<DVectorType>(&DVectorType::_clear, &DVectorType::clear),
     };
     return (memberPointer);
   }

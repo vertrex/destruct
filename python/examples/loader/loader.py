@@ -81,12 +81,42 @@ def connect():
   return regf
 
 
-if __name__ == "__main__":
+def loadPath(pathname):
   loader = Loader()
-  if os.name == 'nt': 
-    baseDir = os.path.expanduser("~") + "/destruct-build/examples/" 
+  for (path, name,) in pathname:
+    if os.name == 'nt':
+      absolute = baseDir + path + "/Release/" + name + ".dll"
+      absolute = os.path.normpath(absolute)
+    else:
+      absolute = baseDir + path + "/lib" + name + ".so"
+    loader.loadFile(absolute)
+
+
+def testLoading(pathname):
+  loadPath(pathname)
+
+  sa = DStructs().find("SimpleA").newObject() 
+  print dir(sa)
+  print sa.object1
+  if sa.object1:
+    print 'sa.object1 exists'
   else:
-    baseDir = os.path.expanduser("~") + "/destruct/examples/" 
+    print 'sa.object1 is none'
+
+  sa.object1 = DStructs().find("DVectorString").newObject()
+  print sa.object1
+  if sa.object1:
+    print 'sa.object1 exists'
+  else:
+    print 'sa.object1 is none'
+
+
+  vs = DStructs().find("DVectorString").newObject()
+  server = DStructs().find("Server").newObject(DUInt32(3583))
+  server.addRoot(vs)
+
+
+if __name__ == "__main__":
   print "found baseDir" + baseDir
 
   pathname = [("dtest", "destruct_test",),
@@ -96,32 +126,10 @@ if __name__ == "__main__":
               ("registry", "registry",),
 	     ]
 
-#           "/destruct/examples/registry/libregistry.so",
-   #        "/destruct/examples/rpc/destruct_rpc.dll",
-  for (path, name,) in pathname:
-    if os.name == 'nt':
-      absolute = baseDir + path + "/Release/" + name + ".dll"
-      absolute = os.path.normpath(absolute)
-    else:
-      absolute = baseDir + path + "/lib" + name + ".so"
-    loader.loadFile(absolute)
+  testLoading(pathname) 
 
-sa = DStructs().find("SimpleA").newObject() 
-print dir(sa)
-print sa.object1
-if sa.object1:
-  print 'sa.object1 exists'
+if os.name == 'nt': 
+  baseDir = os.path.expanduser("~") + "/destruct-build/examples/" 
 else:
-  print 'sa.object1 is none'
+  baseDir = os.path.expanduser("~") + "/destruct/examples/" 
 
-sa.object1 = DStructs().find("DVectorString").newObject()
-print sa.object1
-if sa.object1:
-  print 'sa.object1 exists'
-else:
-  print 'sa.object1 is none'
-
-
-vs = DStructs().find("DVectorString").newObject()
-server = DStructs().find("Server").newObject(DUInt32(3583))
-server.addRoot(vs)

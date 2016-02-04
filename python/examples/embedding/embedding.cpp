@@ -2,8 +2,10 @@
 #include <iostream>
 
 #include "dstructs.hpp"
+#include "dexception.hpp"
 
 #include "embedding.hpp"
+#include "py_dobject.hpp"
 
 PythonInterpreter::PythonInterpreter(void)
 {
@@ -15,82 +17,79 @@ PythonInterpreter::PythonInterpreter(void)
 
 PythonInterpreter::~PythonInterpreter(void)
 {
+  if (this->__pyModule)
+    Py_DECREF(this->__pyModule);
   Py_Finalize();
 }
 
-void PythonInterpreter::loadModule(std::string path)
+void    PythonInterpreter::import(void)
 {
-        //std::cout << "Loading python module" << std::endl;
-        //PyRun_SimpleString("from pyembedding import *\nembed = Embed()\nembed.run()");
-        //std::cout << "Loading finish " << std::endl;
+  PyRun_SimpleString("import sys");
+  PyRun_SimpleString("sys.path.append('.')");
+
+  PyObject* moduleName = PyString_FromString("pyembedding");
+  this->__pyModule = PyImport_Import(moduleName);
+  Py_DECREF(moduleName);
+
+  if (this->__pyModule == NULL)
+    throw Destruct::DException("Can't load module pyembedding"); 
 }
 
-void PythonInterpreter::registerStructures(void)
+PyObject*   PythonInterpreter::getPythonObject(void)
 {
-        //typedef Destruct::DVector<Destruct::DUnicodeString, Destruct::DType::DUnicodeStringType> DVectorString;
-        //Destruct::DStruct* dstructvectors = Destruct::makeNewDClass < DVectorString >(NULL, "DVectorString");
-        //Destruct::DStructs::instance().registerDStruct(dstructvectors);
+  PyObject* pyObject = NULL;
+  PyObject* getPythonObject = PyObject_GetAttrString(this->__pyModule, "getPythonObject");
+
+  if (getPythonObject && PyCallable_Check(getPythonObject)) 
+    pyObject = PyObject_CallObject(getPythonObject, NULL);
+ 
+  if (getPythonObject)
+    Py_DECREF(getPythonObject);
+
+  return (pyObject);
+}
+
+void    PythonInterpreter::showObject(PyObject* dobject)
+{
+  PyObject* pyShowObject = PyObject_GetAttrString(this->__pyModule, "showObject");
+
+  if (pyShowObject && PyCallable_Check(pyShowObject)) 
+  {
+    Py_INCREF(dobject);
+    PyObject* argument = Py_BuildValue("(O)", dobject);
+    PyObject_CallObject(pyShowObject, argument);
+    Py_DECREF(pyShowObject);
+    Py_DECREF(argument);
+  }
+}
+
+void showObject(Destruct::DObject* dobject)
+{
+  std::cout << "showing object of type " << dobject->instanceOf()->name() << std::endl;
+  std::cout << "object->name " << dobject->getValue("name").get<Destruct::DUnicodeString>() << std::endl;
+  std::cout << "object->size " << dobject->getValue("size").get<DInt64>() << std::endl;
+}
+
+void setPythonObject(Destruct::DObject* dobject)
+{
+  dobject->setValue("name", Destruct::RealValue<Destruct::DUnicodeString>("cpp name"));
+  dobject->setValue("size", Destruct::RealValue<DInt64>(512));
 }
 
 int main(int argc, char **argv)
 {
-
   PythonInterpreter     pythonInterpreter;
 
-  pythonInterpreter.registerStructures();
-  pythonInterpreter.loadModule(".");
+  pythonInterpreter.import();
+  PyObject* pyObject = pythonInterpreter.getPythonObject();
 
- 
-  //std::cout << "--- Showing destruct database --- " << std::endl; 
-  //Destruct::DStructs&  destruct = Destruct::DStructs::instance(); //::instance();
-  //for (size_t i = 0; i < destruct.count() ; i++)
-  //std::cout << destruct.find(i)->name() << std::endl;
+  Destruct::DObject* dobject = ((PyDObject::DPyObject*)pyObject)->pimpl;
+  showObject(dobject);
+  setPythonObject(dobject);
 
-         
+  pythonInterpreter.showObject(pyObject);
+  Py_DECREF(pyObject);
+
   return (0); 
 }
-/*
-TaskManager::TaskManager
-{
-  cmd = exec("module arguments")
-  sched.add(cmd)
-}
 
-
-class loader()
-{
- load(path)  
-
-}
-
-class PythonLoader() : loader()
-{
- PyInitialize()
-
- loadpythonmodule("python/")
-  addModule(module)
-}
-
-
-
-class cmd
-{
-  DFunction __function;
-  DObject   __arguments;
-  exec()
-  {
-    function->(argument);
-  }
-}
-
-Scheduler::Scheduler
-{
-  DList<cmd>; 
-
-
-  for cmd in cmds:
-  {
-    worker = pool_getworker()
-    worker.execute(cmd)
-  }
-}*/
