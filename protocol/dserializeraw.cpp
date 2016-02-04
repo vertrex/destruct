@@ -7,7 +7,7 @@ namespace Destruct
  */
 
 
-SerializeRaw::SerializeRaw(DStruct* dstruct, DValue const& args) : DCppObject<SerializeRaw>(dstruct, args), __stream(args.get<DObject*>())
+SerializeRaw::SerializeRaw(DStruct* dstruct, DValue const& args) : DCppObject<SerializeRaw>(dstruct, args), __stream(args)
 {
   this->init(); 
 }
@@ -19,7 +19,7 @@ SerializeRaw::SerializeRaw(SerializeRaw const& copy) : DCppObject<SerializeRaw>(
 
 SerializeRaw::~SerializeRaw()
 {
-  ((DObject*)__stream)->destroy();
+  //((DObject*)__stream)->destroy();
 }
 
 void    SerializeRaw::sDObject(DValue const& args)
@@ -30,7 +30,10 @@ void    SerializeRaw::sDObject(DValue const& args)
   
   DStruct const* dstruct = dobject->instanceOf(); 
   if (dstruct == NULL)
+  {
+    dobject->destroy();
     throw DException("SerializeRaw::sDObject(DValue) object instance is NULL");
+  }
 
   /*
    *  We follow special serialization and iterable method first 
@@ -51,7 +54,7 @@ void    SerializeRaw::sDObject(DValue const& args)
       this->call(type.name(), value);
     }
   }
-  //dobject->destroy();
+  dobject->destroy();
 }
 
 void    SerializeRaw::sDStruct(DValue const& args)
@@ -137,7 +140,7 @@ void    SerializeRaw::sDUInt64(DValue const& args)
 /**
  *  DeserializeRaw
  */
-DeserializeRaw::DeserializeRaw(DStruct* dstruct, DValue const& args) : DCppObject<DeserializeRaw>(dstruct, args), __stream(args.get<DObject*>())
+DeserializeRaw::DeserializeRaw(DStruct* dstruct, DValue const& args) : DCppObject<DeserializeRaw>(dstruct, args), __stream(args)
 {
   this->init(); 
 }
@@ -149,7 +152,7 @@ DeserializeRaw::DeserializeRaw(DeserializeRaw const& copy) : DCppObject<Deserial
 
 DeserializeRaw::~DeserializeRaw()
 {
-  ((DObject*)__stream)->destroy();
+ //((DObject*)__stream)->destroy();
 }
 
 DObject*        DeserializeRaw::dDObject(DValue const& value)
@@ -160,7 +163,10 @@ DObject*        DeserializeRaw::dDObject(DValue const& value)
 
   int32_t index = dobject->instanceOf()->findAttribute("deserializeRaw");
   if (index != -1)
-    return (dobject->call(index, RealValue<DObject*>(this)).get<DObject*>());
+  {
+    return (dobject->call(index, RealValue<DObject*>(this)).get<DObject*>()); //XXX refcount 
+   //dobject->destroy
+  }
 
   for (DStruct::DAttributeIterator i = dstruct->attributeBegin(); i != dstruct->attributeEnd(); ++i, ++x)
   {
@@ -178,8 +184,9 @@ DObject*        DeserializeRaw::dDObject(DValue const& value)
       dobject->setValue(x, value); 
     }    
   }
+  //dobject->destroy();
 
-  return (dobject);
+  return (dobject);//XXX get it and destroy it or return DValue !
 }
 
 DStruct*        DeserializeRaw::dDStruct(void)

@@ -37,7 +37,10 @@ void RegistryRPC::local(const std::string filePath)
   Registry::toFile(fileName + ".bin", regf, "Binary");
   Registry::toFile(fileName + ".raw", regf, "Raw");
   Registry::toFile(fileName + "registry.text", regf, "Text");
-  //Registry::show(regf); 
+  //Registry::show(regf);
+  std::cout << "REGF " << regf->refCount() << std::endl;
+  regf->destroy(); 
+  //regf->destroy(); 
 }
 
 

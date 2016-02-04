@@ -78,7 +78,8 @@ DObject*        Registry::open(DValue const& args)
   arg->destroy();
 
   DObject* deserializer = this->__destruct.find("DeserializeRaw")->newObject(RealValue<DObject*>(streamVFile));
-  deserializer->call("DObject", RealValue<DObject*>(regf));
+  deserializer->call("DObject", RealValue<DObject*>(regf)); //deserializer must destroy object ?
+
 
   if (regf->validate().get<DUInt8>())
     std::cout << "Registry file is valid" << std::endl;
