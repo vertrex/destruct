@@ -15,24 +15,19 @@ int main(int argc, char **argv)
   {
 //XXX leaking path name :) must recurse a dir in argv
 #ifndef WIN32
-  //std::string filePath = "/home/vertrex/destruct/examples/dtest/libdestruct_test.so";
   //loader.loadFile(filePath);
-  std::string filePath = "/home/vertrex/destruct/examples/registry/libregistry.so";
+  std::string filePath = "../modules/libregistry.so";
   loader.loadFile(filePath);
-  filePath = "/home/vertrex/destruct/examples/threading/libdthreading.so";
+  filePath = "../modules/libdthreading.so";
   loader.loadFile(filePath);
-  filePath = "/home/vertrex/destruct/examples/inheritance/libdestruct_inherit.so";
+  filePath = "../modules/libdestruct_inherit.so";
   loader.loadFile(filePath);
-  filePath = "/home/vertrex/destruct/examples/rpc/libdestruct_rpc.so";
+  filePath = "../modules/libdestruct_rpc.so";
   loader.loadFile(filePath);
 #else
   //XXX load other lib 
-  //std::string filePath = "C:\\Users\\Solal\\destruct-build\\examples\\dtest\\Release\\destruct_test.dll";
-  //loader.loadFile(filePath);
-  std::string filePath = "C:\\Users\\Solal\\destruct-build\\examples\\threading\\Release\\dthreading.dll";
+  std::string filePath = "lib\\dthreading.dll";
   loader.loadFile(filePath);
-  //filePath = "/home/vertrex/destruct/examples/registry/libregistry.so";
-  //loader.loadFile(filePath);
 #endif
   }
   catch (Destruct::DException const& exception)

@@ -13,6 +13,9 @@
 #  Solal Jacob <sja@digital-forensic.org>
 include_directories("../")
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/examples/bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/examples/modules)
+
 add_subdirectory(loader)
 add_subdirectory(dtest)
 add_subdirectory(db)
