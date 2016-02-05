@@ -33,7 +33,7 @@ if(UNIX)
   if(ENABLE_DEBUG)
     #add_definitions(-D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -g -Wall -std=c++0x)
     #add_definitions(-D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -g -Wall -fstack-protector-all -D_FORTIFY_SOURCE=2) #fstack-protector-strong 
-    #add_definitions(-D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -g -pg -Wall) #fstack-protector-strong 
+    #set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pg")
     add_definitions(-D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -g -Wall) #fstack-protector-strong 
     message(STATUS "Will use -g for debugging -- yes")
   else(ENABLE_DEBUG)
@@ -75,6 +75,7 @@ if (MSVC)
   set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D__value=_value")
 endif(MSVC)
 
+
 include_directories(.)
 add_subdirectory(protocol)
 
@@ -102,10 +103,18 @@ protocol/dserializeraw.cpp
 protocol/dstream.cpp
 protocol/traceobject.cpp
 protocol/recursivetraceobject.cpp
+protocol/import.cpp
 )
 
+
 configure_file(__init__.py __init__.py COPYONLY)
+
+
 add_library(destruct SHARED ${destruct_source_files})
+
+if(UNIX)
+target_link_libraries(destruct dl)
+endif(UNIX)
 
 file(RELATIVE_PATH rpath ${CMAKE_BINARY_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 if ( CMAKE_GENERATOR MATCHES "Visual Studio")

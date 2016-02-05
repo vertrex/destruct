@@ -1,18 +1,25 @@
-
-
 #include "dstruct.hpp"
-#include "loader.hpp"
+#include "import.hpp"
 
 #include "dobject.hpp"
 #include "dexception.hpp"
 
-Loader::Loader(void) : __destruct(Destruct::DStructs::instance())
+namespace Destruct
 {
+
+Import::Import(DStruct* dstruct, DValue const& args) : DCppObject<Import>(dstruct, args), __destruct(Destruct::DStructs::instance())
+{
+  this->init();
 }
 
-Loader::~Loader(void)
+Import::Import(const Import& copy) : DCppObject<Import>(copy), __destruct(Destruct::DStructs::instance())
 {
-//ifdef win32
+  this->init();
+}
+
+Import::~Import(void) //XXXX when is called ? and must call unload method rather ? because object can be destroyed lot of time !
+                      //or object must be singleton if we keep this list !!!!!!!!!
+{
 #ifndef WIN32
   std::vector<void*>::iterator library = this->__libraries.begin();
 
@@ -21,11 +28,11 @@ Loader::~Loader(void)
 #endif
 }
 
-bool    Loader::loadFile(const std::string& filePath)
+DUInt8  Import::file(DValue const& args)
 {
+  DUnicodeString filePath = args.get<DUnicodeString>();
   std::cout << "Loading file : " << filePath << std::endl;
 
-  //found x struct :
 #ifndef WIN32
   void* library = dlopen(filePath.c_str(), RTLD_LAZY);
   dlerror();
@@ -82,7 +89,12 @@ bool    Loader::loadFile(const std::string& filePath)
   return (true);
 }
 
-void    Loader::registerDStructs(std::vector<Destruct::DStruct*>& dstructs)
+DUInt8  Import::directory(DValue const& directoryPath)
+{
+  return (0);
+}
+
+void    Import::__registerDStructs(std::vector<Destruct::DStruct*>& dstructs)
 {
   std::cout << "Registering module " << " structure:" << std::endl;
 
@@ -94,7 +106,7 @@ void    Loader::registerDStructs(std::vector<Destruct::DStruct*>& dstructs)
   }
 }
 
-void    Loader::__showDestruct() const
+void    Import::__showDestruct() const
 {
   int32_t count = (int32_t)this->__destruct.count();
   for (int32_t index = 0; index < count; ++index)
@@ -103,8 +115,4 @@ void    Loader::__showDestruct() const
   }
 }
 
-bool    Loader::loadDirectory(const std::string& directoryPath)
-{
-
-  return (false);
 }

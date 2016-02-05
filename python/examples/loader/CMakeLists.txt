@@ -12,24 +12,6 @@
 # Author(s):
 #  Solal Jacob <sja@digital-forensic.org>
 
-set (python_loader_files
-  py_loader.cpp
-)
-
 configure_file(loader.py loader.py COPYONLY)
 configure_file(client.py client.py COPYONLY)
 configure_file(server.py server.py COPYONLY)
-
-include_directories("../")
-include_directories("../../")
-include_directories("../../../")
-include_directories("../../../examples/loader")
-
-add_library(_loader SHARED ${python_loader_files})
-
-set_target_properties(_loader PROPERTIES PREFIX "")
-if (MSVC)
-  target_link_libraries(_loader _destruct destruct_loader ${PYTHON_LIBRARY})
-else(MSVC)
-  target_link_libraries(_loader _destruct destruct_loader python2.7)
-endif(MSVC)

@@ -16,6 +16,8 @@
 #include "protocol/traceobject.hpp"
 #include "protocol/recursivetraceobject.hpp"
 
+#include "protocol/import.hpp"
+
 namespace Destruct
 {
 Protocol::Protocol(DStructs* destruct)
@@ -56,6 +58,8 @@ void Protocol::__registerStruct(DStructs* destruct)
   destruct->registerDStruct(new DStruct(NULL, "TraceObject",  TraceObject::newObject)); //use name space Debug.Trace
   destruct->registerDStruct(new DStruct(NULL, "RecursiveTraceObject",  RecursiveTraceObject::newObject));
   destruct->registerDStruct(static_cast<DStruct*>(new DMutableStruct(NULL, "DMutable", DMutableObject::newObject)));
+
+  registerCpp<Import>(destruct, "Import");
 }
 
 }

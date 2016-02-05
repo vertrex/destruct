@@ -5,7 +5,6 @@ sys.path.append("../")
 sys.path.append("../../")
 
 from _destruct import *
-from _loader import *
 
 def workPool():
   workerPool = DStructs().find("WorkerPool").newObject(DUInt8(4))
@@ -25,13 +24,13 @@ def serve():
   server.daemonize()
  
 def load():
-  loader = Loader()
-  paths = ["/home/vertrex/destruct/examples/dtest/libdestruct_test.so",
-           "/home/vertrex/destruct/examples/registry/libregistry.so",
-           "/home/vertrex/destruct/examples/threading/libdthreading.so",
-           "/home/vertrex/destruct/examples/rpc/libdestruct_rpc.so"]
+  loader = DStructs().find("Import").newObject()
+  paths = ["/home/vertrex/destruct/examples/modules/libdestruct_test.so",
+           "/home/vertrex/destruct/examples/modules/libregistry.so",
+           "/home/vertrex/destruct/examples/modules/libdthreading.so",
+           "/home/vertrex/destruct/examples/modules/libdestruct_rpc.so"]
   for path in paths:
-    loader.loadFile(path)
+    loader.file(path)
 
  
 if __name__ == "__main__":

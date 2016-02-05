@@ -3,13 +3,11 @@ import sys
 
 sys.path.append('../')
 sys.path.append('../../')
-sys.path.append('../loader')
 
 from _destruct import *
-from _loader import *
 
-loader = Loader()
-loader.loadFile("/home/vertrex/destruct/examples/inheritance/libdestruct_inherit.so")
+loader = DStructs().find("Import").newObject()
+loader.file("/home/vertrex/destruct/examples/modules/libdestruct_inherit.so")
 
 ##for x in range(0, DStructs().count()):
   #print DStructs().find(x)
