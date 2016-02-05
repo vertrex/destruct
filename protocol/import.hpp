@@ -84,7 +84,6 @@ public:
   {
     static DObject* import = new Import(dstruct, args);
     import->addRef();
-    std::cout << import << std::endl;
     return (import);
   }
 

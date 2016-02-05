@@ -24,7 +24,7 @@ Import::~Import(void)
 DUInt8  Import::file(DValue const& args)
 {
   DUnicodeString filePath = args.get<DUnicodeString>();
-  std::cout << "Loading file : " << filePath << std::endl;
+  //std::cout << "Loading file : " << filePath << std::endl;
 
 #ifndef WIN32
   void* library = dlopen(filePath.c_str(), RTLD_LAZY);
@@ -45,13 +45,13 @@ DUInt8  Import::file(DValue const& args)
   }
 #endif
 
-  std::cout << "Loading symbol from libray " << filePath << std::endl;
+  //std::cout << "Loading symbol from libray " << filePath << std::endl;
 #ifndef WIN32
   void* declare = dlsym(library, "declare");//must better return a list of struct that we register so we now about them and can unload them if the module is unloaded and closed
   dlerror();
   if (!declare)
   {
-    std::cout << "No method declare found in " << filePath << std::endl;
+    //std::cout << "No method declare found in " << filePath << std::endl;
     //dlclose(library); if close remove from __libraries
     return (false);
   }
@@ -59,14 +59,14 @@ DUInt8  Import::file(DValue const& args)
   FARPROC declare = GetProcAddress(library, "declare");
   if (declare == NULL) 
   {
-    std::cout << "No method declare found in " << filePath << std::endl;
+    //std::cout << "No method declare found in " << filePath << std::endl;
     return (false);
   }
 #endif
   //typedef std::vector<Destruct::DStruct*> (*declareFunc)(void);
   typedef void (*declareFunc)(void);
 
-  std::cout << "call decalre" << std::endl;
+  //std::cout << "call decalre" << std::endl;
   declareFunc func = (declareFunc)declare;
 
  // std::vector<Destruct::DStruct*> dstructs = (*func)();
@@ -74,7 +74,7 @@ DUInt8  Import::file(DValue const& args)
 
   //this->registerDStructs(dstructs);
 
-  std::cout << "showing struct" << std::endl;
+  //std::cout << "showing struct" << std::endl;
   this->__showDestruct();
 
 //return list of dstruct to delete before closing library // but if a dobject is created it will crash if not refcount
@@ -104,7 +104,7 @@ void    Import::unload(void) //Must take the name or path of the lib to unload
 
 void    Import::__registerDStructs(std::vector<Destruct::DStruct*>& dstructs)
 {
-  std::cout << "Registering module " << " structure:" << std::endl;
+  //std::cout << "Registering module " << " structure:" << std::endl;
 
   std::vector<Destruct::DStruct*>::iterator dstruct = dstructs.begin();
   for (; dstruct != dstructs.end(); ++dstruct)
