@@ -17,8 +17,7 @@ Import::Import(const Import& copy) : DCppObject<Import>(copy), __destruct(Destru
   this->init();
 }
 
-Import::~Import(void) //XXXX when is called ? and must call unload method rather ? because object can be destroyed lot of time !
-                      //or object must be singleton if we keep this list !!!!!!!!!
+Import::~Import(void) 
 {
 }
 

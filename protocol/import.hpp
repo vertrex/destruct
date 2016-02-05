@@ -5,9 +5,6 @@
 #include <iostream>
 
 #include "destruct.hpp"
-//#include "dstructs.hpp"
-//#include "dstruct.hpp"
-
 #include "dcppobject.hpp"
 
 #ifdef WIN32
@@ -19,7 +16,9 @@
 namespace Destruct
 {
 
-// CImport / PyImport inherit CImport
+/* CImport / PyImport inherit CImport
+ * Import method Declare in C files
+ */
 class Import : public DCppObject<Import> 
 {
 public:
