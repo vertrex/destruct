@@ -91,7 +91,6 @@ def loadPath(pathname):
       absolute = baseDir + "/lib" + name + ".so"
     loader.file(absolute)
 
-
 def testLoading(pathname):
   loadPath(pathname)
 
@@ -112,8 +111,8 @@ def testLoading(pathname):
 
 
   vs = DStructs().find("DVectorString").newObject()
-  server = DStructs().find("Server").newObject(DUInt32(3583))
-  server.addRoot(vs)
+  #server = DStructs().find("Server").newObject(DUInt32(3583))
+  #server.addRoot(vs)
 
 if os.name == 'nt': 
   baseDir = os.path.expanduser("~") + "/destruct-build/examples/modules/" 

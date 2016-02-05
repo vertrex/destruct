@@ -59,7 +59,8 @@ void Protocol::__registerStruct(DStructs* destruct)
   destruct->registerDStruct(new DStruct(NULL, "RecursiveTraceObject",  RecursiveTraceObject::newObject));
   destruct->registerDStruct(static_cast<DStruct*>(new DMutableStruct(NULL, "DMutable", DMutableObject::newObject)));
 
-  registerCpp<Import>(destruct, "Import");
+  Destruct::DStruct* import = new DStruct(NULL, "Import", Import::newObject, Import::ownAttributeBegin(), Import::ownAttributeEnd());//Import is a singleton
+  destruct->registerDStruct(import);
 }
 
 }

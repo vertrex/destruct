@@ -20,12 +20,6 @@ Import::Import(const Import& copy) : DCppObject<Import>(copy), __destruct(Destru
 Import::~Import(void) //XXXX when is called ? and must call unload method rather ? because object can be destroyed lot of time !
                       //or object must be singleton if we keep this list !!!!!!!!!
 {
-#ifndef WIN32
-  std::vector<void*>::iterator library = this->__libraries.begin();
-
-  for (; library != this->__libraries.end(); ++library)
-    dlclose(*library); 
-#endif
 }
 
 DUInt8  Import::file(DValue const& args)
@@ -41,6 +35,7 @@ DUInt8  Import::file(DValue const& args)
     std::cout << "Can't load libray " << filePath << std::endl;
     return (false);
   }
+  std::cout << "adding lib" << std::endl;
   this->__libraries.push_back(library);
 #else
   HMODULE library = LoadLibrary(filePath.c_str());
@@ -92,6 +87,20 @@ DUInt8  Import::file(DValue const& args)
 DUInt8  Import::directory(DValue const& directoryPath)
 {
   return (0);
+}
+
+void    Import::unload(void) //Must take the name or path of the lib to unload
+{
+#ifndef WIN32
+  std::vector<void*>::iterator library = this->__libraries.begin();
+
+  for (; library != this->__libraries.end(); ++library)
+  {
+    dlclose(*library);
+  }
+  //library->clear();
+  //Must unregister registred DStruct ? 
+#endif
 }
 
 void    Import::__registerDStructs(std::vector<Destruct::DStruct*>& dstructs)

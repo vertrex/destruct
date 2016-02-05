@@ -30,6 +30,7 @@ public:
 
   DUInt8                file(DValue const& filePath);
   DUInt8                directory(DValue const& directoryPath);
+  void                  unload(void);
 private:
   void                  __registerDStructs(std::vector<Destruct::DStruct*>&);
   void                  __showDestruct(void) const;
@@ -37,11 +38,11 @@ private:
 
   std::vector<void*>    __libraries;
 public:
-  RealValue<DFunctionObject* > _file, _directory;
+  RealValue<DFunctionObject* > _file, _directory, _unload;
 
   static size_t ownAttributeCount()
   {
-    return (2);
+    return (3);
   }
 
   static DAttribute* ownAttributeBegin()
@@ -49,7 +50,9 @@ public:
     static DAttribute  attributes[] = 
     {
        DAttribute(DType::DUInt8Type, "file",  DType::DUnicodeStringType), 
-       DAttribute(DType::DUInt8Type,  "directory", DType::DUnicodeStringType),
+       DAttribute(DType::DUInt8Type, "directory", DType::DUnicodeStringType),
+       DAttribute(DType::DNoneType,  "unload", DType::DNoneType), //Must unload only a lib with provided name allowing to reload it
+       //Must provide a way to access list of currently loaded library
     };
     return (attributes);
   }
@@ -60,6 +63,7 @@ public:
     {
        DPointer<Import>(&Import::_file, &Import::file),
        DPointer<Import>(&Import::_directory, &Import::directory),
+       DPointer<Import>(&Import::_unload, &Import::unload),
     };
     return (memberPointer);
   }
@@ -72,6 +76,24 @@ public:
   static DPointer<Import>*  memberEnd()
   {
     return (memberBegin() + ownAttributeCount());
+  }
+
+  /** 
+   *  Import is a singleton
+   */
+  static DObject* newObject(Destruct::DStruct* dstruct, DValue const& args)
+  {
+    static DObject* import = new Import(dstruct, args);
+    import->addRef();
+    std::cout << import << std::endl;
+    return (import);
+  }
+
+  virtual DObject* clone() const
+  {
+    DObject* import = static_cast<DObject*>(const_cast<Import*>(this));
+    import->addRef();
+    return (import);
   } 
 };
 
