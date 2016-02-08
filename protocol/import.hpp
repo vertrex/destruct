@@ -32,7 +32,6 @@ public:
   void                  unload(void);
 private:
   void                  __registerDStructs(std::vector<Destruct::DStruct*>&);
-  void                  __showDestruct(void) const;
   Destruct::DStructs&   __destruct;
 
   std::vector<void*>    __libraries;
