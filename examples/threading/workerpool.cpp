@@ -8,7 +8,7 @@
 
 extern "C"
 {
-  EXPORT void declare(void)
+  EXPORT void DestructExport(void)
   {
     WorkerPool::Declare();
   }

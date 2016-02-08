@@ -32,6 +32,11 @@ int main(int argc, char **argv)
     import->call("file", filePath);
 #endif
 
+    size_t count = Destruct::DStructs::instance().count();
+    std::cout << "Destruct database contain " << count << " structures" << std::endl;
+    for (size_t index = 0; index < count; ++index)
+      std::cout << Destruct::DStructs::instance().find(index)->name() << std::endl;
+
     import->destroy();
   }
   catch (Destruct::DException const& exception)

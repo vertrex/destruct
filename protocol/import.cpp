@@ -44,26 +44,26 @@ DUInt8  Import::file(DValue const& args)
 #endif
 
 #ifndef WIN32
-  void* declare = dlsym(library, "declare");//must better return a list of struct that we register so we now about them and can unload them if the module is unloaded and closed
+  void* symbol= dlsym(library, "DestructExport");//must better return a list of struct that we register so we now about them and can unload them if the module is unloaded and closed
   dlerror();
-  if (!declare)
+  if (!symbol)
   {
-    //std::cout << "No method declare found in " << filePath << std::endl;
+    //std::cout << "No method DestructExport found in " << filePath << std::endl;
     //dlclose(library); if close remove from __libraries
     return (false);
   }
 #else
-  FARPROC declare = GetProcAddress(library, "declare");
-  if (declare == NULL) 
+  FARPROC symbol = GetProcAddress(library, "symbol");
+  if (symbol == NULL) 
   {
-    //std::cout << "No method declare found in " << filePath << std::endl;
+    //std::cout << "No method DestructExport found in " << filePath << std::endl;
     return (false);
   }
 #endif
-  //typedef std::vector<Destruct::DStruct*> (*declareFunc)(void);
-  typedef void (*declareFunc)(void);
+  //typedef std::vector<Destruct::DStruct*> (*symbolFunc)(void);
+  typedef void (*symbolFunc)(void);
 
-  declareFunc func = (declareFunc)declare;
+  symbolFunc func = (symbolFunc)symbol;
 
  // std::vector<Destruct::DStruct*> dstructs = (*func)();
   (*func)();
