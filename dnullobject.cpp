@@ -21,7 +21,7 @@ DStruct* DNullObject::__dstructInstance()
   return &dstruct;
 }
 
-DNullObject::DNullObject() : DObject(DNullObject::__dstructInstance(), RealValue<DObject*>(DNone))
+DNullObject::DNullObject() : DObject(DNullObject::__dstructInstance(), RealValue<DObject*>(NULL))
 {
 }
 
