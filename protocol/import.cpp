@@ -98,7 +98,7 @@ void    Import::unload(void) //Must take the name or path of the lib to unload
 
   for (; library != this->__libraries.end(); ++library)
   {
-    FreeLibrary(*library);
+    FreeLibrary((HMODULE)*library);
   }
   //library->clear();
   //Must unregister registred DStruct ?	
