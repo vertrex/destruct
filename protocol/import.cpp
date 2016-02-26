@@ -41,6 +41,7 @@ DUInt8  Import::file(DValue const& args)
     std::cout << "Can't load libray " << filePath << std::endl;
     return (false);
   }
+  this->__libraries.push_back(library);
 #endif
 
 #ifndef WIN32
@@ -53,10 +54,10 @@ DUInt8  Import::file(DValue const& args)
     return (false);
   }
 #else
-  FARPROC symbol = GetProcAddress(library, "symbol");
+  FARPROC symbol = GetProcAddress(library, "DestructExport");
   if (symbol == NULL) 
   {
-    //std::cout << "No method DestructExport found in " << filePath << std::endl;
+    std::cout << "No method DestructExport found in " << filePath << std::endl;
     return (false);
   }
 #endif
@@ -91,7 +92,16 @@ void    Import::unload(void) //Must take the name or path of the lib to unload
     dlclose(*library);
   }
   //library->clear();
-  //Must unregister registred DStruct ? 
+  //Must unregister registred DStruct ?
+#else
+  std::vector<void*>::iterator library = this->__libraries.begin();
+
+  for (; library != this->__libraries.end(); ++library)
+  {
+    FreeLibrary(*library);
+  }
+  //library->clear();
+  //Must unregister registred DStruct ?	
 #endif
 }
 
