@@ -6,7 +6,7 @@ sys.path.append("../")
 sys.path.append("../../")
 
 from _destruct import *
-from _loader import *
+#from _loader import *
 
 class FindKeyStruct(DStruct):
   def __init__(self):
@@ -82,15 +82,14 @@ def connect():
 
 
 def loadPath(pathname):
-  loader = Loader()
-  for (path, name,) in pathname:
+  loader = DStructs().find("Import").newObject()
+  for name in pathname:
     if os.name == 'nt':
-      absolute = baseDir + path + "/Release/" + name + ".dll"
+      absolute = baseDir + "/Release/" + name + ".dll"
       absolute = os.path.normpath(absolute)
     else:
-      absolute = baseDir + path + "/lib" + name + ".so"
-    loader.loadFile(absolute)
-
+      absolute = baseDir + "/lib" + name + ".so"
+    loader.file(absolute)
 
 def testLoading(pathname):
   loadPath(pathname)
@@ -112,24 +111,24 @@ def testLoading(pathname):
 
 
   vs = DStructs().find("DVectorString").newObject()
-  server = DStructs().find("Server").newObject(DUInt32(3583))
-  server.addRoot(vs)
+  #server = DStructs().find("Server").newObject(DUInt32(3583))
+  #server.addRoot(vs)
 
+if os.name == 'nt': 
+  baseDir = os.path.expanduser("~") + "/destruct-build/examples/modules/" 
+else:
+  baseDir = os.path.expanduser("~") + "/destruct/examples/modules/" 
 
 if __name__ == "__main__":
   print "found baseDir" + baseDir
 
-  pathname = [("dtest", "destruct_test",),
-	      ("threading", "dthreading",),
-	      ("inheritance", "destruct_inherit",),
-              ("rpc", "destruct_rpc",),
-              ("registry", "registry",),
+  pathname = ["destruct_test",
+	      "dthreading",
+	      "destruct_inherit",
+              "destruct_rpc",
+              "registry",
 	     ]
 
   testLoading(pathname) 
 
-if os.name == 'nt': 
-  baseDir = os.path.expanduser("~") + "/destruct-build/examples/" 
-else:
-  baseDir = os.path.expanduser("~") + "/destruct/examples/" 
 

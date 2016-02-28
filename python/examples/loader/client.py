@@ -5,7 +5,6 @@ sys.path.append("../")
 sys.path.append("../../")
 
 from _destruct import *
-from _loader import *
 
 class FindKeyStruct(DStruct):
   def __init__(self):
@@ -68,15 +67,15 @@ def connect():
 
 
 def load():
-  loader = Loader()
-  paths = ["/home/vertrex/destruct/examples/dtest/libdestruct_test.so",
-           "/home/vertrex/destruct/examples/registry/libregistry.so",
-           "/home/vertrex/destruct/examples/threading/libdthreading.so",
-           "/home/vertrex/destruct/examples/rpc/libdestruct_rpc.so",
-           "/home/vertrex/destruct/examples/inheritance/libdestruct_inherit.so"]
+  loader = DStructs().find("Import").newObject()
+  paths = ["/home/vertrex/destruct/examples/modules/libdestruct_test.so",
+           "/home/vertrex/destruct/examples/modules/libregistry.so",
+           "/home/vertrex/destruct/examples/modules/libdthreading.so",
+           "/home/vertrex/destruct/examples/modules/libdestruct_rpc.so",
+           "/home/vertrex/destruct/examples/modules/libdestruct_inherit.so"]
 
   for path in paths:
-    loader.loadFile(path)
+    loader.file(path)
 
 
 if __name__ == "__main__":

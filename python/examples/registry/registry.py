@@ -1,4 +1,4 @@
-#!/usr/bin/python 
+#!/usr/bin/python -i 
 import sys
 
 sys.path.append('../../')
@@ -60,4 +60,4 @@ if __name__ == "__main__":
      #for value in values:
         #print value.name.keyName
 
-   showKeys(regf.key)
+   #showKeys(regf.key)

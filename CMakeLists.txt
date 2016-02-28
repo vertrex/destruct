@@ -30,50 +30,26 @@ ENDIF (NOT ${CMAKE_BINARY_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})
 option(ENABLE_DEBUG "Compile using -g flag ? Useful for debugging" OFF)
 add_definitions(-D__STDC_LIMIT_MACROS)
 if(UNIX)
-  if(ENABLE_DEBUG)
-    #add_definitions(-D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -g -Wall -std=c++0x)
-    #add_definitions(-D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -g -Wall -fstack-protector-all -D_FORTIFY_SOURCE=2) #fstack-protector-strong 
-    #add_definitions(-D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -g -pg -Wall) #fstack-protector-strong 
-    add_definitions(-D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -g -Wall) #fstack-protector-strong 
-    message(STATUS "Will use -g for debugging -- yes")
-  else(ENABLE_DEBUG)
-    #add_definitions(-D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -O2 -std=c++0x)
-    add_definitions(-D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -O2 -Wall) 
-    message(STATUS "Will use -g for debugging -- no")
-  endif(ENABLE_DEBUG)
+  if (ENABLE_LEAK_DETECTION)
+    set (CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -fsanitize=leak")
+    set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=leak")
+    set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -fsanitize=leak")
+    add_definitions(-D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -g -Wall -O1 -fsanitize=leak -fno-omit-frame-pointer -fno-optimize-sibling-calls)
+    message(STATUS "Compile using lsan library to detect memory leak, use LD_PRELOAD=path_to_gcc_lsan.so ./dff.py to run")
+  elseif(ENABLE_DEBUG)
+    add_definitions(-D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -g -Wall)
+    message(STATUS "Compile using -g and no optimization")
+  else(ENABLE_LEAK_DETECTION)
+    add_definitions(-D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -O2 -Wall)
+    message(STATUS "Compile with optimization")
+  endif(ENABLE_LEAK_DETECTION)
 endif(UNIX)
 
-#if (ICU_DEP_PATH)
-  #if (WIN32)
-    #if (HAVE_64_BIT)
-      #set(ICU_PATH_SUFFIX "64")
-    #else()
-      #set(ICU_PATH_SUFFIX "")
-    #endif()
-    #set(ICU_INCLUDE_PATH "${ICU_DEP_PATH}/include")
-    #set(ICU_LIBRARIES_PATH "${ICU_DEP_PATH}/lib${ICU_PATH_SUFFIX}")
-    #set(ICU_DYNLIB_PATH "${ICU_DEP_PATH}/bin${ICU_PATH_SUFFIX}")
-  #endif (WIN32)
-#endif (ICU_DEP_PATH)
-
-#find_package(ICU REQUIRED)
-
-# Check 64 bit
-if( "${CMAKE_SIZEOF_VOID_P}" EQUAL 4 )
-  set( HAVE_64_BITS 0 )
-else( "${CMAKE_SIZEOF_VOID_P}" EQUAL 4 )
-  if (WIN32)
-    set(CMAKE_SWIG_FLAGS ${CMAKE_SWIG_FLAGS} -DSWIGWORDSIZE32)
-  else()
-    set(CMAKE_SWIG_FLAGS ${CMAKE_SWIG_FLAGS} -DSWIGWORDSIZE64)
-  endif()
-  set( HAVE_64_BITS 1 )
-endif( "${CMAKE_SIZEOF_VOID_P}" EQUAL 4 )
-#
 
 if (MSVC)
   set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D__value=_value")
 endif(MSVC)
+
 
 include_directories(.)
 add_subdirectory(protocol)
@@ -102,11 +78,19 @@ protocol/dserializeraw.cpp
 protocol/dstream.cpp
 protocol/traceobject.cpp
 protocol/recursivetraceobject.cpp
+protocol/import.cpp
 )
 
+
 configure_file(__init__.py __init__.py COPYONLY)
+
+
 add_library(destruct SHARED ${destruct_source_files})
 target_link_libraries(destruct icuuc)
+
+if(UNIX)
+target_link_libraries(destruct dl)
+endif(UNIX)
 
 file(RELATIVE_PATH rpath ${CMAKE_BINARY_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 if ( CMAKE_GENERATOR MATCHES "Visual Studio")

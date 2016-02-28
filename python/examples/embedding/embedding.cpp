@@ -7,7 +7,7 @@
 #include "embedding.hpp"
 #include "py_dobject.hpp"
 
-PythonInterpreter::PythonInterpreter(void)
+PythonInterpreter::PythonInterpreter(void) : __pyModule(NULL)
 {
   Py_SetProgramName((char*)"embedding");
   Py_Initialize();
@@ -80,15 +80,22 @@ int main(int argc, char **argv)
 {
   PythonInterpreter     pythonInterpreter;
 
-  pythonInterpreter.import();
-  PyObject* pyObject = pythonInterpreter.getPythonObject();
+  try
+  {
+    pythonInterpreter.import();
+    PyObject* pyObject = pythonInterpreter.getPythonObject();
 
-  Destruct::DObject* dobject = ((PyDObject::DPyObject*)pyObject)->pimpl;
-  showObject(dobject);
-  setPythonObject(dobject);
+    Destruct::DObject* dobject = ((PyDObject::DPyObject*)pyObject)->pimpl;
+    showObject(dobject);
+    setPythonObject(dobject);
 
-  pythonInterpreter.showObject(pyObject);
-  Py_DECREF(pyObject);
+    pythonInterpreter.showObject(pyObject);
+    Py_DECREF(pyObject);
+  }
+  catch (Destruct::DException const& exception)
+  {
+    std::cout << exception.error() << std::endl;
+  }
 
   return (0); 
 }

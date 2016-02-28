@@ -12,7 +12,7 @@
 
 extern "C"
 {
-  EXPORT void declare(void)
+  EXPORT void DestructExport(void)
   {
     Inheritance::declare();
   }

@@ -14,19 +14,8 @@
 
 include_directories("../../")
 
-set (loader_libfiles
-loader.cpp
-)
-
-add_library(destruct_loader SHARED ${loader_libfiles})
-if(MSVC)
-target_link_libraries(destruct_loader destruct)
-else(MSVC)
-target_link_libraries(destruct_loader destruct dl)
-endif(MSVC)
-
 set (load_files
 load.cpp)
 
 add_executable(load ${load_files})
-target_link_libraries(load destruct_loader) 
+target_link_libraries(load destruct) 
