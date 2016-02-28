@@ -96,7 +96,7 @@ DValue RegfTime64::date(void)
 
 DValue RegfTime64::deserializeRaw(DValue const& value)
 {
-  DObject* deserializer = value.get<DObject*>();
+  DObject* deserializer = value;
   this->timeStamp = deserializer->call("DUInt64");
 
   return RealValue<DObject*>(this);
@@ -116,10 +116,10 @@ RegfName::~RegfName(void)
 
 DValue    RegfName::deserializeRaw(DValue const& arg)
 {
-  DObject* deserializer = arg.get<DObject*>();
-  DObject* stream = deserializer->getValue("stream").get<DObject*>();
+  DObject* deserializer = arg;
+  DObject* stream = deserializer->getValue("stream");
 
-  DBuffer buffer = stream->call("read", RealValue<DInt64>(60)).get<DBuffer>();
+  DBuffer buffer = stream->call("read", RealValue<DInt64>(60));
   uint8_t* fileNameBuff = buffer.data();
 
   uint32_t i = 0;

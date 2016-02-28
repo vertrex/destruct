@@ -98,7 +98,8 @@ int main(int argc, char** argv)
   }
 
   RegistryRPC   registryRPC;
-
+//use import, load rpc and subclass ?
+//sync struct with client so it doesn t need any destruct declaration
   try 
   {
     if (std::string(argv[1]) == std::string("-l") && argc == 3)

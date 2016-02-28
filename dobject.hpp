@@ -30,7 +30,10 @@ public:
   virtual DValue getValue(DUnicodeString const& name) const;
   virtual void setValue(DUnicodeString const& name, DValue const &);
 
-  virtual DValue call(DUnicodeString const& name, DValue const &);
+
+  //template <typename RealType>
+  //DValue call(DUnicodeString const& name, RealType v); //ambigous & can't be overloaded
+  virtual DValue call(DUnicodeString const& name, DValue const &); //virtual or template
   virtual DValue call(DUnicodeString const& name);
 
   virtual BaseValue* getBaseValue(size_t index) = 0;

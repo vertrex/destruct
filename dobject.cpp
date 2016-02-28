@@ -57,11 +57,22 @@ void DObject::setValue(DUnicodeString const& name, DValue const& v)
   throw DException(this->instanceOf()->name() + "::setValue instance has no attribute " + name);
 }
 
+//template <typename RealType>
+//DValue DObject::call(DUnicodeString const& name, RealType v)
+//{
+  //int32_t index = this->instanceOf()->findAttribute(name);
+  //DValue value = RealValue<RealType>(v);
+  //if (index != -1)
+   //return (this->call((size_t)index, value));
+
+  //throw DException(this->instanceOf()->name() + "::call instance has no attribute " + name); 
+//}
+
 DValue DObject::call(DUnicodeString const& name, DValue const& v) //const ? XXX  : throw
 {
   int32_t index = this->instanceOf()->findAttribute(name);
   if (index != -1)
-   return (this->call(index, v));
+   return (this->call((size_t)index, v));
 
   throw DException(this->instanceOf()->name() + "::call instance has no attribute " + name); 
 }
@@ -70,7 +81,7 @@ DValue DObject::call(DUnicodeString const& name) //const ? XXX  : throw
 {
   int32_t index = this->instanceOf()->findAttribute(name);
   if (index != -1)
-    return (this->call(index, RealValue<DObject*>(DNone)));
+    return (this->call((size_t)index, RealValue<DObject*>(DNone)));
 
   throw DException(this->instanceOf()->name() + "::call instance has no attribute " + name); 
 }

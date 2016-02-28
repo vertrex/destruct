@@ -10,6 +10,8 @@ from _registryrpc import *
 from PyQt4.QtGui import QApplication, QTreeWidget, QTreeWidgetItem, QMainWindow, QDockWidget, QTableWidget, QWidget, QBoxLayout, QTableWidgetItem, QDialog, QAction, QVBoxLayout, QDialogButtonBox, QLabel, QLineEdit, QGroupBox, QFormLayout, QSpinBox
 from PyQt4.QtCore import SIGNAL, Qt
 
+from binascii import hexlify
+
 class DObjectTreeWidgetItem(QTreeWidgetItem):
   def __init__(self, parent, dobject):
     super(DObjectTreeWidgetItem, self).__init__(parent)
@@ -77,8 +79,17 @@ class ValuesTableWidget(QTableWidget):
       value = valuesList.get(index)
       self.setItem(index, 0, QTableWidgetItem(value.name.keyName))
       self.setItem(index, 1, QTableWidgetItem(value.valueTypeName()))
-      self.setItem(index, 2, QTableWidgetItem(str(value.data())))
-
+      vd = value.data() #or segfault !
+      data = vd.data()
+      if type(data) == bytearray:
+        self.setItem(index, 2, QTableWidgetItem(hexlify(data)))
+      elif type(data) == DObject:
+        multiString = ""
+        for string in data:
+          multiString += string + ","
+        self.setItem(index, 2, QTableWidgetItem(multiString[:-1]))
+      else:
+        self.setItem(index, 2, QTableWidgetItem(str(data)))
     self.resizeColumnsToContents()
     self.resizeRowsToContents()
 
@@ -98,7 +109,7 @@ class ConnectionDialog(QDialog):
     super(ConnectionDialog, self).__init__(parent)
     layout = QVBoxLayout(self)
     formLayout = QFormLayout()
-    self.filePath = QLineEdit("/home/user/dump/registry/system") 
+    self.filePath = QLineEdit("/home/vertrex/dump/registry/system") 
     formLayout.addRow(QLabel("server registry file path :"), self.filePath)
     self.ipAddress = QLineEdit("127.0.0.1")
     formLayout.addRow(QLabel("server ip address :"), self.ipAddress)
@@ -129,6 +140,10 @@ class MainWindow(QMainWindow):
     ok = connectionDialog.exec_()
     if not ok:
       return
+
+    #destruct import rpc
+    #rpc connect
+    #...
 
     registry = self.registryRPC.connect(str(connectionDialog.ipAddress.text()), connectionDialog.port.value())
     regf = registry.open(str(connectionDialog.filePath.text()))

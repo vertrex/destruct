@@ -43,7 +43,7 @@ NamedKey::~NamedKey(void)
 NameLength::NameLength(DStruct* dstruct, DValue const& args) : DCppObject<NameLength>(dstruct, args), __size(0)
 {
   this->init();
-  this->parent = args.get<DObject* >();
+  this->parent = args;
 }
 
 NameLength::~NameLength(void)
@@ -52,11 +52,11 @@ NameLength::~NameLength(void)
 
 DValue    NameLength::deserializeRaw(DValue const& arg)
 {
-  DObject* deserializer = arg.get<DObject*>();
+  DObject* deserializer = arg;
 
-  DUInt16 size = ((DObject*)this->parent)->getValue(this->attributeKeyName).get<DUInt16>();
+  DUInt16 size = ((DObject*)this->parent)->getValue(this->attributeKeyName);
 
-  DBuffer buffer = deserializer->getValue("stream").get<DObject*>()->call("read", RealValue<DInt64>((DInt64)size)).get<DBuffer>();
+  DBuffer buffer = deserializer->getValue("stream").get<DObject*>()->call("read", RealValue<DInt64>((DInt64)size));
   
   this->keyName = DUnicodeString(std::string((char*)buffer.data(), size));
 

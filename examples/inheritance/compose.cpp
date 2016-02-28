@@ -5,7 +5,7 @@
  */
 Compose::Compose(DComposedStruct* composedStruct, DValue const& args) : DObject(composedStruct, args)
 {
-  Destruct::DStructs& destruct = Destruct::DStructs::instance();
+  //Destruct::DStructs& destruct = Destruct::DStructs::instance();
 
   std::vector<DStruct const*> dstructs = composedStruct->inherit();
   std::vector<DStruct const*>::iterator dstruct = dstructs.begin();

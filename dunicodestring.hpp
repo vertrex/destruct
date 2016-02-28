@@ -4,6 +4,7 @@
 #include <string>
 #include <iostream>
 #include <sstream>
+#include <stdint.h>
 
 #include "destruct.hpp"
 
@@ -15,12 +16,18 @@ class DUnicodeString
 public:
 
 EXPORT DUnicodeString();
+
 EXPORT DUnicodeString(const DUnicodeString& dunicodeString);
 EXPORT DUnicodeString(const std::string& string);
 EXPORT DUnicodeString(const char *); 
 EXPORT DUnicodeString(const char);
-
+/**
+ *   Unicode conversion method using ICU
+ *   See ICU for valid codepage
+ */
+EXPORT DUnicodeString(const char* str, int32_t size, const char* codepage);
 EXPORT ~DUnicodeString(); 
+
 
 EXPORT std::string  string(void) const;
 EXPORT const char* c_str() const;

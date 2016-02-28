@@ -106,6 +106,7 @@ protocol/recursivetraceobject.cpp
 
 configure_file(__init__.py __init__.py COPYONLY)
 add_library(destruct SHARED ${destruct_source_files})
+target_link_libraries(destruct icuuc)
 
 file(RELATIVE_PATH rpath ${CMAKE_BINARY_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 if ( CMAKE_GENERATOR MATCHES "Visual Studio")

@@ -90,11 +90,11 @@ public:
   EXPORT DValue& operator=(const DValue&);
   EXPORT DValue& replace(const DValue&);
 
-  //template <typename PlainType>// ok but could be ambigous in some case
-  //operator PlainType() const
-  //{
-  //return (this->get<PlainType>());
-  //}
+  template <typename PlainType>// ok but could be ambigous in some case
+  operator PlainType() const
+  {
+    return (this->get<PlainType>());
+  }
 
   template <typename PlainType>
   EXPORT PlainType get() const

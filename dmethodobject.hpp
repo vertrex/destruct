@@ -272,7 +272,7 @@ public:
       return (__methodBase->call(args));
     }
     catch (std::bad_cast error)
-    { 
+    {
       throw DException("DMethodObject::call(args) : Bad cast");
     }
   }

@@ -27,7 +27,7 @@ using namespace Destruct;
 Subkeys::Subkeys(DStruct* dstruct, DValue const& args) : DCppObject<Subkeys>(dstruct, args), __size(0)
 {
   this->init();
-  this->parent = args.get<DObject* >();
+  this->parent = args;
   this->list = Destruct::DStructs::instance().generate("DVectorObject");
 }
 
@@ -37,13 +37,13 @@ Subkeys::~Subkeys(void)
 
 DValue    Subkeys::deserializeRaw(DValue const& arg)
 {
-  DObject* deserializer = arg.get<DObject*>();
-  DObject* stream = deserializer->getValue("stream").get<DObject*>();
+  DObject* deserializer = arg;
+  DObject* stream = deserializer->getValue("stream");
 
 
   //XXX IF SUBKEY COUNT IN PARENT ? //if nk only ? 
-  DUInt32 parentSubkeyCount = ((DObject*)this->parent)->getValue("subkeyCount").get<DUInt32>();
-  DUInt32 subkeyListOffset = ((DObject*)this->parent)->getValue("subkeyListOffset").get<DUInt32>();
+  DUInt32 parentSubkeyCount = ((DObject*)this->parent)->getValue("subkeyCount");
+  DUInt32 subkeyListOffset = ((DObject*)this->parent)->getValue("subkeyListOffset");
   if (parentSubkeyCount == 0 || subkeyListOffset == 0xffffffff)
   {
     deserializer->destroy();
@@ -73,12 +73,12 @@ DValue    Subkeys::deserializeRaw(DValue const& arg)
         subkeyChecksum = deserializer->call("DUInt32");
   
       
-      DUInt64 currentOffset = stream->call("tell").get<DUInt64>();
+      DUInt64 currentOffset = stream->call("tell");
       stream->call("seek", RealValue<DUInt64>(subkeyOffset + 0x1000));
 
-      //DUInt32 subHbinSize = deserializer->call("DUInt32").get<DUInt32>();
-      deserializer->call("DUInt32").get<DUInt32>();
-      DUInt16 subKeySignature = deserializer->call("DUInt16").get<DUInt16>();
+      //DUInt32 subHbinSize = deserializer->call("DUInt32");
+      deserializer->call("DUInt32");
+      DUInt16 subKeySignature = deserializer->call("DUInt16");
 
       if (subKeySignature == 0x6b6e) //nk
       { 

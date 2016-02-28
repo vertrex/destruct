@@ -1,3 +1,5 @@
+#include <unicode/unistr.h>
+
 #include "dunicodestring.hpp"
 
 namespace Destruct
@@ -22,6 +24,11 @@ DUnicodeString::DUnicodeString(const char *chr) : __string(chr)
 DUnicodeString::DUnicodeString(const char c) : __string("")
 {
   this->__string += c;
+}
+
+DUnicodeString::DUnicodeString(const char* str, int32_t size, const char * codepage)
+{
+  UnicodeString(str, size, codepage).toUTF8String(this->__string);
 }
 
 DUnicodeString::~DUnicodeString() 

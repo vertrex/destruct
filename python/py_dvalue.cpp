@@ -418,9 +418,9 @@ PyObject*     PyDUnicodeString::asDValue(Destruct::DValue const& v)
 {
   Destruct::DUnicodeString value = v.get<Destruct::DUnicodeString>();
 #ifdef FAST_CONVERSION
-  return (PyString_FromStringAndSize(value.c_str(), value.size()));
+  return (PyUnicode_FromStringAndSize(value.c_str(), value.size()));
 #else
-  return (PyObject_CallObject((PyObject*)PyDUnicodeString::pyType  , Py_BuildValue("(O)", PyString_FromStringAndSize(value.c_str(), value.size()))));
+  return (PyObject_CallObject((PyObject*)PyDUnicodeString::pyType  , Py_BuildValue("(O)", PyUnicode_FromStringAndSize(value.c_str(), value.size()))));
 #endif
 }
 
@@ -428,9 +428,9 @@ PyObject*     PyDUnicodeString::asPyObject(PyObject* self, int32_t attributeInde
 {
 #ifdef FAST_CONVERSION
   Destruct::DUnicodeString value = ((PyDObject::DPyObject*)self)->pimpl->getValue(attributeIndex).get<Destruct::DUnicodeString>();
-  return (PyString_FromStringAndSize(value.c_str(), value.size()));
+  return (PyUnicode_FromStringAndSize(value.c_str(), value.size()));
 #else
-  return (PyObject_CallObject((PyObject*)PyDUnicodeString::pyType  , Py_BuildValue("(O)", PyString_FromStringAndSize(value.c_str(), value.size()))));
+  return (PyObject_CallObject((PyObject*)PyDUnicodeString::pyType  , Py_BuildValue("(O)", PyUnicode_FromStringAndSize(value.c_str(), value.size()))));
 #endif
 }
 
@@ -457,18 +457,10 @@ PyDBuffer::PyDBuffer()
 
 Destruct::DValue PyDBuffer::toDValue(PyObject* value) 
 {
-//  if (PyBuffer_Check(value))
-  if (PyObject_CheckReadBuffer(value))
+  if (PyByteArray_Check(value))
   {
-    const void*  data;
-    Py_ssize_t   size;
-
-        //PyObject_AsCharBuffer ? abstract.h
-    if (PyObject_AsReadBuffer(value, &data, &size) == 0)
-    {
-      Destruct::DBuffer fvalue((uint8_t*)data, (DInt32)size);
-      return Destruct::RealValue<Destruct::DBuffer>(fvalue);
-    }
+    Destruct::DBuffer fvalue((uint8_t*)PyByteArray_AsString(value), PyByteArray_Size(value));
+    return Destruct::RealValue<Destruct::DBuffer>(fvalue);
   }
 
   throw Destruct::DException("Can't cast to DBuffer");
@@ -478,9 +470,9 @@ PyObject*     PyDBuffer::asDValue(Destruct::DValue const& v)
 {
   Destruct::DBuffer value = v.get<Destruct::DBuffer>();
 #ifdef FAST_CONVERSION
-  return (PyBuffer_FromMemory(value.data(), value.size()));
+  return (PyByteArray_FromStringAndSize((char*)value.data(), value.size()));
 #else
-  return (PyObject_CallObject((PyObject*)PyDBuffer::pyType  , Py_BuildValue("(O)", PyBuffer_FromMemory(value.data(), value.size()))));
+  return (PyObject_CallObject((PyObject*)PyDBuffer::pyType  , Py_BuildValue("(O)", PyByteArray_FromStringAndSize((char*)value.data(), value.size()))));
 #endif
 }
 
@@ -488,9 +480,9 @@ PyObject*     PyDBuffer::asPyObject(PyObject* self, int32_t attributeIndex)
 {
 #ifdef FAST_CONVERSION
   Destruct::DBuffer value = ((PyDObject::DPyObject*)self)->pimpl->getValue(attributeIndex).get<Destruct::DBuffer>();
-  return (PyBuffer_FromMemory(value.data(), value.size()));
+  return (PyByteArray_FromStringAndSize((char*)value.data(), value.size()));
 #else
-  return (PyObject_CallObject((PyObject*)PyDBuffer::pyType, Py_BuildValue("(O)", PyBuffer_FromMemory(value.data(), value.size()))));
+  return (PyObject_CallObject((PyObject*)PyDBuffer::pyType, Py_BuildValue("(O)", PyByteArray_FromStringAndSize((char*)value.data(), value.size()))));
 #endif
  
 }

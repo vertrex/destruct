@@ -90,8 +90,10 @@ void    SerializeRPC::sDUnicodeString(DValue const& args)
 void    SerializeRPC::sDBuffer(DValue const& args)
 {
   DObject* stream = this->__stream;
-  //write size
-  //write buffer data ? (for other only write data or do it for each so it self contained ??) 
+  DBuffer buffer = args.get<DBuffer>();
+  RealValue<DInt64>  dsize((DInt64)buffer.size());
+
+  stream->call("write", RealValue<DBuffer>(dsize.asDBuffer()));
   stream->call("write", args);
 }
 
@@ -234,13 +236,10 @@ DUnicodeString  DeserializeRPC::dDUnicodeString(void)
 
 DBuffer         DeserializeRPC::dDBuffer(void)
 {
-  //XXX implement me 
-  //DObject* stream = this->__stream;
-  //stream->call("write", args);
-  //read buffer size
-  //read buffer data
+  DObject* stream = this->__stream;
 
-  return DBuffer();
+  DInt64  size = this->call("DInt64").get<DInt64>();
+  return (stream->call("read", RealValue<DInt64>(size)).get<DBuffer>());
 }
 
 DInt8           DeserializeRPC::dDInt8(void)
