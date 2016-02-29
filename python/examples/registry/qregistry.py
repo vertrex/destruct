@@ -130,7 +130,9 @@ class MainWindow(QMainWindow):
     openAction = QAction("&Connect", self)
     openAction.triggered.connect(self.connection);
     self.menuBar().addAction(openAction)
-    self.registryRPC = RegistryRPC()
+    loader = DStructs().find("Import").newObject()
+    loader.file("../../../examples/modules/libdestruct_rpc.so")
+    loader.file("../../../examples/modules/libregistry.so")
 
   def connection(self):
     connectionDialog = ConnectionDialog(self)
@@ -138,13 +140,13 @@ class MainWindow(QMainWindow):
     if not ok:
       return
 
-    #destruct import rpc
-    #rpc connect
-    #...
-
-    registry = self.registryRPC.connect(str(connectionDialog.ipAddress.text()), connectionDialog.port.value())
-    regf = registry.open(str(connectionDialog.filePath.text()))
-    self.registryBrowserWidget = RegistryBrowserWidget(regf.key)
+    arg = DStructs().find("ClientArgument").newObject()
+    arg.port = connectionDialog.port.value() 
+    arg.address = str(connectionDialog.ipAddress.text())
+    self.client = DStructs().find("Client").newObject(arg)
+    self.registry = self.client.findObject() #registry is hardcoded in rpc client change that 
+    self.regf = self.registry.open(str(connectionDialog.filePath.text()))
+    self.registryBrowserWidget = RegistryBrowserWidget(self.regf.key)
     self.dockWidget = QDockWidget()
     self.dockWidget.setWidget(self.registryBrowserWidget) 
     self.addDockWidget(Qt.TopDockWidgetArea, self.dockWidget)

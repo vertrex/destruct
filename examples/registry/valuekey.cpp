@@ -70,6 +70,9 @@ DObject*        ValueKey::data(void)
     return (RealValue<DObject*>(regnone));    
   }
   DObject* dataObject = dataStruct->newObject(RealValue<DObject*>(this));
+  if (realDataSize >= 16344)
+    std::cout << "Found big cell " << this->name << " size " << realDataSize << std::endl;
+
   return (dataObject);
 }
 

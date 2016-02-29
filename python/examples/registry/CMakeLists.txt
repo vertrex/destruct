@@ -11,23 +11,14 @@
 # 
 # Author(s):
 #  Solal Jacob <sja@digital-forensic.org>
+add_custom_target(pyregistry)
+add_dependencies(examples pyregistry)
+add_dependencies(_destruct pyregistry)
+configure_file(registry.py registry.py COPYONLY)
+configure_file(qregistry.py qregistry.py COPYONLY)
 
-set (python_registryrpc_files
-  py_registryrpc.cpp
+set (pydestruct_examples_registry_files
+registry.py
+qregistry.py
 )
 
-
-include_directories("../")
-include_directories("../../")
-include_directories("../../../")
-include_directories("../../../examples/registry")
-include_directories("../../../examples/rpc")
-
-add_library(_registryrpc SHARED ${python_registryrpc_files})
-
-set_target_properties(_registryrpc PROPERTIES PREFIX "")
-if (MSVC)
-  target_link_libraries(_registryrpc _destruct registry destruct_rpc ${PYTHON_LIBRARY})
-else(MSVC)
-  target_link_libraries(_registryrpc _destruct registry destruct_rpc python2.7)
-endif(MSVC)

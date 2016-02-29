@@ -87,8 +87,8 @@ DValue    Subkeys::deserializeRaw(DValue const& arg)
         deserializer->call("DObject", RealValue<DObject*>(subkey)); //throw if not nk ?
         ((DObject*)this->list)->call("push", RealValue<DObject*>(subkey)); 
       }
-      else 
-        std::cout << "found subkey signature " << subKeySignature << std::endl; 
+      //else 
+      //std::cout << "found subkey signature " << subKeySignature << std::endl; 
       //strange sometime is lh but that's all !
       stream->call("seek", RealValue<DUInt64>(currentOffset));
     }
