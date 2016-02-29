@@ -32,10 +32,8 @@ class KeyTreeWidgetItem(DObjectTreeWidgetItem):
 
   def populateItemSubKeys(self):
     if not self.__populated:
-      subKeysList = self.subkeys.list
-      size = subKeysList.size()
-      for index in range(0, size):
-        subKey = subKeysList.get(index)
+      subKeyList = self.subkeys.list
+      for subKey in subKeyList:
         item = KeyTreeWidgetItem(self, subKey)
       self.__populated = True
 
@@ -49,9 +47,7 @@ class KeyTreeView(QTreeWidget):
  
   def populateTree(self, key):
     subKeysList = key.subkeys.list
-    size = subKeysList.size()
-    for index in range(0, size):
-      subKey = subKeysList.get(index)
+    for subKey in subKeysList: 
       item = KeyTreeWidgetItem(None, subKey)
       self.addTopLevelItem(item)
       item.populateItemSubKeys()
@@ -75,8 +71,8 @@ class ValuesTableWidget(QTableWidget):
     valuesList = keyItem.values.list
     size = valuesList.size()
     self.setRowCount(size)
-    for index in range(0, size):
-      value = valuesList.get(index)
+    index = 0
+    for value in valuesList:
       self.setItem(index, 0, QTableWidgetItem(value.name))
       self.setItem(index, 1, QTableWidgetItem(value.valueTypeName()))
       vd = value.data() #or segfault !
@@ -90,6 +86,7 @@ class ValuesTableWidget(QTableWidget):
         self.setItem(index, 2, QTableWidgetItem(multiString[:-1]))
       else:
         self.setItem(index, 2, QTableWidgetItem(str(data)))
+      index += 1
     self.resizeColumnsToContents()
     self.resizeRowsToContents()
 
