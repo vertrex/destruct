@@ -6,7 +6,9 @@ sys.path.append('../../')
 sys.path.append('../')
 
 from _destruct import *
-from _workerpool import *
+
+imp  = DStructs().find("Import").newObject()
+imp.file("../../../examples/modules/libdthreading.so")
 
 #COUNT = 1000000
 COUNT = 100000

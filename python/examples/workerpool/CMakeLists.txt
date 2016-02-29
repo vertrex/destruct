@@ -12,20 +12,11 @@
 # Author(s):
 #  Solal Jacob <sja@digital-forensic.org>
 
-set (python_workerpool_files
-  py_workerpool.cpp
-)
-
-include_directories("../")
-include_directories("../../")
-include_directories("../../../")
-
-add_library(_workerpool SHARED ${python_workerpool_files})
+add_custom_target(pyworkerpool)
+add_dependencies(examples pyworkerpool)
+add_dependencies(_destruct pyworkerpool)
 configure_file(workerpool.py workerpool.py COPYONLY)
 
-set_target_properties(_workerpool PROPERTIES PREFIX "")
-if (MSVC)
-  target_link_libraries(_workerpool _destruct dthreading ${PYTHON_LIBRARY})
-else(MSVC)
-  target_link_libraries(_workerpool _destruct dthreading python2.7)
-endif(MSVC)
+set (pydestruct_examples_workerpool_files
+workerpool.py
+)
