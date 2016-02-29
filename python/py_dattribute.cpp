@@ -38,7 +38,7 @@ PyObject* PyDAttribute::name(PyDAttribute::DPyObject* self, PyObject* args, PyOb
 
 PyObject* PyDAttribute::description(PyDAttribute::DPyObject* self, PyObject* args, PyObject* kwds)
 {
-  return (PyString_FromString(self->pimpl->description().c_str()));
+  return (PyUnicode_FromString(self->pimpl->description().c_str()));
 }
 
 PyObject* PyDAttribute::dtype(PyDAttribute::DPyObject* self, PyObject*args, PyObject* kwds)

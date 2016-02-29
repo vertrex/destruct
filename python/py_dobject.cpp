@@ -153,6 +153,11 @@ PyObject* PyDObject::getValue(PyDObject::DPyObject* self, PyObject* attributeObj
   {
     attributeIndex = PyLong_AsLong(attributeObject);
   }
+  else if (PyUnicode_Check(attributeObject))
+  {
+    attributeName = PyUnicode_AS_DATA(attributeObject); 
+    attributeIndex = self->pimpl->instanceOf()->findAttribute(std::string(attributeName));
+  }
   else if (PyString_Check(attributeObject))
   {
     attributeName = PyString_AsString(attributeObject); 
@@ -204,6 +209,11 @@ PyObject* PyDObject::setValueObject(PyDObject::DPyObject* self, PyObject* args, 
   {
     attributeIndex = PyLong_AsLong(attributeObject);
     return (PyDObject::setValue(self, attributeIndex, valueObject));
+  }
+  else if (PyUnicode_Check(attributeObject))
+  {
+    attributeName = PyUnicode_AS_DATA(attributeObject); 
+    return (PyDObject::setValue(self, attributeName, valueObject));
   }
   else if (PyString_Check(attributeObject))
   {
