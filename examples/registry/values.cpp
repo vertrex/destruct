@@ -58,7 +58,7 @@ DValue    RegistryValues::deserializeRaw(DValue const& arg)
   {
     RealValue<DUInt32> subvalueOffset = deserializer->call("DUInt32");
         
-    DObject* subvalue = valueStruct->newObject(RealValue<DObject*>(deserializer));
+    DObject* subvalue = valueStruct->newObject();
 
     DUInt64 currentOffset = stream->call("tell").get<DUInt64>();
     stream->call("seek", RealValue<DUInt64>(subvalueOffset + 0x1000));

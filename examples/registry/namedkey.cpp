@@ -27,8 +27,6 @@ NamedKey::NamedKey(DStruct* dstruct, DValue const& args) : DCppObject<NamedKey>(
   
   this->timestamp = Destruct::DStructs::instance().find("RegfTime64")->newObject();
   this->keyName = Destruct::DStructs::instance().find("NameLength")->newObject(RealValue<DObject*>(this));
-  ((DObject*)this->keyName)->setValue("attributeKeyName", RealValue<DUnicodeString>("keyNameLength"));
-
   this->subkeys = Destruct::DStructs::instance().find("Subkeys")->newObject(RealValue<DObject*>(this));
   this->values = Destruct::DStructs::instance().find("RegistryValues")->newObject(RealValue<DObject*>(this));
 }
@@ -54,11 +52,9 @@ DValue    NameLength::deserializeRaw(DValue const& arg)
 {
   DObject* deserializer = arg;
 
-  DUInt16 size = ((DObject*)this->parent)->getValue(this->attributeKeyName);
-
+  DUInt16 size = ((DObject*)this->parent)->getValue("keyNameLength");
   DBuffer buffer = deserializer->getValue("stream").get<DObject*>()->call("read", RealValue<DInt64>((DInt64)size));
-  
-  this->keyName = DUnicodeString(std::string((char*)buffer.data(), size));
+  this->name = DUnicodeString(std::string((char*)buffer.data(), size)); //XXX depend of flags in parent ! generally ascii but could be UTF16-LE
 
   return RealValue<DObject*>(this);
 }

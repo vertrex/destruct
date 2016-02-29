@@ -20,9 +20,9 @@ public:
   RealValue<DUInt16>           signature, nameLength, unknown1, valueType;//named, unkown2
   RealValue<DInt32>            size;
   RealValue<DUInt32>           dataOffset, dataLength, dataType;
-  RealValue<DObject*>          name, _deserializer;
+  RealValue<DUnicodeString>    name;
+  RealValue<DObject*>          _deserializer;
   RealValue<DFunctionObject*>  _valueTypeName, _data;
-
   attributeCount(ValueKey, 12)
   attributeList(
                 attribute(DInt32, size)
@@ -30,11 +30,10 @@ public:
                 attribute(DUInt16, nameLength)
                 attribute(DUInt32, dataLength)
                 attribute(DUInt32, dataOffset)
-                attribute(DUInt32, dataType)//XXX data in offset ? for 'big data'
+                attribute(DUInt32, dataType)
                 attribute(DUInt16, valueType)
                 attribute(DUInt16, unknown1)
-                attribute(DObject, name)
-                //attribute(DObject, data)
+                attribute(DUnicodeString, name)
                 function(DObject, data, DNone)
                 function(DUnicodeString, valueTypeName, DNone)
                 function(DUInt8, deserializeRaw, DObject)
@@ -50,7 +49,6 @@ public:
              member(ValueKey, valueType)
              member(ValueKey, unknown1)
              member(ValueKey, name)
-             //member(ValueKey, data)
              method(ValueKey, data) 
              method(ValueKey, valueTypeName)
              method(ValueKey, deserializeRaw)

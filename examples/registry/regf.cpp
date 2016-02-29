@@ -130,7 +130,7 @@ DValue    RegfName::deserializeRaw(DValue const& arg)
          break;
   }
   if (i < 58)
-    this->fileName = DUnicodeString(std::string((char*)fileNameBuff, i));
+    this->fileName = DUnicodeString((char*)fileNameBuff, i, "UTF16-LE");
 
   return RealValue<DObject*>(this);
 }

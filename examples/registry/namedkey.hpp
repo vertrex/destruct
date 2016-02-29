@@ -43,7 +43,7 @@ public:
       attribute(DUInt32, unknown2) //security cell index ??
       attribute(DUInt16, keyNameLength)
       attribute(DUInt16, classNameLength)
-      attribute(DObject, keyName)
+      attribute(DObject, keyName) //use a function to return name() directly ?
       attribute(DObject, subkeys)
       attribute(DObject, values)
       )
@@ -87,18 +87,14 @@ public:
   DValue  deserializeRaw(DValue const& stream);
 
   RealValue<DObject*>        parent;
-  RealValue<DUnicodeString>  keyName;
-  RealValue<DUnicodeString>  attributeKeyName;
+  RealValue<DUnicodeString>  name;
 
-  attributeCount(NameLength, 3)
-  attributeList(attribute(DUnicodeString, keyName)
-                attribute(DUnicodeString, attributeKeyName)
+  attributeCount(NameLength, 2)
+  attributeList(attribute(DUnicodeString, name)
                 function(DUInt8, deserializeRaw, DObject)
-                //attribute(DObject, parent) //recurse
                )
   memberList(NameLength, 
-             member(NameLength, keyName)
-             member(NameLength, attributeKeyName)
+             member(NameLength, name)
              method(NameLength, deserializeRaw)
             )
 private:

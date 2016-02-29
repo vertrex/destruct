@@ -27,7 +27,7 @@ class DObjectTreeWidgetItem(QTreeWidgetItem):
 class KeyTreeWidgetItem(DObjectTreeWidgetItem):
   def __init__(self, parent, key):
     super(KeyTreeWidgetItem, self).__init__(parent, key)
-    self.setText(0, key.keyName.keyName)
+    self.setText(0, key.keyName.name)
     self.__populated = False 
 
   def populateItemSubKeys(self):
@@ -77,7 +77,7 @@ class ValuesTableWidget(QTableWidget):
     self.setRowCount(size)
     for index in range(0, size):
       value = valuesList.get(index)
-      self.setItem(index, 0, QTableWidgetItem(value.name.keyName))
+      self.setItem(index, 0, QTableWidgetItem(value.name))
       self.setItem(index, 1, QTableWidgetItem(value.valueTypeName()))
       vd = value.data() #or segfault !
       data = vd.data()

@@ -8,11 +8,7 @@ using namespace Destruct;
 ValueKey::ValueKey(DStruct* dstruct, DValue const& args) : DCppObject<ValueKey>(dstruct, args), __size(0)
 {
   this->init();
-  this->name = DStructs::instance().generate("NameLength", RealValue<DObject*>(this));
-  ((DObject*)this->name)->setValue("attributeKeyName", RealValue<DUnicodeString>("nameLength"));
-
   this->realDataSize = 0;
-  this->_deserializer = args;
 }
 
 
@@ -23,7 +19,7 @@ ValueKey::~ValueKey(void)
 DObject*       ValueKey::deserializeRaw(DValue const& arg)
 {
   DObject* deserializer = arg;
-//  this->_deserializer = arg; set by caller but maybe better to get it here 
+  this->_deserializer = arg;
   DObject* stream = deserializer->getValue("stream");
 
  
@@ -39,15 +35,17 @@ DObject*       ValueKey::deserializeRaw(DValue const& arg)
   this->unknown1 =   deserializer->call("DUInt16");
 
   if (this->nameLength)
-    this->name = deserializer->call("DObject", this->name);
-  //else
-    //this->name = "(default)" apparait souvent ds software
-  ///XXX set only a string and delet the object ?
+  {
+    DBuffer buffer = deserializer->getValue("stream").get<DObject*>()->call("read", RealValue<DInt64>((DInt64)this->nameLength));
+    this->name = DUnicodeString(std::string((char*)buffer.data(), this->nameLength));
+  }
+  else
+    this->name = "(default)";
 
   if (0x80000000 & this->dataLength)
   {
     this->realDataSize = this->dataLength & ~0x80000000;
-    this->realDataOffset = dataOffsetOffset - 4; //because we skip on DUInt32 when we read in a cell hive 
+    this->realDataOffset = dataOffsetOffset - 4; //because we skip DUInt32 when we read a cell hive 
   }
   else
   {
