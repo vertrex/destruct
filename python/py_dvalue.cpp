@@ -395,7 +395,7 @@ PyDUnicodeString::PyDUnicodeString()
   memcpy(pyMethods , &baseTypePyMethods , sizeof(baseTypePyMethods));
   pyMethods[0].ml_meth = (PyCFunction)this->getType;
 
-  pyType->tp_base = &PyString_Type;
+  pyType->tp_base = &PyUnicode_Type;
   pyType->tp_name = "destruct.DUnicodeString";
   pyType->tp_basicsize = sizeof(DPyObject);
   pyType->tp_init = (initproc)(PyDUnicodeString::_init);
@@ -406,6 +406,11 @@ PyDUnicodeString::PyDUnicodeString()
 
 Destruct::DValue PyDUnicodeString::toDValue(PyObject* value) 
 {
+  if (PyUnicode_Check(value))
+  {
+    Destruct::DUnicodeString fvalue = std::string(PyUnicode_AS_DATA(value));
+    return Destruct::RealValue<Destruct::DUnicodeString>(fvalue);
+  }
   if (PyString_Check(value))
   {
     Destruct::DUnicodeString fvalue = std::string(PyString_AsString(value));

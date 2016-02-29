@@ -34,7 +34,7 @@ public:
 
   EXPORT virtual                       ~DStruct();
 
-  EXPORT virtual void                  addAttribute(const DAttribute&);
+  EXPORT virtual void                  addAttribute(const DAttribute&); //return DStruct& so DStruct().addAttribute().addAttribute(()
   EXPORT DUnicodeString                name() const;
   EXPORT DStruct const * const         base() const;
 
