@@ -19,6 +19,25 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules/")
 
 set(CMAKE_INCLUDE_PATH "${INCLUDEDIR}")
 set(CMAKE_LIBRARY_PATH "${LIBDIR}")
+if (ICU_DEP_PATH)
+  if (WIN32)
+    if (HAVE_64_BITS)
+      set(ICU_PATH_SUFFIX "64")
+    else()
+      set(ICU_PATH_SUFFIX "")
+    endif()
+    set(ICU_INCLUDE_PATH "${ICU_DEP_PATH}/include")
+    set(ICU_LIBRARIES_PATH "${ICU_DEP_PATH}/lib${ICU_PATH_SUFFIX}")
+    set(ICU_DYNLIB_PATH "${ICU_DEP_PATH}/bin${ICU_PATH_SUFFIX}")
+    foreach (icu_dynlib ${ICU_DYN_LIBRARIES})
+    install_rule(${icu_dynlib})
+    endforeach()
+  endif (WIN32)
+endif (ICU_DEP_PATH)
+
+find_package(ICU REQUIRED)
+include_directories(ICU_INCLUDE_PATH)
+include_directories(${ICU_INCLUDE_DIRS})
 
 include("cmake_modules/dff/macros.cmake")
 
@@ -86,7 +105,7 @@ configure_file(__init__.py __init__.py COPYONLY)
 
 
 add_library(destruct SHARED ${destruct_source_files})
-target_link_libraries(destruct icuuc)
+target_link_libraries(destruct ${ICU_LIBRARIES})
 
 if(UNIX)
 target_link_libraries(destruct dl)
