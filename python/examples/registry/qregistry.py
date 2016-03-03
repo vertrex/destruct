@@ -5,7 +5,6 @@ sys.path.append('../../')
 sys.path.append('../')
 
 from _destruct import *
-from _registryrpc import *
 
 from PyQt4.QtGui import QApplication, QTreeWidget, QTreeWidgetItem, QMainWindow, QDockWidget, QTableWidget, QWidget, QBoxLayout, QTableWidgetItem, QDialog, QAction, QVBoxLayout, QDialogButtonBox, QLabel, QLineEdit, QGroupBox, QFormLayout, QSpinBox
 from PyQt4.QtCore import SIGNAL, Qt
