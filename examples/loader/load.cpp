@@ -14,9 +14,9 @@ int main(int argc, char **argv)
   try
   {
     //XXX leaking path name :) must recurse a dir in argv
+	Destruct::DObject* import = Destruct::DStructs::instance().find("Import")->newObject();
 #ifndef WIN32
     //loader.loadFile(filePath);
-    Destruct::DObject* import = Destruct::DStructs::instance().find("Import")->newObject();
 
     Destruct::RealValue<Destruct::DUnicodeString> filePath("../modules/libregistry.so");
     import->call("file", filePath);
@@ -26,9 +26,14 @@ int main(int argc, char **argv)
     import->call("file", filePath);
     filePath = "../modules/libdestruct_rpc.so";
     import->call("file", filePath);
-#else
-    //XXX load other lib 
-    std::string filePath = "lib\\dthreading.dll";
+#else    
+    Destruct::RealValue<Destruct::DUnicodeString> filePath("../modules/registry.dll");
+    import->call("file", filePath);
+    filePath = "../modules/dthreading.dll";
+    import->call("file", filePath);
+    filePath = "../modules/destruct_inherit.dll";
+    import->call("file", filePath);
+    filePath = "../modules/destruct_rpc.dll";
     import->call("file", filePath);
 #endif
 
