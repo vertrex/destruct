@@ -13,16 +13,17 @@ def showStruct(dobject):
     print "\t\t" + struct.attribute(index).name()
 
 def showKeys(key):
- print key.keyName.name + " : "
+ #print key.keyName.name + " : "
  subKeysList = key.subkeys.list
  valuesList = key.values.list
  size = subKeysList.size()
 
- print "\t\tValues(" + str(valuesList.size()) + ") :"
+ #print "\t\tValues(" + str(valuesList.size()) + ") :"
  for value in valuesList:
-   print value.name
+   #print value.name
+   value.data()
 
- print "\t\tSubkeys(" + str(subKeysList.size()) + ") :"
+ #print "\t\tSubkeys(" + str(subKeysList.size()) + ") :"
  for subKey in subKeysList:
     showKeys(subKey)
 
@@ -35,29 +36,36 @@ def findKey(key, path):
        print 'found'
   print "not found"
  
+def usage():
+   print "./registry -l localFilePath"
+   print "./registry -c serverFilePath [server] [port]"
 
 if __name__ == "__main__":
- if len(sys.argv) < 2:
-   print "./registry serverFilePath [server] [port]"
+ if len(sys.argv) < 3:
+   usage()
  else:
    registry = None
    loader = DStructs().find("Import").newObject()
    loader.file("../../../examples/modules/libdestruct_rpc.so")
    loader.file("../../../examples/modules/libregistry.so")
-   arg = DStructs().find("ClientArgument").newObject()
-   arg.address = "127.0.0.1"
-   arg.port = 0xdff
-   if len(sys.argv) == 4:
-     registry = registryRPC.connect(sys.argv[2], int(sys.argv[3]))
-     arg.address = sys.argv[2]
-     arg.port = int(sys.argv[3])
-   elif len(sys.argv) == 3:
-     registry = registryRPC.connect(sys.argv[2], 0xdff)
-     arg.address = sys.argv[2]
-   client = DStructs().find("Client").newObject(arg)
-   registry = client.findObject() #registry is h
-   regf = registry.open(sys.argv[1])
-  
+   print 'ok loaded'
+   if sys.argv[1] == '-l':
+      registry = DStructs().find("Registry") .newObject()
+   elif sys.argv[1] == '-c':
+     arg = DStructs().find("ClientArgument").newObject()
+     arg.address = "127.0.0.1"
+     arg.port = 0xdff
+     if len(sys.argv) == 5:
+       arg.address = sys.argv[3]
+       arg.port = int(sys.argv[4])
+     elif len(sys.argv) == 4:
+       arg.address = sys.argv[3]
+     client = DStructs().find("Client").newObject(arg)
+     registry = client.findObject()
+   else:
+      usage()
+   print registry
+   regf = registry.open(sys.argv[2])
    showKeys(regf.key)
    #subkeys =regf.key.subkeys.list
    #for key in subkeys:

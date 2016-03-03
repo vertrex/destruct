@@ -6,7 +6,7 @@ sys.path.append('../')
 
 from _destruct import *
 
-from PyQt4.QtGui import QApplication, QTreeWidget, QTreeWidgetItem, QMainWindow, QDockWidget, QTableWidget, QWidget, QBoxLayout, QTableWidgetItem, QDialog, QAction, QVBoxLayout, QDialogButtonBox, QLabel, QLineEdit, QGroupBox, QFormLayout, QSpinBox
+from PyQt4.QtGui import QApplication, QTreeWidget, QTreeWidgetItem, QMainWindow, QDockWidget, QTableWidget, QWidget, QBoxLayout, QTableWidgetItem, QDialog, QAction, QVBoxLayout, QDialogButtonBox, QLabel, QLineEdit, QGroupBox, QFormLayout, QSpinBox, QFileDialog
 from PyQt4.QtCore import SIGNAL, Qt
 
 from binascii import hexlify
@@ -129,9 +129,24 @@ class MainWindow(QMainWindow):
     openAction = QAction("&Connect", self)
     openAction.triggered.connect(self.connection);
     self.menuBar().addAction(openAction)
+    localAction = QAction("&Local", self)
+    localAction.triggered.connect(self.local);
+    self.menuBar().addAction(localAction)
     loader = DStructs().find("Import").newObject()
     loader.file("../../../examples/modules/libdestruct_rpc.so")
     loader.file("../../../examples/modules/libregistry.so")
+
+  def addRegistryBrowserWidget(self, regf):
+    self.registryBrowserWidget = RegistryBrowserWidget(regf.key)
+    self.dockWidget = QDockWidget()
+    self.dockWidget.setWidget(self.registryBrowserWidget) 
+    self.addDockWidget(Qt.TopDockWidgetArea, self.dockWidget)
+
+  def local(self):
+    filePath = QFileDialog.getOpenFileName().toUtf8()
+    self.registry = DStructs().find("Registry").newObject() 
+    regf = self.registry.open(str(filePath))
+    self.addRegistryBrowserWidget(regf)
 
   def connection(self):
     connectionDialog = ConnectionDialog(self)
@@ -144,11 +159,8 @@ class MainWindow(QMainWindow):
     arg.address = str(connectionDialog.ipAddress.text())
     self.client = DStructs().find("Client").newObject(arg)
     self.registry = self.client.findObject() #registry is hardcoded in rpc client change that 
-    self.regf = self.registry.open(str(connectionDialog.filePath.text()))
-    self.registryBrowserWidget = RegistryBrowserWidget(self.regf.key)
-    self.dockWidget = QDockWidget()
-    self.dockWidget.setWidget(self.registryBrowserWidget) 
-    self.addDockWidget(Qt.TopDockWidgetArea, self.dockWidget)
+    regf = self.registry.open(str(connectionDialog.filePath.text()))
+    self.addRegistryBrowserWidget(regf)
 
 if __name__ == "__main__":
   app = QApplication(sys.argv)
