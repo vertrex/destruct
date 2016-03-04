@@ -94,7 +94,7 @@ public:
 
   attributeCount(RegfName, 2)
   attributeList(attribute(DUnicodeString, fileName)
-                function(DUInt8, deserializeRaw, DObject)
+                function(DObject, deserializeRaw, DObject)
                )
   memberList(RegfName, 
              member(RegfName, fileName)
@@ -118,7 +118,7 @@ public:
   attributeList(
                 attribute(DUInt64, timeStamp)
                 function(DUnicodeString, date, DNone)
-                function(DUInt8, deserializeRaw, DObject)
+                function(DObject, deserializeRaw, DObject)
                )
   memberList(RegfTime64, 
              member(RegfTime64, timeStamp)

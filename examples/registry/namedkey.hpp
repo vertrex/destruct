@@ -15,12 +15,13 @@ public:
   RealValue<DInt32>  size;
   RealValue<DUInt32> parentKeyOffset, subkeyCount, subkeyCountVolatile,  subkeyListOffset, subkeyListOffsetVolatile, valueCount, valueListOffset,
   securityDescriptorOffset, classNameOffset, unknown1, subkeyNameMaximumLength, subkeyClassNameMaximumLength, valueNameMaximumLength, valueDataMaximumSize, unknown2;
-  RealValue<DObject*> keyName, subkeys, values, timestamp;
+  RealValue<DObject*> subkeys, values, timestamp;
 
-  RealValue<DUnicodeString>  fileName;
+  RealValue<DUnicodeString>  fileName, name;
 
+  DObject*      deserializeRaw(DValue const& stream);
 
-  attributeCount(NamedKey, 24)
+  attributeCount(NamedKey, 25)
   attributeList(
       attribute(DInt32, size) //hbin size
       attribute(DUInt16, signature)
@@ -43,9 +44,10 @@ public:
       attribute(DUInt32, unknown2) //security cell index ??
       attribute(DUInt16, keyNameLength)
       attribute(DUInt16, classNameLength)
-      attribute(DObject, keyName) //use a function to return name() directly ?
+      attribute(DUnicodeString, name) //deserialized directly ?
       attribute(DObject, subkeys)
       attribute(DObject, values)
+      function(DObject, deserializeRaw, DObject)
       )
 
   memberList(NamedKey, 
@@ -70,35 +72,12 @@ public:
       member(NamedKey, unknown2)
       member(NamedKey, keyNameLength)
       member(NamedKey, classNameLength)
-      member(NamedKey, keyName)
+      member(NamedKey, name)
       member(NamedKey, subkeys)
       member(NamedKey, values)
-      //method(NamedKey, deserializeRaw)
+      method(NamedKey, deserializeRaw)
       )
 private:
-  RealValue<DFunctionObject*>        _deserializeRaw;
-};
-
-class NameLength : public DCppObject<NameLength>
-{
-public:
-          NameLength(DStruct* dstruct, DValue const& args);
-          ~NameLength();
-  DValue  deserializeRaw(DValue const& stream);
-
-  RealValue<DObject*>        parent;
-  RealValue<DUnicodeString>  name;
-
-  attributeCount(NameLength, 2)
-  attributeList(attribute(DUnicodeString, name)
-                function(DUInt8, deserializeRaw, DObject)
-               )
-  memberList(NameLength, 
-             member(NameLength, name)
-             method(NameLength, deserializeRaw)
-            )
-private:
-  uint64_t                           __size;
   RealValue<DFunctionObject*>        _deserializeRaw;
 };
 

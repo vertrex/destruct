@@ -25,36 +25,50 @@ NamedKey::NamedKey(DStruct* dstruct, DValue const& args) : DCppObject<NamedKey>(
 {
   this->init();
   
-  this->timestamp = Destruct::DStructs::instance().find("RegfTime64")->newObject();
-  this->keyName = Destruct::DStructs::instance().find("NameLength")->newObject(RealValue<DObject*>(this));
-  this->subkeys = Destruct::DStructs::instance().find("Subkeys")->newObject(RealValue<DObject*>(this));
-  this->values = Destruct::DStructs::instance().find("RegistryValues")->newObject(RealValue<DObject*>(this));
 }
 
 NamedKey::~NamedKey(void)
 {
 }
 
-/**
- * NameLength 
- */
-NameLength::NameLength(DStruct* dstruct, DValue const& args) : DCppObject<NameLength>(dstruct, args), __size(0)
+DObject*        NamedKey::deserializeRaw(DValue const& args)
 {
-  this->init();
-  this->parent = args;
+  DObject* deserializer = args;
+  DObject* stream = deserializer->getValue("stream");
+
+  this->size = deserializer->call("DInt32");
+  this->signature = deserializer->call("DUInt16");
+  this->keyType = deserializer->call("DUInt16");
+  this->timestamp = Destruct::DStructs::instance().find("RegfTime64")->newObject();
+  deserializer->call("DObject", this->timestamp);
+  this->unknown1 = deserializer->call("DUInt32");
+  this->parentKeyOffset = deserializer->call("DUInt32");
+  this->subkeyCount = deserializer->call("DUInt32");
+  this->subkeyCountVolatile = deserializer->call("DUInt32");
+  this->subkeyListOffset = deserializer->call("DUInt32");
+  this->subkeyListOffsetVolatile = deserializer->call("DUInt32");
+  this->valueCount = deserializer->call("DUInt32");
+  this->valueListOffset  = deserializer->call("DUInt32");
+  this->securityDescriptorOffset = deserializer->call("DUInt32");
+  this->classNameOffset = deserializer->call("DUInt32");
+  this->subkeyNameMaximumLength = deserializer->call("DUInt32");
+  this->subkeyClassNameMaximumLength = deserializer->call("DUInt32");
+  this->valueNameMaximumLength = deserializer->call("DUInt32");
+  this->valueDataMaximumSize = deserializer->call("DUInt32");
+  this->unknown2 = deserializer->call("DUInt32");
+  this->keyNameLength = deserializer->call("DUInt16");
+  this->classNameLength = deserializer->call("DUInt16");
+
+  DBuffer buffer = stream->call("read", RealValue<DInt64>((DInt64)this->keyNameLength));
+  this->name = DUnicodeString(std::string((char*)buffer.data(), this->keyNameLength)); //type UTF ?
+
+  this->subkeys = Destruct::DStructs::instance().find("Subkeys")->newObject(RealValue<DObject*>(this));
+  deserializer->call("DObject", subkeys);
+
+  this->values = Destruct::DStructs::instance().find("RegistryValues")->newObject(RealValue<DObject*>(this));
+  deserializer->call("DObject", values);
+ 
+
+  return (this);
 }
 
-NameLength::~NameLength(void)
-{
-}
-
-DValue    NameLength::deserializeRaw(DValue const& arg)
-{
-  DObject* deserializer = arg;
-
-  DUInt16 size = ((DObject*)this->parent)->getValue("keyNameLength");
-  DBuffer buffer = deserializer->getValue("stream").get<DObject*>()->call("read", RealValue<DInt64>((DInt64)size));
-  this->name = DUnicodeString(std::string((char*)buffer.data(), size)); //XXX depend of flags in parent ! generally ascii but could be UTF16-LE
-
-  return RealValue<DObject*>(this);
-}

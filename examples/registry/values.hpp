@@ -35,7 +35,7 @@ public:
   attributeCount(RegistryValues, 3)
   attributeList(attribute(DInt32, size)
                 attribute(DObject, list)
-                function(DUInt8, deserializeRaw, DObject)
+                function(DObject, deserializeRaw, DObject)
                )
   memberList(RegistryValues, 
              member(RegistryValues, size)

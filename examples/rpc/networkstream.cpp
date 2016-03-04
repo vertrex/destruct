@@ -59,6 +59,10 @@ DBuffer NetworkStream::read(DValue const& args)
   DBuffer buffer(size);
   
   this->__readStream.read((char*)buffer.data(), (uint32_t)size);
+  //if buffer[0] == ERROR_FLAG;
+ //throw DEXception Dexception(std::string(buffer[1:0])) //handle exception (strange way but no ned to rewrite code)
+ // else return buffer(buffer.data() + 1, buffer.size()) //
+
   return (buffer);
 }
 

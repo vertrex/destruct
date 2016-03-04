@@ -1,4 +1,4 @@
-#!/usr/bin/python -i 
+#!/usr/bin/python 
 import sys
 
 sys.path.append('../../')
@@ -21,7 +21,9 @@ def showKeys(key):
  #print "\t\tValues(" + str(valuesList.size()) + ") :"
  for value in valuesList:
    #print value.name
-   value.data()
+   data = value.data()
+   if data is not None:
+     x = data.data()
 
  #print "\t\tSubkeys(" + str(subKeysList.size()) + ") :"
  for subKey in subKeysList:
@@ -31,7 +33,7 @@ def findKey(key, path):
   subKeysList = key.subkeys.list
   size = subKeysList.size()
   for subKey in subKeysList:
-     if subKey.keyName.name == path:
+     if subKey.name == path:
        return subKey.values.list
        print 'found'
   print "not found"

@@ -26,7 +26,7 @@ class DObjectTreeWidgetItem(QTreeWidgetItem):
 class KeyTreeWidgetItem(DObjectTreeWidgetItem):
   def __init__(self, parent, key):
     super(KeyTreeWidgetItem, self).__init__(parent, key)
-    self.setText(0, key.keyName.name)
+    self.setText(0, key.name)
     self.__populated = False 
 
   def populateItemSubKeys(self):
@@ -70,22 +70,25 @@ class ValuesTableWidget(QTableWidget):
     valuesList = keyItem.values.list
     size = valuesList.size()
     self.setRowCount(size)
-    index = 0
-    for value in valuesList:
-      self.setItem(index, 0, QTableWidgetItem(value.name))
-      self.setItem(index, 1, QTableWidgetItem(value.valueTypeName()))
-      vd = value.data() #or segfault !
-      data = vd.data()
-      if type(data) == bytearray:
-        self.setItem(index, 2, QTableWidgetItem(hexlify(data)))
-      elif type(data) == DObject:
-        multiString = ""
-        for string in data:
-          multiString += string + ","
-        self.setItem(index, 2, QTableWidgetItem(multiString[:-1]))
-      else:
-        self.setItem(index, 2, QTableWidgetItem(str(data)))
-      index += 1
+    count = valuesList.size()
+    for index in range(0, count):
+        value = valuesList.get(index)
+        self.setItem(index, 0, QTableWidgetItem(value.name))
+        self.setItem(index, 1, QTableWidgetItem(value.valueTypeName()))
+        vd = value.data() #or segfault !
+        data = vd.data()
+        if type(data) == bytearray:
+          self.setItem(index, 2, QTableWidgetItem(hexlify(data)))
+        elif type(data) == DObject:
+          multiString = ""
+          for string in data:
+            multiString += string + ","
+          self.setItem(index, 2, QTableWidgetItem(multiString[:-1]))
+        else:
+          if type(data) == unicode:
+            self.setItem(index, 2, QTableWidgetItem(data))
+          else:
+            self.setItem(index, 2, QTableWidgetItem(str(data)))
     self.resizeColumnsToContents()
     self.resizeRowsToContents()
 

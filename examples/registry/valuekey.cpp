@@ -42,16 +42,34 @@ DObject*       ValueKey::deserializeRaw(DValue const& arg)
   else
     this->name = "(default)";
 
+  //check if data in offset
   if (0x80000000 & this->dataLength)
   {
     this->realDataSize = this->dataLength & ~0x80000000;
-    this->realDataOffset = dataOffsetOffset - 4; //because we skip DUInt32 when we read a cell hive 
+    this->realDataOffset = dataOffsetOffset;
   }
   else
   {
     this->realDataSize = this->dataLength;
-    this->realDataOffset = this->dataOffset + 0x1000;
+    this->realDataOffset = this->dataOffset + 0x1000 + 4; //skip first byte
   }
+
+  //check if big data
+  DUInt64 previousOffset = stream->call("tell");
+  if (this->realDataSize < 16344)
+  {
+    this->dataOffsets = DStructs::instance().generate("DVectorUInt32");
+    ((DObject*)this->dataOffsets)->call("push", RealValue<DUInt32>(this->realDataOffset));
+  }
+  else
+  { 
+    stream->call("seek", RealValue<DUInt64>(this->realDataOffset));
+    DObject* bigData = DStructs::instance().generate("RegistryBigData");
+    deserializer->call("DObject", RealValue<DObject*>(bigData));
+    this->dataOffsets = bigData->getValue("offsets");
+    //bigData->destroy(); //or segfault  cause offsets is deleted
+  }
+  stream->call("seek", RealValue<DUInt64>(previousOffset)); //usefull ? c deja seek ds un parent a check XXX
 
   return (RealValue<DObject*>(this));
 }
@@ -65,16 +83,42 @@ DObject*        ValueKey::data(void)
 {
   DStruct* dataStruct = DStructs::instance().find(ValueKey::registryTypeStructName(this->dataType));
   if (dataStruct == NULL)
-  {
-    DObject* regnone = DStructs::instance().generate("RegistryDataNone");
-    return (RealValue<DObject*>(regnone));    
-  }
+    return (DNone);
   DObject* dataObject = dataStruct->newObject(RealValue<DObject*>(this));
-  if (realDataSize >= 16344)
-    std::cout << "Found big cell " << this->name << " size " << realDataSize << std::endl;
-
   return (dataObject);
 }
+
+RegistryBigData::RegistryBigData(DStruct* dstruct, DValue const& args) : DCppObject<RegistryBigData>(dstruct, args)
+{
+  this->init();
+}
+
+RegistryBigData::~RegistryBigData()
+{
+}
+
+DObject*       RegistryBigData::deserializeRaw(DValue const& args)
+{
+  DObject* serializer  = args;
+  DObject* stream = serializer->getValue("stream");
+
+  //DUInt32  binSize = serializer->call("DUInt32"); //already skipped
+  DUInt16  signature = serializer->call("DUInt16");
+  DUInt16  numberOfSegments = serializer->call("DUInt16");
+  DUInt32  segmentListOffset = (DUInt32)serializer->call("DUInt32") + 0x1000;
+
+  stream->call("seek", RealValue<DUInt64>(segmentListOffset));
+  DObject* offsetsList = DStructs::instance().generate("DVectorUInt32");
+
+  DUInt32 dataListSize = serializer->call("DUInt32"); 
+  for (DUInt16 count = 0; count < numberOfSegments; ++count)
+    offsetsList->call("push", RealValue<DUInt32>((DUInt32)serializer->call("DUInt32") + 4 + 0x1000));
+  
+  this->offsets = offsetsList;
+
+  return (this);
+}
+
 
 /**
  * RegistryDataNone
@@ -94,6 +138,49 @@ DObject*        RegistryDataNone::data(void)
   return (RealValue<DObject*>(DNone)); 
 }
 
+
+/**
+ *  RegistryData
+ */
+RegistryData::RegistryData()
+{
+}
+
+RegistryData::~RegistryData()
+{
+}
+
+DBuffer    RegistryData::read(DObject* _parent)
+{
+  ValueKey* parent = (ValueKey*)_parent; 
+  DObject* stream = ((DObject*)parent->_deserializer)->getValue("stream"); 
+  uint8_t*    buffer = new uint8_t[parent->realDataSize];
+
+  DObject* offsets = parent->dataOffsets;
+  DUInt64 offsetCount = offsets->call("size");
+
+  DUInt64 sizeToRead = parent->realDataSize;
+  DUInt64 sizeReaded = 0;
+
+  for (DUInt64 index = 0; index < offsetCount; ++index)
+  {
+    if (parent->realDataSize - sizeReaded < 16344)
+      sizeToRead = parent->realDataSize - sizeReaded;
+    else
+      sizeToRead = 16344;
+
+    stream->call("seek", RealValue<DUInt64>((DUInt32)offsets->call("get", RealValue<DUInt64>(index))));
+
+    DBuffer tmpBuffer = stream->call("read", RealValue<DInt64>(sizeToRead));
+    memcpy(buffer + sizeReaded, tmpBuffer.data(), sizeToRead);
+    sizeReaded += sizeToRead;
+  }
+  DBuffer dbuffer((uint8_t*)buffer, parent->realDataSize);
+  delete buffer;
+  return (dbuffer);
+}
+
+
 /**
  * RegistryDataSZ
  */
@@ -111,14 +198,8 @@ DUnicodeString        RegistryDataSZ::data(void)
 {
   try
   {
-    ValueKey* parent = (ValueKey*)(DObject*)this->_parent;
-    DObject* stream = ((DObject*)parent->_deserializer)->getValue("stream"); 
-    stream->call("seek", RealValue<DUInt64>(parent->realDataOffset));
-
-    ((DObject*)parent->_deserializer)->call("DUInt32"); //size ?
-    DBuffer buffer = stream->call("read", RealValue<DInt64>(parent->realDataSize));
-
-    return (DUnicodeString((char*)buffer.data(), parent->realDataSize, "UTF16-LE"));
+    DBuffer buffer = this->read(this->_parent);
+    return (DUnicodeString((char*)buffer.data(), buffer.size() - 2, "UTF16-LE")); //-1 pas de \\0 pour icu ?
   }
   catch (DException const &exception)
   {
@@ -143,12 +224,13 @@ DObject*        RegistryDataMultiSZ::data(void)
 {
   try
   {
-    ValueKey* parent = (ValueKey*)(DObject*)this->_parent;
-    DObject* stream = ((DObject*)parent->_deserializer)->getValue("stream"); 
-    stream->call("seek", RealValue<DUInt64>(parent->realDataOffset));
+    DBuffer buffer = this->read(this->_parent);
 
-    ((DObject*)parent->_deserializer)->call("DUInt32"); //skip cell id
-    DBuffer buffer = stream->call("read", RealValue<DInt64>(parent->realDataSize));
+    //ValueKey* parent = (ValueKey*)(DObject*)this->_parent;
+    //DObject* stream = ((DObject*)parent->_deserializer)->getValue("stream"); 
+    //stream->call("seek", RealValue<DUInt64>(parent->realDataOffset));
+    //
+    //DBuffer buffer = stream->call("read", RealValue<DInt64>(parent->realDataSize));
 
     DObject* vector = DStructs::instance().generate("DVectorString");
 
@@ -196,7 +278,6 @@ DUInt32 RegistryDataDWord::data(void)
     DObject* stream = ((DObject*)parent->_deserializer)->getValue("stream"); 
     stream->call("seek", RealValue<DUInt64>(parent->realDataOffset));
 
-    ((DObject*)parent->_deserializer)->call("DUInt32"); //size ?
     DUInt32 value = ((DObject*)parent->_deserializer)->call("DUInt32"); //size ?
     return value;
   }
@@ -227,7 +308,6 @@ DInt32 RegistryDataDWordBE::data(void)
     DObject* stream = ((DObject*)parent->_deserializer)->getValue("stream"); 
     stream->call("seek", RealValue<DUInt64>(parent->realDataOffset));
 
-    ((DObject*)parent->_deserializer)->call("DInt32"); //size ?
     DInt32 value = ((DObject*)parent->_deserializer)->call("DInt32"); //size ?
     return value;
   }
@@ -258,7 +338,6 @@ DUInt64 RegistryDataQWord::data(void)
     DObject* stream = ((DObject*)parent->_deserializer)->getValue("stream"); 
     stream->call("seek", RealValue<DUInt64>(parent->realDataOffset));
 
-    ((DObject*)parent->_deserializer)->call("DInt32"); //size ?
     DUInt64 value = ((DObject*)parent->_deserializer)->call("DUInt64");
     return value;
   }
@@ -286,12 +365,11 @@ DBuffer RegistryDataBinary::data(void)
 {
   try
   {
-    ValueKey* parent = (ValueKey*)(DObject*)this->_parent;
-    DObject* stream = ((DObject*)parent->_deserializer)->getValue("stream"); 
-    stream->call("seek", RealValue<DUInt64>(parent->realDataOffset));
-
-    ((DObject*)parent->_deserializer)->call("DInt32"); //size ?
-    return (stream->call("read", RealValue<DInt64>(parent->realDataSize)));
+    return (this->read(this->_parent));
+    //ValueKey* parent = (ValueKey*)(DObject*)this->_parent;
+    //DObject* stream = ((DObject*)parent->_deserializer)->getValue("stream"); 
+    //stream->call("seek", RealValue<DUInt64>(parent->realDataOffset));
+    //return (stream->call("read", RealValue<DInt64>(parent->realDataSize)));
   }
   catch (DException const &exception)
   {

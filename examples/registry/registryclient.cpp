@@ -19,9 +19,9 @@ DObject* RegistryClient::start(void)
   return (root);
 }
 
-void   RegistryClient::printKey(DObject* key)
+void   RegistryClient::printKey(DObject* key) ///remove not usefull anymore ! 
 {
- DObject* name = key->getValue("keyName").get<DObject*>();
+ DObject* name = key->getValue("keyName").get<DObject*>(); //XXX
 
  DObject* values = key->getValue("values").get<DObject*>(); 
  DObject* valuesList = values->getValue("list").get<DObject*>();
@@ -32,7 +32,7 @@ void   RegistryClient::printKey(DObject* key)
  DUInt64  subKeysListSize = subKeysList->call("size").get<DUInt64>();
 
  std::cout << "Key : "  << std::endl
-           << "      name : " << name->getValue("keyName").get<DUnicodeString>() << std::endl;
+           << "      name : " << name->getValue("keyName").get<DUnicodeString>() << std::endl; //not usefull anymore !
 
  if (valuesListSize)
  {

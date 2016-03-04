@@ -17,6 +17,8 @@ public:
   DUInt32  realDataSize;
   DUInt64  realDataOffset;
 
+  RealValue<DObject*> dataOffsets;
+
   RealValue<DUInt16>           signature, nameLength, unknown1, valueType;//named, unkown2
   RealValue<DInt32>            size;
   RealValue<DUInt32>           dataOffset, dataLength, dataType;
@@ -36,7 +38,7 @@ public:
                 attribute(DUnicodeString, name)
                 function(DObject, data, DNone)
                 function(DUnicodeString, valueTypeName, DNone)
-                function(DUInt8, deserializeRaw, DObject)
+                function(DObject, deserializeRaw, DObject)
                )
 
   memberList(ValueKey, 
@@ -99,6 +101,36 @@ private:
   }
 };
 
+class RegistryBigData : public DCppObject<RegistryBigData>
+{
+public:
+  RegistryBigData(DStruct* dstruct, DValue const& args);
+  ~RegistryBigData();
+
+  DObject* deserializeRaw(DValue const& args);
+
+  RealValue<DObject*>           offsets;
+  RealValue<DFunctionObject*>     _deserializeRaw;
+
+  attributeCount(RegistryBigData, 2)
+  attributeList(
+                attribute(DObject, offsets)
+                function(DObject, deserializeRaw, DObject)
+               )
+  memberList(RegistryBigData,
+                member(RegistryBigData, offsets)
+                method(RegistryBigData, deserializeRaw)
+            )
+};
+
+class RegistryData
+{
+public:
+  RegistryData();
+  ~RegistryData();
+  DBuffer   read(DObject* parent);
+};
+
 class RegistryDataNone : public DCppObject<RegistryDataNone>
 {
 public:
@@ -118,7 +150,7 @@ public:
             )
 };
 
-class RegistryDataSZ : public DCppObject<RegistryDataSZ>
+class RegistryDataSZ : public DCppObject<RegistryDataSZ>, public RegistryData
 {
 public:
   RegistryDataSZ(DStruct* dstruct, DValue const& args);
@@ -138,7 +170,7 @@ public:
             )
 };
 
-class RegistryDataMultiSZ : public DCppObject<RegistryDataMultiSZ>
+class RegistryDataMultiSZ : public DCppObject<RegistryDataMultiSZ>, public RegistryData
 {
 public:
   RegistryDataMultiSZ(DStruct* dstruct, DValue const& args);
@@ -218,7 +250,7 @@ public:
             )
 };
 
-class RegistryDataBinary : public DCppObject<RegistryDataBinary>
+class RegistryDataBinary : public DCppObject<RegistryDataBinary>, public RegistryData
 {
 public:
   RegistryDataBinary(DStruct* dstruct, DValue const& args);

@@ -40,10 +40,9 @@ DValue    Subkeys::deserializeRaw(DValue const& arg)
   DObject* deserializer = arg;
   DObject* stream = deserializer->getValue("stream");
 
-
   //XXX IF SUBKEY COUNT IN PARENT ? //if nk only ? 
-  DUInt32 parentSubkeyCount = ((DObject*)this->parent)->getValue("subkeyCount");
-  DUInt32 subkeyListOffset = ((DObject*)this->parent)->getValue("subkeyListOffset");
+  DUInt32 parentSubkeyCount = ((DObject*)this->parent)->getValue("subkeyCount"); //passer en paremetre car si non c la loose pour les ri
+  DUInt32 subkeyListOffset = ((DObject*)this->parent)->getValue("subkeyListOffset"); //check ds le parent
   if (parentSubkeyCount == 0 || subkeyListOffset == 0xffffffff)
   {
     deserializer->destroy();
@@ -52,7 +51,6 @@ DValue    Subkeys::deserializeRaw(DValue const& arg)
   }
 
   stream->call("seek", RealValue<DUInt64>(subkeyListOffset + 0x1000)); 
- 
 
   //XXX hbin cell  (multi form can't know yet)
   size = deserializer->call("DInt32");
@@ -66,31 +64,47 @@ DValue    Subkeys::deserializeRaw(DValue const& arg)
     subkeyCount = deserializer->call("DUInt16");
     for (uint32_t index = 0; index < subkeyCount; ++index)
     {
-      RealValue<DUInt32> subkeyOffset, subkeyChecksum;
-      subkeyOffset = deserializer->call("DUInt32");   
+      if (signature == 0x6972) //special case sublist of itself ...
+      {
+         DUnicodeString kname = ((DObject*)this->parent)->getValue("name");
+         std::cout << " ri on " << kname << std::endl;
+         RealValue<DUInt32> subKeyListOffset = deserializer->call("DUInt32");
+         DUInt64 currentOffset = stream->call("tell");  //XXX parse all put in lsit then create after ? rather than seeking ?
+         //next sublist 
+       
+         //DObject*  subkeys = Destruct().find("Subkeys").newObject(RealValue<DObject*>(this->parent)); //XXX nous ou le paren ?? ca devient compliquer :) mais bien gere ca doit se faire recup la list et push tous ds notre parent car elle doivent etre merge sur une clef !
+         //this->deserializer("DObject", subkeys);
+ 
+         stream->call("seek", RealValue<DUInt64>(currentOffset));
+      }
+      else 
+      {
+        RealValue<DUInt32> subkeyOffset, subkeyChecksum;
+        subkeyOffset = deserializer->call("DUInt32");   
 
-      if (signature == 0x686c || signature == 0x666c) //LH || LF
-        subkeyChecksum = deserializer->call("DUInt32");
+        if (signature == 0x686c || signature == 0x666c) //LH || LF
+          subkeyChecksum = deserializer->call("DUInt32");
   
       
-      DUInt64 currentOffset = stream->call("tell");
-      stream->call("seek", RealValue<DUInt64>(subkeyOffset + 0x1000));
-
-      //DUInt32 subHbinSize = deserializer->call("DUInt32");
-      deserializer->call("DUInt32");
-      DUInt16 subKeySignature = deserializer->call("DUInt16");
-
-      if (subKeySignature == 0x6b6e) //nk
-      { 
+        DUInt64 currentOffset = stream->call("tell"); //parse all offset and then create from list rather than seeking we reed this metada structure and other use it to create the nk object 
         stream->call("seek", RealValue<DUInt64>(subkeyOffset + 0x1000));
-        DObject* subkey = namedKeyStruct->newObject();
-        deserializer->call("DObject", RealValue<DObject*>(subkey)); //throw if not nk ?
-        ((DObject*)this->list)->call("push", RealValue<DObject*>(subkey)); 
+
+        //DUInt32 subHbinSize = deserializer->call("DUInt32");
+        deserializer->call("DUInt32");
+        DUInt16 subKeySignature = deserializer->call("DUInt16");
+
+        if (subKeySignature == 0x6b6e) //nk
+        { 
+          stream->call("seek", RealValue<DUInt64>(subkeyOffset + 0x1000));
+          DObject* subkey = namedKeyStruct->newObject();
+          deserializer->call("DObject", RealValue<DObject*>(subkey)); //throw if not nk ?
+          ((DObject*)this->list)->call("push", RealValue<DObject*>(subkey)); 
+        }
+        //else 
+        //std::cout << "found subkey signature " << subKeySignature << std::endl; 
+        //strange sometime is lh but that's all !
+        stream->call("seek", RealValue<DUInt64>(currentOffset));
       }
-      //else 
-      //std::cout << "found subkey signature " << subKeySignature << std::endl; 
-      //strange sometime is lh but that's all !
-      stream->call("seek", RealValue<DUInt64>(currentOffset));
     }
   }
   else

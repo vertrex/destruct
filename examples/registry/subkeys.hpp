@@ -38,7 +38,7 @@ public:
                 attribute(DUInt16, signature)
                 attribute(DUInt16, subkeyCount)
                 attribute(DObject, list)
-                function(DUInt8, deserializeRaw, DObject)
+                function(DObject, deserializeRaw, DObject)
                )
   memberList(Subkeys, 
              member(Subkeys, size)
