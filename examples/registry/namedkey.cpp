@@ -62,12 +62,17 @@ DObject*        NamedKey::deserializeRaw(DValue const& args)
   DBuffer buffer = stream->call("read", RealValue<DInt64>((DInt64)this->keyNameLength));
   this->name = DUnicodeString(std::string((char*)buffer.data(), this->keyNameLength)); //type UTF ?
 
-  this->subkeys = Destruct::DStructs::instance().find("Subkeys")->newObject(RealValue<DObject*>(this));
-  deserializer->call("DObject", subkeys);
+  this->subkeys = Destruct::DStructs::instance().find("Subkeys")->newObject();
+  if (this->subkeyCount != 0 && this->subkeyListOffset != 0xffffffff)
+  {
+    //subkeyCount also in children ? check if same ?
+    stream->call("seek", RealValue<DUInt64>(this->subkeyListOffset + 0x1000)); 
+    deserializer->call("DObject", subkeys);
+  }
 
   this->values = Destruct::DStructs::instance().find("RegistryValues")->newObject(RealValue<DObject*>(this));
   deserializer->call("DObject", values);
- 
+  //same than for subkeys here , seek and deserialize here rather than in object  
 
   return (this);
 }

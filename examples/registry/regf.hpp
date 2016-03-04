@@ -82,7 +82,7 @@ private:
   RealValue<DFunctionObject*>        _name, _time, _version;//, _key;
 };
 
-class RegfName : public DCppObject<RegfName>
+class RegfName : public DCppObject<RegfName> //remove 
 {
 public:
           RegfName(DStruct* dstruct, DValue const& args);
@@ -104,7 +104,7 @@ private:
   RealValue<DFunctionObject*>        _deserializeRaw;
 };
 
-class RegfTime64 : public DCppObject<RegfTime64>
+class RegfTime64 : public DCppObject<RegfTime64> //remove ?
 {
 public:
           RegfTime64(DStruct* dstruct, DValue const& args);

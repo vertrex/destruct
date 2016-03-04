@@ -31,7 +31,7 @@ public:
 
   RealValue<DInt32>          size;
   RealValue<DUInt16>         signature, subkeyCount;
-  RealValue<DObject*>        parent, list;
+  RealValue<DObject*>        list;
 
   attributeCount(Subkeys, 5)
   attributeList(attribute(DInt32, size)

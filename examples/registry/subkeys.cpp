@@ -27,7 +27,6 @@ using namespace Destruct;
 Subkeys::Subkeys(DStruct* dstruct, DValue const& args) : DCppObject<Subkeys>(dstruct, args), __size(0)
 {
   this->init();
-  this->parent = args;
   this->list = Destruct::DStructs::instance().generate("DVectorObject");
 }
 
@@ -40,25 +39,11 @@ DValue    Subkeys::deserializeRaw(DValue const& arg)
   DObject* deserializer = arg;
   DObject* stream = deserializer->getValue("stream");
 
-  //XXX IF SUBKEY COUNT IN PARENT ? //if nk only ? 
-  DUInt32 parentSubkeyCount = ((DObject*)this->parent)->getValue("subkeyCount"); //passer en paremetre car si non c la loose pour les ri
-  DUInt32 subkeyListOffset = ((DObject*)this->parent)->getValue("subkeyListOffset"); //check ds le parent
-  if (parentSubkeyCount == 0 || subkeyListOffset == 0xffffffff)
-  {
-    deserializer->destroy();
-    stream->destroy();
-    return  RealValue<DObject*>(this);
-  }
-
-  stream->call("seek", RealValue<DUInt64>(subkeyListOffset + 0x1000)); 
-
-  //XXX hbin cell  (multi form can't know yet)
   size = deserializer->call("DInt32");
   signature = deserializer->call("DUInt16");
-  //e
 
-                   //"lh"                 //"lf"                  "ri"                  "li"
   DStruct* namedKeyStruct = Destruct::DStructs::instance().find("NamedKey"); 
+                   //"lh"                 //"lf"                  "ri"                  "li"
   if (signature == 0x686c || signature == 0x666c || signature == 0x6972 || signature == 0x696c)
   { 
     subkeyCount = deserializer->call("DUInt16");
@@ -66,15 +51,21 @@ DValue    Subkeys::deserializeRaw(DValue const& arg)
     {
       if (signature == 0x6972) //special case sublist of itself ...
       {
-         DUnicodeString kname = ((DObject*)this->parent)->getValue("name");
-         std::cout << " ri on " << kname << std::endl;
          RealValue<DUInt32> subKeyListOffset = deserializer->call("DUInt32");
          DUInt64 currentOffset = stream->call("tell");  //XXX parse all put in lsit then create after ? rather than seeking ?
-         //next sublist 
-       
-         //DObject*  subkeys = Destruct().find("Subkeys").newObject(RealValue<DObject*>(this->parent)); //XXX nous ou le paren ?? ca devient compliquer :) mais bien gere ca doit se faire recup la list et push tous ds notre parent car elle doivent etre merge sur une clef !
-         //this->deserializer("DObject", subkeys);
- 
+         if (subKeyListOffset != 0xffffffff)
+         {
+           DObject* subkeys = Destruct::DStructs::instance().find("Subkeys")->newObject();
+           stream->call("seek", RealValue<DUInt64>(subKeyListOffset + 0x1000)); 
+           deserializer->call("DObject", RealValue<DObject*>(subkeys));
+           DObject* sublist = subkeys->getValue("list"); 
+           DUInt64 count = sublist->call("size");
+           for (DUInt64 index = 0; index < count; index++)
+           {
+            DValue subkey = sublist->call("get", RealValue<DUInt64>(index));
+            ((DObject*)this->list)->call("push", subkey); 
+           }
+         }
          stream->call("seek", RealValue<DUInt64>(currentOffset));
       }
       else 
