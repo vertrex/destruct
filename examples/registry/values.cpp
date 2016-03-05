@@ -27,7 +27,7 @@ using namespace Destruct;
 RegistryValues::RegistryValues(DStruct* dstruct, DValue const& args) : DCppObject<RegistryValues>(dstruct, args), __size(0)
 {
   this->init();
-  this->parent = args.get<DObject* >();
+  this->valueCount = args;
   this->list = Destruct::DStructs::instance().generate("DVectorObject");
 }
 
@@ -37,35 +37,24 @@ RegistryValues::~RegistryValues(void)
 
 DValue    RegistryValues::deserializeRaw(DValue const& arg)
 {
-  DObject* deserializer = arg.get<DObject*>();
-
+  DObject* deserializer = arg;
+  DObject* stream = deserializer->getValue("stream");
   DStruct* valueStruct = Destruct::DStructs::instance().find("ValueKey"); 
 
-  DUInt32 valueCount = ((DObject*)this->parent)->getValue("valueCount").get<DUInt32>();
-  DUInt32 valueListOffset = ((DObject*)this->parent)->getValue("valueListOffset").get<DUInt32>();
-  if (valueCount == 0 || valueListOffset == 0xffffffff)
-  {
-    deserializer->destroy();
-    return (RealValue<DObject*>(this)); 
-  }
-
-  DObject* stream = deserializer->getValue("stream").get<DObject*>();
-  stream->call("seek", RealValue<DUInt64>(valueListOffset + 0x1000)); 
-
   size = deserializer->call("DInt32");
-
-  for (uint32_t index = 0; index < valueCount ; ++index)
+  for (uint32_t index = 0; index < this->valueCount ; ++index)
   {
     RealValue<DUInt32> subvalueOffset = deserializer->call("DUInt32");
         
     DObject* subvalue = valueStruct->newObject();
 
-    DUInt64 currentOffset = stream->call("tell").get<DUInt64>();
+    DUInt64 currentOffset = stream->call("tell");
     stream->call("seek", RealValue<DUInt64>(subvalueOffset + 0x1000));
 
     deserializer->call("DObject", RealValue<DObject*>(subvalue));
     stream->call("seek", RealValue<DUInt64>((DUInt64)currentOffset));
     ((DObject*)this->list)->call("push", RealValue<DObject*>(subvalue)); 
+    subvalue->destroy();
   }
 
   stream->destroy();

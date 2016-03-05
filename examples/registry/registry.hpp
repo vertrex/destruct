@@ -33,9 +33,6 @@ public:
   ~Registry();
 
   DObject*              open(DValue const& args);
-  //void                setStateInfo(const std::string&);
-  bool                  load(Destruct::DValue value);
-  Destruct::DValue      save(void) const;
 
   static void           show(DObject* object);
   EXPORT static void    toFile(std::string fileName, DObject* object, std::string type);

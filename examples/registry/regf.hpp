@@ -24,24 +24,25 @@ using namespace Destruct;
 class Regf : public DCppObject<Regf> //header REGF
 {
 public:
-  RealValue<DUInt32>  regf, sequence1, sequence2, major, minor, fileType, unknown1,
-                                keyrecord, lasthbin, unknown2;
-  RealValue<DObject*> regfName, timestamp, key;
-
   Regf(DStruct* dstruct, DValue const& args);
   ~Regf();
   DValue              name(void);
   DValue              time(void);
   DValue              version(void);
-  DValue              validate(void);
-  //DValue              key(void);
+  DUInt8              validate(void);
+  DObject*            deserializeRaw(DValue const& args);
+
+  RealValue<DUInt32>  regf, sequence1, sequence2, major, minor, fileType, unknown1,
+                                keyrecord, lasthbin, unknown2;
+  RealValue<DUInt64>  timestamp;
+  RealValue<DObject*> regfName, key;
 
   attributeCount(Regf, 16)
 
   attributeList(attribute(DUInt32, regf)
                 attribute(DUInt32, sequence1)
                 attribute(DUInt32, sequence2) //sequence1 == sequence2 if sync properly
-                attribute(DObject, timestamp) //FILETIME UTC
+                attribute(DUInt64, timestamp) //FILETIME UTC
                 attribute(DUInt32, major) 
                 attribute(DUInt32, minor)
                 attribute(DUInt32, fileType) //0x0 normal 0x1 transaction log
@@ -53,10 +54,9 @@ public:
                 //attribute(Dbuffer, padding) 396 bytes
                 //attribute(DUInt32, checksum) xor-32 of previous 508 bytes
                 function(DUnicodeString, name, DNone)
-                function(DUnicodeString, time, DNone)
                 function(DUnicodeString, version, DNone)
                 attribute(DObject, key)
-                //function(DObject, key, DNone)
+                function(DObject, deserializeRaw, DObject)
                )
 
   memberList(Regf, 
@@ -73,13 +73,12 @@ public:
              member(Regf, unknown2)
              member(Regf, regfName)
              method(Regf, name)
-             method(Regf, time)
              method(Regf, version)
              member(Regf, key)
-             //method(Regf, key)
+             method(Regf, deserializeRaw)
             )
 private:
-  RealValue<DFunctionObject*>        _name, _time, _version;//, _key;
+  RealValue<DFunctionObject*>        _name, _time, _version, _deserializeRaw;
 };
 
 class RegfName : public DCppObject<RegfName> //remove 
@@ -102,33 +101,6 @@ public:
             )
 private:
   RealValue<DFunctionObject*>        _deserializeRaw;
-};
-
-class RegfTime64 : public DCppObject<RegfTime64> //remove ?
-{
-public:
-          RegfTime64(DStruct* dstruct, DValue const& args);
-          RegfTime64(RegfTime64 const& copy);
-          ~RegfTime64();
-  DValue  deserializeRaw(DValue const& stream);
-
-  DValue date(void);
-  RealValue<DUInt64>  timeStamp;
-
-  attributeList(
-                attribute(DUInt64, timeStamp)
-                function(DUnicodeString, date, DNone)
-                function(DObject, deserializeRaw, DObject)
-               )
-  memberList(RegfTime64, 
-             member(RegfTime64, timeStamp)
-             method(RegfTime64, date)
-             method(RegfTime64, deserializeRaw)
-            )
-  attributeCount(RegfTime64, 3)
-private:
-  RealValue<DFunctionObject*>        _deserializeRaw;
-  RealValue<DFunctionObject*>        _date;
 };
 
 #endif

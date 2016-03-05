@@ -36,7 +36,7 @@ DObject*       ValueKey::deserializeRaw(DValue const& arg)
 
   if (this->nameLength)
   {
-    DBuffer buffer = deserializer->getValue("stream").get<DObject*>()->call("read", RealValue<DInt64>((DInt64)this->nameLength));
+    DBuffer buffer = stream->call("read", RealValue<DInt64>((DInt64)this->nameLength));
     this->name = DUnicodeString(std::string((char*)buffer.data(), this->nameLength));
   }
   else
@@ -67,10 +67,14 @@ DObject*       ValueKey::deserializeRaw(DValue const& arg)
     DObject* bigData = DStructs::instance().generate("RegistryBigData");
     deserializer->call("DObject", RealValue<DObject*>(bigData));
     this->dataOffsets = bigData->getValue("offsets");
+//    this->dataOffset->addRef();
     //bigData->destroy(); //or segfault  cause offsets is deleted
   }
   stream->call("seek", RealValue<DUInt64>(previousOffset)); //usefull ? c deja seek ds un parent a check XXX
 
+  deserializer->destroy();
+  stream->destroy();
+  
   return (RealValue<DObject*>(this));
 }
 

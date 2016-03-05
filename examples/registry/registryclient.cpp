@@ -8,7 +8,6 @@ RegistryClient::RegistryClient(std::string const& addr, uint32_t port) : Client(
 
 DObject* RegistryClient::start(void)
 {
-  std::cout << "connect to host" << std::endl;
   Destruct::DStructs& destruct = Destruct::DStructs::instance();
   this->__networkStream = destruct.find("NetworkStream")->newObject(RealValue<DInt32>(this->connectionSocket())); //XXX doublon init in client?
 

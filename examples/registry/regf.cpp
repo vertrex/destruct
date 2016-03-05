@@ -28,31 +28,22 @@ using namespace Destruct;
 Regf::Regf(DStruct* dstruct, DValue const& args) : DCppObject<Regf>(dstruct, args)
 {
   this->init();
-
-  this->regfName = new RegfName(Destruct::DStructs::instance().find("RegfName"), RealValue<DObject*>(DNone));
-  this->timestamp = new RegfTime64(Destruct::DStructs::instance().find("RegfTime64"), RealValue<DObject*>(DNone));
-  //XXX  keyrecord get root key here
 }
 
 Regf::~Regf(void)
 {
 }
 
-DValue  Regf::validate(void)
+DUInt8 Regf::validate(void)
 {
   if (((DUInt32)this->regf) == 0x66676572 && (this->sequence1 == this->sequence2))
-    return (RealValue<DUInt8>(1));
-  return (RealValue<DUInt8>(0));
+    return (1);
+  return (0);
 }
 
 DValue  Regf::name(void)
 {
   return (((DObject*)this->regfName)->getValue("filename"));
-}
-
-DValue  Regf::time(void)
-{
-  return (((DObject*)this->timestamp)->call("date"));
 }
 
 DValue  Regf::version(void)
@@ -63,44 +54,36 @@ DValue  Regf::version(void)
   return RealValue<DUnicodeString>(stringStream.str());
 }
 
-//dDValue  Regf::key(void)
-//{
-//return  RealValue<DObject*>(new RegistryKey(Destruct::DStructs::instance().find("RegistryKey"), RealValue<DObject*>(DNone)));
-//}
-/**
- *  RegfTime
- */ 
-RegfTime64::RegfTime64(DStruct* dstruct, DValue const& args) : DCppObject<RegfTime64>(dstruct, args)
+DObject* Regf::deserializeRaw(DValue const& args)
 {
-  this->init();
+  DObject* deserializer = args;
+  DObject* stream = deserializer->getValue("stream");
+
+  this->regf = deserializer->call("DUInt32");
+  this->sequence1 = deserializer->call("DUInt32");
+  this->sequence2 = deserializer->call("DUInt32");
+  this->timestamp = deserializer->call("DUInt64");
+  this->major = deserializer->call("DUInt32");
+  this->minor = deserializer->call("DUInt32");
+  this->fileType = deserializer->call("DUInt32");
+  this->unknown1 = deserializer->call("DUInt32"); 
+  this->keyrecord = deserializer->call("DUInt32");
+  this->lasthbin = deserializer->call("DUInt32");
+  this->unknown2 = deserializer->call("DUInt32");
+
+  this->regfName = new RegfName(Destruct::DStructs::instance().find("RegfName"), RealValue<DObject*>(DNone));
+  deserializer->call("DObject", RealValue<DObject*>(this->regfName));
+
+  if (this->validate() == 0)
+    throw DException("Invalid sequence in registry");
+
+  stream->call("seek", RealValue<DUInt64>(this->keyrecord + 0x1000));
+  this->key = DStructs::instance().find("NamedKey")->newObject();
+  deserializer->call("DObject", this->key);
+ 
+  return (this);
 }
 
-RegfTime64::RegfTime64(RegfTime64 const& copy): DCppObject<RegfTime64>(copy)
-{
-  this->init();
-}
-
-RegfTime64::~RegfTime64()
-{
-}
-
-DValue RegfTime64::date(void)
-{
-  std::stringstream stringStream;
-  //vtime* t = new vtime(this->timeStamp, TIME_MS_64);
-  // 
-  //stringStream << "time " << t->hour << ":" << t->minute << ":" << t->second << " " << t->day << "/" << t->month << "/" << t->year;
-  //delete t;
-  return RealValue<DUnicodeString>(stringStream.str());
-}
-
-DValue RegfTime64::deserializeRaw(DValue const& value)
-{
-  DObject* deserializer = value;
-  this->timeStamp = deserializer->call("DUInt64");
-
-  return RealValue<DObject*>(this);
-}
 
 /**
  *  RegfName

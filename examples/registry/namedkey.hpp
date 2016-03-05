@@ -15,7 +15,8 @@ public:
   RealValue<DInt32>  size;
   RealValue<DUInt32> parentKeyOffset, subkeyCount, subkeyCountVolatile,  subkeyListOffset, subkeyListOffsetVolatile, valueCount, valueListOffset,
   securityDescriptorOffset, classNameOffset, unknown1, subkeyNameMaximumLength, subkeyClassNameMaximumLength, valueNameMaximumLength, valueDataMaximumSize, unknown2;
-  RealValue<DObject*> subkeys, values, timestamp;
+  RealValue<DUInt64> timestamp;
+  RealValue<DObject*> subkeys, values;
 
   RealValue<DUnicodeString>  fileName, name;
 
@@ -26,7 +27,7 @@ public:
       attribute(DInt32, size) //hbin size
       attribute(DUInt16, signature)
       attribute(DUInt16, keyType)
-      attribute(DObject, timestamp)
+      attribute(DUInt64, timestamp)
       attribute(DUInt32, unknown1)
       attribute(DUInt32, parentKeyOffset)
       attribute(DUInt32, subkeyCount)

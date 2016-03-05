@@ -29,7 +29,8 @@ public:
   DValue  deserializeRaw(DValue const& stream);
 
 
-  RealValue<DInt32>          size;
+  RealValue<DInt32>          size;// == (valueCount / 4) * -1
+  RealValue<DUInt32>         valueCount;
   RealValue<DObject*>        parent, list;
 
   attributeCount(RegistryValues, 3)

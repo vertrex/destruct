@@ -154,7 +154,7 @@ inline DValue  DVector<DObject*, DType::DObjectType>::get(DValue const& args)
     if (index >= this->__vector.size())
       throw DException(std::string("DContainer::get bad index\n"));
     DObject* object = this->__vector[index];
-    object->addRef(); // ? segfault in python
+    //object->addRef(); // ? segfault in python
     return (RealValue<DObject*>(object)); //addRef
   }
 }

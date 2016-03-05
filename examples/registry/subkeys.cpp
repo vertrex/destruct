@@ -65,6 +65,7 @@ DValue    Subkeys::deserializeRaw(DValue const& arg)
             DValue subkey = sublist->call("get", RealValue<DUInt64>(index));
             ((DObject*)this->list)->call("push", subkey); 
            }
+           sublist->destroy();
          }
          stream->call("seek", RealValue<DUInt64>(currentOffset));
       }
@@ -77,11 +78,10 @@ DValue    Subkeys::deserializeRaw(DValue const& arg)
           subkeyChecksum = deserializer->call("DUInt32");
   
       
-        DUInt64 currentOffset = stream->call("tell"); //parse all offset and then create from list rather than seeking we reed this metada structure and other use it to create the nk object 
+        DUInt64 currentOffset = stream->call("tell");
         stream->call("seek", RealValue<DUInt64>(subkeyOffset + 0x1000));
 
-        //DUInt32 subHbinSize = deserializer->call("DUInt32");
-        deserializer->call("DUInt32");
+        deserializer->call("DUInt32"); //subhbinsize
         DUInt16 subKeySignature = deserializer->call("DUInt16");
 
         if (subKeySignature == 0x6b6e) //nk
@@ -89,20 +89,12 @@ DValue    Subkeys::deserializeRaw(DValue const& arg)
           stream->call("seek", RealValue<DUInt64>(subkeyOffset + 0x1000));
           DObject* subkey = namedKeyStruct->newObject();
           deserializer->call("DObject", RealValue<DObject*>(subkey)); //throw if not nk ?
-          ((DObject*)this->list)->call("push", RealValue<DObject*>(subkey)); 
+          ((DObject*)this->list)->call("push", RealValue<DObject*>(subkey));
+          subkey->destroy(); 
         }
-        //else 
-        //std::cout << "found subkey signature " << subKeySignature << std::endl; 
-        //strange sometime is lh but that's all !
         stream->call("seek", RealValue<DUInt64>(currentOffset));
       }
     }
-  }
-  else
-  {
-     std::ios::fmtflags flags(std::cout.flags()); 
-     std::cout << "Key bad signature" << std::hex << signature << std::endl;
-     std::cout.flags(flags);
   }
 
   stream->destroy();

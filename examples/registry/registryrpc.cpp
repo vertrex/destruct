@@ -46,6 +46,7 @@ void RegistryRPC::local(const std::string filePath)
 
 void RegistryRPC::serve(uint32_t port)
 {
+ //use destruct import
  RegistryServer  server(port);
  server.initRoot();
  //server.daemonize();
@@ -54,6 +55,7 @@ void RegistryRPC::serve(uint32_t port)
 
 void RegistryRPC::connect(std::string const& filePath, std::string const& addr, uint32_t port)
 {
+  //use destruct import 
   RegistryClient client(addr, port);
   DObject* registry = client.start();
 

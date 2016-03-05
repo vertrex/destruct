@@ -23,7 +23,6 @@
 #include "valuekey.hpp"
 #include "protocol/traceobject.hpp"
 
-#include "streamvfile.hpp"
 #include "client.hpp"
 
 
@@ -40,11 +39,9 @@ void    Registry::declare(void)
   Destruct::DStructs& destruct = Destruct::DStructs::instance();
 
   registerDCpp(Registry)
-  //registerDCpp(StreamFile)
   registerDCpp(RegistryOpt)
   registerDCpp(Regf)
   registerDCpp(RegfName)
-  registerDCpp(RegfTime64)
   registerDCpp(NamedKey) //RegistryNamedKey
   registerDCpp(Subkeys) //RegistrySubkeys
   registerDCpp(ValueKey)  //RegistryValueKey
@@ -80,28 +77,14 @@ DObject*        Registry::open(DValue const& args)
   DMutableObject* arg = static_cast<DMutableObject*>(this->__destruct.generate("DMutable"));
   arg->setValueAttribute(DType::DUnicodeStringType, "filePath", args); 
   arg->setValueAttribute(DType::DInt8Type, "input",  RealValue<DInt8>(DStream::Input));
-  DObject* streamVFile = this->__destruct.find("DStream")->newObject(RealValue<DObject*>(arg));
+  DObject* stream = this->__destruct.find("DStream")->newObject(RealValue<DObject*>(arg));
   arg->destroy();
 
-  DObject* deserializer = this->__destruct.find("DeserializeRaw")->newObject(RealValue<DObject*>(streamVFile));
+  DObject* deserializer = this->__destruct.find("DeserializeRaw")->newObject(RealValue<DObject*>(stream));
   deserializer->call("DObject", RealValue<DObject*>(regf)); //deserializer must destroy object ?
 
-
-  if (regf->validate().get<DUInt8>())
-    std::cout << "Registry file is valid" << std::endl;
-  else
-    std::cout << "Registry file is invalid" << std::endl;
-
-  NamedKey* key = new NamedKey(this->__destruct.find("NamedKey"), RealValue<DObject*>(DNone));
-
-  DUInt64 x = 0x1000 + regf->keyrecord; //XXX put in Regf 
-  streamVFile->call("seek", RealValue<DUInt64>(x));
-  deserializer->call("DObject", RealValue<DObject*>(key));
-  regf->key = key;
-
-  key->destroy();  
   deserializer->destroy();
-  streamVFile->destroy();
+  stream->destroy();
   return (regf);
 }
 
@@ -130,15 +113,4 @@ void            Registry::show(DObject* object)
   serializer->call("DObject", RealValue<DObject*>(object));
   serializer->destroy();
   dstream->destroy(); 
-}
-
-/** Loading and saving method **/
-bool                    Registry::load(DValue value)
-{
-  return (false);
-}
-
-DValue   Registry::save(void) const
-{
-  return (RealValue<DObject*>(DNone));
 }

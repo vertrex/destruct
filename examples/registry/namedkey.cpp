@@ -24,7 +24,6 @@ using namespace Destruct;
 NamedKey::NamedKey(DStruct* dstruct, DValue const& args) : DCppObject<NamedKey>(dstruct, args)
 {
   this->init();
-  
 }
 
 NamedKey::~NamedKey(void)
@@ -39,8 +38,7 @@ DObject*        NamedKey::deserializeRaw(DValue const& args)
   this->size = deserializer->call("DInt32");
   this->signature = deserializer->call("DUInt16");
   this->keyType = deserializer->call("DUInt16");
-  this->timestamp = Destruct::DStructs::instance().find("RegfTime64")->newObject();
-  deserializer->call("DObject", this->timestamp);
+  this->timestamp = deserializer->call("DUInt64");
   this->unknown1 = deserializer->call("DUInt32");
   this->parentKeyOffset = deserializer->call("DUInt32");
   this->subkeyCount = deserializer->call("DUInt32");
@@ -65,15 +63,19 @@ DObject*        NamedKey::deserializeRaw(DValue const& args)
   this->subkeys = Destruct::DStructs::instance().find("Subkeys")->newObject();
   if (this->subkeyCount != 0 && this->subkeyListOffset != 0xffffffff)
   {
-    //subkeyCount also in children ? check if same ?
     stream->call("seek", RealValue<DUInt64>(this->subkeyListOffset + 0x1000)); 
     deserializer->call("DObject", subkeys);
   }
 
-  this->values = Destruct::DStructs::instance().find("RegistryValues")->newObject(RealValue<DObject*>(this));
-  deserializer->call("DObject", values);
-  //same than for subkeys here , seek and deserialize here rather than in object  
+  this->values = Destruct::DStructs::instance().find("RegistryValues")->newObject(this->valueCount);
+  if (this->valueCount != 0 && this->valueListOffset != 0xffffffff)
+  {
+    stream->call("seek", RealValue<DUInt64>(this->valueListOffset + 0x1000)); 
+    deserializer->call("DObject", values);
+  }
 
+  deserializer->destroy();
+  stream->destroy();
   return (this);
 }
 
