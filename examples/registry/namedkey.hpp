@@ -9,16 +9,17 @@ class NamedKey: public DCppObject<NamedKey>
 {
 public:
   NamedKey(DStruct* dstruct, DValue const& args);
+protected:
   ~NamedKey();
-
+public:
   RealValue<DUInt16> signature, keyType, keyNameLength, classNameLength;
   RealValue<DInt32>  size;
   RealValue<DUInt32> parentKeyOffset, subkeyCount, subkeyCountVolatile,  subkeyListOffset, subkeyListOffsetVolatile, valueCount, valueListOffset,
   securityDescriptorOffset, classNameOffset, unknown1, subkeyNameMaximumLength, subkeyClassNameMaximumLength, valueNameMaximumLength, valueDataMaximumSize, unknown2;
   RealValue<DUInt64> timestamp;
-  RealValue<DObject*> subkeys, values;
-
   RealValue<DUnicodeString>  fileName, name;
+
+  RealValue<DObject*> subkeys, values;
 
   DObject*      deserializeRaw(DValue const& stream);
 

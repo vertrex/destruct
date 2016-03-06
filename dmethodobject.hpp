@@ -42,9 +42,9 @@ public:
   {
   }
  
-  DValue call(const DValue& args)
+  DValue call(const DValue& args) //argumentype
   {
-    return RealValue<RealReturnType>((__self->*__member)(args));
+    return RealValue<RealReturnType>((__self->*__member)(args)); //realvalue<argumentype>() ?
   }
 private:
   CPPClass* __self;
@@ -265,6 +265,7 @@ public:
   {
   }
 
+                //auto template possible for args ?
   DValue call(const DValue& args) const
   {
     try 

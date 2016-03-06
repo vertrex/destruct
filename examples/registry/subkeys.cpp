@@ -32,9 +32,10 @@ Subkeys::Subkeys(DStruct* dstruct, DValue const& args) : DCppObject<Subkeys>(dst
 
 Subkeys::~Subkeys(void)
 {
+  //std::cout << "~Subkeys" << std::endl;
 }
 
-DValue    Subkeys::deserializeRaw(DValue const& arg)
+DObject*        Subkeys::deserializeRaw(DValue const& arg)
 {
   DObject* deserializer = arg;
   DObject* stream = deserializer->getValue("stream");
@@ -52,7 +53,7 @@ DValue    Subkeys::deserializeRaw(DValue const& arg)
       if (signature == 0x6972) //special case sublist of itself ...
       {
          RealValue<DUInt32> subKeyListOffset = deserializer->call("DUInt32");
-         DUInt64 currentOffset = stream->call("tell");  //XXX parse all put in lsit then create after ? rather than seeking ?
+         DUInt64 currentOffset = stream->call("tell"); 
          if (subKeyListOffset != 0xffffffff)
          {
            DObject* subkeys = Destruct::DStructs::instance().find("Subkeys")->newObject();
@@ -63,9 +64,10 @@ DValue    Subkeys::deserializeRaw(DValue const& arg)
            for (DUInt64 index = 0; index < count; index++)
            {
             DValue subkey = sublist->call("get", RealValue<DUInt64>(index));
-            ((DObject*)this->list)->call("push", subkey); 
+            ((DObject*)this->list)->call("push", subkey);
            }
            sublist->destroy();
+           ((DObject*)subkeys)->destroy();
          }
          stream->call("seek", RealValue<DUInt64>(currentOffset));
       }
@@ -90,7 +92,7 @@ DValue    Subkeys::deserializeRaw(DValue const& arg)
           DObject* subkey = namedKeyStruct->newObject();
           deserializer->call("DObject", RealValue<DObject*>(subkey)); //throw if not nk ?
           ((DObject*)this->list)->call("push", RealValue<DObject*>(subkey));
-          subkey->destroy(); 
+          subkey->destroy();
         }
         stream->call("seek", RealValue<DUInt64>(currentOffset));
       }
@@ -100,6 +102,6 @@ DValue    Subkeys::deserializeRaw(DValue const& arg)
   stream->destroy();
   deserializer->destroy();
 
-  return (RealValue<DObject*>(this));
+  return (this);
 }
 

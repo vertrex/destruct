@@ -34,8 +34,7 @@ public:
 
   DObject*              open(DValue const& args);
 
-  static void           show(DObject* object);
-  EXPORT static void    toFile(std::string fileName, DObject* object, std::string type);
+
 
   attributeCount(Registry, 1)
 

@@ -18,7 +18,6 @@ include_directories("../rpc")
 
 set(registry_libfiles
   registry.cpp
-  registryopt.cpp
   regf.cpp
   subkeys.cpp
   values.cpp

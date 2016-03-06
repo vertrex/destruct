@@ -85,6 +85,7 @@ public:
     return (this->__baseValue[idx]->getFinal());
   }
 
+                                 //auto template possible for args ?
   virtual DValue call(size_t idx, DValue const & args)
   {
     DValue v = this->__baseValue[idx]->getFinal();

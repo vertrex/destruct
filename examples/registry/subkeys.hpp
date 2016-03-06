@@ -25,8 +25,7 @@ class Subkeys : public DCppObject<Subkeys>
 {
 public:
           Subkeys(DStruct* dstruct, DValue const& args);
-          ~Subkeys();
-  DValue  deserializeRaw(DValue const& stream);
+  DObject*      deserializeRaw(DValue const& stream);
 
 
   RealValue<DInt32>          size;
@@ -47,6 +46,8 @@ public:
              member(Subkeys, list)
              method(Subkeys, deserializeRaw)
             )
+protected:
+  ~Subkeys();
 private:
   uint64_t                           __size;
   RealValue<DFunctionObject*>        _deserializeRaw;

@@ -15,7 +15,6 @@
  */
 
 #include "registry.hpp"
-#include "registryopt.hpp"
 #include "regf.hpp"
 #include "subkeys.hpp"
 #include "values.hpp"
@@ -28,7 +27,7 @@
 
 extern "C"
 {
-  void DestructExport()
+  EXPORT void DestructExport()
   {
     Registry::declare();
   }
@@ -39,7 +38,6 @@ void    Registry::declare(void)
   Destruct::DStructs& destruct = Destruct::DStructs::instance();
 
   registerDCpp(Registry)
-  registerDCpp(RegistryOpt)
   registerDCpp(Regf)
   registerDCpp(RegfName)
   registerDCpp(NamedKey) //RegistryNamedKey
@@ -72,45 +70,18 @@ Registry::~Registry()
 
 DObject*        Registry::open(DValue const& args)
 {
-  Regf* regf = new Regf(this->__destruct.find("Regf"), RealValue<DObject*>(DNone));
+  RealValue<DObject*> regf = new Regf(this->__destruct.find("Regf"), RealValue<DObject*>(DNone));
   
   DMutableObject* arg = static_cast<DMutableObject*>(this->__destruct.generate("DMutable"));
   arg->setValueAttribute(DType::DUnicodeStringType, "filePath", args); 
   arg->setValueAttribute(DType::DInt8Type, "input",  RealValue<DInt8>(DStream::Input));
-  DObject* stream = this->__destruct.find("DStream")->newObject(RealValue<DObject*>(arg));
+  RealValue<DObject*> stream = this->__destruct.find("DStream")->newObject(RealValue<DObject*>(arg));
   arg->destroy();
 
-  DObject* deserializer = this->__destruct.find("DeserializeRaw")->newObject(RealValue<DObject*>(stream));
-  deserializer->call("DObject", RealValue<DObject*>(regf)); //deserializer must destroy object ?
+  RealValue<DObject*> deserializer = this->__destruct.find("DeserializeRaw")->newObject(stream);
+  ((DObject*)stream)->destroy();
 
-  deserializer->destroy();
-  stream->destroy();
+  ((DObject*)deserializer)->call("DObject", regf); //deserializer must destroy object ?
+
   return (regf);
-}
-
-void            Registry::toFile(std::string filePath, DObject* object, std::string type)
-{
-  Destruct::DStructs& destruct = Destruct::DStructs::instance();
-
-  DMutableObject* arg = static_cast<DMutableObject*>(destruct.generate("DMutable"));
-  arg->setValueAttribute(DType::DUnicodeStringType, "filePath", RealValue<DUnicodeString>(filePath)); 
-  arg->setValueAttribute(DType::DInt8Type, "input", RealValue<DInt8>(DStream::Output));
-  DObject* dstream = destruct.generate("DStream", RealValue<DObject*>(arg));
-  arg->destroy();
- 
-  DObject* serializer = destruct.find("Serialize" + type)->newObject(RealValue<DObject*>(dstream));
-  serializer->call("DObject", RealValue<DObject*>(object));
-  serializer->destroy();
-  dstream->destroy(); 
-}
-
-void            Registry::show(DObject* object)
-{
-  Destruct::DStructs& destruct = Destruct::DStructs::instance();
-  DObject* dstream = destruct.generate("DStreamCout", RealValue<DObject*>());
- 
-  DObject* serializer = destruct.find("SerializeText")->newObject(RealValue<DObject*>(dstream));
-  serializer->call("DObject", RealValue<DObject*>(object));
-  serializer->destroy();
-  dstream->destroy(); 
 }

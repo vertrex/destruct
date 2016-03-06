@@ -16,7 +16,6 @@
 #include <iostream>
 
 #include "regf.hpp"
-#include "registryopt.hpp"
 
 #include "dstructs.hpp"
 
@@ -30,8 +29,9 @@ Regf::Regf(DStruct* dstruct, DValue const& args) : DCppObject<Regf>(dstruct, arg
   this->init();
 }
 
-Regf::~Regf(void)
+Regf::~Regf()
 {
+  //std::cout << "~Regf()" << std::endl;
 }
 
 DUInt8 Regf::validate(void)
@@ -80,10 +80,12 @@ DObject* Regf::deserializeRaw(DValue const& args)
   stream->call("seek", RealValue<DUInt64>(this->keyrecord + 0x1000));
   this->key = DStructs::instance().find("NamedKey")->newObject();
   deserializer->call("DObject", this->key);
+
+  deserializer->destroy();
+  stream->destroy();
  
   return (this);
 }
-
 
 /**
  *  RegfName
@@ -97,7 +99,7 @@ RegfName::~RegfName(void)
 {
 }
 
-DValue    RegfName::deserializeRaw(DValue const& arg)
+DObject*        RegfName::deserializeRaw(DValue const& arg)
 {
   DObject* deserializer = arg;
   DObject* stream = deserializer->getValue("stream");
@@ -115,5 +117,8 @@ DValue    RegfName::deserializeRaw(DValue const& arg)
   if (i < 58)
     this->fileName = DUnicodeString((char*)fileNameBuff, i, "UTF16-LE");
 
-  return RealValue<DObject*>(this);
+  deserializer->destroy();
+  stream->destroy();
+
+  return (this);
 }

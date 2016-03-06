@@ -28,19 +28,16 @@ void RegistryRPC::local(const std::string filePath)
   DObject* registry = destruct.generate("Registry");
 
   std::cout << "opening file " << filePath << std::endl;
-
   DObject* regf = registry->call("open", RealValue<DUnicodeString>(filePath)).get<DObject*>();
-
   std::cout << "Regf deserialized " << std::endl;
 
-  std::string fileName(filePath, filePath.rfind("/") + 1);
-  Registry::toFile(fileName + ".bin", regf, "Binary");
-  Registry::toFile(fileName + ".raw", regf, "Raw");
-  Registry::toFile(fileName + "registry.text", regf, "Text");
-  //Registry::show(regf);
-  std::cout << "REGF " << regf->refCount() << std::endl;
+  //std::string fileName(filePath, filePath.rfind("/") + 1);
+  //RegistryRPC::toFile(fileName + ".bin", regf, "Binary");
+  //RegistryRPC::toFile(fileName + ".raw", regf, "Raw");
+  //RegistryRPC::toFile(fileName + "registry.text", regf, "Text");
+  //RegistryRPC::show(regf);
   regf->destroy(); 
-  //regf->destroy(); 
+  registry->destroy();
 }
 
 
@@ -150,3 +147,29 @@ int main(int argc, char** argv)
  */
 }
 
+void            RegistryRPC::toFile(std::string filePath, DObject* object, std::string type)
+{
+  Destruct::DStructs& destruct = Destruct::DStructs::instance();
+
+  DMutableObject* arg = static_cast<DMutableObject*>(destruct.generate("DMutable"));
+  arg->setValueAttribute(DType::DUnicodeStringType, "filePath", RealValue<DUnicodeString>(filePath)); 
+  arg->setValueAttribute(DType::DInt8Type, "input", RealValue<DInt8>(DStream::Output));
+  DObject* dstream = destruct.generate("DStream", RealValue<DObject*>(arg));
+  arg->destroy();
+ 
+  DObject* serializer = destruct.find("Serialize" + type)->newObject(RealValue<DObject*>(dstream));
+  serializer->call("DObject", RealValue<DObject*>(object));
+  serializer->destroy();
+  dstream->destroy(); 
+}
+
+void            RegistryRPC::show(DObject* object)
+{
+  Destruct::DStructs& destruct = Destruct::DStructs::instance();
+  DObject* dstream = destruct.generate("DStreamCout", RealValue<DObject*>());
+ 
+  DObject* serializer = destruct.find("SerializeText")->newObject(RealValue<DObject*>(dstream));
+  serializer->call("DObject", RealValue<DObject*>(object));
+  serializer->destroy();
+  dstream->destroy(); 
+}

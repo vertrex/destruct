@@ -152,7 +152,6 @@ DeserializeRaw::DeserializeRaw(DeserializeRaw const& copy) : DCppObject<Deserial
 
 DeserializeRaw::~DeserializeRaw()
 {
- //((DObject*)__stream)->destroy();
 }
 
 DObject*        DeserializeRaw::dDObject(DValue const& value)
@@ -164,8 +163,9 @@ DObject*        DeserializeRaw::dDObject(DValue const& value)
   int32_t index = dobject->instanceOf()->findAttribute("deserializeRaw");
   if (index != -1)
   {
-    return (dobject->call(index, RealValue<DObject*>(this)).get<DObject*>()); //XXX refcount 
-   //dobject->destroy
+    DValue rval = dobject->call(index, RealValue<DObject*>(this));
+    //dobject->destroy();
+    return (rval);
   }
 
   for (DStruct::DAttributeIterator i = dstruct->attributeBegin(); i != dstruct->attributeEnd(); ++i, ++x)

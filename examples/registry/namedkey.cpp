@@ -26,8 +26,11 @@ NamedKey::NamedKey(DStruct* dstruct, DValue const& args) : DCppObject<NamedKey>(
   this->init();
 }
 
-NamedKey::~NamedKey(void)
+NamedKey::~NamedKey()
 {
+  //std::cout << "~NamedKey" << std::endl;
+  //std::cout << "~NamedKey::subkey " << ((DObject*)subkeys)->refCount() << std::endl;
+  //std::cout << "~NamedKey::values" << ((DObject*)values)->refCount() << std::endl;
 }
 
 DObject*        NamedKey::deserializeRaw(DValue const& args)
@@ -60,7 +63,9 @@ DObject*        NamedKey::deserializeRaw(DValue const& args)
   DBuffer buffer = stream->call("read", RealValue<DInt64>((DInt64)this->keyNameLength));
   this->name = DUnicodeString(std::string((char*)buffer.data(), this->keyNameLength)); //type UTF ?
 
-  this->subkeys = Destruct::DStructs::instance().find("Subkeys")->newObject();
+  DObject* subkeysObject = Destruct::DStructs::instance().find("Subkeys")->newObject();
+  this->subkeys = subkeysObject;
+
   if (this->subkeyCount != 0 && this->subkeyListOffset != 0xffffffff)
   {
     stream->call("seek", RealValue<DUInt64>(this->subkeyListOffset + 0x1000)); 

@@ -24,9 +24,9 @@ using namespace Destruct;
 class RegistryValues : public DCppObject<RegistryValues>
 {
 public:
-          RegistryValues(DStruct* dstruct, DValue const& args);
-          ~RegistryValues();
-  DValue  deserializeRaw(DValue const& stream);
+  RegistryValues(DStruct* dstruct, DValue const& args);
+
+  DObject*      deserializeRaw(DValue const& stream);
 
 
   RealValue<DInt32>          size;// == (valueCount / 4) * -1
@@ -43,6 +43,8 @@ public:
              member(RegistryValues, list)
              method(RegistryValues, deserializeRaw)
             )
+protected:
+  ~RegistryValues();
 private:
   uint64_t                           __size;
   RealValue<DFunctionObject*>        _deserializeRaw;

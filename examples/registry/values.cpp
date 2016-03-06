@@ -31,11 +31,14 @@ RegistryValues::RegistryValues(DStruct* dstruct, DValue const& args) : DCppObjec
   this->list = Destruct::DStructs::instance().generate("DVectorObject");
 }
 
-RegistryValues::~RegistryValues(void)
+RegistryValues::~RegistryValues()
 {
+ //std::cout << "~RegistryValues" << std::endl;
+ //DObject* l = this->list;
+ //std::cout << "this-List ref " << l->refCount() << std::endl;
 }
 
-DValue    RegistryValues::deserializeRaw(DValue const& arg)
+DObject* RegistryValues::deserializeRaw(DValue const& arg)
 {
   DObject* deserializer = arg;
   DObject* stream = deserializer->getValue("stream");
@@ -45,21 +48,20 @@ DValue    RegistryValues::deserializeRaw(DValue const& arg)
   for (uint32_t index = 0; index < this->valueCount ; ++index)
   {
     RealValue<DUInt32> subvalueOffset = deserializer->call("DUInt32");
-        
-    DObject* subvalue = valueStruct->newObject();
-
     DUInt64 currentOffset = stream->call("tell");
-    stream->call("seek", RealValue<DUInt64>(subvalueOffset + 0x1000));
 
+    stream->call("seek", RealValue<DUInt64>(subvalueOffset + 0x1000));
+    DObject* subvalue = valueStruct->newObject();
     deserializer->call("DObject", RealValue<DObject*>(subvalue));
-    stream->call("seek", RealValue<DUInt64>((DUInt64)currentOffset));
     ((DObject*)this->list)->call("push", RealValue<DObject*>(subvalue)); 
     subvalue->destroy();
+
+    stream->call("seek", RealValue<DUInt64>((DUInt64)currentOffset));
   }
 
   stream->destroy();
   deserializer->destroy();
 
-  return (RealValue<DObject*>(this));
+  return (this);
 }
 

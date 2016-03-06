@@ -11,9 +11,9 @@ ValueKey::ValueKey(DStruct* dstruct, DValue const& args) : DCppObject<ValueKey>(
   this->realDataSize = 0;
 }
 
-
 ValueKey::~ValueKey(void)
 {
+  //std::cout << "~ValueKey()" << std::endl; 
 }
 
 DObject*       ValueKey::deserializeRaw(DValue const& arg)
@@ -67,15 +67,15 @@ DObject*       ValueKey::deserializeRaw(DValue const& arg)
     DObject* bigData = DStructs::instance().generate("RegistryBigData");
     deserializer->call("DObject", RealValue<DObject*>(bigData));
     this->dataOffsets = bigData->getValue("offsets");
-//    this->dataOffset->addRef();
-    //bigData->destroy(); //or segfault  cause offsets is deleted
+    //this->dataOffset->addRef();
+    bigData->destroy(); //or segfault  cause offsets is deleted
   }
   stream->call("seek", RealValue<DUInt64>(previousOffset)); //usefull ? c deja seek ds un parent a check XXX
 
-  deserializer->destroy();
+  deserializer->destroy(); //segfault
   stream->destroy();
   
-  return (RealValue<DObject*>(this));
+  return (this);
 }
 
 DUnicodeString  ValueKey::valueTypeName(void)
@@ -120,6 +120,8 @@ DObject*       RegistryBigData::deserializeRaw(DValue const& args)
   
   this->offsets = offsetsList;
 
+  stream->destroy();
+  serializer->destroy();
   return (this);
 }
 
@@ -157,7 +159,8 @@ RegistryData::~RegistryData()
 DBuffer    RegistryData::read(DObject* _parent)
 {
   ValueKey* parent = (ValueKey*)_parent; 
-  DObject* stream = ((DObject*)parent->_deserializer)->getValue("stream"); 
+  DObject* deserializer = parent->_deserializer;
+  DObject* stream = deserializer->getValue("stream"); 
   uint8_t*    buffer = new uint8_t[parent->realDataSize];
 
   DObject* offsets = parent->dataOffsets;
@@ -181,6 +184,9 @@ DBuffer    RegistryData::read(DObject* _parent)
   }
   DBuffer dbuffer((uint8_t*)buffer, parent->realDataSize);
   delete buffer;
+  deserializer->destroy();
+  stream->destroy();
+
   return (dbuffer);
 }
 

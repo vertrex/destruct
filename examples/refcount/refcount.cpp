@@ -212,7 +212,7 @@ void Refcount::test(void)
   std::cout << "test : DCppRefCount returnObjectAsDvalue" << std::endl;
   {
     DObject* cppRefCount = this->__destruct.generate("DCppRefCount");
-    DObject* retObject = cppRefCount->call("returnObjectAsDValue").get<DObject*>();
+    DObject* retObject = cppRefCount->call("returnObjectAsDValue"); //.get<DObject*>();
     std::cout << "retObjectAsValue ref count " << retObject->refCount() << std::endl;
     retObject->destroy();
     retObject->destroy();

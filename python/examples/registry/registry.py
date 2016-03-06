@@ -68,7 +68,10 @@ if __name__ == "__main__":
       usage()
    print registry
    regf = registry.open(sys.argv[2])
-   showKeys(regf.key)
+   print 'showKeys'
+   key = regf
+   showKeys(key)
+   print 'end'
    #subkeys =regf.key.subkeys.list
    #for key in subkeys:
         #print key.keyName.keyName

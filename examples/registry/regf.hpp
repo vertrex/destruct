@@ -25,7 +25,6 @@ class Regf : public DCppObject<Regf> //header REGF
 {
 public:
   Regf(DStruct* dstruct, DValue const& args);
-  ~Regf();
   DValue              name(void);
   DValue              time(void);
   DValue              version(void);
@@ -77,6 +76,9 @@ public:
              member(Regf, key)
              method(Regf, deserializeRaw)
             )
+
+protected:
+  ~Regf();
 private:
   RealValue<DFunctionObject*>        _name, _time, _version, _deserializeRaw;
 };
@@ -86,7 +88,7 @@ class RegfName : public DCppObject<RegfName> //remove
 public:
           RegfName(DStruct* dstruct, DValue const& args);
           ~RegfName();
-  DValue  deserializeRaw(DValue const& stream);
+  DObject* deserializeRaw(DValue const& stream);
 
   RealValue<DUnicodeString>  fileName;
 
