@@ -45,10 +45,11 @@ PyObject*     PyDObject::asDValue(Destruct::DValue const& v)
 
   if (value == NULL || value == Destruct::DNone)
     Py_RETURN_NONE;
-  
+ 
   PyTypeObject* pyType = PyDObject::pyType(); 
   Py_INCREF(pyType);
   PyDObject::DPyObject*  dobjectObject = (PyDObject::DPyObject*)_PyObject_New(pyType);
+  value->addRef(); 
   dobjectObject->pimpl = value;
 
   return ((PyObject*)dobjectObject);
@@ -60,11 +61,12 @@ PyObject*     PyDObject::asPyObject(PyObject* self, int32_t attributeIndex)
 
   if (value == NULL || value == Destruct::DNone)
     Py_RETURN_NONE;
-   
+  
   PyTypeObject* pyType = PyDObject::pyType(); 
   Py_INCREF(pyType);
   PyDObject::DPyObject*  dobjectObject = (PyDObject::DPyObject*)_PyObject_New(pyType);
   //incref ? // decref here 
+  value->addRef(); 
   dobjectObject->pimpl = value; //don't addref because .get<> already add a Ref
   //Py_DECREF(dobjectObject) //XXX ;???? destroy refcount
 

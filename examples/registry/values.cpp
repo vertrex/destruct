@@ -33,9 +33,6 @@ RegistryValues::RegistryValues(DStruct* dstruct, DValue const& args) : DCppObjec
 
 RegistryValues::~RegistryValues()
 {
- //std::cout << "~RegistryValues" << std::endl;
- //DObject* l = this->list;
- //std::cout << "this-List ref " << l->refCount() << std::endl;
 }
 
 DObject* RegistryValues::deserializeRaw(DValue const& arg)

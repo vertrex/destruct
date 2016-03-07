@@ -13,21 +13,26 @@ def showStruct(dobject):
     print "\t\t" + struct.attribute(index).name()
 
 def showKeys(key):
- #print key.keyName.name + " : "
- subKeysList = key.subkeys.list
- valuesList = key.values.list
- size = subKeysList.size()
+ try:
+   print key.name + " : "
+   subKeysList = key.subkeys.list
+   valuesList = key.values.list
+   size = subKeysList.size()
+   #print "\t\tValues(" + str(valuesList.size()) + ") :"
+   for value in valuesList:
+     print "\t", value.name
+     data = value.data()
+     if data is not None:
+       x = data.data()
 
- #print "\t\tValues(" + str(valuesList.size()) + ") :"
- for value in valuesList:
-   #print value.name
-   data = value.data()
-   if data is not None:
-     x = data.data()
+   #print "\t\tSubkeys(" + str(subKeysList.size()) + ") :"
+   for subKey in subKeysList:
+      showKeys(subKey)
 
- #print "\t\tSubkeys(" + str(subKeysList.size()) + ") :"
- for subKey in subKeysList:
-    showKeys(subKey)
+ except Exception as e:
+   print str(key)
+   print type(key)
+   print e
 
 def findKey(key, path):
   subKeysList = key.subkeys.list
@@ -69,7 +74,7 @@ if __name__ == "__main__":
    print registry
    regf = registry.open(sys.argv[2])
    print 'showKeys'
-   key = regf
+   key = regf.key
    showKeys(key)
    print 'end'
    #subkeys =regf.key.subkeys.list

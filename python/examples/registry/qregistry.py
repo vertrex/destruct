@@ -75,8 +75,7 @@ class ValuesTableWidget(QTableWidget):
         value = valuesList.get(index)
         self.setItem(index, 0, QTableWidgetItem(value.name))
         self.setItem(index, 1, QTableWidgetItem(value.valueTypeName()))
-        vd = value.data() #or segfault !
-        data = vd.data()
+        data = value.data().data()
         if type(data) == bytearray:
           self.setItem(index, 2, QTableWidgetItem(hexlify(data)))
         elif type(data) == DObject:
@@ -93,9 +92,10 @@ class ValuesTableWidget(QTableWidget):
     self.resizeRowsToContents()
 
 class RegistryBrowserWidget(QWidget):
-  def __init__(self, root):
+  def __init__(self, regf):
     QWidget.__init__(self)
-    self.keyTreeView = KeyTreeView(self, root)
+    self.regf = regf
+    self.keyTreeView = KeyTreeView(self, regf.key)
     self.valuesTableWidget = ValuesTableWidget(self)
     self.keyTreeView.itemClicked.connect(self.valuesTableWidget.populate)
     boxLayout = QBoxLayout(QBoxLayout.LeftToRight, self)
@@ -140,7 +140,7 @@ class MainWindow(QMainWindow):
     loader.file("../../../examples/modules/libregistry.so")
 
   def addRegistryBrowserWidget(self, regf):
-    self.registryBrowserWidget = RegistryBrowserWidget(regf.key)
+    self.registryBrowserWidget = RegistryBrowserWidget(regf)
     self.dockWidget = QDockWidget()
     self.dockWidget.setWidget(self.registryBrowserWidget) 
     self.addDockWidget(Qt.TopDockWidgetArea, self.dockWidget)

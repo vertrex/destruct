@@ -13,7 +13,6 @@ ValueKey::ValueKey(DStruct* dstruct, DValue const& args) : DCppObject<ValueKey>(
 
 ValueKey::~ValueKey(void)
 {
-  //std::cout << "~ValueKey()" << std::endl; 
 }
 
 DObject*       ValueKey::deserializeRaw(DValue const& arg)
@@ -156,9 +155,10 @@ RegistryData::~RegistryData()
 {
 }
 
-DBuffer    RegistryData::read(DObject* _parent)
+DBuffer    RegistryData::read(DValue const& _parent)
 {
-  ValueKey* parent = (ValueKey*)_parent; 
+  ValueKey* parent = (ValueKey*)_parent.get<DObject*>();
+ 
   DObject* deserializer = parent->_deserializer;
   DObject* stream = deserializer->getValue("stream"); 
   uint8_t*    buffer = new uint8_t[parent->realDataSize];
@@ -184,8 +184,8 @@ DBuffer    RegistryData::read(DObject* _parent)
   }
   DBuffer dbuffer((uint8_t*)buffer, parent->realDataSize);
   delete buffer;
-  deserializer->destroy();
-  stream->destroy();
+  //deserializer->destroy();
+  //stream->destroy();
 
   return (dbuffer);
 }

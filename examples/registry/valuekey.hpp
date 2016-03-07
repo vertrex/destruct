@@ -39,6 +39,7 @@ public:
                 function(DObject, data, DNone)
                 function(DUnicodeString, valueTypeName, DNone)
                 function(DObject, deserializeRaw, DObject)
+                //dataOffset //for dff or other lib that need it
                )
 
   memberList(ValueKey, 
@@ -54,6 +55,7 @@ public:
              method(ValueKey, data) 
              method(ValueKey, valueTypeName)
              method(ValueKey, deserializeRaw)
+             //dataOffset 
             )
 
 protected:
@@ -105,7 +107,6 @@ class RegistryBigData : public DCppObject<RegistryBigData>
 {
 public:
   RegistryBigData(DStruct* dstruct, DValue const& args);
-  ~RegistryBigData();
 
   DObject* deserializeRaw(DValue const& args);
 
@@ -121,21 +122,23 @@ public:
                 member(RegistryBigData, offsets)
                 method(RegistryBigData, deserializeRaw)
             )
+protected:
+  ~RegistryBigData();
 };
 
 class RegistryData
 {
 public:
   RegistryData();
+  DBuffer   read(DValue const& parent);
+protected:
   ~RegistryData();
-  DBuffer   read(DObject* parent);
 };
 
 class RegistryDataNone : public DCppObject<RegistryDataNone>
 {
 public:
   RegistryDataNone(DStruct* dstruct, DValue const& args);
-  ~RegistryDataNone();
 
   RealValue<DFunctionObject*> _data;
 
@@ -148,13 +151,14 @@ public:
   memberList(RegistryDataNone, 
                method(RegistryDataNone, data)
             )
+protected:
+  ~RegistryDataNone();
 };
 
 class RegistryDataSZ : public DCppObject<RegistryDataSZ>, public RegistryData
 {
 public:
   RegistryDataSZ(DStruct* dstruct, DValue const& args);
-  ~RegistryDataSZ();
 
   RealValue<DObject*>         _parent;
   RealValue<DFunctionObject*> _data;
@@ -168,13 +172,14 @@ public:
   memberList(RegistryDataSZ, 
                method(RegistryDataSZ, data)
             )
+protected:
+  ~RegistryDataSZ();
 };
 
 class RegistryDataMultiSZ : public DCppObject<RegistryDataMultiSZ>, public RegistryData
 {
 public:
   RegistryDataMultiSZ(DStruct* dstruct, DValue const& args);
-  ~RegistryDataMultiSZ();
 
   RealValue<DObject*>         _parent;
   RealValue<DFunctionObject*> _data;
@@ -188,13 +193,14 @@ public:
   memberList(RegistryDataMultiSZ, 
                method(RegistryDataMultiSZ, data)
             )
+protected:
+  ~RegistryDataMultiSZ();
 };
 
 class RegistryDataDWord : public DCppObject<RegistryDataDWord>
 {
 public:
   RegistryDataDWord(DStruct* dstruct, DValue const& args);
-  ~RegistryDataDWord();
 
   RealValue<DObject*>         _parent;
   RealValue<DFunctionObject*> _data;
@@ -208,13 +214,14 @@ public:
   memberList(RegistryDataDWord, 
                method(RegistryDataDWord, data)
             )
+protected:
+  ~RegistryDataDWord();
 };
 
 class RegistryDataDWordBE : public DCppObject<RegistryDataDWordBE>
 {
 public:
   RegistryDataDWordBE(DStruct* dstruct, DValue const& args);
-  ~RegistryDataDWordBE();
 
   RealValue<DObject*>         _parent;
   RealValue<DFunctionObject*> _data;
@@ -228,13 +235,14 @@ public:
   memberList(RegistryDataDWordBE, 
                method(RegistryDataDWordBE, data)
             )
+protected:
+  ~RegistryDataDWordBE();
 };
 
 class RegistryDataQWord : public DCppObject<RegistryDataQWord>
 {
 public:
   RegistryDataQWord(DStruct* dstruct, DValue const& args);
-  ~RegistryDataQWord();
 
   RealValue<DObject*>         _parent;
   RealValue<DFunctionObject*> _data;
@@ -248,13 +256,14 @@ public:
   memberList(RegistryDataQWord, 
                method(RegistryDataQWord, data)
             )
+protected:
+  ~RegistryDataQWord();
 };
 
 class RegistryDataBinary : public DCppObject<RegistryDataBinary>, public RegistryData
 {
 public:
   RegistryDataBinary(DStruct* dstruct, DValue const& args);
-  ~RegistryDataBinary();
 
   RealValue<DObject*>         _parent;
   RealValue<DFunctionObject*> _data;
@@ -268,5 +277,7 @@ public:
   memberList(RegistryDataBinary, 
                method(RegistryDataBinary, data)
             )
+protected:
+  ~RegistryDataBinary();
 };
 #endif

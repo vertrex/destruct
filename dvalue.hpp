@@ -7,7 +7,6 @@
 #include "dunicodestring.hpp"
 #include "dbuffer.hpp"
 //#include "protocol/dstreambase.hpp"
-
 namespace Destruct
 {
 
@@ -82,6 +81,8 @@ protected:
 class DValue
 {
 public:
+  //template <typename PlainType>
+  //EXPORT DValue(RealValue<PlainType> v) : __value(v) {}
   EXPORT DValue(FinalValue const &);
   EXPORT DValue(DValue const &);
   EXPORT explicit DValue (FinalValue* = NULL);
