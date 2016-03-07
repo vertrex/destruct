@@ -59,9 +59,12 @@ DObject*        NamedKey::deserializeRaw(DValue const& args)
   this->unknown2 = deserializer->call("DUInt32");
   this->keyNameLength = deserializer->call("DUInt16");
   this->classNameLength = deserializer->call("DUInt16");
-
+ 
   DBuffer buffer = stream->call("read", RealValue<DInt64>((DInt64)this->keyNameLength));
-  this->name = DUnicodeString(std::string((char*)buffer.data(), this->keyNameLength)); //type UTF ?
+  if (this->keyType & 0x0020)
+    this->name = DUnicodeString(std::string((char*)buffer.data(), this->keyNameLength));
+  else
+    this->name = DUnicodeString((char*)buffer.data(), this->keyNameLength, "UTF16-LE");
 
   DObject* subkeysObject = Destruct::DStructs::instance().find("Subkeys")->newObject();
   this->subkeys = subkeysObject;

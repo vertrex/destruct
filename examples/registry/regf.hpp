@@ -25,18 +25,18 @@ class Regf : public DCppObject<Regf> //header REGF
 {
 public:
   Regf(DStruct* dstruct, DValue const& args);
-  DValue              name(void);
   DValue              time(void);
   DValue              version(void);
   DUInt8              validate(void);
   DObject*            deserializeRaw(DValue const& args);
 
   RealValue<DUInt32>  regf, sequence1, sequence2, major, minor, fileType, unknown1,
-                                keyrecord, lasthbin, unknown2;
+                      keyrecord, lasthbin, unknown2;
   RealValue<DUInt64>  timestamp;
-  RealValue<DObject*> regfName, key;
+  RealValue<DObject*> key;
+  RealValue<DUnicodeString> name;
 
-  attributeCount(Regf, 16)
+  attributeCount(Regf, 15)
 
   attributeList(attribute(DUInt32, regf)
                 attribute(DUInt32, sequence1)
@@ -49,10 +49,9 @@ public:
                 attribute(DUInt32, keyrecord) //root key offset
                 attribute(DUInt32, lasthbin)  //hive bins data size
                 attribute(DUInt32, unknown2)
-                attribute(DObject, regfName)  //UTF-16 LE sometime reg name size == 64
                 //attribute(Dbuffer, padding) 396 bytes
                 //attribute(DUInt32, checksum) xor-32 of previous 508 bytes
-                function(DUnicodeString, name, DNone)
+                attribute(DUnicodeString, name)
                 function(DUnicodeString, version, DNone)
                 attribute(DObject, key)
                 function(DObject, deserializeRaw, DObject)
@@ -70,8 +69,7 @@ public:
              member(Regf, keyrecord)
              member(Regf, lasthbin)
              member(Regf, unknown2)
-             member(Regf, regfName)
-             method(Regf, name)
+             member(Regf, name)
              method(Regf, version)
              member(Regf, key)
              method(Regf, deserializeRaw)
@@ -80,29 +78,7 @@ public:
 protected:
   ~Regf();
 private:
-  RealValue<DFunctionObject*>        _name, _time, _version, _deserializeRaw;
-};
-
-class RegfName : public DCppObject<RegfName> //remove 
-{
-public:
-          RegfName(DStruct* dstruct, DValue const& args);
-          ~RegfName();
-  DObject* deserializeRaw(DValue const& stream);
-
-  RealValue<DUnicodeString>  fileName;
-
-
-  attributeCount(RegfName, 2)
-  attributeList(attribute(DUnicodeString, fileName)
-                function(DObject, deserializeRaw, DObject)
-               )
-  memberList(RegfName, 
-             member(RegfName, fileName)
-             method(RegfName, deserializeRaw)
-            )
-private:
-  RealValue<DFunctionObject*>        _deserializeRaw;
+  RealValue<DFunctionObject*>        _version, _deserializeRaw;
 };
 
 #endif

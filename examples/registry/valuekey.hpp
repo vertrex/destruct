@@ -14,17 +14,16 @@ public:
   DUnicodeString        valueTypeName(void);
   DObject*              data(void);
  
-  DUInt32  realDataSize;
   DUInt64  realDataOffset;
 
 
   RealValue<DUInt16>           signature, nameLength, unknown1, valueType;//named, unkown2
-  RealValue<DInt32>            size;
+  RealValue<DInt32>            size, realDataSize;
   RealValue<DUInt32>           dataOffset, dataLength, dataType;
   RealValue<DUnicodeString>    name;
   RealValue<DObject*>          _deserializer, dataOffsets;
   RealValue<DFunctionObject*>  _valueTypeName, _data;
-  attributeCount(ValueKey, 13)
+  attributeCount(ValueKey, 14)
   attributeList(
                 attribute(DInt32, size)
                 attribute(DUInt16, signature)
@@ -38,7 +37,8 @@ public:
                 function(DObject, data, DNone)
                 function(DUnicodeString, valueTypeName, DNone)
                 function(DObject, deserializeRaw, DObject)
-                attribute(DObject, dataOffsets) 
+                attribute(DObject, dataOffsets)
+                attribute(DInt32, realDataSize)
                )
 
   memberList(ValueKey, 
@@ -55,6 +55,7 @@ public:
              method(ValueKey, valueTypeName)
              method(ValueKey, deserializeRaw)
              member(ValueKey, dataOffsets) 
+             member(ValueKey, realDataSize)
             )
 
 protected:
@@ -78,8 +79,10 @@ private:
                                           "REG_FULL_RESOURCE_DESCRIPTON",
                                           "REG_RESOURCE_REQUIEREMENTS_LIST",
                                           "REG_QWORD",
-                                        }; 
-    return registryType[dataType]; 
+                                        };
+    if (dataType < 12) 
+      return registryType[dataType]; 
+    return ("REG_BINARY");
   }
 
   static std::string registryTypeStructName(uint32_t dataType)
@@ -97,8 +100,10 @@ private:
                                           "RegistryDataBinary",
                                           "RegistryDataBinary",
                                           "RegistryQWord",
-                                        }; 
-    return registryTypeStructName[dataType]; 
+                                        };
+    if (dataType < 12) 
+      return registryTypeStructName[dataType]; 
+    return ("RegistryDataBinary"); 
   }
 };
 

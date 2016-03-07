@@ -36,7 +36,11 @@ DObject*       ValueKey::deserializeRaw(DValue const& arg)
   if (this->nameLength)
   {
     DBuffer buffer = stream->call("read", RealValue<DInt64>((DInt64)this->nameLength));
-    this->name = DUnicodeString(std::string((char*)buffer.data(), this->nameLength));
+    if (this->valueType == 0x1)
+      this->name = DUnicodeString(std::string((char*)buffer.data(), this->nameLength)); ///XXX encode ?
+    else
+      this->name = DUnicodeString((char*)buffer.data(), this->nameLength, "UTF16-LE"); ///XXX encode ?
+        
   }
   else
     this->name = "(default)";
@@ -44,12 +48,12 @@ DObject*       ValueKey::deserializeRaw(DValue const& arg)
   //check if data in offset
   if (0x80000000 & this->dataLength)
   {
-    this->realDataSize = this->dataLength & ~0x80000000;
+    this->realDataSize = (DInt32)(this->dataLength & ~0x80000000);
     this->realDataOffset = dataOffsetOffset;
   }
   else
   {
-    this->realDataSize = this->dataLength;
+    this->realDataSize = (DInt32)this->dataLength;
     this->realDataOffset = this->dataOffset + 0x1000 + 4; //skip first byte
   }
 

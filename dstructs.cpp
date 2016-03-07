@@ -251,7 +251,7 @@ DStruct*        NameSpace::dstruct(const size_t index)
 
 DStruct*        NameSpace::dstruct(DUnicodeString const& name)
 {
-  std::vector<DStruct*>::iterator dstruct = this->__structures.begin();
+  std::vector<DStruct*>::const_iterator dstruct = this->__structures.begin();
   for (; dstruct != this->__structures.end(); ++dstruct)
   {
     if ((*dstruct)->name() == name)

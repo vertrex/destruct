@@ -39,7 +39,6 @@ void    Registry::declare(void)
 
   registerDCpp(Registry)
   registerDCpp(Regf)
-  registerDCpp(RegfName)
   registerDCpp(NamedKey) //RegistryNamedKey
   registerDCpp(Subkeys) //RegistrySubkeys
   registerDCpp(ValueKey)  //RegistryValueKey

@@ -41,11 +41,6 @@ DUInt8 Regf::validate(void)
   return (0);
 }
 
-DValue  Regf::name(void)
-{
-  return (((DObject*)this->regfName)->getValue("filename"));
-}
-
 DValue  Regf::version(void)
 {
   std::stringstream stringStream;
@@ -70,12 +65,24 @@ DObject* Regf::deserializeRaw(DValue const& args)
   this->keyrecord = deserializer->call("DUInt32");
   this->lasthbin = deserializer->call("DUInt32");
   this->unknown2 = deserializer->call("DUInt32");
-
-  this->regfName = new RegfName(Destruct::DStructs::instance().find("RegfName"), RealValue<DObject*>(DNone));
-  deserializer->call("DObject", RealValue<DObject*>(this->regfName));
-
   if (this->validate() == 0)
     throw DException("Invalid sequence in registry");
+  if (this->fileType == 0x01)
+    throw DException("Invalid registry (transaction log)"); //should throw himself if value is not good XXX test on it to besure module can handle strange case  
+
+  DBuffer buffer = stream->call("read", RealValue<DInt64>(60));
+  uint8_t* fileNameBuff = buffer.data();
+  uint32_t i = 0;
+  for (; i < 58; ++i)
+  {
+     if (!(i % 2))
+       if (fileNameBuff[i] == 0 && fileNameBuff[i+1] == 0)
+         break;
+  }
+  if (i < 58) //or "" ca arrive XXX 
+    this->name = DUnicodeString((char*)fileNameBuff, i, "UTF16-LE");
+  else
+    this->name = "regf";
 
   stream->call("seek", RealValue<DUInt64>(this->keyrecord + 0x1000));
   this->key = DStructs::instance().find("NamedKey")->newObject();
@@ -84,41 +91,5 @@ DObject* Regf::deserializeRaw(DValue const& args)
   deserializer->destroy();
   stream->destroy();
  
-  return (this);
-}
-
-/**
- *  RegfName
- */
-RegfName::RegfName(DStruct* dstruct, DValue const& args) : DCppObject<RegfName>(dstruct, args)
-{
-  this->init();
-}
-
-RegfName::~RegfName(void)
-{
-}
-
-DObject*        RegfName::deserializeRaw(DValue const& arg)
-{
-  DObject* deserializer = arg;
-  DObject* stream = deserializer->getValue("stream");
-
-  DBuffer buffer = stream->call("read", RealValue<DInt64>(60));
-  uint8_t* fileNameBuff = buffer.data();
-
-  uint32_t i = 0;
-  for (; i < 58; ++i)
-  {
-     if (!(i % 2))
-       if (fileNameBuff[i] == 0 && fileNameBuff[i+1] == 0)
-         break;
-  }
-  if (i < 58)
-    this->fileName = DUnicodeString((char*)fileNameBuff, i, "UTF16-LE");
-
-  deserializer->destroy();
-  stream->destroy();
-
   return (this);
 }
