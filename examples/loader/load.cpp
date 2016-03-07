@@ -18,18 +18,18 @@ int main(int argc, char **argv)
 #ifndef WIN32
     //loader.loadFile(filePath);
 
-    Destruct::RealValue<Destruct::DUnicodeString> filePath("../modules/libregistry.so");
+    Destruct::RealValue<Destruct::DUnicodeString> filePath("../modules/libdestruct_registry.so");
     import->call("file", filePath);
-    filePath = "../modules/libdthreading.so";
+    filePath = "../modules/libdestruct_threading.so";
     import->call("file", filePath);
     filePath = "../modules/libdestruct_inherit.so";
     import->call("file", filePath);
     filePath = "../modules/libdestruct_rpc.so";
     import->call("file", filePath);
 #else    
-    Destruct::RealValue<Destruct::DUnicodeString> filePath("../modules/registry.dll");
+    Destruct::RealValue<Destruct::DUnicodeString> filePath("../modules/destruct_registry.dll");
     import->call("file", filePath);
-    filePath = "../modules/dthreading.dll";
+    filePath = "../modules/destruct_threading.dll";
     import->call("file", filePath);
     filePath = "../modules/destruct_inherit.dll";
     import->call("file", filePath);

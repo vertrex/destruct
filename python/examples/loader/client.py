@@ -69,8 +69,8 @@ def connect():
 def load():
   loader = DStructs().find("Import").newObject()
   paths = ["/home/vertrex/destruct/examples/modules/libdestruct_test.so",
-           "/home/vertrex/destruct/examples/modules/libregistry.so",
-           "/home/vertrex/destruct/examples/modules/libdthreading.so",
+           "/home/vertrex/destruct/examples/modules/libdestruct_registry.so",
+           "/home/vertrex/destruct/examples/modules/libdestruct_threading.so",
            "/home/vertrex/destruct/examples/modules/libdestruct_rpc.so",
            "/home/vertrex/destruct/examples/modules/libdestruct_inherit.so"]
 

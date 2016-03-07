@@ -20,15 +20,15 @@ set(threading_libfiles
   threadsafeobject.cpp
 )
 
-add_library(dthreading SHARED ${threading_libfiles})
+add_library(destruct_threading SHARED ${threading_libfiles})
 if (MSVC)
-target_link_libraries(dthreading destruct)
+target_link_libraries(destruct_threading destruct)
 else (MSVC)
-target_link_libraries(dthreading pthread destruct)
+target_link_libraries(destruct_threading pthread destruct)
 endif(MSVC)
 
 set(threading_files
 threading.cpp)
 
 add_executable(threading ${threading_files})
-target_link_libraries(threading dthreading)
+target_link_libraries(threading destruct_threading)

@@ -137,7 +137,7 @@ class MainWindow(QMainWindow):
     self.menuBar().addAction(localAction)
     loader = DStructs().find("Import").newObject()
     loader.file("../../../examples/modules/libdestruct_rpc.so")
-    loader.file("../../../examples/modules/libregistry.so")
+    loader.file("../../../examples/modules/libdestruct_registry.so")
 
   def addRegistryBrowserWidget(self, regf):
     self.registryBrowserWidget = RegistryBrowserWidget(regf)

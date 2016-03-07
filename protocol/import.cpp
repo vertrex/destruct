@@ -39,6 +39,7 @@ DUInt8  Import::file(DValue const& args)
   if (library == NULL) 
   {
     std::cout << "Can't load libray " << filePath << std::endl;
+    //throw ?
     return (false);
   }
   this->__libraries.push_back(library);

@@ -17,15 +17,14 @@ public:
   DUInt32  realDataSize;
   DUInt64  realDataOffset;
 
-  RealValue<DObject*> dataOffsets;
 
   RealValue<DUInt16>           signature, nameLength, unknown1, valueType;//named, unkown2
   RealValue<DInt32>            size;
   RealValue<DUInt32>           dataOffset, dataLength, dataType;
   RealValue<DUnicodeString>    name;
-  RealValue<DObject*>          _deserializer;
+  RealValue<DObject*>          _deserializer, dataOffsets;
   RealValue<DFunctionObject*>  _valueTypeName, _data;
-  attributeCount(ValueKey, 12)
+  attributeCount(ValueKey, 13)
   attributeList(
                 attribute(DInt32, size)
                 attribute(DUInt16, signature)
@@ -39,7 +38,7 @@ public:
                 function(DObject, data, DNone)
                 function(DUnicodeString, valueTypeName, DNone)
                 function(DObject, deserializeRaw, DObject)
-                //dataOffset //for dff or other lib that need it
+                attribute(DObject, dataOffsets) 
                )
 
   memberList(ValueKey, 
@@ -55,7 +54,7 @@ public:
              method(ValueKey, data) 
              method(ValueKey, valueTypeName)
              method(ValueKey, deserializeRaw)
-             //dataOffset 
+             member(ValueKey, dataOffsets) 
             )
 
 protected:

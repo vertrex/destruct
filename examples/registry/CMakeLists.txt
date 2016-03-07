@@ -28,11 +28,11 @@ set(registry_libfiles
   registryclient.cpp
 )
 
-add_library(registry SHARED ${registry_libfiles})
-target_link_libraries(registry destruct destruct_rpc)
+add_library(destruct_registry SHARED ${registry_libfiles})
+target_link_libraries(destruct_registry destruct destruct_rpc)
 
 set(registry_files
 registryrpc.cpp)
 
 add_executable(registryrpc ${registry_files})
-target_link_libraries(registryrpc destruct destruct_rpc registry)
+target_link_libraries(registryrpc destruct destruct_rpc destruct_registry) #can import now

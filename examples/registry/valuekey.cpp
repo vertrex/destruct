@@ -66,7 +66,7 @@ DObject*       ValueKey::deserializeRaw(DValue const& arg)
     DObject* bigData = DStructs::instance().generate("RegistryBigData");
     deserializer->call("DObject", RealValue<DObject*>(bigData));
     this->dataOffsets = bigData->getValue("offsets");
-    //this->dataOffset->addRef();
+    ((DObject*)this->dataOffsets)->addRef(); //check with lsan XXX
     bigData->destroy(); //or segfault  cause offsets is deleted
   }
   stream->call("seek", RealValue<DUInt64>(previousOffset)); //usefull ? c deja seek ds un parent a check XXX

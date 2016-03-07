@@ -54,7 +54,7 @@ if __name__ == "__main__":
    registry = None
    loader = DStructs().find("Import").newObject()
    loader.file("../../../examples/modules/libdestruct_rpc.so")
-   loader.file("../../../examples/modules/libregistry.so")
+   loader.file("../../../examples/modules/libdestruct_registry.so")
    print 'ok loaded'
    if sys.argv[1] == '-l':
       registry = DStructs().find("Registry") .newObject()
