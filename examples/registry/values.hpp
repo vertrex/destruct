@@ -30,18 +30,20 @@ public:
 
 
   RealValue<DInt32>          size;// == (valueCount / 4) * -1
-  RealValue<DUInt32>         valueCount;
+  RealValue<DUInt32>         valueCount, minor;
   RealValue<DObject*>        parent, list;
 
-  attributeCount(RegistryValues, 3)
+  attributeCount(RegistryValues, 4)
   attributeList(attribute(DInt32, size)
                 attribute(DObject, list)
                 function(DObject, deserializeRaw, DObject)
+                attribute(DUInt32, minor)
                )
   memberList(RegistryValues, 
              member(RegistryValues, size)
              member(RegistryValues, list)
              method(RegistryValues, deserializeRaw)
+             member(RegistryValues, minor)
             )
 protected:
   ~RegistryValues();

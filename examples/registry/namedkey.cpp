@@ -24,6 +24,7 @@ using namespace Destruct;
 NamedKey::NamedKey(DStruct* dstruct, DValue const& args) : DCppObject<NamedKey>(dstruct, args)
 {
   this->init();
+  this->minor = 5;
 }
 
 NamedKey::~NamedKey()
@@ -67,8 +68,8 @@ DObject*        NamedKey::deserializeRaw(DValue const& args)
     this->name = DUnicodeString((char*)buffer.data(), this->keyNameLength, "UTF16-LE");
 
   DObject* subkeysObject = Destruct::DStructs::instance().find("Subkeys")->newObject();
+  subkeysObject->setValue("minor", this->minor);
   this->subkeys = subkeysObject;
-
   if (this->subkeyCount != 0 && this->subkeyListOffset != 0xffffffff)
   {
     stream->call("seek", RealValue<DUInt64>(this->subkeyListOffset + 0x1000)); 
@@ -76,6 +77,7 @@ DObject*        NamedKey::deserializeRaw(DValue const& args)
   }
 
   this->values = Destruct::DStructs::instance().find("RegistryValues")->newObject(this->valueCount);
+  ((DObject*)this->values)->setValue("minor", this->minor);
   if (this->valueCount != 0 && this->valueListOffset != 0xffffffff)
   {
     stream->call("seek", RealValue<DUInt64>(this->valueListOffset + 0x1000)); 

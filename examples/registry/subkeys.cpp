@@ -28,6 +28,7 @@ Subkeys::Subkeys(DStruct* dstruct, DValue const& args) : DCppObject<Subkeys>(dst
 {
   this->init();
   this->list = Destruct::DStructs::instance().generate("DVectorObject");
+  this->minor = 5;
 }
 
 Subkeys::~Subkeys(void)
@@ -57,6 +58,7 @@ DObject*        Subkeys::deserializeRaw(DValue const& arg)
          if (subKeyListOffset != 0xffffffff)
          {
            DObject* subkeys = Destruct::DStructs::instance().find("Subkeys")->newObject();
+           subkeys->setValue("minor", this->minor);
            stream->call("seek", RealValue<DUInt64>(subKeyListOffset + 0x1000)); 
            deserializer->call("DObject", RealValue<DObject*>(subkeys));
            DObject* sublist = subkeys->getValue("list"); 
@@ -90,6 +92,7 @@ DObject*        Subkeys::deserializeRaw(DValue const& arg)
         { 
           stream->call("seek", RealValue<DUInt64>(subkeyOffset + 0x1000));
           DObject* subkey = namedKeyStruct->newObject();
+          subkey->setValue("minor", this->minor);
           deserializer->call("DObject", RealValue<DObject*>(subkey)); //throw if not nk ?
           ((DObject*)this->list)->call("push", RealValue<DObject*>(subkey));
           subkey->destroy();

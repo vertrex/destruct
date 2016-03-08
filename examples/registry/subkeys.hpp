@@ -29,15 +29,17 @@ public:
 
 
   RealValue<DInt32>          size;
+  RealValue<DUInt32>         minor;
   RealValue<DUInt16>         signature, subkeyCount;
   RealValue<DObject*>        list;
 
-  attributeCount(Subkeys, 5)
+  attributeCount(Subkeys, 6)
   attributeList(attribute(DInt32, size)
                 attribute(DUInt16, signature)
                 attribute(DUInt16, subkeyCount)
                 attribute(DObject, list)
                 function(DObject, deserializeRaw, DObject)
+                attribute(DUInt32, minor)
                )
   memberList(Subkeys, 
              member(Subkeys, size)
@@ -45,6 +47,7 @@ public:
              member(Subkeys, subkeyCount)
              member(Subkeys, list)
              method(Subkeys, deserializeRaw)
+             member(Subkeys, minor)
             )
 protected:
   ~Subkeys();

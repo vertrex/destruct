@@ -44,7 +44,7 @@ DUInt8 Regf::validate(void)
 DValue  Regf::version(void)
 {
   std::stringstream stringStream;
-  stringStream << minor << "." << major;
+  stringStream << major << "." << minor;
 
   return RealValue<DUnicodeString>(stringStream.str());
 }
@@ -86,10 +86,11 @@ DObject* Regf::deserializeRaw(DValue const& args)
 
   stream->call("seek", RealValue<DUInt64>(this->keyrecord + 0x1000));
   this->key = DStructs::instance().find("NamedKey")->newObject();
+  ((DObject*)this->key)->setValue("minor", this->minor);
   deserializer->call("DObject", this->key);
 
   deserializer->destroy();
   stream->destroy();
- 
+
   return (this);
 }

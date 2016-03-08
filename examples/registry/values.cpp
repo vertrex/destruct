@@ -29,6 +29,7 @@ RegistryValues::RegistryValues(DStruct* dstruct, DValue const& args) : DCppObjec
   this->init();
   this->valueCount = args;
   this->list = Destruct::DStructs::instance().generate("DVectorObject");
+  this->minor = 5;
 }
 
 RegistryValues::~RegistryValues()
@@ -49,6 +50,7 @@ DObject* RegistryValues::deserializeRaw(DValue const& arg)
 
     stream->call("seek", RealValue<DUInt64>(subvalueOffset + 0x1000));
     DObject* subvalue = valueStruct->newObject();
+    subvalue->setValue("minor", this->minor);
     deserializer->call("DObject", RealValue<DObject*>(subvalue));
     ((DObject*)this->list)->call("push", RealValue<DObject*>(subvalue)); 
     subvalue->destroy();

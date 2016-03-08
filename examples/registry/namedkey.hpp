@@ -14,8 +14,7 @@ protected:
 public:
   RealValue<DUInt16> signature, keyType, keyNameLength, classNameLength;
   RealValue<DInt32>  size;
-  RealValue<DUInt32> parentKeyOffset, subkeyCount, subkeyCountVolatile,  subkeyListOffset, subkeyListOffsetVolatile, valueCount, valueListOffset,
-  securityDescriptorOffset, classNameOffset, unknown1, subkeyNameMaximumLength, subkeyClassNameMaximumLength, valueNameMaximumLength, valueDataMaximumSize, unknown2;
+  RealValue<DUInt32> parentKeyOffset, subkeyCount, subkeyCountVolatile,  subkeyListOffset, subkeyListOffsetVolatile, valueCount, valueListOffset, securityDescriptorOffset, classNameOffset, unknown1, subkeyNameMaximumLength, subkeyClassNameMaximumLength, valueNameMaximumLength, valueDataMaximumSize, unknown2, minor;
   RealValue<DUInt64> timestamp;
   RealValue<DUnicodeString>  fileName, name;
 
@@ -23,7 +22,7 @@ public:
 
   DObject*      deserializeRaw(DValue const& stream);
 
-  attributeCount(NamedKey, 25)
+  attributeCount(NamedKey, 26)
   attributeList(
       attribute(DInt32, size) //hbin size
       attribute(DUInt16, signature)
@@ -50,6 +49,7 @@ public:
       attribute(DObject, subkeys)
       attribute(DObject, values)
       function(DObject, deserializeRaw, DObject)
+      attribute(DUInt32, minor)
       )
 
   memberList(NamedKey, 
@@ -78,6 +78,7 @@ public:
       member(NamedKey, subkeys)
       member(NamedKey, values)
       method(NamedKey, deserializeRaw)
+      member(NamedKey, minor)
       )
 private:
   RealValue<DFunctionObject*>        _deserializeRaw;

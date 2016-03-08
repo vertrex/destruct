@@ -19,11 +19,11 @@ public:
 
   RealValue<DUInt16>           signature, nameLength, unknown1, valueType;//named, unkown2
   RealValue<DInt32>            size, realDataSize;
-  RealValue<DUInt32>           dataOffset, dataLength, dataType;
+  RealValue<DUInt32>           dataOffset, dataLength, dataType, minor;
   RealValue<DUnicodeString>    name;
   RealValue<DObject*>          _deserializer, dataOffsets;
   RealValue<DFunctionObject*>  _valueTypeName, _data;
-  attributeCount(ValueKey, 14)
+  attributeCount(ValueKey, 15)
   attributeList(
                 attribute(DInt32, size)
                 attribute(DUInt16, signature)
@@ -39,6 +39,7 @@ public:
                 function(DObject, deserializeRaw, DObject)
                 attribute(DObject, dataOffsets)
                 attribute(DInt32, realDataSize)
+                attribute(DUInt32, minor)
                )
 
   memberList(ValueKey, 
@@ -56,6 +57,7 @@ public:
              method(ValueKey, deserializeRaw)
              member(ValueKey, dataOffsets) 
              member(ValueKey, realDataSize)
+             member(ValueKey, minor)
             )
 
 protected:
