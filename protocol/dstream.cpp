@@ -16,6 +16,8 @@ DStream::DStream(DStruct* dstruct, DValue const& args) : DCppObject<DStream>(dst
     this->__stream.open(filePath.c_str(), std::iostream::out | std::iostream::binary | std::iostream::trunc);
   else
     this->__stream.open(filePath.c_str(), std::iostream::in | std::iostream::binary);
+  if (this->__stream.fail())
+    throw DException("DStream can't open file " + filePath);
 }
 
 DStream::DStream(const DStream& copy) : DCppObject<DStream>(copy)
@@ -59,7 +61,11 @@ DInt64  DStream::write(DValue const& args)
   {
     this->__stream.write(data, size);
     if (this->__stream.fail())
-      throw DException("DStream::write Can't write data of size " + size);
+    {
+      std::stringstream exception;
+      exception << "DStream::write error can't write data of size " << size;
+      throw DException(exception.str());
+    }
   }
   return (size); //XXX check
 }

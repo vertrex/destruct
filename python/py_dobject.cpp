@@ -157,7 +157,10 @@ PyObject* PyDObject::getValue(PyDObject::DPyObject* self, PyObject* attributeObj
   }
   else if (PyUnicode_Check(attributeObject))
   {
-    attributeName = PyUnicode_AS_DATA(attributeObject); 
+    PyObject* utf8Object = PyUnicode_AsUTF8String(attributeObject);
+    //XXX check utf8Object is not null or raise py exception
+    attributeName = PyString_AsString(utf8Object);
+    ///XXXX decref utf8Object
     attributeIndex = self->pimpl->instanceOf()->findAttribute(std::string(attributeName));
   }
   else if (PyString_Check(attributeObject))
@@ -214,7 +217,10 @@ PyObject* PyDObject::setValueObject(PyDObject::DPyObject* self, PyObject* args, 
   }
   else if (PyUnicode_Check(attributeObject))
   {
-    attributeName = PyUnicode_AS_DATA(attributeObject); 
+    PyObject* utf8Object = PyUnicode_AsUTF8String(attributeObject);
+    ////XXX check if utf8object is null null or throw
+    attributeName = PyString_AsString(utf8Object); 
+    ///XXX decref utf8object
     return (PyDObject::setValue(self, attributeName, valueObject));
   }
   else if (PyString_Check(attributeObject))

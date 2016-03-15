@@ -408,7 +408,10 @@ Destruct::DValue PyDUnicodeString::toDValue(PyObject* value)
 {
   if (PyUnicode_Check(value))
   {
-    Destruct::DUnicodeString fvalue = std::string(PyUnicode_AS_DATA(value));
+    PyObject* utf8Object = PyUnicode_AsUTF8String(value);
+    //XXX check utf8Object is not null or raise py exception
+    Destruct::DUnicodeString fvalue = std::string(PyString_AsString(utf8Object));
+    // decref ytf8object
     return Destruct::RealValue<Destruct::DUnicodeString>(fvalue);
   }
   if (PyString_Check(value))

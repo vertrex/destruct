@@ -222,7 +222,13 @@ Destruct::DValue PythonBaseModule::pyObjectToDValue(PyObject* object)
     return (Destruct::RealValue<DInt64>(PyLong_AsLong(object)));
   }
   else if (PyUnicode_Check(object))
-    return Destruct::RealValue<Destruct::DUnicodeString>(std::string(PyUnicode_AS_DATA(object)));
+  {
+    PyObject* utf8Object = PyUnicode_AsUTF8String(object);
+    //XXX check utf8Object is not null or raise py exception
+    Destruct::DUnicodeString fvalue = std::string(PyString_AsString(utf8Object));
+    // decref ytf8object
+    return Destruct::RealValue<Destruct::DUnicodeString>(fvalue);
+  }
   else if (PyString_Check(object)) 
     return Destruct::RealValue<Destruct::DUnicodeString>(std::string(PyString_AsString(object)));
   else if (PyObject_TypeCheck(object, PyDMethodObject::pyType()))
