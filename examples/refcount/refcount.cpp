@@ -34,7 +34,7 @@ void Refcount::test(void)
   DObject* vector = this->__destruct.generate(testObjectName); 
   vector->destroy();
   }
-
+  
   std::cout << "----create vector by realvalue()" << std::endl;
   {
   DObject* object = this->__destruct.generate(testObjectName);
@@ -68,46 +68,40 @@ void Refcount::test(void)
   DObject* robject = object;
   robject->destroy();
   }
-  std::cout << "----------test 7 ------" << std::endl;
-  {
-          //RealValue<DObject*> object(this->__destruct.generate(testObjectName)); //delete pas 
-  }
+  //std::cout << "----------test 7 ------" << std::endl;
+  //{
+   //RealValue<DObject*> object = this->__destruct.generate(testObjectName);
+   //}
   std::cout << "----------test 8 ------" << std::endl;
   {
   RealValue<DObject*> object(this->__destruct.generate(testObjectName));
-  std::cout << "copy object to other rv" << std::endl;
-  RealValue<DObject*> object2(object); //XXX delete apres la deuxieme fois ????
+  //std::cout << "copy object to other rv" << std::endl;
+  RealValue<DObject*> object2(object);
   ((DObject*)object)->destroy();
   }
   std::cout << "-------test 9-------" << std::endl;
   {
-   std::cout << "--create by copy" << std::endl;
+          //std::cout << "--create by copy" << std::endl;
    DObject* object(this->__destruct.generate(testObjectName));
-   std::cout << "--copy object to rv" << std::endl;
-   RealValue<DObject*> object2(object); //XXX delete apres la deuxieme fois ????
-   std::cout << "--copy object to other rv" << std::endl;
-   RealValue<DObject*> object3(object); //XXX delete apres la deuxieme fois ????
-   std::cout << "--copy object to other rv" << std::endl;
-   RealValue<DObject*> object4(object); //XXX delete apres la deuxieme fois ????
+   //std::cout << "--copy object to rv" << std::endl;
+   RealValue<DObject*> object2(object);
+   //std::cout << "--copy object to other rv" << std::endl;
+   RealValue<DObject*> object3(object); 
+   //std::cout << "--copy object to other rv" << std::endl;
+   RealValue<DObject*> object4(object);
    object->destroy();
-   std::cout << "scope end" << std::endl;
+   //std::cout << "scope end" << std::endl;
   }
 
   std::cout << "----------test10 -------" << std::endl;
   {
-   std::cout << "--create by copy" << std::endl;
    RealValue<DObject*> object(this->__destruct.generate(testObjectName));
-   std::cout << "--copy rv object to other rv" << std::endl;
-   RealValue<DObject*> object2(object); //XXX delete apres la deuxieme fois ????
-   std::cout << "--copy rv object again to other rv" << std::endl;
-   RealValue<DObject*> object3(object); //XXX delete apres la deuxieme fois ????
-   std::cout << "get obj val " << std::endl;
+   RealValue<DObject*> object2(object);
+   RealValue<DObject*> object3(object);
    DObject* robj3 = object3;
-   std::cout << "destroy one obj" << std::endl;
-   std::cout << robj3 << std::endl;
-   std::cout << robj3->refCount() << std::endl;
+   //std::cout << robj3 << std::endl;
+   //std::cout << robj3->refCount() << std::endl;
    robj3->destroy();
-   std::cout << "scope end val will be killed " << std::endl;
   }
 
 
@@ -115,23 +109,23 @@ void Refcount::test(void)
   {
     DValue value(RealValue<DObject*>(this->__destruct.generate(testObjectName)));
     DObject* obj = value.get<DObject*>();
-    obj->destroy();
+    //obj->destroy();
     obj->destroy();
   }
   std::cout << "----test12------" << std::endl;
   {
     DValue value(RealValue<DObject*>(this->__destruct.generate(testObjectName)));
-    DObject* object = value.get<DObject*>(); //DRealValue = ...
-    object->destroy(); //destroy get ! 
-    object->destroy(); //destroy original object !
+    DObject* object = value.get<DObject*>();
+    //object->destroy();
+    object->destroy();
   }
   std::cout << "-----test13----" << std::endl;
   {
     DValue value(RealValue<DObject*>(this->__destruct.generate(testObjectName)));
-    DValue value2(value); //XXX delete 2 x segfault !  
-    DValue value3(value); //XXX delete 2 x segfault !  
-    DObject* object = value.get<DObject*>(); //DRealValue = ...
-    object->destroy(); //delete get
+    DValue value2(value);
+    DValue value3(value);
+    DObject* object = value.get<DObject*>();
+    //object->destroy(); //delete get
     object->destroy(); //delete newObject
   }
 
@@ -169,18 +163,17 @@ void Refcount::test(void)
   {
     DObject* object = this->__destruct.generate(testObjectName);
     DValue v = this->testDVCRefDV(RealValue<DObject*>(object)); //const& ok :) 
-    std::cout << "Object refcount " << object->refCount() << std::endl;
     DObject* res = v.get<DObject*>();
-    res->destroy();
+    //res->destroy();
     res->destroy(); //== object->destroy()
   }
-  std::cout << "----test: RealValue DValue & object--" << std::endl;
+  std::cout << "----test: RealValue DValue& object--" << std::endl;
   {
     DObject* object = this->__destruct.generate(testObjectName);
     DValue i = RealValue<DObject*>(object); //non const ref must copy in temp dvalue ! ? 
     DValue v = this->testDVRefDV(i);
     DObject* res = v.get<DObject*>();
-    res->destroy();
+    //res->destroy();
     res->destroy(); //== object->destroy()
   }   
   std::cout << "test: DValue testDVDV(DValue value)" << std::endl;
@@ -189,14 +182,13 @@ void Refcount::test(void)
     DValue i = RealValue<DObject*>(object);
     DValue v = this->testDVRefDV(i);
     DObject* res = v.get<DObject*>();
-    res->destroy();
+    //res->destroy();
     res->destroy(); 
   }
   std::cout << "test : DObject* testObjRV(RealValue<DObject*> object)" << std::endl;
   {
     DObject* object = this->__destruct.generate(testObjectName);
     this->testObjRV(object);
-    std::cout << "ret " << object->refCount() << std::endl;
     object->destroy();
   }
 
@@ -204,17 +196,15 @@ void Refcount::test(void)
   {
     DObject* cppRefCount = this->__destruct.generate("DCppRefCount");
     DObject* retObject = cppRefCount->call("returnObject").get<DObject*>();
-    std::cout << "retObject ref count " << retObject->refCount() << std::endl;
     retObject->destroy();
     cppRefCount->destroy();
   }
- 
+return ;
   std::cout << "test : DCppRefCount returnObjectAsDvalue" << std::endl;
   {
     DObject* cppRefCount = this->__destruct.generate("DCppRefCount");
     DObject* retObject = cppRefCount->call("returnObjectAsDValue"); //.get<DObject*>();
-    std::cout << "retObjectAsValue ref count " << retObject->refCount() << std::endl;
-    retObject->destroy();
+    //std::cout << "retObjectAsValue ref count " << retObject->refCount() << std::endl;
     retObject->destroy();
     cppRefCount->destroy();
   }
@@ -222,22 +212,43 @@ void Refcount::test(void)
   std::cout << "test : voidDVCref " << std::endl;
   {
     DObject* object = this->__destruct.generate(testObjectName);
-    std::cout << "voidDVCref ref before " << object->refCount() << std::endl;
+    //std::cout << "voidDVCref ref before " << object->refCount() << std::endl;
     voidDVCRef(RealValue<DObject*>(object));
-    std::cout << "object ref after " << object->refCount() << std::endl;
+    //std::cout << "object ref after " << object->refCount() << std::endl;
     object->destroy();
   }
-
+return ;
   std::cout << "test : setDobject " << std::endl;
   {
     DObject* cppRefCount = this->__destruct.generate("DCppRefCount");
-    std::cout << "setObject ref count " << cppRefCount->refCount() << std::endl;
-    cppRefCount->call("setDObject", RealValue<DObject*>(cppRefCount));
-    std::cout << "setObject ret ref count " << cppRefCount->refCount() << std::endl;
+    //std::cout << "setObject ref count " << cppRefCount->refCount() << std::endl;
+    DObject* object = this->__destruct.generate(testObjectName);
+    cppRefCount->call("setDObject", RealValue<DObject*>(object));  //recursively set in self ...
+    object->destroy();
     cppRefCount->destroy();
   }
 
-  //test vector object :
+  std::cout << "test : setDobject as value " << std::endl;
+  {
+    DObject* cppRefCount = this->__destruct.generate("DCppRefCount");
+    DObject* object = this->__destruct.generate(testObjectName);
+    cppRefCount->setValue("valObject", RealValue<DObject*>(object));
+    object->destroy();
+    cppRefCount->destroy();
+  }
+
+return; 
+  std::cout << "test : setDobject equal " << std::endl;
+  {
+    DObject* cppRefCount = this->__destruct.generate("DCppRefCount");
+    DObject* object = this->__destruct.generate(testObjectName);
+    cppRefCount->call("setDObjectEq", RealValue<DObject*>(object));  //recursively set in self ...
+    std::cout << "cpprefcount ret ref count " << cppRefCount->refCount() << std::endl;
+    std::cout << "object set  ref count " << object->refCount() << std::endl;
+    object->destroy();
+    cppRefCount->destroy();
+  }
+return;
   std::cout << "test : vectorObject" << std::endl;
   {
     DObject* vectorObject = this->__destruct.generate("DVectorObject");
@@ -253,10 +264,9 @@ void Refcount::test(void)
     DValue iv = vectorObject->call("get", RealValue<DUInt64>(0));
     DValue ve = vectorObject->call("get", RealValue<DUInt64>(0));
     DValue vr = vectorObject->call("get", RealValue<DUInt64>(0));
-  
+    
     cppRefCount->destroy();
     vectorObject->destroy();
-   
   }
 
   std::cout << "========END TEST FUNC ===================="<< std::endl;

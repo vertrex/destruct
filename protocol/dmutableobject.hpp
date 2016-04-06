@@ -15,7 +15,6 @@ public:
   EXPORT DMutableObject(const DUnicodeString& name, DValue const& args); 
   EXPORT DMutableObject(DMutableStruct* dstructDef, DValue const& args); 
   EXPORT DMutableObject(DMutableObject const &);
-  EXPORT ~DMutableObject();
 
   using DObject::getValue;
   using DObject::setValue;
@@ -28,6 +27,8 @@ public:
 
   EXPORT static DObject* newObject(DMutableStruct* myClass, DValue const& args);
   EXPORT virtual DObject*  clone() const;
+protected:
+  EXPORT ~DMutableObject();
 };
 
 }

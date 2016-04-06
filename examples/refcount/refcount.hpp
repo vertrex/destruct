@@ -26,12 +26,19 @@ public:
     this->init();
   }
 
-  RealValue<DFunctionObject*> _returnObject, _returnObjectAsDValue, _setDObject;
+  RealValue<DFunctionObject*> _returnObject, _returnObjectAsDValue, _setDObject, _setDObjectEq;
+  RealValue<DObject*>         valObject;
 
   void          setDObject(DValue const& args)
   {
     DObject* o = args.get<DObject*>();
-    o->destroy(); 
+    this->valObject.set(RealValue<DObject*>(o));
+  }
+
+  void          setDObjectEq(DValue const& args)
+  {
+    DObject* o = args.get<DObject*>();
+    this->valObject = o;
   }
 
   DObject*      returnObject(void)
@@ -48,7 +55,7 @@ public:
 
   static size_t ownAttributeCount()
   {
-    return (3);
+    return (5);
   }
 
   static DAttribute* ownAttributeBegin()
@@ -58,6 +65,8 @@ public:
       DAttribute(DType::DObjectType, "returnObject", DType::DNoneType),
       DAttribute(DType::DObjectType, "returnObjectAsDValue", DType::DNoneType),
       DAttribute(DType::DNoneType, "setDObject", DType::DObjectType),
+      DAttribute(DType::DNoneType, "setDObjectEq", DType::DObjectType),
+      DAttribute(DType::DObjectType, "valObject"),
     };
     return (attributes);
   }
@@ -69,6 +78,8 @@ public:
       DPointer<DCppRefCount>(&DCppRefCount::_returnObject, &DCppRefCount::returnObject),
       DPointer<DCppRefCount>(&DCppRefCount::_returnObjectAsDValue, &DCppRefCount::returnObjectAsDValue),
       DPointer<DCppRefCount>(&DCppRefCount::_setDObject, &DCppRefCount::setDObject),
+      DPointer<DCppRefCount>(&DCppRefCount::_setDObjectEq, &DCppRefCount::setDObjectEq),
+      DPointer<DCppRefCount>(&DCppRefCount::valObject),
     };
     return (memberPointer);
   }

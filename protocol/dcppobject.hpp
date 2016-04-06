@@ -94,7 +94,7 @@ public:
     try 
     {
       DValue res = fo->call(args);
-      fo->destroy();
+      //fo->destroy();
       return (res);
     }
     catch (DException const& exception)

@@ -27,7 +27,6 @@ SerializeBinary::SerializeBinary(SerializeBinary const& copy) : DCppObject<Seria
 
 SerializeBinary::~SerializeBinary()
 {
-  ((DObject*)__stream)->destroy();
 }
 
 void    SerializeBinary::sDObject(DValue const& args)
@@ -59,7 +58,6 @@ void    SerializeBinary::sDObject(DValue const& args)
       this->call(returnType.name(), value);
     }
     iterator->destroy(); 
-    dobject->destroy();
     return ;
   }
   
@@ -75,7 +73,6 @@ void    SerializeBinary::sDObject(DValue const& args)
       this->call(type.name(), value);
     }
   }
-  dobject->destroy();
 }
 
 void    SerializeBinary::sDStruct(DValue const& args)
@@ -197,7 +194,6 @@ DeserializeBinary::DeserializeBinary(DeserializeBinary const& copy) : DCppObject
 
 DeserializeBinary::~DeserializeBinary()
 {
-  ((DObject*)__stream)->destroy();
 }
 
 DObject*        DeserializeBinary::dDObject(DValue const& value)
@@ -260,6 +256,7 @@ DObject*        DeserializeBinary::dDObject(DValue const& value)
       continue;
     else if (type.getType() == DType::DUnknownType)
       continue;
+    //if type == dobject destroy ?
     else
     {
       DValue value = this->call(type.name());

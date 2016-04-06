@@ -52,11 +52,11 @@ public:
     DObject*  argumentsObject = args.get<DObject*>();
     KeyType   key = argumentsObject->getValue("index").get<KeyType>();
     ValueType value = argumentsObject->getValue("value").get<ValueType>();
-    //value / key dobject->destroy
 
+    //map / key add ref or use dvalue directly 
     this->__map[key] = value;
 
-    argumentsObject->destroy();
+    //argumentsObject->destroy(); //will destroy contained object
  
     return (DNone);
   }

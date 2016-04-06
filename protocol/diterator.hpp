@@ -31,10 +31,6 @@ public:
     this->init();
   }
 
-  ~DIterator()
-  {
-    ((DObject*)container)->destroy();
-  }
 
   void  next(void)
   {
@@ -84,6 +80,13 @@ public:
     throw DException("DIterator::currentItem container is not set.\n");
   }
 
+protected:
+  ~DIterator()
+  {
+    //((DObject*)container)->destroy(); //destroy by rv
+  }
+
+public:
   RealValue<DUInt64>          index;
   RealValue<DObject*>         container;
   RealValue<DFunctionObject*> _next;

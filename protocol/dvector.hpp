@@ -23,11 +23,6 @@ public:
     this->init();
   }
 
-  ~DVector()
-  {
-    this->__vector.clear();
-  }
-
   DUInt64  push(DValue const& args) 
   {
     this->__vector.push_back(args.get<VectorType>());
@@ -121,7 +116,12 @@ public:
   static DPointer<DVectorType >*  memberEnd()
   {
     return (memberBegin() + ownAttributeCount());
-  } 
+  }
+
+  ~DVector()
+  {
+    this->__vector.clear();
+  }
 private:
   std::vector<VectorType>   __vector;
 };
@@ -135,14 +135,17 @@ inline DVector<DObject*, DType::DObjectType >::~DVector()
 {
  std::vector<DObject* >::iterator object = this->__vector.begin();
  for (; object != this->__vector.end(); ++object)
+ {
    (*object)->destroy();
+ }
  this->__vector.clear();
 }
 
 template<>
 inline DUInt64 DVector<DObject*, DType::DObjectType >::push(DValue const& args)
 {
-  DObject* object = args.get<DObject*>();//add ref
+  DObject* object = args.get<DObject*>();
+  object->addRef();
   this->__vector.push_back(object);
   return (this->__vector.size() - 1);
 }
@@ -154,8 +157,8 @@ inline DValue  DVector<DObject*, DType::DObjectType>::get(DValue const& args)
     if (index >= this->__vector.size())
       throw DException(std::string("DContainer::get bad index\n"));
     DObject* object = this->__vector[index];
-    //object->addRef(); // ? segfault in python
-    return (RealValue<DObject*>(object)); //addRef
+    //object->addRef(); // ?
+    return (RealValue<DObject*>(object)); //addRef temporary
   }
 }
 #endif

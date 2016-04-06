@@ -9,7 +9,7 @@
 namespace Destruct
 {
 
-SerializeText::SerializeText(DStruct* dstruct, DValue const& args) : DCppObject<SerializeText>(dstruct, args), __stream(args.get<DObject*>()), __depth(0)
+SerializeText::SerializeText(DStruct* dstruct, DValue const& args) : DCppObject<SerializeText>(dstruct, args), __stream(args), __depth(0)
 {
   this->init(); 
 }
@@ -21,13 +21,12 @@ SerializeText::SerializeText(SerializeText const& copy) : DCppObject<SerializeTe
 
 SerializeText::~SerializeText()
 {
-  ((DObject*)__stream)->destroy();
 }
 
 void    SerializeText::sDObject(DValue const& args)
 {
   int x = 0;
-  DObject* dobject = args.get<DObject*>();
+  DObject* dobject = args;
   DStruct const* dstruct = dobject->instanceOf();
   //DUnicodeString output = std::string(2 * this->__depth, ' ');
   DUnicodeString output; // = std::string(2 * this->__depth, ' ');
@@ -37,7 +36,7 @@ void    SerializeText::sDObject(DValue const& args)
   int32_t index = dobject->instanceOf()->findAttribute("iterator");
   if (index != -1)
   {
-    DObject* iterator = dobject->call("iterator").get<DObject*>();
+    DObject* iterator = dobject->call("iterator");
     DType::Type_t returnType = iterator->instanceOf()->attribute("currentItem").type().getReturnType();
 
     DValue count = dobject->call("size");
@@ -63,7 +62,6 @@ void    SerializeText::sDObject(DValue const& args)
     iterator->destroy();
     output = std::string(2 * this->__depth, ' ') + "};";
     this->sDUnicodeString(RealValue<DUnicodeString>(output));
-    dobject->destroy();
     return ;
   }
 
@@ -82,7 +80,6 @@ void    SerializeText::sDObject(DValue const& args)
   output = std::string(2 * this->__depth, ' ');
   output += "};";
   this->sDUnicodeString(RealValue<DUnicodeString>(output));
-  dobject->destroy();
 }
 
 void    SerializeText::sDStruct(DValue const& args)

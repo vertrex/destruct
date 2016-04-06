@@ -37,6 +37,12 @@ public:
   {
   }
 
+  RealValue&  operator=(RealValue const& rhs)
+  {
+    __val = rhs.__val;
+    return (*this);
+  }
+
   ~RealValue()
   {
   }
@@ -102,15 +108,12 @@ public:
   DUnicodeString asUnicodeString() const
   {
     DUnicodeString const ref('"' +  this->string() + '"');
-
     return (ref);
   }
 
   DBuffer       asDBuffer() const
   {
-                                //copy or not ? XXX delete ?
     DBuffer buffer((uint8_t*)this->c_str(), (int32_t)this->size());
-
     return (buffer);
   }
 
@@ -131,139 +134,167 @@ public:
 };
 
 /*
- * DObject specialization
+ * DObject class specialization
  */
 template <>
-inline RealValue<DObject* >::RealValue() : __val(DNone) 
+class RealValue<DObject*> : public TypedValue<DObject*> 
 {
-}
+public:
+  RealValue() : __val(DNone) 
+  {
+  }
 
-template <>
-inline RealValue<DObject* >::RealValue(DObject* val) : __val(val)
-{
-  if (val)
-    val->addRef();
-}
+  RealValue(DObject* val) : __val(val)
+  {
+    if (this->__val)
+      this->__val->addRef();
+  }
 
-template <>
-inline RealValue<DObject*>::RealValue(DValue value) : __val(value.get<DObject*>())
-{
-}
+  RealValue(DValue value) : __val(value.get<DObject*>())
+  {
+    if (this->__val)
+      this->__val->addRef();
+  }
 
-template <>
-inline RealValue<DObject* >::operator DObject*() const
-{
-  return (this->__val);
-}
+  RealValue(RealValue<DObject*> const & rhs) :  __val(rhs.__val)
+  {
+    if (this->__val)
+      this->__val->addRef();
+  }
+ 
+  ~RealValue()
+  {
+    if (this->__val)
+      this->__val->destroy();
+  }
 
-template <>
-inline RealValue<DObject*>::RealValue(RealValue<DObject*> const & rhs) :  __val(rhs) //XXX __val(rhs.__val) ...
-{
-  if (this->__val)
-    this->__val->addRef();
-} 
+  operator DObject*() const
+  {
+    return (this->__val); //return object as is, don't increment ref
+  }
 
-template <>
-inline FinalValue* RealValue<DObject* >::clone() const
-{
-  return  (new RealValue(*this));
-}
+  RealValue<DObject*>& operator=(RealValue<DObject*> const& value)
+  {
+    if (this->__val)
+     this->__val->delRef();
 
-template <>
-inline void RealValue<DObject* >::set(DValue const& v)
-{
-  if (this->__val)
-    this->__val->destroy();
-  this->__val = v.get<DObject *>();
-}
+    this->__val = value.__val;
+    if (this->__val)
+      this->__val->addRef();
 
-template <>
-inline RealValue<DObject* >::~RealValue()
-{
-  if (this->__val)
-    this->__val->destroy();
-}
+    return (*this);
+  }
 
-template <>
-inline DUnicodeString RealValue<DObject* >::asUnicodeString() const
-{
-  if (this->__val->instanceOf())
-    return (this->__val->instanceOf()->name() + " *");
-  else 
-    return std::string("DObject::asUnicodeString() can't get Instance of object !\n");
-}
+  FinalValue* clone() const
+  {
+    return  (new RealValue(*this)); //RealValue(DObject*) add a ref
+  }
 
-template <>
-inline DBuffer RealValue<DObject*>::asDBuffer() const
-{
-  throw DException("Can't convert DObject to DBuffer");
-}
+  void set(DValue const& v)
+  {
+    if (this->__val)
+     this->__val->delRef();
+
+    this->__val = v.get<DObject *>();
+    if (this->__val)
+      this->__val->addRef();
+  }
+
+  DUnicodeString asUnicodeString() const
+  {
+    if (this->__val->instanceOf())
+      return (this->__val->instanceOf()->name() + " *");
+    else 
+      return std::string("DObject::asUnicodeString() can't get Instance of object !\n");
+  }
+
+  DBuffer asDBuffer() const
+  {
+    throw DException("Can't convert DObject to DBuffer");
+  }
+protected:
+  DObject*      __val;
+};
 
 /*
  * DFunctionObject specialization
  */
 template <>
-inline RealValue<DFunctionObject* >::RealValue() : __val(0) //XXX init a 0 ? call(0) ? throw ? 
+class RealValue<DFunctionObject*> : public TypedValue<DFunctionObject*> 
 {
-}
+public:
+  RealValue() : __val(NULL)
+  {
+  }
 
-template <>
-inline RealValue<DFunctionObject* >::RealValue(DFunctionObject* val) : __val(val)
-{
-  if (val)
-    this->__val->addRef();
-}
+  RealValue(DFunctionObject* val) : __val(val)
+  {
+    if (this->__val)
+      this->__val->addRef();
+  }
 
-template <>
-inline RealValue<DFunctionObject*>::RealValue(DValue value) : __val(value.get<DFunctionObject*>())
-{
-}
+  RealValue(DValue value) : __val(value.get<DFunctionObject*>())
+  {
+    if (this->__val)
+     this->__val->addRef();
+  }
 
-template <>
-inline RealValue<DFunctionObject* >::operator DFunctionObject*() const
-{
-  return (this->__val);
-}
+  RealValue(RealValue<DFunctionObject*> const & rhs) :  __val(rhs.__val)
+  {
+    if (this->__val)
+      this->__val->addRef();
+  }
+ 
+  ~RealValue()
+  {
+    if (this->__val)
+      this->__val->destroy();
+  }
 
-template <>
-inline RealValue<DFunctionObject*>::RealValue(RealValue<DFunctionObject*> const & rhs) :  __val(rhs)
-{
-  if (this->__val)
-    this->__val->addRef();
-} 
+  operator DFunctionObject*() const
+  {
+    return (this->__val); //return as is, don't increment ref
+  }
 
-template <>
-inline FinalValue* RealValue<DFunctionObject* >::clone() const
-{
-  return (new RealValue(*this));
-}
+  RealValue<DFunctionObject*>& operator=(RealValue<DFunctionObject*> const& value)
+  {
+    if (this->__val)
+     this->__val->delRef();
 
-template <>
-inline void RealValue<DFunctionObject* >::set(DValue const& v)
-{
-  if (this->__val)
-    this->__val->destroy();
-  this->__val = v.get<DFunctionObject *>();
-}
+    this->__val = value.__val;
+    if (this->__val)
+      this->__val->addRef();
 
-template <>
-inline RealValue<DFunctionObject* >::~RealValue()
-{
-  if (this->__val)
-    this->__val->destroy();
-}
+    return (*this);
+  }
 
-template <>
-inline DUnicodeString RealValue<DFunctionObject* >::asUnicodeString() const
-{
-  return ("DFunctionObject"); //throw ?
-}
+  FinalValue* clone() const
+  {
+    return (new RealValue(*this));
+  }
 
-template<>
-inline DBuffer  RealValue<DFunctionObject* >::asDBuffer() const
-{
-  throw DException("Can't convert DFunctionObject* as DBuffer");
-}
+  void set(DValue const& v)
+  {
+    if (this->__val)
+     this->__val->delRef();
+
+    this->__val = v.get<DFunctionObject *>();
+    if (this->__val)
+      this->__val->addRef();
+  }
+
+  DUnicodeString asUnicodeString() const
+  {
+    return ("DFunctionObject"); //throw ?
+  }
+
+  DBuffer  asDBuffer() const
+  {
+    throw DException("Can't convert DFunctionObject* as DBuffer");
+  }
+protected:
+  DFunctionObject*      __val;
+};
 
 /*
  *  DUInt8 specialization (or asUnicodeString see him as char, 'c')

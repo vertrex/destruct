@@ -65,7 +65,7 @@ public:
   {
     DObject* returnObject = (__self->*__member)(args);
     DValue value = RealValue<DObject*>(returnObject);
-    returnObject->destroy();
+    //returnObject->destroy();
 
     return (value);
   }
@@ -150,7 +150,7 @@ public:
 
     DObject* returnObject = (__self->*__member)();
     DValue value = RealValue<DObject*>(returnObject);
-    returnObject->destroy();
+    //returnObject->destroy();
 
     return (value);
   }

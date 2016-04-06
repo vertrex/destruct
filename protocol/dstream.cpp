@@ -6,11 +6,10 @@ namespace Destruct
 DStream::DStream(DStruct* dstruct, DValue const& args) : DCppObject<DStream>(dstruct, args)
 {
   this->init();
-  DObject* dargs = args.get<DObject*>();
+  DObject* dargs = args;
 
   DInt8 mode = dargs->getValue("input").get<DInt8>();
   DUnicodeString filePath = dargs->getValue("filePath").get<DUnicodeString>();
-  dargs->destroy();
 
   if (mode == 0)
     this->__stream.open(filePath.c_str(), std::iostream::out | std::iostream::binary | std::iostream::trunc);

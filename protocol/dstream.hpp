@@ -39,7 +39,8 @@ public:
   DUInt64  tell(void);
 //  DValue  seek(DValue const& args);
   //tell implement for regf  
- 
+
+protected: 
   ~DStream();
 private:
   std::fstream  __stream; 
@@ -99,7 +100,8 @@ public:
   DBuffer  read(DValue const& args); 
   DInt64   write(DValue const& args);
 //  DValue  seek(DValue const& args);
-  
+ 
+protected: 
   ~DStreamCout();
 public:
   RealValue<DFunctionObject* > _read;
@@ -151,7 +153,8 @@ public:
   DInt64          write(DValue const& args);
   DUnicodeString  str(void);
   void            clear(void);
-  
+ 
+protected: 
   ~DStreamString();
 private:
   std::stringstream   __stream; 

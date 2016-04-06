@@ -122,6 +122,7 @@ private:
 /*
  * We specialize DValue because of refCount this shouldn't happen in normal case ...
  */
+/*
 template <>
 inline DObject* DValue::get<DObject* >() const
 {
@@ -151,6 +152,6 @@ inline DFunctionObject* DValue::get<DFunctionObject* >() const
   else
    return (NULL); // ret DNone !
 }
-
+*/
 }
 #endif

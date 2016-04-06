@@ -79,7 +79,9 @@ public:
 
   void init(CPPClass* obj)
   {
-    obj->*__member = new DMethodObject(obj, __method);
+    DMethodObject* method = new DMethodObject(obj, __method);
+    obj->*__member = method;
+    method->delRef();
   }
 
   ~DFunctionPointer()
@@ -118,7 +120,9 @@ public:
 
   void init(CPPClass* obj)
   {
-    obj->*__member = new DMethodObject(obj, __method);
+    DMethodObject* method = new DMethodObject(obj, __method);
+    obj->*__member = method;
+    method->delRef();
   }
 
   FinalValue& value(CPPClass* obj) const
@@ -153,7 +157,9 @@ public:
 
   void init(CPPClass* obj)
   {
-    obj->*__member = new DMethodObject(obj, __method);
+    DMethodObject* method = new DMethodObject(obj, __method);
+    obj->*__member = method;
+    method->delRef();
   }
 
   FinalValue& value(CPPClass* obj) const
@@ -188,7 +194,9 @@ public:
 
   void init(CPPClass* obj)
   {
-    obj->*__member = new DMethodObject(obj, __method);
+    DMethodObject* method = new DMethodObject(obj, __method);
+    obj->*__member = method;
+    method->delRef();
   }
 
   FinalValue& value(CPPClass* obj) const
@@ -205,8 +213,6 @@ private:
   RealReturnType CPPClass::* __member;
   MReturnType (CPPClass::* __method) (void) const;
 };
-
-
 
 /*
  * DFunctionPointer specialization : void CPPClass(void)
@@ -225,7 +231,9 @@ public:
 
   void init(CPPClass* obj)
   {
-    obj->*__member = new DMethodObject(obj, __method);
+    DMethodObject* method = new DMethodObject(obj, __method);
+    obj->*__member = method;
+    method->delRef();
   }
 
   FinalValue& value(CPPClass* obj) const

@@ -34,7 +34,6 @@ public:
 
 protected:
   ~SerializeText();
-
 public:
   RealValue<DFunctionObject* > _DObject, _DStruct, _DUnicodeString, _DNone, _DMethod, _DBuffer, 
                                _DInt8, _DInt16, _DInt32, _DInt64,

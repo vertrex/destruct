@@ -19,9 +19,10 @@ void    Session::save(DValue const& filePath)
   DMutableObject* arg = static_cast<DMutableObject*>(this->__destruct.generate("DMutable"));
   arg->setValueAttribute(DType::DUnicodeStringType, "filePath", filePath); 
   arg->setValueAttribute(DType::DInt8Type, "input",  RealValue<DInt8>(DStream::Output));
+
   DObject* stream = this->__destruct.generate("DStream", RealValue<DObject*>(arg));
- 
   arg->destroy();
+
   DObject* serializer = this->__destruct.generate("SerializeBinary", RealValue<DObject*>(stream));
 
   std::cout << "Saving dstruct " << std::endl;

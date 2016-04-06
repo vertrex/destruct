@@ -59,23 +59,24 @@ DObject*  DB::populateSession(void)
 
   partition->destroy();
   moduleArguments->destroy();
+  modules->destroy();
 
   //Save a DMapString
 
-  DObject* stringMap = this->__destruct.generate("DMapString");
+  //DObject* stringMap = this->__destruct.generate("DMapString");
 
-  DObject* item = stringMap->call("newItem").get<DObject*>();
-  item->setValue("index", RealValue<DUnicodeString>("1"));
-  item->setValue("value", RealValue<DUnicodeString>("a"));
-  stringMap->call("setItem", RealValue<DObject*>(item)); 
+  //DObject* item = stringMap->call("newItem").get<DObject*>();
+  //item->setValue("index", RealValue<DUnicodeString>("1"));
+  //item->setValue("value", RealValue<DUnicodeString>("a"));
+  //stringMap->call("setItem", RealValue<DObject*>(item)); 
 
-  item->setValue("index", RealValue<DUnicodeString>("2"));
-  item->setValue("value", RealValue<DUnicodeString>("b"));
-  stringMap->call("setItem", RealValue<DObject*>(item));
-  item->destroy();
+  //item->setValue("index", RealValue<DUnicodeString>("2"));
+  //item->setValue("value", RealValue<DUnicodeString>("b"));
+  //stringMap->call("setItem", RealValue<DObject*>(item));
+  //item->destroy();
 
   //((DObject*)this->__session->modules)->call("push", RealValue<DObject*>(stringMap)); //leak or serial leak
-  stringMap->destroy();
+  //stringMap->destroy();
  
   return (this->__session); 
 }
@@ -104,8 +105,8 @@ void            DB::show(DObject* object) const
   DObject* cout = this->__destruct.generate("DStreamCout");
   DObject* serializeText = this->__destruct.generate("SerializeText", RealValue<DObject*>(cout));
   serializeText->call("DObject", RealValue<DObject*>(object));
-  serializeText->destroy();
   cout->destroy();
+  serializeText->destroy();
 }
 
 void            DB::load(DValue const& filePath)
@@ -139,8 +140,6 @@ void            DB::load(DValue const& filePath)
   deserializer->destroy();
 
   this->__session = static_cast<Session*>(value.get<DObject*>());
-  DObject* session = value.get<DObject*>();
-  session->destroy(); 
 }
 
 Session*        DB::session(void)
