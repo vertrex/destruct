@@ -30,8 +30,8 @@ DStruct const * const DObject::base(void) const
 
 DObject::~DObject()
 {
- //if (this->__baseObject)
-   //this->__baseObject->destroy();
+ if (this->__baseObject)
+   this->__baseObject->destroy();
 }
 
 DObject* DObject::baseObject(void) const

@@ -82,15 +82,18 @@ void  Inheritance::declare(void)
 void Inheritance::test(void)
 {
   std::cout << "==== Simple object B inherit simple object A ====" << std::endl;
-  
-  DObject* simpleB = this->__destruct.generate("SimpleB");
+ 
 
+  DObject* simpleB = this->__destruct.generate("SimpleB");
+ 
   simpleB->setValue("text1", RealValue<DUnicodeString>("text1"));
   simpleB->setValue("text2", RealValue<DUnicodeString>("text2"));
   simpleB->setValue("text3", RealValue<DUnicodeString>("text3"));
 
+  
   this->show(simpleB);
   simpleB->destroy();
+  
   //this->testComposition(simpleB);
 
   //std::cout << "==== ComposableObject ====" << std::endl;
@@ -105,9 +108,9 @@ void Inheritance::test(void)
   DObject* composition = this->__destruct.generate("CppACppB");
   this->testComposition(composition);
   composition->destroy();
+
   std::cout << "==== Inherit SimpleACppB ===" << std::endl;
-  composition = this->__destruct.generate("SimpleACppB");
- 
+  composition = this->__destruct.generate("SimpleACppB"); 
   this->testComposition(composition);
   composition->destroy();
 }

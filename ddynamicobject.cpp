@@ -40,9 +40,7 @@ void DDynamicObject::init(DDynamicObject* self)
      if (def) // def is not necessarily a DDynamicObject! XXX not used yet
      {
        for (size_t idx = 0; idx != this->__values.size(); ++idx)
-       {
           this->__values[idx] = DObject::getBaseValue(def, idx)->clone(self);
-       }
      }
      else
      {
@@ -50,9 +48,7 @@ void DDynamicObject::init(DDynamicObject* self)
        std::vector<BaseValue*>::iterator i = this->__values.begin();
 
        for (a = instanceOf()->attributeBegin(); a != instanceOf()->attributeEnd(); ++a, ++i)
-       {
          *i = a->type().newValue();
-       }
      }
   }
 }
@@ -66,10 +62,22 @@ void DDynamicObject::copy(DDynamicObject * self, DDynamicObject const & rhs)
 }
 DDynamicObject::~DDynamicObject()
 {
-  for (size_t idx = 0; idx != this->__values.size(); ++idx)
+  if (this->baseObject())
   {
-    delete this->__values[idx];
-    this->__values[idx] = NULL;
+    size_t idx = this->base()->attributeCount();
+    for (; idx != this->instanceOf()->attributeCount(); ++idx)
+    {
+       delete this->__values[idx];
+       this->__values[idx] = NULL;
+    }
+  }
+  else
+  {
+    for (size_t idx = 0; idx != this->__values.size(); ++idx)
+    {
+      delete this->__values[idx];
+      this->__values[idx] = NULL;
+    }
   }
 }
 
