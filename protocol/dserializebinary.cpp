@@ -31,7 +31,7 @@ SerializeBinary::~SerializeBinary()
 
 void    SerializeBinary::sDObject(DValue const& args)
 {
-  DObject* dobject = args.get<DObject*>();
+  DObject* dobject = args;
   //if (dobject == NULL)
   //return (this->sDNone());
 
@@ -46,7 +46,7 @@ void    SerializeBinary::sDObject(DValue const& args)
   int32_t index = dstruct->findAttribute("iterator");
   if (index != -1)
   {
-    DObject* iterator = dobject->call("iterator").get<DObject*>();
+    DObject* iterator = dobject->call("iterator");
     DType returnType = DType(iterator->instanceOf()->attribute("currentItem").type().getReturnType());
 
     DValue count = dobject->call("size");   
@@ -77,7 +77,7 @@ void    SerializeBinary::sDObject(DValue const& args)
 
 void    SerializeBinary::sDStruct(DValue const& args)
 {
-  DStruct* dstruct = args.get<DStruct*>();
+  DStruct* dstruct = args;
 //  if (dstruct == NULL)
 //     throw DException
 
@@ -115,7 +115,7 @@ void    SerializeBinary::sDUnicodeString(DValue const& args)
 {
   DObject* stream = this->__stream;
 
-  DUnicodeString str = args.get<DUnicodeString>();
+  DUnicodeString str = args;
   RealValue<DInt64>  dsize((int64_t)str.size());
 
   stream->call("write", RealValue<DBuffer>(dsize.asDBuffer()));
@@ -199,12 +199,12 @@ DeserializeBinary::~DeserializeBinary()
 DObject*        DeserializeBinary::dDObject(DValue const& value)
 {
   DStruct* dstruct = NULL;
-  DObject* dobject = value.get<DObject*>();
+  DObject* dobject = value;
 
   if (dobject == DNone)
   {
     DStructs& dstructs = DStructs::instance();
-    DUnicodeString structName = this->call("DUnicodeString").get<DUnicodeString>();
+    DUnicodeString structName = this->call("DUnicodeString");
 
     if (structName == "None")
       return (RealValue<DObject*>(DNone));
@@ -213,7 +213,6 @@ DObject*        DeserializeBinary::dDObject(DValue const& value)
     if (dstruct == NULL)
       throw DException("Can't find struct : '" + structName + "' in destruct database.");
     dobject = dstruct->newObject();
-    dobject->addRef();
   }
   else
     dstruct = dobject->instanceOf();
@@ -223,15 +222,14 @@ DObject*        DeserializeBinary::dDObject(DValue const& value)
   if (index != -1)
   {
     DType::Type_t   returnType = dstruct->attribute("get").type().getReturnType();
-    DUInt64 count = this->call("DUInt64").get<DUInt64>();
+    DUInt64 count = this->call("DUInt64");
    
     if (hasNewItem != -1)
     {
       for (DUInt64 index = 0; index < count; index++)
       {
-       DUnicodeString structName = this->call("DUnicodeString").get<DUnicodeString>(); //deserialize type
-       DObject* item = dobject->call("newItem").get<DObject*>(); //usefull ??? if registered why not used registered type because it'swritten
-       item->addRef(); //because we destroy object ref after
+       DUnicodeString structName = this->call("DUnicodeString"); //deserialize type
+       DObject* item = dobject->call("newItem"); //usefull ??? if registered why not used registered type because it'swritten
        this->call("DObject", RealValue<DObject*>(item));
        dobject->call("setItem", RealValue<DObject*>(item));
        item->destroy();
@@ -242,10 +240,16 @@ DObject*        DeserializeBinary::dDObject(DValue const& value)
       for (DUInt64 index = 0; index < count; index++) 
       {
          DValue value = this->call(DType(returnType).name());
-         dobject->call("push", value);
+         if (DType(returnType).getType() == DType::DObjectType)
+         {
+            DObject* ovalue = value;
+            dobject->call("push", value);
+            ovalue->destroy();
+         }
+         else
+           dobject->call("push", value);
       }
     }
-    dobject->destroy();
     return (dobject);
   }
 
@@ -257,13 +261,19 @@ DObject*        DeserializeBinary::dDObject(DValue const& value)
     else if (type.getType() == DType::DUnknownType)
       continue;
     //if type == dobject destroy ?
+    else if (type.getType() == DType::DObjectType)
+    {
+      DValue value = this->call(type.name());
+      DObject* ovalue = value;
+      dobject->setValue((*attribute).name(), value);
+      ovalue->destroy();
+    }
     else
     {
       DValue value = this->call(type.name());
       dobject->setValue((*attribute).name(), value);
     }
   }
-  dobject->destroy();
   return (dobject);
 }
 
@@ -271,14 +281,14 @@ DStruct*        DeserializeBinary::dDStruct(void)
 {
   DStruct* dstruct = NULL; 
 
-  DUnicodeString structName = this->call("DUnicodeString").get<DUnicodeString>();
-  DUInt32 attributeCount = this->call("DUInt32").get<DUInt32>(); //32 ?
+  DUnicodeString structName = this->call("DUnicodeString");
+  DUInt32 attributeCount = this->call("DUInt32");
 
   if ((dstruct = new DStruct(0, structName, DSimpleObject::newObject)) == NULL)//inheritance ? 
     return (NULL);
   for (size_t i = 0; i < attributeCount; i++) 
   {
-     DUnicodeString name = this->call("DUnicodeString").get<DUnicodeString>();
+     DUnicodeString name = this->call("DUnicodeString");
      
      DType::Type_t type = (DType::Type_t)this->call("DUInt8").get<DUInt8>(); //XXX type serialization ?
      if (type == DType::DMethodType)
@@ -308,8 +318,8 @@ DUnicodeString  DeserializeBinary::dDUnicodeString(void)
 {
   DObject* stream = this->__stream;
 
-  DInt64  size = this->call("DInt64").get<DInt64>(); 
-  DBuffer buffer = stream->call("read", RealValue<DInt64>(size)).get<DBuffer>();
+  DInt64  size = this->call("DInt64"); 
+  DBuffer buffer = stream->call("read", RealValue<DInt64>(size));
 
   std::string str((const char*)buffer.data(), buffer.size()); //DUnicodeString constructor XXX
   //DUnicodeString string(dbuffer.data(), size);
@@ -332,7 +342,7 @@ DBuffer         DeserializeBinary::dDBuffer(void)
 DInt8           DeserializeBinary::dDInt8(void)
 {
   DObject* stream = this->__stream;
-  DBuffer buffer = stream->call("read", RealValue<DInt64>(sizeof(DInt8))).get<DBuffer>();
+  DBuffer buffer = stream->call("read", RealValue<DInt64>(sizeof(DInt8)));
 
   return (*((DInt8*)buffer.data()));
 }
@@ -340,7 +350,7 @@ DInt8           DeserializeBinary::dDInt8(void)
 DInt16          DeserializeBinary::dDInt16(void)
 {
   DObject* stream = this->__stream;
-  DBuffer buffer = stream->call("read", RealValue<DInt64>(sizeof(DInt16))).get<DBuffer>();
+  DBuffer buffer = stream->call("read", RealValue<DInt64>(sizeof(DInt16)));
 
   return (*((DInt16*)buffer.data()));
 }
@@ -348,7 +358,7 @@ DInt16          DeserializeBinary::dDInt16(void)
 DInt32          DeserializeBinary::dDInt32(void)
 {
   DObject* stream = this->__stream;
-  DBuffer buffer = stream->call("read", RealValue<DInt64>(sizeof(DInt32))).get<DBuffer>();
+  DBuffer buffer = stream->call("read", RealValue<DInt64>(sizeof(DInt32)));
 
   return (*((DInt32*)buffer.data()));
 }
@@ -356,7 +366,7 @@ DInt32          DeserializeBinary::dDInt32(void)
 DInt64          DeserializeBinary::dDInt64(void)
 {
   DObject* stream = this->__stream;
-  DBuffer buffer = stream->call("read", RealValue<DInt64>(sizeof(DInt64))).get<DBuffer>();
+  DBuffer buffer = stream->call("read", RealValue<DInt64>(sizeof(DInt64)));
 
   return (*((DInt64*)buffer.data()));
 }
@@ -364,7 +374,7 @@ DInt64          DeserializeBinary::dDInt64(void)
 DUInt8          DeserializeBinary::dDUInt8(void)
 {
   DObject* stream = this->__stream;
-  DBuffer buffer = stream->call("read", RealValue<DInt64>(sizeof(DUInt8))).get<DBuffer>();
+  DBuffer buffer = stream->call("read", RealValue<DInt64>(sizeof(DUInt8)));
 
   return (*((DUInt8*)buffer.data()));
 }
@@ -372,7 +382,7 @@ DUInt8          DeserializeBinary::dDUInt8(void)
 DUInt16         DeserializeBinary::dDUInt16(void)
 {
   DObject* stream = this->__stream;
-  DBuffer buffer = stream->call("read", RealValue<DInt64>(sizeof(DUInt16))).get<DBuffer>();
+  DBuffer buffer = stream->call("read", RealValue<DInt64>(sizeof(DUInt16)));
 
   return (*((DUInt16*)buffer.data()));
 }
@@ -380,7 +390,7 @@ DUInt16         DeserializeBinary::dDUInt16(void)
 DUInt32         DeserializeBinary::dDUInt32(void)
 {
   DObject* stream = this->__stream;
-  DBuffer buffer = stream->call("read", RealValue<DInt64>(sizeof(DUInt32))).get<DBuffer>();
+  DBuffer buffer = stream->call("read", RealValue<DInt64>(sizeof(DUInt32)));
 
   return (*((DUInt32*)buffer.data()));
 }
@@ -388,7 +398,7 @@ DUInt32         DeserializeBinary::dDUInt32(void)
 DUInt64         DeserializeBinary::dDUInt64(void)
 {
   DObject* stream = this->__stream;
-  DBuffer buffer = stream->call("read", RealValue<DInt64>(sizeof(DUInt64))).get<DBuffer>();
+  DBuffer buffer = stream->call("read", RealValue<DInt64>(sizeof(DUInt64)));
   
   return (*((DUInt64*)buffer.data()));
 }

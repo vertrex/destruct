@@ -157,7 +157,6 @@ int     main(int argc, char** argv)
     {
       db.load(RealValue<DUnicodeString>("db.sav"));
       db.show(db.session());
-
     }
     else if (argc > 1 && std::string(argv[1]) == std::string("-s"))
     {
