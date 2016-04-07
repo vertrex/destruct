@@ -155,22 +155,30 @@ class WorkerPool : public DCppObject<WorkerPool>
 public:
   static void Declare(void)
   {
-    
+    DStructs& dstructs = Destruct::DStructs::instance();
+
+    DStruct* queue = makeNewDCpp<Queue>("Queue");
+    dstructs.registerDStruct(queue);
+
     DStruct* workerPool = makeNewDCpp<WorkerPool>("WorkerPool");
-    Destruct::DStructs::instance().registerDStruct(workerPool);
+    dstructs.registerDStruct(workerPool);
     DStruct* task = makeNewDCpp<Task<DUInt64, DType::DUInt64Type, DUInt64, DType::DUInt64Type> >("Task"); //XXX mus derivate to other possible type 
-    Destruct::DStructs::instance().registerDStruct(task);
+    dstructs.registerDStruct(task);
   
     DStruct* taskObject = makeNewDCpp<Task<DObject*, DType::DObjectType, DUInt64, DType::DUInt64Type > >("TaskObject");//mutable etc... ?
-    Destruct::DStructs::instance().registerDStruct(taskObject);
+    dstructs.registerDStruct(taskObject);
+
+    DStruct* threadSafeObject = new DStruct(NULL, "ThreadSafeObject", ThreadSafeObject::newObject);
+    dstructs.registerDStruct(threadSafeObject);
   }
 
   EXPORT WorkerPool(DStruct* dstruct, DValue const& args);
-  ~WorkerPool();
 
   bool                          addTask(DValue const& task);
   DValue                        join(void);
   DValue                        map(DValue const& task);
+protected:
+  ~WorkerPool();
 private:
   DUInt8                        __threadNumber;
   ThreadStruct*                 __threads;
@@ -218,7 +226,6 @@ public:
     return (memberBegin() + ownAttributeCount());
   }
 };
-
 
 
 #endif

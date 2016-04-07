@@ -28,7 +28,6 @@ ThreadSafeObject::ThreadSafeObject(ThreadSafeObject const& copy) : DObject(copy)
 
 ThreadSafeObject::~ThreadSafeObject()
 {
-  //std::cout << "ThreadSafeObject destroyed " << std::endl;
   mutex_lock(&this->__mutex);
   this->__dobject->destroy();
   mutex_unlock(&this->__mutex);
@@ -105,7 +104,7 @@ DValue           ThreadSafeObject::call(DUnicodeString const& name)
   DFunctionObject* funcObj = func.get<DFunctionObject*>();
 
   mutex_unlock(&this->__mutex);
-  DValue result = funcObj->call(); //because of "Dequeue" call who lock himself ...
+  DValue result = funcObj->call(); //because of "Dequeue" call who lock himself ... XXX must be lock but...
 
   //if (name != "dequeue")
   //pthread_mutex_unlock(&this->__mutex);

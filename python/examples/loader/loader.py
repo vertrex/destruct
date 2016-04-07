@@ -123,10 +123,10 @@ if __name__ == "__main__":
   print "found baseDir" + baseDir
 
   pathname = ["destruct_test",
-	      "dthreading",
+	      "destruct_threading",
 	      "destruct_inherit",
               "destruct_rpc",
-              "registry",
+              "destruct_registry",
 	     ]
 
   testLoading(pathname) 

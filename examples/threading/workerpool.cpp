@@ -25,9 +25,9 @@ ThreadResult Worker(ThreadData dobject)
   while (1)
   {
     DValue object = workQueue->call("dequeue");
-    DObject* task = object.get<DObject*>();
+    DObject* task = object;
 
-    DFunctionObject* function = task->getValue("function").get<DFunctionObject*>();
+    DFunctionObject* function = task->getValue("function");
     DValue args = task->getValue("argument");
 
     DValue result = function->call(args);
@@ -46,9 +46,9 @@ WorkerPool::WorkerPool(DStruct* dstruct, DValue const& args) : DCppObject<Worker
   this->init();
 
   this->__threadNumber = args.get<DUInt8>();
-  this->__taskQueue = makeNewDCpp<Queue>("Queue")->newObject();
+  DObject* queue = DStructs::instance().find("Queue")->newObject();
 
-  this->__taskQueue = (new DStruct(NULL, "ThreadSafeObject", ThreadSafeObject::newObject))->newObject(RealValue<DObject*>(this->__taskQueue)); 
+  this->__taskQueue = DStructs::instance().find("ThreadSafeObject")->newObject(RealValue<DObject*>(queue)); 
 
   this->__threads = new ThreadStruct[this->__threadNumber];
 
@@ -67,6 +67,7 @@ WorkerPool::~WorkerPool()
     destroyThread(this->__threads[i]);
   }
   delete this->__threads;
+  this->__taskQueue->destroy();
 }
 
 DValue WorkerPool::join(void)
@@ -84,15 +85,15 @@ bool    WorkerPool::addTask(DValue const& args)
 
 DValue  WorkerPool::map(DValue const& arg)
 {
-  DObject* args = arg.get<DObject*>();
+  DObject* args = arg;
   DValue function = args->getValue("function");
-  DObject* vector = args->getValue("argument").get<DObject*>();
-  DObject* iterator = vector->call("iterator").get<DObject*>();
+  DObject* vector = args->getValue("argument");
+  DObject* iterator = vector->call("iterator");
 
   for (; !iterator->call("isDone").get<DInt8>(); iterator->call("nextItem"))
   {
     //DObject* task = args->clone();
-    DObject* task = makeNewDCpp< Task<DUInt64, DType::DUInt64Type, DUInt64, DType::DUInt64Type > >("Task")->newObject();
+    DObject* task = DStructs::instance().find("Task")->newObject();
     task->setValue("function", function);
     task->setValue("argument", iterator->call("currentItem"));
     this->addTask(RealValue<DObject*>(task));

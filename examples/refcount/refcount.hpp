@@ -96,7 +96,6 @@ public:
 protected:
   ~DCppRefCount()
   {
-    std::cout << "~DCppRefCount" << std::endl;
   }
 };
 
