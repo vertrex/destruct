@@ -13,7 +13,6 @@ public:
   EXPORT		    RegistryClient(std::string const& addr, uint32_t port);
   EXPORT virtual DObject*   start(void);
   EXPORT void		    printKey(DObject* key);
-  EXPORT void		    printValue(DObject* key);
 private: 
   DObject*		    __networkStream; //XXX ?? already in client
 };

@@ -77,12 +77,12 @@ if __name__ == "__main__":
    key = regf.key
    showKeys(key)
    print 'end'
-   #subkeys =regf.key.subkeys.list
-   #for key in subkeys:
-        #print key.keyName.keyName
-        
-   #values = findKey(regf.key, "MountedDevices")
-   #if values:
-     #for value in values:
-        #print value.name.keyName
+   ##subkeys =regf.key.subkeys.list
+   ##for key in subkeys:
+        ##print key.keyName.keyName
+       # 
+   ##values = findKey(regf.key, "MountedDevices")
+   ##if values:
+     ##for value in values:
+        ##print value.name.keyName
 

@@ -46,13 +46,12 @@ DValue ClientObject::getValue(DUnicodeString const& name) const
  
   if (dtype.getType() == DType::DMethodType)
   {
-    DUInt64 id = ((DObject*)this->__deserializer)->call("DUInt64").get<DUInt64>();
-
+    DUInt64 id = ((DObject*)this->__deserializer)->call("DUInt64");
 
     //Not directly returned as dvalue and DRef by a DFunction* () function so must deref ourself or memory will leak
     DFunctionObject* clientFunctionObject = new ClientFunctionObject(((DObject*)this->__networkStream), ((DObject*)this->__serializer), ((DObject*)this->__deserializer), id, dtype.getArgumentType(), dtype.getReturnType()); 
     DValue functionObject = RealValue<DFunctionObject*>(clientFunctionObject);
-    clientFunctionObject->destroy();
+    //clientFunctionObject->destroy(); //python get a 0 ref object
     return (functionObject);
   } 
 

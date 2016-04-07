@@ -29,19 +29,18 @@ SerializeRPC::~SerializeRPC()
 
 void    SerializeRPC::sDObject(DValue const& args)
 {
-  DObject* dobject = args.get<DObject*>();
+  DObject* dobject = args;
 
   RealValue<DUInt64> id = this->__objectManager->call("registerObject", args);  
  
   this->sDUnicodeString(RealValue<DUnicodeString>(dobject->instanceOf()->name()));
   this->sDUInt64(id);
-  dobject->destroy();
 }
 
 
 void    SerializeRPC::sDStruct(DValue const& args)
 {
-  DStruct* dstruct = args.get<DStruct*>();
+  DStruct* dstruct = args;
 //  if (dstruct == NULL)
 //     throw DException
 
@@ -79,7 +78,7 @@ void    SerializeRPC::sDUnicodeString(DValue const& args)
 {
   DObject* stream = this->__stream;
 
-  DUnicodeString str = args.get<DUnicodeString>();
+  DUnicodeString str = args;
   RealValue<DInt64>  dsize((int64_t)str.size());
 
   stream->call("write", RealValue<DBuffer>(dsize.asDBuffer()));
@@ -90,7 +89,7 @@ void    SerializeRPC::sDUnicodeString(DValue const& args)
 void    SerializeRPC::sDBuffer(DValue const& args)
 {
   DObject* stream = this->__stream;
-  DBuffer buffer = args.get<DBuffer>();
+  DBuffer buffer = args;
   RealValue<DInt64>  dsize((DInt64)buffer.size());
 
   stream->call("write", RealValue<DBuffer>(dsize.asDBuffer()));
@@ -179,7 +178,7 @@ DObject*        DeserializeRPC::dDObject(DValue const& value)
   DObject* serializer = DStructs::instance().find("SerializeRPC")->newObject(RealValue<DObject*>(this->__stream)); //XXX new object each time  -> slow 
   DObject* clientObject = new ClientObject(RealValue<DObject*>(this->__stream), RealValue<DObject*>(serializer), RealValue<DObject*>(this), id, dstruct);
   serializer->destroy(); 
- 
+
   return (clientObject);
 }
 
@@ -187,14 +186,14 @@ DStruct*        DeserializeRPC::dDStruct(void)
 {
   DStruct* dstruct = NULL; 
 
-  DUnicodeString structName = this->call("DUnicodeString").get<DUnicodeString>();
-  DUInt32 attributeCount = this->call("DUInt32").get<DUInt32>(); //32 ?
+  DUnicodeString structName = this->call("DUnicodeString");
+  DUInt32 attributeCount = this->call("DUInt32"); //32 ?
 
   if ((dstruct = new DStruct(0, structName, DSimpleObject::newObject)) == NULL)//inheritance ? 
     return (NULL);
   for (size_t i = 0; i < attributeCount; i++) 
   {
-     DUnicodeString name = this->call("DUnicodeString").get<DUnicodeString>();
+     DUnicodeString name = this->call("DUnicodeString");
      
      DType::Type_t type = (DType::Type_t)this->call("DUInt8").get<DUInt8>(); //XXX type serialization ?
      if (type == DType::DMethodType)
@@ -226,11 +225,11 @@ DUnicodeString  DeserializeRPC::dDUnicodeString(void)
 {
   DObject* stream = this->__stream;
 
-  DInt64  size = this->call("DInt64").get<DInt64>();
+  DInt64  size = this->call("DInt64");
   if (size == 0)
     return ("");
 
-  DBuffer buffer = stream->call("read", RealValue<DInt64>(size)).get<DBuffer>();
+  DBuffer buffer = stream->call("read", RealValue<DInt64>(size));
   return (std::string((const char*)buffer.data(), buffer.size()));
 }
 
@@ -238,14 +237,14 @@ DBuffer         DeserializeRPC::dDBuffer(void)
 {
   DObject* stream = this->__stream;
 
-  DInt64  size = this->call("DInt64").get<DInt64>();
+  DInt64  size = this->call("DInt64");
   return (stream->call("read", RealValue<DInt64>(size)).get<DBuffer>());
 }
 
 DInt8           DeserializeRPC::dDInt8(void)
 {
   DObject* stream = this->__stream;
-  DBuffer buffer = stream->call("read", RealValue<DInt64>(sizeof(DInt8))).get<DBuffer>();
+  DBuffer buffer = stream->call("read", RealValue<DInt64>(sizeof(DInt8)));
 
   return (*((DInt8*)buffer.data()));
 }
@@ -253,7 +252,7 @@ DInt8           DeserializeRPC::dDInt8(void)
 DInt16          DeserializeRPC::dDInt16(void)
 {
   DObject* stream = this->__stream;
-  DBuffer buffer = stream->call("read", RealValue<DInt64>(sizeof(DInt16))).get<DBuffer>();
+  DBuffer buffer = stream->call("read", RealValue<DInt64>(sizeof(DInt16)));
 
   return (*((DInt16*)buffer.data()));
 }
@@ -261,7 +260,7 @@ DInt16          DeserializeRPC::dDInt16(void)
 DInt32          DeserializeRPC::dDInt32(void)
 {
   DObject* stream = this->__stream;
-  DBuffer buffer = stream->call("read", RealValue<DInt64>(sizeof(DInt32))).get<DBuffer>();
+  DBuffer buffer = stream->call("read", RealValue<DInt64>(sizeof(DInt32)));
 
   return (*((DInt32*)buffer.data()));
 }
@@ -269,7 +268,7 @@ DInt32          DeserializeRPC::dDInt32(void)
 DInt64          DeserializeRPC::dDInt64(void)
 {
   DObject* stream = this->__stream;
-  DBuffer buffer = stream->call("read", RealValue<DInt64>(sizeof(DInt64))).get<DBuffer>();
+  DBuffer buffer = stream->call("read", RealValue<DInt64>(sizeof(DInt64)));
 
   return (*((DInt64*)buffer.data()));
 }
@@ -277,7 +276,7 @@ DInt64          DeserializeRPC::dDInt64(void)
 DUInt8          DeserializeRPC::dDUInt8(void)
 {
   DObject* stream = this->__stream;
-  DBuffer buffer = stream->call("read", RealValue<DInt64>(sizeof(DUInt8))).get<DBuffer>();
+  DBuffer buffer = stream->call("read", RealValue<DInt64>(sizeof(DUInt8)));
 
   return (*((DUInt8*)buffer.data()));
 }
@@ -285,7 +284,7 @@ DUInt8          DeserializeRPC::dDUInt8(void)
 DUInt16         DeserializeRPC::dDUInt16(void)
 {
   DObject* stream = this->__stream;
-  DBuffer buffer = stream->call("read", RealValue<DInt64>(sizeof(DUInt16))).get<DBuffer>();
+  DBuffer buffer = stream->call("read", RealValue<DInt64>(sizeof(DUInt16)));
 
   return (*((DUInt16*)buffer.data()));
 }
@@ -293,7 +292,7 @@ DUInt16         DeserializeRPC::dDUInt16(void)
 DUInt32         DeserializeRPC::dDUInt32(void)
 {
   DObject* stream = this->__stream;
-  DBuffer buffer = stream->call("read", RealValue<DInt64>(sizeof(DUInt32))).get<DBuffer>();
+  DBuffer buffer = stream->call("read", RealValue<DInt64>(sizeof(DUInt32)));
 
   return (*((DUInt32*)buffer.data()));
 }
@@ -301,7 +300,7 @@ DUInt32         DeserializeRPC::dDUInt32(void)
 DUInt64         DeserializeRPC::dDUInt64(void)
 {
   DObject* stream = this->__stream;
-  DBuffer buffer = stream->call("read", RealValue<DInt64>(sizeof(DUInt64))).get<DBuffer>();
+  DBuffer buffer = stream->call("read", RealValue<DInt64>(sizeof(DUInt64)));
 
   return (*((DUInt64*)buffer.data()));
 }

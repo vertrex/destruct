@@ -14,8 +14,6 @@ public:
 
   DValue call(void)const;
   DValue call(DValue const& args) const;
-private:
-  DFunctionObject*      __functionObject; //used ?
 };
 
 

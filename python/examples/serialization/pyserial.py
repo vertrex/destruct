@@ -98,7 +98,7 @@ complex3.number = 3
 complex3.object = vectorString
 
 complexStruct = testDStructSerialization(ComplexObject(), "complex") #deserialize & register 
-print dir(complexStruct.newObject())
+#print dir(complexStruct.newObject())
 
 complex = testObjectSerialization(complex1, "complex")
 print complex.name, complex.number, complex.object
@@ -126,4 +126,4 @@ for x in range(0, 20):
 
 r = testObjectSerialization(stringMap, "dictionary")
 print r
-print dir(r)
+#print dir(r)

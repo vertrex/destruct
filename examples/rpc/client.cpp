@@ -70,9 +70,9 @@ Client::Client(DUnicodeString const& addr, uint32_t port) : DCppObject<Client>(N
 Client::Client(DStruct* dstruct, DValue const& value) : DCppObject<Client>(dstruct, value), __networkStream(NULL), __serialize(NULL), __deserialize(NULL)
 {
   this->init();
-  DObject* args = value.get<DObject*>();
+  DObject* args = value;
 
-  DUnicodeString addr = args->getValue("address").get<DUnicodeString>();
+  DUnicodeString addr = args->getValue("address");
   uint32_t port = args->getValue("port").get<DUInt32>();
   this->__connect(addr, port);
   this->__networkStream = DStructs::instance().find("NetworkStream")->newObject(RealValue<DInt32>(this->__connectionSocket));
@@ -82,6 +82,7 @@ Client::Client(DStruct* dstruct, DValue const& value) : DCppObject<Client>(dstru
 
 Client::~Client()
 {
+  std::cout << "~Client" << std::endl;
   this->__networkStream->destroy();
   this->__serialize->destroy();
   this->__deserialize->destroy();
@@ -170,7 +171,7 @@ Destruct::DStruct* Client::remoteFind(const DUnicodeString name)
   this->__serialize->call("DUnicodeString", RealValue<DUnicodeString>(name));
   this->__networkStream->call("flush");
  
-  DStruct* dstruct = this->__deserialize->call("DStruct").get<DStruct*>();
+  DStruct* dstruct = this->__deserialize->call("DStruct");
   if (dstruct)
   {
     Destruct::DStructs& destruct = Destruct::DStructs::instance();

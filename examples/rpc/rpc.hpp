@@ -23,7 +23,7 @@ public:
   TestServer(uint32_t port);
 
   static void  declare(void);
-  void         initRoot(void);
+  DObject*     initRoot(void);
 };
 
 class RPC

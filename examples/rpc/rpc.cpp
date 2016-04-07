@@ -18,9 +18,10 @@ RPC::~RPC()
 
 void RPC::serve(uint32_t port)
 {
-  std::cout << "create TesterServer" << std::endl;
+  std::cout << "Create TesterServer" << std::endl;
   TestServer  server(port);
-  server.initRoot(); 
+  DObject* root = server.initRoot(); 
+  server.setRoot(root);
   std::cout << "Daemonize server " << std::endl;
 //  server.daemonize();
   server.serve();
@@ -67,9 +68,9 @@ DObject* TestClient::start(void)
   this->networkStream()->call("flush");
   std::cout << "Root  path : " << remote->call("path").get<DUnicodeString>() << std::endl;
 
-  DObject* remoteChild = remote->getValue("children").get<DObject*>();
+  DObject* remoteChild = remote->getValue("children");
   std::cout << "Iterating on child " << remoteChild->instanceOf()->name() << std::endl;
-  DUInt64 size = remoteChild->call("size").get<DUInt64>();
+  DUInt64 size = remoteChild->call("size");
 
   std::cout << "get children size " << size << std::endl; 
   //for (DUInt64 i = 0; i < size; ++i)
@@ -77,7 +78,7 @@ DObject* TestClient::start(void)
     DUInt64 i = 0;
     for (DUInt64 x = 0; x < 10; ++x) 
     {
-      Destruct::DObject* child = remoteChild->call("get", RealValue<DUInt64>(i)).get<DObject*>();
+      Destruct::DObject* child = remoteChild->call("get", RealValue<DUInt64>(i));
       std::cout <<  "child(" << i << ") : " 
               << "'" << child->getValue("name").get<DUnicodeString>() << "'"
               << " is of type : " <<  child->instanceOf()->name() 
@@ -117,17 +118,15 @@ void            TestServer::declare(void)
   dstruct.registerDStruct(directoryStruct);
 }
 
-void            TestServer::initRoot(void)
+DObject*        TestServer::initRoot(void)
 {
   Destruct::DStructs& dstruct = Destruct::DStructs::instance();
   DStruct* fileStruct = dstruct.find("File");
   DStruct* directoryStruct = dstruct.find("Directory");
 
   DObject* root = directoryStruct->newObject();
-  this->objectManager()->call("registerObject", RealValue<DObject*>(root));
 
-  DObject* children = root->getValue("children").get<DObject*>();
-  root->destroy();
+  DObject* children = root->getValue("children");
  
   DObject* file1 = fileStruct->newObject();
 
@@ -142,9 +141,8 @@ void            TestServer::initRoot(void)
 
   DObject* directory1 = directoryStruct->newObject();
   children->call("push", RealValue<DObject*>(directory1));
-  DObject* d1children = directory1->getValue("children").get<DObject*>();
+  DObject* d1children = directory1->getValue("children");
   directory1->destroy();
-  children->destroy();
 /*  
   Directory* directory1 = new Directory(directoryStruct, RealValue<DObject*>(DNone));
   directory1->name = "Directory1";
@@ -152,11 +150,11 @@ void            TestServer::initRoot(void)
   */
 
   File* file3 = new File(fileStruct, RealValue<DObject*>(DNone));  
-  this->objectManager()->call("registerObject", RealValue<DObject*>(file3));
   file3->name = "File3"; 
   d1children->call("push", RealValue<DObject*>(file3));
   d1children->destroy();
   file3->destroy();
+  return (root);
 }
 
 

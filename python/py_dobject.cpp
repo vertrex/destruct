@@ -41,7 +41,8 @@ Destruct::DValue PyDObject::toDValue(PyObject* value)
 
 PyObject*     PyDObject::asDValue(Destruct::DValue const& v)
 {
-  Destruct::DObject*     value = v.get<Destruct::DObject*>();
+  Destruct::DObject*     value = v;
+  value->addRef(); 
 
   if (value == NULL || value == Destruct::DNone)
     Py_RETURN_NONE;
@@ -49,7 +50,6 @@ PyObject*     PyDObject::asDValue(Destruct::DValue const& v)
   PyTypeObject* pyType = PyDObject::pyType(); 
   Py_INCREF(pyType);
   PyDObject::DPyObject*  dobjectObject = (PyDObject::DPyObject*)_PyObject_New(pyType);
-  value->addRef(); 
   dobjectObject->pimpl = value;
 
   return ((PyObject*)dobjectObject);
@@ -57,7 +57,8 @@ PyObject*     PyDObject::asDValue(Destruct::DValue const& v)
 
 PyObject*     PyDObject::asPyObject(PyObject* self, int32_t attributeIndex)
 {
-  Destruct::DObject*     value = ((PyDObject::DPyObject*)self)->pimpl->getValue(attributeIndex).get<Destruct::DObject*>();
+  Destruct::DObject*     value = ((PyDObject::DPyObject*)self)->pimpl->getValue(attributeIndex);
+  value->addRef();
 
   if (value == NULL || value == Destruct::DNone)
     Py_RETURN_NONE;
@@ -66,8 +67,7 @@ PyObject*     PyDObject::asPyObject(PyObject* self, int32_t attributeIndex)
   Py_INCREF(pyType);
   PyDObject::DPyObject*  dobjectObject = (PyDObject::DPyObject*)_PyObject_New(pyType);
   //incref ? // decref here 
-  value->addRef(); 
-  dobjectObject->pimpl = value; //don't addref because .get<> already add a Ref
+  dobjectObject->pimpl = value;
   //Py_DECREF(dobjectObject) //XXX ;???? destroy refcount
 
   return ((PyObject*)dobjectObject);
@@ -765,7 +765,7 @@ int  PyDObject::_setmap(DPyObject* self, PyObject* _key, PyObject* _value)
       argument->setValueAttribute(valueType, "value", value);
 
       self->pimpl->call("setItem", Destruct::RealValue<Destruct::DObject*>(argument));
-      argument->destroy(); //seem to be not enough other must havbe forget to call destroy 
+      //argument->destroy(); //seem to be not enough other must havbe forget to call destroy 
 /*
 pour les map set key& value(
       Destruct::DObject* item = self->pimpl->call("newItem").get<Destruct::DObject*>();

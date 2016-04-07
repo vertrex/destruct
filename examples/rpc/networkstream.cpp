@@ -34,7 +34,7 @@ NetworkStream::~NetworkStream()
 
 DBuffer NetworkStream::read(DValue const& args)
 {
-  DInt64 size = args.get<DInt64>(); //DUInt32 ? 
+  DInt64 size = args; //DUInt32 ? 
   if (!this->__readStream.toRead()) 
   {
     char tmp[4096];
@@ -68,7 +68,7 @@ DBuffer NetworkStream::read(DValue const& args)
 
 DInt64  NetworkStream::write(DValue const& args)
 {
-  DBuffer buffer = args.get<DBuffer>();
+  DBuffer buffer = args;
 
   this->__writeStream.write((const char*)buffer.data(), (uint32_t)buffer.size());
 

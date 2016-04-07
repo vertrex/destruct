@@ -29,6 +29,7 @@ RegistryValues::RegistryValues(DStruct* dstruct, DValue const& args) : DCppObjec
   this->init();
   this->valueCount = args;
   this->list = Destruct::DStructs::instance().generate("DVectorObject");
+  ((DObject*)this->list)->destroy();
   this->minor = 5;
 }
 
@@ -58,8 +59,8 @@ DObject* RegistryValues::deserializeRaw(DValue const& arg)
     stream->call("seek", RealValue<DUInt64>((DUInt64)currentOffset));
   }
 
-  stream->destroy();
-  deserializer->destroy();
+  //stream->destroy();
+  //deserializer->destroy();
 
   return (this);
 }

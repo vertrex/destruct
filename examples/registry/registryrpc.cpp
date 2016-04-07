@@ -28,15 +28,15 @@ void RegistryRPC::local(const std::string filePath)
   DObject* registry = destruct.generate("Registry");
 
   std::cout << "opening file " << filePath << std::endl;
-  DObject* regf = registry->call("open", RealValue<DUnicodeString>(filePath)).get<DObject*>();
+  DObject* regf = registry->call("open", RealValue<DUnicodeString>(filePath));
   std::cout << "Regf deserialized " << std::endl;
 
-  //std::string fileName(filePath, filePath.rfind("/") + 1);
-  //RegistryRPC::toFile(fileName + ".bin", regf, "Binary");
-  //RegistryRPC::toFile(fileName + ".raw", regf, "Raw");
-  //RegistryRPC::toFile(fileName + "registry.text", regf, "Text");
+  std::string fileName(filePath, filePath.rfind("/") + 1);
+  RegistryRPC::toFile(fileName + ".bin", regf, "Binary");
+  RegistryRPC::toFile(fileName + ".raw", regf, "Raw");
+  RegistryRPC::toFile(fileName + "registry.text", regf, "Text");
   //RegistryRPC::show(regf);
-  regf->destroy(); 
+  regf->destroy();
   registry->destroy();
 }
 
@@ -56,28 +56,12 @@ void RegistryRPC::connect(std::string const& filePath, std::string const& addr, 
   RegistryClient client(addr, port);
   DObject* registry = client.start();
 
-  DValue regfv = registry->call("open", RealValue<DUnicodeString>(filePath));
-  DObject* regf = regfv.get<DObject*>();
+  DObject* regf = registry->call("open", RealValue<DUnicodeString>(filePath));
  
   //std::string fileName(filePath, filePath.rfind("/") + 1);
-  //Registry::toFile(fileName + "registry-rpc.text", regf, "Text");
-  DObject* rootKey = regf->getValue("key").get<DObject*>();
-
+  //RegistryRPC::toFile(fileName + "registry-rpc.text", regf, "Text");
+  DObject* rootKey = regf->getValue("key");
   client.printKey(rootKey);
-
-  return ;
-/*
-  DObject* subKeys = rootKey->getValue("subkeys").get<DObject*>();
-  DObject* subKeysList = subKeys->getValue("list").get<DObject*>();
-
-  DObject* iterator = subKeysList->call("iterator").get<DObject*>(); 
-  
-  for(; iterator->call("isDone").get<DInt8>() != 1; iterator->call("nextItem"))
-  {
-    DObject* subKey = iterator->call("currentItem").get<DObject*>();
-    std::cout << "subKey " << subKey->instanceOf()->name() << std::endl;
-  }
-*/
 }
 
 const std::string RegistryRPC::usage(void)

@@ -31,7 +31,7 @@ public:
 
   RealValue<DInt32>          size;// == (valueCount / 4) * -1
   RealValue<DUInt32>         valueCount, minor;
-  RealValue<DObject*>        parent, list;
+  RealValue<DObject*>        list;
 
   attributeCount(RegistryValues, 4)
   attributeList(attribute(DInt32, size)

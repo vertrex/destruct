@@ -19,19 +19,17 @@ SerializeRaw::SerializeRaw(SerializeRaw const& copy) : DCppObject<SerializeRaw>(
 
 SerializeRaw::~SerializeRaw()
 {
-  //((DObject*)__stream)->destroy();
 }
 
 void    SerializeRaw::sDObject(DValue const& args)
 {
-  DObject* dobject = args.get<DObject*>();
+  DObject* dobject = args;
   if (dobject == NULL)
     return ; 
   
   DStruct const* dstruct = dobject->instanceOf(); 
   if (dstruct == NULL)
   {
-    dobject->destroy();
     throw DException("SerializeRaw::sDObject(DValue) object instance is NULL");
   }
 
@@ -54,7 +52,6 @@ void    SerializeRaw::sDObject(DValue const& args)
       this->call(type.name(), value);
     }
   }
-  dobject->destroy();
 }
 
 void    SerializeRaw::sDStruct(DValue const& args)
@@ -157,14 +154,13 @@ DeserializeRaw::~DeserializeRaw()
 DObject*        DeserializeRaw::dDObject(DValue const& value)
 {
   int x = 0;
-  DObject* dobject = value.get<DObject*>();
+  DObject* dobject = value;
   DStruct const* dstruct = dobject->instanceOf(); 
 
   int32_t index = dobject->instanceOf()->findAttribute("deserializeRaw");
   if (index != -1)
   {
     DValue rval = dobject->call(index, RealValue<DObject*>(this));
-    //dobject->destroy();
     return (rval);
   }
 
@@ -184,9 +180,8 @@ DObject*        DeserializeRaw::dDObject(DValue const& value)
       dobject->setValue(x, value); 
     }    
   }
-  //dobject->destroy();
 
-  return (dobject);//XXX get it and destroy it or return DValue !
+  return (dobject);
 }
 
 DStruct*        DeserializeRaw::dDStruct(void)

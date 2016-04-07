@@ -79,8 +79,8 @@ DObject*        Registry::open(DValue const& args)
 
   RealValue<DObject*> deserializer = this->__destruct.find("DeserializeRaw")->newObject(stream);
   ((DObject*)stream)->destroy();
-
-  ((DObject*)deserializer)->call("DObject", regf); //deserializer must destroy object ?
+  ((DObject*)deserializer)->call("DObject", regf);
+        
 
   return (regf);
 }

@@ -63,20 +63,21 @@ DObject*       ValueKey::deserializeRaw(DValue const& arg)
   {
     this->dataOffsets = DStructs::instance().generate("DVectorUInt32");
     ((DObject*)this->dataOffsets)->call("push", RealValue<DUInt32>(this->realDataOffset));
+    ((DObject*)this->dataOffsets)->destroy();
   }
   else
-  { 
+  {
     stream->call("seek", RealValue<DUInt64>(this->realDataOffset));
     DObject* bigData = DStructs::instance().generate("RegistryBigData");
     deserializer->call("DObject", RealValue<DObject*>(bigData));
     this->dataOffsets = bigData->getValue("offsets");
-    ((DObject*)this->dataOffsets)->addRef(); //check with lsan XXX
+    //((DObject*)this->dataOffsets)->addRef(); //check with lsan XXX
     bigData->destroy(); //or segfault  cause offsets is deleted
   }
   stream->call("seek", RealValue<DUInt64>(previousOffset)); //usefull ? c deja seek ds un parent a check XXX
 
-  deserializer->destroy(); //segfault
-  stream->destroy();
+  //deserializer->destroy(); //segfault
+  //stream->destroy();
   
   return (this);
 }
@@ -127,8 +128,8 @@ DObject*       RegistryBigData::deserializeRaw(DValue const& args)
   
   this->offsets = offsetsList;
 
-  stream->destroy();
-  serializer->destroy();
+  //stream->destroy();
+  //serializer->destroy();
   return (this);
 }
 

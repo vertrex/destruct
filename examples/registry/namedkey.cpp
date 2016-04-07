@@ -70,6 +70,7 @@ DObject*        NamedKey::deserializeRaw(DValue const& args)
   DObject* subkeysObject = Destruct::DStructs::instance().find("Subkeys")->newObject();
   subkeysObject->setValue("minor", this->minor);
   this->subkeys = subkeysObject;
+  subkeysObject->destroy();
   if (this->subkeyCount != 0 && this->subkeyListOffset != 0xffffffff)
   {
     stream->call("seek", RealValue<DUInt64>(this->subkeyListOffset + 0x1000)); 
@@ -83,9 +84,9 @@ DObject*        NamedKey::deserializeRaw(DValue const& args)
     stream->call("seek", RealValue<DUInt64>(this->valueListOffset + 0x1000)); 
     deserializer->call("DObject", values);
   }
-
-  deserializer->destroy();
-  stream->destroy();
+  ((DObject*)this->values)->destroy();
+  //deserializer->destroy();
+  //stream->destroy();
   return (this);
 }
 

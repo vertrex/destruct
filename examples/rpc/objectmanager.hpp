@@ -29,7 +29,7 @@ public:
 private:
   mapType        __objectsID;
 protected:
-  ~ObjectManager(); //singleton / virt
+  ~ObjectManager();
 public:
   static size_t ownAttributeCount()
   {

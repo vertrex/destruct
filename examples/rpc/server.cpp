@@ -39,7 +39,7 @@ Server::~Server()
   close(this->__connectionSocket);
   close(this->__listenSocket);
 #endif
-  this->__objectManager->call("clear");
+  this->__objectManager->call("clear"); //called in destroy 
   this->__objectManager->destroy();
 }
 
@@ -231,6 +231,6 @@ void    Server::showRoot(void)
   DObject* serializer = destruct.generate("SerializeText", RealValue<DObject*>(stream));
 
   serializer->call("DObject", this->__objectManager->call("object", RealValue<DUInt64>(0)));
-  serializer->destroy();
   stream->destroy();
+  serializer->destroy();
 }

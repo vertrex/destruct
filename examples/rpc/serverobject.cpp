@@ -26,20 +26,19 @@ ServerObject::~ServerObject()
 void    ServerObject::setValue(void)
 {
   DValue id = this->__deserializer->call("DUInt64");
-  DUnicodeString name = this->__deserializer->call("DUnicodeString").get<DUnicodeString>();
+  DUnicodeString name = this->__deserializer->call("DUnicodeString");
 
-  DObject* object = this->__objectManager->call("object", id).get<DObject*>();
+  DObject* object = this->__objectManager->call("object", id);
 
   DValue value = this->__deserializer->call(object->instanceOf()->attribute(name).type().name());
   object->setValue(name, value);
-  object->destroy();
 }
 
 void    ServerObject::getValue(void)
 {
   DValue id = this->__deserializer->call("DUInt64");
-  DUnicodeString name = this->__deserializer->call("DUnicodeString").get<DUnicodeString>();
-  DObject* object = this->__objectManager->call("object", id).get<DObject*>();
+  DUnicodeString name = this->__deserializer->call("DUnicodeString");
+  DObject* object = this->__objectManager->call("object", id);
   
   DValue value = object->getValue(name);
 
@@ -58,14 +57,13 @@ void    ServerObject::getValue(void)
   else
     this->__serializer->call(type.name(), value);
   this->__networkStream->call("flush");
-  object->destroy(); 
 }
 
 void    ServerObject::call(void)
 {
   DValue id = this->__deserializer->call("DUInt64");
-  DObject* object = this->__objectManager->call("object", id).get<DObject*>();
-  DUnicodeString name = this->__deserializer->call("DUnicodeString").get<DUnicodeString>();
+  DObject* object = this->__objectManager->call("object", id);
+  DUnicodeString name = this->__deserializer->call("DUnicodeString");
   DType type = object->instanceOf()->attribute(name).type();
 
   DValue args = this->__deserializer->call(type.argumentName());
@@ -73,21 +71,19 @@ void    ServerObject::call(void)
 
   this->__serializer->call(type.returnName(), value);
   this->__networkStream->call("flush");
-  object->destroy();
 }
 
 void    ServerObject::call0(void)
 {
   DValue id = this->__deserializer->call("DUInt64");
-  DObject* object = this->__objectManager->call("object", id).get<DObject*>();
-  DUnicodeString name = this->__deserializer->call("DUnicodeString").get<DUnicodeString>();
+  DObject* object = this->__objectManager->call("object", id);
+  DUnicodeString name = this->__deserializer->call("DUnicodeString");
 
   DValue value = object->call(name); 
   
   DType type = object->instanceOf()->attribute(name).type();
   this->__serializer->call(type.returnName(), value);
   this->__networkStream->call("flush");
-  object->destroy();
 }
 
 void    ServerObject::functionCall(void)
@@ -100,7 +96,6 @@ void    ServerObject::functionCall(void)
   this->__serializer->call(DType((DType::Type_t)(DUInt64)object->returnType).name(), value); 
 
   this->__networkStream->call("flush");
-  object->destroy();
 }
 
 void    ServerObject::functionCall0(void)
@@ -113,12 +108,11 @@ void    ServerObject::functionCall0(void)
   this->__serializer->call(DType((DType::Type_t)(DUInt64)object->returnType).name(), value); 
 
   this->__networkStream->call("flush");
-  object->destroy();
 }
 
 void    ServerObject::findDStruct(void)
 {
-  DUnicodeString name = this->__deserializer->call("DUnicodeString").get<DUnicodeString>(); 
+  DUnicodeString name = this->__deserializer->call("DUnicodeString"); 
   std::cout << "Send DStruct " << name << std::endl;
   Destruct::DStructs& destruct = Destruct::DStructs::instance();
   DStruct* dstruct = destruct.find(name);

@@ -39,17 +39,21 @@ PyObject*     PyDMethodObject::asDValue(Destruct::DValue const& v)
 PyObject*     PyDMethodObject::asPyObject(PyObject* _self, int32_t attributeIndex)
 {
   PyDObject::DPyObject* self = (PyDObject::DPyObject*)_self;
-  Destruct::DFunctionObject* value = self->pimpl->getValue(attributeIndex).get<Destruct::DFunctionObject*>();
- 
+  Destruct::DFunctionObject* value = self->pimpl->getValue(attributeIndex);
+
   if (value == NULL)
     Py_RETURN_NONE;
+
+  value->addRef();
 // get ici type et sauvegarde le pointeur suffit au lieu de index + dobject (dobject qui est deja le this de l objet non ? en + ) 
 //mais le gain de temps est negligeable apparement !
   PyDMethodObject::DPyObject* dmethodobject = (PyDMethodObject::DPyObject*)_PyObject_New(PyDMethodObject::pyType()); 
   dmethodobject->pimpl = value;
   dmethodobject->index = attributeIndex;
   dmethodobject->dobject = self->pimpl;
- 
+  dmethodobject->dobject->addRef();
+
+  //Py_INCREF(self); //?
   Py_INCREF(dmethodobject);
 
   return ((PyObject*)dmethodobject);
@@ -156,7 +160,7 @@ PyMethodDef PyDMethodObject::pyMethods[] =
 int PyDMethodObject::_init(PyDMethodObject::DPyObject* self, PyObject *args, PyObject *kwds)
 {
   self->pimpl = NULL;
-  printf("init object\n");
+  self->dobject = NULL;
  
   return (0);
 }
@@ -167,6 +171,11 @@ void PyDMethodObject::_dealloc(PyDMethodObject::DPyObject* self)
   {
     self->pimpl->destroy();
     self->pimpl = NULL;
+  }
+  if (self->dobject)
+  {
+    self->dobject->destroy();
+    self->dobject = NULL;
   }
   self->ob_type->tp_free((PyObject*)self);
 }
@@ -201,9 +210,9 @@ PyObject* PyDMethodObject::getType(PyDMethodObject::DPyObject* self, PyObject* a
   return (PyInt_FromSize_t(Destruct::DType::DMethodType)); 
 }
 
-/*   
- *  DPythonMethodObject : public DFunctionObject called by c++ code 
- */ 
+/**  
+ *   DPythonMethodObject : public DFunctionObject called by c++ code 
+ **/ 
 Destruct::DValue DPythonMethodObject::call(void) const
 {
   PyGILState_STATE gstate = PyGILState_Ensure();

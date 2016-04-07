@@ -20,26 +20,27 @@ DObject* RegistryClient::start(void)
 
 void   RegistryClient::printKey(DObject* key) ///remove not usefull anymore ! 
 {
- DObject* name = key->getValue("keyName").get<DObject*>(); //XXX
+ DUnicodeString name = key->getValue("name"); //XXX
+ std::cout << "get name " << std::endl;
 
- DObject* values = key->getValue("values").get<DObject*>(); 
- DObject* valuesList = values->getValue("list").get<DObject*>();
- DUInt64  valuesListSize = valuesList->call("size").get<DUInt64>();
+ DObject* values = key->getValue("values"); 
+ DObject* valuesList = values->getValue("list");
+ DUInt64  valuesListSize = valuesList->call("size");
 
- DObject* subKeys = key->getValue("subkeys").get<DObject*>();
- DObject* subKeysList = subKeys->getValue("list").get<DObject*>();
- DUInt64  subKeysListSize = subKeysList->call("size").get<DUInt64>();
+ DObject* subKeys = key->getValue("subkeys");
+ DObject* subKeysList = subKeys->getValue("list");
+ DUInt64  subKeysListSize = subKeysList->call("size");
 
  std::cout << "Key : "  << std::endl
-           << "      name : " << name->getValue("keyName").get<DUnicodeString>() << std::endl; //not usefull anymore !
+           << "      name : " << name << std::endl; //not usefull anymore !
 
  if (valuesListSize)
  {
    std::cout << "      values ("  << valuesListSize <<  ") : " << std::endl;
    for (DUInt64 index = 0; index < valuesListSize; ++index)
    {
-     DObject* value = valuesList->call("get", RealValue<DUInt64>(index)).get<DObject*>();
-     printValue(value);
+     DObject* value = valuesList->call("get", RealValue<DUInt64>(index));
+     std::cout << "\t" << value->getValue("name").get<DUnicodeString>() << std::endl;
      value->destroy();
    }
  }
@@ -49,20 +50,13 @@ void   RegistryClient::printKey(DObject* key) ///remove not usefull anymore !
    std::cout << "      keys ("  << subKeysListSize << ") : " << std::endl;
    for (DUInt64 index = 0; index < subKeysListSize; ++index)
    {
-     DObject* subKey = subKeysList->call("get", RealValue<DUInt64>(index)).get<DObject*>();
+     DObject* subKey = subKeysList->call("get", RealValue<DUInt64>(index));
      this->printKey(subKey);
      subKey->destroy();
    }
- 
- name->destroy();}
+ }
  subKeys->destroy();
  subKeysList->destroy();
  values->destroy();
  valuesList->destroy();
-}
-
-void    RegistryClient::printValue(DObject* value)
-{
-  DObject* name = value->getValue("name").get<DObject*>();
-  std::cout << "\t" << name->getValue("keyName").get<DUnicodeString>() << std::endl;
 }

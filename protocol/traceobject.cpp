@@ -5,10 +5,11 @@
 namespace Destruct
 {
 
-TraceObject::TraceObject(DStruct* dstruct, DValue const& args) : DObject(args.get<DObject*>()->instanceOf(), args), __dobject(args.get<DObject*>())
+TraceObject::TraceObject(DStruct* dstruct, DValue const& args) : DObject(args.get<DObject*>()->instanceOf(), args), __dobject(args)
 {
   DUnicodeString const& name = __dobject->instanceOf()->name();
   std::cout << name <<  "::" << name << "()" << std::endl;
+  this->__dobject->addRef();
 }
 
 TraceObject::TraceObject(TraceObject const& copy) : DObject(copy), __dobject(copy.__dobject)
@@ -121,6 +122,7 @@ DObject*         TraceObject::object(void) const
  */
 TraceFunctionObject::TraceFunctionObject(DFunctionObject* functionObject) : __functionObject(functionObject)
 {
+  this->__functionObject->addRef();
 }
 
 TraceFunctionObject::~TraceFunctionObject()

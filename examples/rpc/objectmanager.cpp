@@ -12,7 +12,7 @@ ObjectManager::ObjectManager(ObjectManager const& copy) : DCppObjectSingleton<Ob
   this->init();
 }
 
-ObjectManager::~ObjectManager() //singleton !
+ObjectManager::~ObjectManager()
 {
   this->clear();
 }
@@ -21,23 +21,25 @@ void          ObjectManager::clear(void)
 {
   mapIterator object = this->__objectsID.begin();
   for (; object != this->__objectsID.end(); ++object)
-    object->second->destroy();
+  {
+     object->second->destroy();
+  }
 
   this->__objectsID.clear();
 }
 
 DUInt64       ObjectManager::registerObject(DValue const& arg)
 {
-  DObject* object = arg.get<DObject*>();
+  DObject* object = arg;
   mapIterator i = this->__objectsID.begin();
   for (; i != this->__objectsID.end(); ++i)
     if (i->second == object)
     {
-      object->destroy();
       return (i->first);
     }
 
   DUInt64 id = this->__currentID;
+  object->addRef(); //for all ?
   this->__objectsID[id] = object;
   this->__currentID++;
 
@@ -46,12 +48,11 @@ DUInt64       ObjectManager::registerObject(DValue const& arg)
 
 DObject*      ObjectManager::object(DValue const& arg) 
 {
-  DUInt64 id = arg.get<DUInt64>();
+  DUInt64 id = arg;
   mapIterator object = this->__objectsID.find(id);
   if (object != this->__objectsID.end())
   {   
-    object->second->addRef();
-    return (object->second); //addRef
+    return (object->second); 
   }
 
   return (DNone);

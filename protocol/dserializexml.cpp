@@ -15,7 +15,6 @@ SerializeXML::SerializeXML(SerializeXML const& copy) : DCppObject<SerializeXML>(
 
 SerializeXML::~SerializeXML()
 {
-  ((DObject*)__stream)->destroy();
 }
 
 void    SerializeXML::sDObject(DValue const& args)
@@ -28,7 +27,6 @@ void    SerializeXML::sDObject(DValue const& args)
   for (DStruct::DAttributeIterator i = dstruct->attributeBegin(); i != dstruct->attributeEnd(); ++i, ++x)
   {
     //XXX handle vector / map 
-
     if (i->type().getType() == DType::DObjectType)
     {
        DValue subObject = dobject->getValue(x);
@@ -37,7 +35,6 @@ void    SerializeXML::sDObject(DValue const& args)
        this->__depth += 1;
        this->sDObject(subObject);
        this->__depth -= 1;
-       //subObject->destroy();
     }
     else    
       XMLTag(this->__stream, i->name(), dobject->getValue(x).asUnicodeString(), this->__depth);

@@ -31,7 +31,7 @@ Regf::Regf(DStruct* dstruct, DValue const& args) : DCppObject<Regf>(dstruct, arg
 
 Regf::~Regf()
 {
-  std::cout << "~Regf()" << std::endl;
+  //std::cout << "~Regf()" << std::endl;
 }
 
 DUInt8 Regf::validate(void)
@@ -89,8 +89,9 @@ DObject* Regf::deserializeRaw(DValue const& args)
   ((DObject*)this->key)->setValue("minor", this->minor);
   deserializer->call("DObject", this->key);
 
-  deserializer->destroy();
-  stream->destroy();
+  ((DObject*)this->key)->destroy();
+  //deserializer->destroy();
+  //stream->destroy();
 
   return (this);
 }
