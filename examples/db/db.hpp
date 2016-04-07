@@ -1,5 +1,5 @@
-#ifndef __RPC__
-#define __RPC__
+#ifndef __DB__
+#define __DB__
 
 #include <stdint.h>
 
