@@ -118,7 +118,7 @@ PyObject* PyDStruct::newObject(PyDStruct::DPyObject* self, PyObject* args, PyObj
     PyErr_Clear();
     dobject = self->pimpl->newObject(); 
   }
- 
+
   CHECK_ALLOC(dobject)
 
   PyDObject::DPyObject*   dobjectObject = (PyDObject::DPyObject*)_PyObject_New((PyTypeObject*)PyDObject::pyType());
@@ -216,7 +216,6 @@ PyObject*     PyDStruct::asDValue(Destruct::DValue const& v)
     Py_RETURN_NONE;
   
   PyTypeObject* pyType = PyDStruct::pyType(); 
-  Py_INCREF(pyType);
   PyDStruct::DPyObject*  dstructObject = (PyDStruct::DPyObject*)_PyObject_New(pyType);
   dstructObject->pimpl = value;
 
@@ -231,7 +230,6 @@ PyObject*     PyDStruct::asPyObject(PyObject* self, int32_t attributeIndex)
     Py_RETURN_NONE;
    
   PyTypeObject* pyType = PyDStruct::pyType(); 
-  Py_INCREF(pyType);
   PyDStruct::DPyObject*  dstructObject = (PyDStruct::DPyObject*)_PyObject_New(pyType);
   dstructObject->pimpl = value;
 

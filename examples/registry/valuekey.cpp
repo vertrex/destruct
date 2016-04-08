@@ -87,11 +87,12 @@ DUnicodeString  ValueKey::valueTypeName(void)
  return (ValueKey::registryType(this->dataType));
 }
 
-DObject*        ValueKey::data(void)
+DObject*        ValueKey::data(void) //allocate object must be destroyed by caller
 {
   DStruct* dataStruct = DStructs::instance().find(ValueKey::registryTypeStructName(this->dataType));
   if (dataStruct == NULL)
     return (DNone);
+
   DObject* dataObject = dataStruct->newObject(RealValue<DObject*>(this));
   return (dataObject);
 }
@@ -165,7 +166,7 @@ RegistryData::~RegistryData()
 DBuffer    RegistryData::read(DValue const& _parent)
 {
   ValueKey* parent = (ValueKey*)_parent.get<DObject*>();
- 
+
   DObject* deserializer = parent->_deserializer;
   DObject* stream = deserializer->getValue("stream"); 
 
@@ -212,6 +213,7 @@ RegistryDataSZ::RegistryDataSZ(DStruct* dstruct, DValue const& args) : DCppObjec
 {
   this->init();
   this->_parent = args;
+  //((DObject*)this->_parent)->destroy();
 }
 
 RegistryDataSZ::~RegistryDataSZ(void)
@@ -238,6 +240,7 @@ RegistryDataMultiSZ::RegistryDataMultiSZ(DStruct* dstruct, DValue const& args) :
 {
   this->init();
   this->_parent = args;
+  //((DObject*)this->_parent)->destroy();
 }
 
 RegistryDataMultiSZ::~RegistryDataMultiSZ(void)
@@ -281,6 +284,7 @@ RegistryDataDWord::RegistryDataDWord(DStruct* dstruct, DValue const& args) : DCp
 {
   this->init();
   this->_parent = args;
+  //((DObject*)this->_parent)->destroy();
 }
 
 RegistryDataDWord::~RegistryDataDWord(void)
@@ -311,6 +315,7 @@ RegistryDataDWordBE::RegistryDataDWordBE(DStruct* dstruct, DValue const& args) :
 {
   this->init();
   this->_parent = args;
+  //((DObject*)this->_parent)->destroy();
 }
 
 RegistryDataDWordBE::~RegistryDataDWordBE(void)
@@ -341,6 +346,7 @@ RegistryDataQWord::RegistryDataQWord(DStruct* dstruct, DValue const& args) : DCp
 {
   this->init();
   this->_parent = args;
+  //((DObject*)this->_parent)->destroy();
 }
 
 RegistryDataQWord::~RegistryDataQWord(void)
@@ -372,6 +378,7 @@ RegistryDataBinary::RegistryDataBinary(DStruct* dstruct, DValue const& args) : D
 {
   this->init();
   this->_parent = args;
+  //((DObject*)this->_parent)->destroy();
 }
 
 RegistryDataBinary::~RegistryDataBinary(void)

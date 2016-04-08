@@ -53,9 +53,6 @@ PyObject*     PyDMethodObject::asPyObject(PyObject* _self, int32_t attributeInde
   dmethodobject->dobject = self->pimpl;
   dmethodobject->dobject->addRef();
 
-  //Py_INCREF(self); //?
-  Py_INCREF(dmethodobject);
-
   return ((PyObject*)dmethodobject);
 }
 
@@ -137,8 +134,8 @@ PyObject* PyDMethodObject::call(PyObject* _self, PyObject* args)
   }
   catch (std::bad_cast exception) //catch in cpp ?
   {
-    PyEval_RestoreThread(_save); 
     Destruct::DUnicodeString argumentString = "MethodObject must return a " + type.returnName();
+    PyEval_RestoreThread(_save); 
     PyErr_SetString(PyExc_TypeError, argumentString.c_str()); 
   }
 

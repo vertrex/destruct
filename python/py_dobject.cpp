@@ -48,7 +48,6 @@ PyObject*     PyDObject::asDValue(Destruct::DValue const& v)
     Py_RETURN_NONE;
  
   PyTypeObject* pyType = PyDObject::pyType(); 
-  Py_INCREF(pyType);
   PyDObject::DPyObject*  dobjectObject = (PyDObject::DPyObject*)_PyObject_New(pyType);
   dobjectObject->pimpl = value;
 
@@ -64,11 +63,8 @@ PyObject*     PyDObject::asPyObject(PyObject* self, int32_t attributeIndex)
     Py_RETURN_NONE;
   
   PyTypeObject* pyType = PyDObject::pyType(); 
-  Py_INCREF(pyType);
   PyDObject::DPyObject*  dobjectObject = (PyDObject::DPyObject*)_PyObject_New(pyType);
-  //incref ? // decref here 
   dobjectObject->pimpl = value;
-  //Py_DECREF(dobjectObject) //XXX ;???? destroy refcount
 
   return ((PyObject*)dobjectObject);
 }
@@ -119,6 +115,22 @@ PyDObject::PyDObject()
 
   if (PyType_Ready(pyType) < 0)
     throw Destruct::DException("PyType ready error");
+}
+
+PyObject* PyDObject::refCount(PyDObject::DPyObject* self)
+{
+  int32_t count = self->pimpl->refCount();
+  return (PyInt_FromLong(count));
+}
+
+void    PyDObject::addRef(PyDObject::DPyObject* self)
+{
+  self->pimpl->addRef();
+}
+
+void    PyDObject::destroy(PyDObject::DPyObject* self)
+{
+  self->pimpl->destroy();
 }
 
 PyObject* PyDObject::instanceOf(PyDObject::DPyObject* self)
@@ -285,13 +297,15 @@ PyObject*  PyDObject::setValue(PyDObject::DPyObject* self, int32_t attributeInde
         {
           Destruct::DFunctionObject* dpythonMethodObject = new DPythonMethodObject((PyObject*)self, valueObject, attributeIndex); //new donc doit XXX del si ecraser par un set value ou object detruit
           self->pimpl->setValue(attributeIndex, Destruct::RealValue<Destruct::DFunctionObject* >(dpythonMethodObject));
+          dpythonMethodObject->destroy(); //because of set value !
         }
         Py_RETURN_NONE; 
       }
       PyErr_SetString(PyExc_TypeError, "setValue : object must be callable");
       return (0);
     }
-    
+   
+    //destroy object if type is dobject ?  
     self->pimpl->setValue(attributeIndex, DValueDispatchTable[typeId]->toDValue(valueObject));
     Py_RETURN_NONE;
   }
@@ -304,6 +318,9 @@ PyObject*  PyDObject::setValue(PyDObject::DPyObject* self, int32_t attributeInde
 
 PyMethodDef PyDObject::pyMethods[] = 
 {
+  {"refCount", (PyCFunction)refCount, METH_NOARGS, "Return destruct reference count of DObject."},
+  {"addRef", (PyCFunction)addRef, METH_NOARGS, "Add reference to DObject."},
+  {"destroy", (PyCFunction)destroy, METH_NOARGS, "Dereference DObject."},
   {"instanceOf", (PyCFunction)instanceOf, METH_NOARGS, "Return the DStruct definition who generate this object."},
   {"clone", (PyCFunction)clone, METH_NOARGS, "Return a clone of this object."},
   {"getType",  (PyCFunction)getType, METH_CLASS, "Return self DType::type."},
@@ -337,7 +354,6 @@ int PyDObject::_init(PyDObjectT::DPyObject* self, PyObject *args, PyObject *kwds
 
     if (pyArgs != NULL)
     {
-      //XXX Add init type ds dstruct ou DObject par default  ? XXX XXX XXX 
       //Destruct::DValue dstructArgs = Destruct::RealValue<Destruct::DObject*>(Destruct::DNone);
       Destruct::DValue dstructArgs = DValueDispatchTable[9]->toDValue(pyArgs);
       self->pimpl = dstruct->newObject(dstructArgs);
@@ -368,7 +384,6 @@ int PyDObject::_init(PyDObjectT::DPyObject* self, PyObject *args, PyObject *kwds
 
     return (0);
   }
- //self incref ?
 
   std::string errorString = "Can't find " + std::string(dstructName) + " in Destruct database";
   PyErr_SetString(PyExc_RuntimeError, errorString.c_str());

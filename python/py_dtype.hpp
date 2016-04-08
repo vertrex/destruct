@@ -15,6 +15,7 @@ public:
   static PyTypeObject*  pyType(void);
 
   static int            _init(DPyObject* self, PyObject* args, PyObject* kwds);
+  //static void           _dealloc(DPyObject* self);
   static PyObject*      _repr(DPyObject* self);
 
   static PyObject*      getType(DPyObject* self, PyObject* args, PyObject* kwds);

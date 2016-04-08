@@ -23,8 +23,10 @@ def showKeys(key):
      print "\t", value.name
      data = value.data()
      if data is not None:
-       x = data.data()
-
+        try:
+           x = data.data()
+        except :
+          pass
    #print "\t\tSubkeys(" + str(subKeysList.size()) + ") :"
    for subKey in subKeysList:
       showKeys(subKey)

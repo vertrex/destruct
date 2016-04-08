@@ -8,14 +8,14 @@ class DPythonMethodObject : public Destruct::DFunctionObject
 public:
   DPythonMethodObject(PyObject* self, PyObject* callable, int32_t attributeIndex) : __self(self), __pythonCallable(callable),  __attributeIndex(attributeIndex) 
   {
-    Py_INCREF(__self);
+    //Py_INCREF(__self);  //never called if incref self
     Py_INCREF(__pythonCallable);
   }
 
-  ~DPythonMethodObject()
+  ~DPythonMethodObject() ///XXX never called !
   {
-    Py_DECREF(__self); 
-    Py_DECREF(__pythonCallable);
+    //Py_DECREF(__self); 
+     Py_DECREF(__pythonCallable);
   }
 
   Destruct::DValue      call(void) const;

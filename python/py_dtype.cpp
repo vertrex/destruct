@@ -12,7 +12,7 @@ PyTypeObject*     PyDType::pyType(void)
 
 PyDType::PyDType()
 {
-  Destruct::DType::init();//XXX should not be done here as it allocate object that are already allocated and clean is not called ! 
+  Destruct::DType::init();//XXX should not be done here  if already called by cpp, must be freed at end  
   //pyType = (PyTypeObject*)malloc(sizeof(basePyType));
   PyTypeObject* pyType = PyDType::pyType();
   memcpy(pyType , &basePyType , sizeof(basePyType));
@@ -126,3 +126,12 @@ int PyDType::_init(PyDTypeT::DPyObject *self, PyObject *args, PyObject *kwds)
  
   return (0);
 }
+
+/*
+void PyDType::_dealloc(PyDTypeT::DPyObject* self)
+{
+  delete self->pimpl;
+  Destruct::DType::clean();
+  self->ob_type->tp_free((PyObject*)self);
+}
+*/
