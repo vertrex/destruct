@@ -176,7 +176,7 @@ public:
   RealValue<DObject*>& operator=(RealValue<DObject*> const& value)
   {
     if (this->__val)
-     this->__val->delRef();
+     this->__val->destroy();
 
     this->__val = value.__val;
     if (this->__val)
@@ -193,7 +193,7 @@ public:
   void set(DValue const& v)
   {
     if (this->__val)
-     this->__val->delRef();
+     this->__val->destroy();
 
     this->__val = v.get<DObject *>();
     if (this->__val)
@@ -259,7 +259,7 @@ public:
   RealValue<DFunctionObject*>& operator=(RealValue<DFunctionObject*> const& value)
   {
     if (this->__val)
-     this->__val->delRef();
+     this->__val->destroy();
 
     this->__val = value.__val;
     if (this->__val)
@@ -276,7 +276,7 @@ public:
   void set(DValue const& v)
   {
     if (this->__val)
-     this->__val->delRef();
+     this->__val->destroy();
 
     this->__val = v.get<DFunctionObject *>();
     if (this->__val)

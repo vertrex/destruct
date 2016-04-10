@@ -81,7 +81,7 @@ public:
   {
     DMethodObject* method = new DMethodObject(obj, __method);
     obj->*__member = method;
-    method->delRef();
+    method->destroy();
   }
 
   ~DFunctionPointer()
@@ -122,7 +122,7 @@ public:
   {
     DMethodObject* method = new DMethodObject(obj, __method);
     obj->*__member = method;
-    method->delRef();
+    method->destroy();
   }
 
   FinalValue& value(CPPClass* obj) const
@@ -159,7 +159,7 @@ public:
   {
     DMethodObject* method = new DMethodObject(obj, __method);
     obj->*__member = method;
-    method->delRef();
+    method->destroy();
   }
 
   FinalValue& value(CPPClass* obj) const
@@ -196,7 +196,7 @@ public:
   {
     DMethodObject* method = new DMethodObject(obj, __method);
     obj->*__member = method;
-    method->delRef();
+    method->destroy();
   }
 
   FinalValue& value(CPPClass* obj) const
@@ -233,7 +233,7 @@ public:
   {
     DMethodObject* method = new DMethodObject(obj, __method);
     obj->*__member = method;
-    method->delRef();
+    method->destroy();
   }
 
   FinalValue& value(CPPClass* obj) const
