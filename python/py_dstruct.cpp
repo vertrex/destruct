@@ -110,7 +110,7 @@ PyObject* PyDStruct::newObject(PyDStruct::DPyObject* self, PyObject* args, PyObj
 
   if (PyArg_ParseTuple(args, "O", &argsObject))
   {
-    Destruct::DValue value = pyObjectToDValue(argsObject); //optimize -> add init in dstruct with description of arg or optimize passing to dvalue in python with table pythonobject->type dtype::type
+    Destruct::DValue value = pyObjectToDValue(argsObject);
     dobject = self->pimpl->newObject(value);
   }
   else

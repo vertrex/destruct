@@ -123,14 +123,20 @@ PyObject* PyDObject::refCount(PyDObject::DPyObject* self)
   return (PyInt_FromLong(count));
 }
 
-void    PyDObject::addRef(PyDObject::DPyObject* self)
+PyObject* PyDObject::addRef(PyDObject::DPyObject* self)
 {
   self->pimpl->addRef();
+
+  Py_INCREF(Py_None);
+  return (Py_None);
 }
 
-void    PyDObject::destroy(PyDObject::DPyObject* self)
+PyObject* PyDObject::destroy(PyDObject::DPyObject* self)
 {
   self->pimpl->destroy();
+ 
+  Py_INCREF(Py_None);
+  return (Py_None);
 }
 
 PyObject* PyDObject::instanceOf(PyDObject::DPyObject* self)

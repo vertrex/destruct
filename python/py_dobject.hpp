@@ -26,8 +26,8 @@ public:
   static PyObject*      _dir(DPyObject* self, PyObject* args, PyObject* kwds);
 
   static PyObject*      refCount(DPyObject* self);
-  static void           addRef(DPyObject* self);
-  static void           destroy(DPyObject* self);
+  static PyObject*      addRef(DPyObject* self);
+  static PyObject*      destroy(DPyObject* self);
   static PyObject*      instanceOf(DPyObject* self);
   static PyObject*      clone(DPyObject* self);
 
