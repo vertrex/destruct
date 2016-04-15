@@ -37,7 +37,7 @@ public:
   void     seek(DValue const& args);
   DUInt64  size(void);
   DUInt64  tell(void);
-//  DValue  seek(DValue const& args);
+//DValue  seek(DValue const& args);
   //tell implement for regf  
 
 protected: 

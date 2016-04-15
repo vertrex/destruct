@@ -187,7 +187,7 @@ public:
 
   FinalValue* clone() const
   {
-    return  (new RealValue(*this)); //RealValue(DObject*) add a ref
+    return  (new RealValue(*this)); //RealValue(DObject*) add a ref // != this->__val->clone()
   }
 
   void set(DValue const& v)

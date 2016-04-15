@@ -28,18 +28,10 @@ public:
 
   DCppObject(DCppObject const& copy) : DObject(copy), __members(CppClass::memberBegin())
   {
-//    this->copy(this, copy); //must copy all attributes // or let's do it in CppClass constructor ?
+    //this->copy(this, copy);  //will work for normal object must does it will work for method as init must be init late ? XXX must test with method to be sure if used here will be easier or maybe use an object between to avoid having to call copy everywhere, must take care to copy in all object only init right now in most of constructor
   }
 
-  void copy(DCppObject const& copy)
-  {
-    //for (size_t idx = 0; idx < CppClass::ownAttributeCount(); ++idx)
-    //{
-    //this->__members[idx].init(static_cast<CppClass*>(this));
-    //}
-  }
-
-  void  init(void) //Must be cal by inherited object constructor
+  void  init(void) //Must be cal by inherited object constructor // or must use a between class to wrap ?
   {
     //use default object value and set it like in ddynamicobject 
     std::vector<BaseValue*> baseValue;
@@ -67,7 +59,7 @@ public:
 
   virtual DObject* clone() const
   {
-    return (new CppClass(*static_cast<const CppClass *>(this)));
+    return (new CppClass((const CppClass&)* dynamic_cast<const CppClass *>(this)));
   }
 
   using DObject::getValue;
@@ -104,6 +96,13 @@ public:
   }
 
 protected:
+  void copy(DCppObject* self, DCppObject const& rhs)
+  {
+    this->init(); //still need to init all as we make copy ? 
+    for (size_t idx = 0; idx != rhs.__baseValue.size(); ++idx)
+       this->__baseValue[idx] = rhs.__baseValue[idx]->clone(self);
+  }
+
   virtual BaseValue* getBaseValue(size_t idx)
   {
     return (&this->__members[idx].value(static_cast<CppClass *>(this)));
