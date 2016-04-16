@@ -123,7 +123,7 @@ public:
 
   DValue                        currentItem(void)
   {
-    DObject* item = static_cast<DObject*>(this->container)->call("newItem").get<DObject*>();
+    DObject* item = static_cast<DObject*>(this->container)->call("newItem");
     item->setValue("index", RealValue<KeyType>(this->it->first));
     item->setValue("value", RealValue<ValueType>(this->it->second));
 

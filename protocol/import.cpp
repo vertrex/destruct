@@ -23,7 +23,7 @@ Import::~Import(void)
 
 DUInt8  Import::file(DValue const& args)
 {
-  DUnicodeString filePath = args.get<DUnicodeString>();
+  DUnicodeString filePath = args;
 
 #ifndef WIN32
   void* library = dlopen(filePath.c_str(), RTLD_LAZY);

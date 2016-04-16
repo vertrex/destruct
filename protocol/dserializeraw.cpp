@@ -74,7 +74,7 @@ void    SerializeRaw::sDUnicodeString(DValue const& args)
   //Write string directly
   DObject* stream = this->__stream;
 
-  DUnicodeString str = args.get<DUnicodeString>();
+  DUnicodeString str = args;
   stream->call("write", RealValue<DBuffer>(args.asDBuffer()));
 }
 
@@ -224,7 +224,7 @@ DBuffer         DeserializeRaw::dDBuffer(void)
 DInt8           DeserializeRaw::dDInt8(void)
 {
   DObject* stream = this->__stream;
-  DBuffer buffer = stream->call("read", RealValue<DInt64>(sizeof(DInt8))).get<DBuffer>();
+  DBuffer buffer = stream->call("read", RealValue<DInt64>(sizeof(DInt8)));
 
   return (*((DInt8*)buffer.data()));
 }
@@ -232,7 +232,7 @@ DInt8           DeserializeRaw::dDInt8(void)
 DInt16          DeserializeRaw::dDInt16(void)
 {
   DObject* stream = this->__stream;
-  DBuffer buffer = stream->call("read", RealValue<DInt64>(sizeof(DInt16))).get<DBuffer>();
+  DBuffer buffer = stream->call("read", RealValue<DInt64>(sizeof(DInt16)));
 
   return (*((DInt16*)buffer.data()));
 }
@@ -240,7 +240,7 @@ DInt16          DeserializeRaw::dDInt16(void)
 DInt32          DeserializeRaw::dDInt32(void)
 {
   DObject* stream = this->__stream;
-  DBuffer buffer = stream->call("read", RealValue<DInt64>(sizeof(DInt32))).get<DBuffer>();
+  DBuffer buffer = stream->call("read", RealValue<DInt64>(sizeof(DInt32)));
 
   return (*((DInt32*)buffer.data()));
 }
@@ -248,7 +248,7 @@ DInt32          DeserializeRaw::dDInt32(void)
 DInt64          DeserializeRaw::dDInt64(void)
 {
   DObject* stream = this->__stream;
-  DBuffer buffer = stream->call("read", RealValue<DInt64>(sizeof(DInt64))).get<DBuffer>();
+  DBuffer buffer = stream->call("read", RealValue<DInt64>(sizeof(DInt64)));
 
   return (*((DInt64*)buffer.data()));
 }
@@ -256,7 +256,7 @@ DInt64          DeserializeRaw::dDInt64(void)
 DUInt8          DeserializeRaw::dDUInt8(void)
 {
   DObject* stream = this->__stream;
-  DBuffer buffer = stream->call("read", RealValue<DInt64>(sizeof(DUInt8))).get<DBuffer>();
+  DBuffer buffer = stream->call("read", RealValue<DInt64>(sizeof(DUInt8)));
 
   return (*((DUInt8*)buffer.data()));
 }
@@ -264,7 +264,7 @@ DUInt8          DeserializeRaw::dDUInt8(void)
 DUInt16         DeserializeRaw::dDUInt16(void)
 {
   DObject* stream = this->__stream;
-  DBuffer buffer = stream->call("read", RealValue<DInt64>(sizeof(DUInt16))).get<DBuffer>();
+  DBuffer buffer = stream->call("read", RealValue<DInt64>(sizeof(DUInt16)));
 
   return (*((DUInt16*)buffer.data()));
 }
@@ -272,7 +272,7 @@ DUInt16         DeserializeRaw::dDUInt16(void)
 DUInt32         DeserializeRaw::dDUInt32(void)
 {
   DObject* stream = this->__stream;
-  DBuffer buffer = stream->call("read", RealValue<DInt64>(sizeof(DUInt32))).get<DBuffer>();
+  DBuffer buffer = stream->call("read", RealValue<DInt64>(sizeof(DUInt32)));
 
   return (*((DUInt32*)buffer.data()));
 }
@@ -280,7 +280,7 @@ DUInt32         DeserializeRaw::dDUInt32(void)
 DUInt64         DeserializeRaw::dDUInt64(void)
 {
   DObject* stream = this->__stream;
-  DBuffer buffer = stream->call("read", RealValue<DInt64>(sizeof(DUInt64))).get<DBuffer>();
+  DBuffer buffer = stream->call("read", RealValue<DInt64>(sizeof(DUInt64)));
   
   return (*((DUInt64*)buffer.data()));
 }

@@ -670,7 +670,7 @@ PyObject* PyDObject::_iter(PyDObject::DPyObject* self)
     {
       return ((PyObject*)self);
     }
-    Destruct::DObject* iterator = self->pimpl->call("iterator").get<Destruct::DObject*>();
+    Destruct::DObject* iterator = self->pimpl->call("iterator");
   
     PyDObject::DPyObject*  dobjectObject = (PyDObject::DPyObject*)_PyObject_New(PyDObject::pyType());
     dobjectObject->pimpl = iterator;
@@ -689,7 +689,7 @@ PyObject* PyDObject::_iternext(PyDObject::DPyObject* self)
 {
   try 
   {
-    DInt8 isDone(self->pimpl->call("isDone").get<DInt8>());
+    DInt8 isDone = self->pimpl->call("isDone");
     if (!isDone)
     {
       Destruct::DValue result = self->pimpl->call("currentItem");

@@ -32,7 +32,7 @@ Destruct::DValue PyDInt8::toDValue(PyObject* value)
 
 PyObject*     PyDInt8::asDValue(Destruct::DValue const& v)
 {
-  DInt8 value = v.get<DInt8>();
+  DInt8 value = v;
 #ifdef FAST_CONVERSION
   return (PyInt_FromLong(value));
 #else 
@@ -42,7 +42,7 @@ PyObject*     PyDInt8::asDValue(Destruct::DValue const& v)
 
 PyObject*     PyDInt8::asPyObject(PyObject* self, int32_t attributeIndex)
 {
-  DInt8 value = ((PyDObject::DPyObject*)self)->pimpl->getValue(attributeIndex).get<DInt8>();
+  DInt8 value = ((PyDObject::DPyObject*)self)->pimpl->getValue(attributeIndex);
 #ifdef FAST_CONVERSION
   return (PyInt_FromLong(value));
 #else
@@ -80,7 +80,7 @@ Destruct::DValue PyDInt16::toDValue(PyObject* value)
 
 PyObject*     PyDInt16::asDValue(Destruct::DValue const& v)
 {
-  DInt16 value = v.get<DInt16>();
+  DInt16 value = v;
 #ifdef FAST_CONVERSION
   return (PyInt_FromLong(value));
 #else
@@ -90,7 +90,7 @@ PyObject*     PyDInt16::asDValue(Destruct::DValue const& v)
 
 PyObject*     PyDInt16::asPyObject(PyObject* self, int32_t attributeIndex)
 {
-  DInt16 value = ((PyDObject::DPyObject*)self)->pimpl->getValue(attributeIndex).get<DInt16>();
+  DInt16 value = ((PyDObject::DPyObject*)self)->pimpl->getValue(attributeIndex);
 #ifdef FAST_CONVERSION
   return (PyInt_FromLong(value));
 #else
@@ -128,7 +128,7 @@ Destruct::DValue PyDInt32::toDValue(PyObject* value)
 
 PyObject*        PyDInt32::asDValue(Destruct::DValue const& v)
 {
-  DInt32 value = v.get<DInt32>();
+  DInt32 value = v;
 #ifdef FAST_CONVERSION
   return PyInt_FromLong(value);
 #else
@@ -138,7 +138,7 @@ PyObject*        PyDInt32::asDValue(Destruct::DValue const& v)
 
 PyObject*        PyDInt32::asPyObject(PyObject* self, int32_t attributeIndex)
 {
-  DInt32 value = ((PyDObject::DPyObject*)self)->pimpl->getValue(attributeIndex).get<DInt32>();
+  DInt32 value = ((PyDObject::DPyObject*)self)->pimpl->getValue(attributeIndex);
 #ifdef FAST_CONVERSION
   return (PyInt_FromLong(value));
 #else
@@ -176,7 +176,7 @@ Destruct::DValue PyDInt64::toDValue(PyObject* value)
 
 PyObject*     PyDInt64::asDValue(Destruct::DValue const& v)
 {
-  DInt64 value = v.get<DInt64>();
+  DInt64 value = v;
 #ifdef FAST_CONVERSION
   return (PyLong_FromLong((long)value));
 #else
@@ -186,7 +186,7 @@ PyObject*     PyDInt64::asDValue(Destruct::DValue const& v)
 
 PyObject*     PyDInt64::asPyObject(PyObject* self, int32_t attributeIndex)
 {
-  DInt64 value = ((PyDObject::DPyObject*)self)->pimpl->getValue(attributeIndex).get<DInt64>();
+  DInt64 value = ((PyDObject::DPyObject*)self)->pimpl->getValue(attributeIndex);
 #ifdef FAST_CONVERSION
   return (PyLong_FromLong((long)value));
 #else
@@ -224,7 +224,7 @@ Destruct::DValue PyDUInt8::toDValue(PyObject* value)
 
 PyObject*     PyDUInt8::asDValue(Destruct::DValue const& v)
 {
-  DUInt8 value = v.get<DUInt8>();
+  DUInt8 value = v;
 #ifdef FAST_CONVERSION
   return (PyInt_FromLong((long)value));
 #else
@@ -234,7 +234,7 @@ PyObject*     PyDUInt8::asDValue(Destruct::DValue const& v)
 
 PyObject*     PyDUInt8::asPyObject(PyObject* self, int32_t attributeIndex)
 {
-  DUInt8 value = ((PyDObject::DPyObject*)self)->pimpl->getValue(attributeIndex).get<DUInt8>();
+  DUInt8 value = ((PyDObject::DPyObject*)self)->pimpl->getValue(attributeIndex);
 #ifdef FAST_CONVERSION
   return (PyInt_FromLong(value));
 #else
@@ -272,7 +272,7 @@ Destruct::DValue PyDUInt16::toDValue(PyObject* value)
 
 PyObject*     PyDUInt16::asDValue(Destruct::DValue const& v)
 {
-  DUInt16 value = v.get<DUInt16>();
+  DUInt16 value = v;
 #ifdef FAST_CONVERSION
   return (PyInt_FromLong((long)value));
 #else
@@ -282,7 +282,7 @@ PyObject*     PyDUInt16::asDValue(Destruct::DValue const& v)
 
 PyObject*     PyDUInt16::asPyObject(PyObject* self, int32_t attributeIndex)
 {
-  DUInt16 value = ((PyDObject::DPyObject*)self)->pimpl->getValue(attributeIndex).get<DUInt16>();
+  DUInt16 value = ((PyDObject::DPyObject*)self)->pimpl->getValue(attributeIndex);
 #ifdef FAST_CONVERSION
   return (PyInt_FromLong(value));
 #else
@@ -320,7 +320,7 @@ Destruct::DValue PyDUInt32::toDValue(PyObject* value)
 
 PyObject*     PyDUInt32::asDValue(Destruct::DValue const& v)
 {
-  DUInt32 value = v.get<DUInt32>();
+  DUInt32 value = v;
 #ifdef FAST_CONVERSION
   return (PyInt_FromLong(value));
 #else
@@ -330,7 +330,7 @@ PyObject*     PyDUInt32::asDValue(Destruct::DValue const& v)
 
 PyObject*     PyDUInt32::asPyObject(PyObject* self, int32_t attributeIndex)
 {
-  DUInt32 value = ((PyDObject::DPyObject*)self)->pimpl->getValue(attributeIndex).get<DUInt32>();
+  DUInt32 value = ((PyDObject::DPyObject*)self)->pimpl->getValue(attributeIndex);
 #ifdef FAST_CONVERSION
   return (PyInt_FromLong(value));
 #else
@@ -368,7 +368,7 @@ Destruct::DValue PyDUInt64::toDValue(PyObject* value)
 
 PyObject*     PyDUInt64::asDValue(Destruct::DValue const& v)
 {
-  DUInt64 value = v.get<DUInt64>();
+  DUInt64 value = v;
 #ifdef FAST_CONVERSION
   return (PyInt_FromLong((long)value));
 #else
@@ -378,7 +378,7 @@ PyObject*     PyDUInt64::asDValue(Destruct::DValue const& v)
 
 PyObject*     PyDUInt64::asPyObject(PyObject* self, int32_t attributeIndex)
 {
-  DUInt64 value = ((PyDObject::DPyObject*)self)->pimpl->getValue(attributeIndex).get<DUInt64>();
+  DUInt64 value = ((PyDObject::DPyObject*)self)->pimpl->getValue(attributeIndex);
 #ifdef FAST_CONVERSION
   return (PyInt_FromLong((long)value));
 #else
@@ -424,7 +424,7 @@ Destruct::DValue PyDUnicodeString::toDValue(PyObject* value)
 
 PyObject*     PyDUnicodeString::asDValue(Destruct::DValue const& v)
 {
-  Destruct::DUnicodeString value = v.get<Destruct::DUnicodeString>();
+  Destruct::DUnicodeString value = v;
 #ifdef FAST_CONVERSION
   return (PyUnicode_FromStringAndSize(value.c_str(), value.size()));
 #else
@@ -435,7 +435,7 @@ PyObject*     PyDUnicodeString::asDValue(Destruct::DValue const& v)
 PyObject*     PyDUnicodeString::asPyObject(PyObject* self, int32_t attributeIndex)
 {
 #ifdef FAST_CONVERSION
-  Destruct::DUnicodeString value = ((PyDObject::DPyObject*)self)->pimpl->getValue(attributeIndex).get<Destruct::DUnicodeString>();
+  Destruct::DUnicodeString value = ((PyDObject::DPyObject*)self)->pimpl->getValue(attributeIndex);
   return (PyUnicode_FromStringAndSize(value.c_str(), value.size()));
 #else
   return (PyObject_CallObject((PyObject*)PyDUnicodeString::pyType  , Py_BuildValue("(O)", PyUnicode_FromStringAndSize(value.c_str(), value.size()))));
@@ -476,7 +476,7 @@ Destruct::DValue PyDBuffer::toDValue(PyObject* value)
 
 PyObject*     PyDBuffer::asDValue(Destruct::DValue const& v)
 {
-  Destruct::DBuffer value = v.get<Destruct::DBuffer>();
+  Destruct::DBuffer value = v;
 #ifdef FAST_CONVERSION
   return (PyByteArray_FromStringAndSize((char*)value.data(), value.size()));
 #else
@@ -487,7 +487,7 @@ PyObject*     PyDBuffer::asDValue(Destruct::DValue const& v)
 PyObject*     PyDBuffer::asPyObject(PyObject* self, int32_t attributeIndex)
 {
 #ifdef FAST_CONVERSION
-  Destruct::DBuffer value = ((PyDObject::DPyObject*)self)->pimpl->getValue(attributeIndex).get<Destruct::DBuffer>();
+  Destruct::DBuffer value = ((PyDObject::DPyObject*)self)->pimpl->getValue(attributeIndex);
   return (PyByteArray_FromStringAndSize((char*)value.data(), value.size()));
 #else
   return (PyObject_CallObject((PyObject*)PyDBuffer::pyType, Py_BuildValue("(O)", PyByteArray_FromStringAndSize((char*)value.data(), value.size()))));

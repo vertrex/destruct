@@ -20,7 +20,7 @@ SerializeXML::~SerializeXML()
 void    SerializeXML::sDObject(DValue const& args)
 {
   int x = 0;
-  DObject* dobject = args.get<DObject*>();
+  DObject* dobject = args;
   DStruct const* dstruct = dobject->instanceOf();
   XMLTag tag = XMLTag(this->__stream, dstruct->name(), "\n", this->__depth++, true);
 

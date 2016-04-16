@@ -8,8 +8,8 @@ DStream::DStream(DStruct* dstruct, DValue const& args) : DCppObject<DStream>(dst
   this->init();
   DObject* dargs = args;
 
-  DInt8 mode = dargs->getValue("input").get<DInt8>();
-  DUnicodeString filePath = dargs->getValue("filePath").get<DUnicodeString>();
+  DInt8 mode = dargs->getValue("input");
+  DUnicodeString filePath = dargs->getValue("filePath");
 
   if (mode == 0)
     this->__stream.open(filePath.c_str(), std::iostream::out | std::iostream::binary | std::iostream::trunc);
@@ -34,7 +34,7 @@ DStream::~DStream()
 
 DBuffer DStream::read(DValue const& args)
 {
-  DInt64 size = args.get<DInt64>();
+  DInt64 size = args;
   if (size == 0)
     return DBuffer(NULL, 0);
 
@@ -51,7 +51,7 @@ DBuffer DStream::read(DValue const& args)
 
 DInt64  DStream::write(DValue const& args)
 {
-  DBuffer buffer = args.get<DBuffer>();
+  DBuffer buffer = args;
 
   const char* data = (const char*)buffer.data();
   int64_t size = buffer.size();
@@ -76,7 +76,7 @@ void    DStream::flush(void)
 
 void    DStream::seek(DValue const& args)
 {
-  DUInt64 pos = args.get<DUInt64>();
+  DUInt64 pos = args;
 //if input
   this->__stream.seekg(pos);
 }
@@ -132,7 +132,7 @@ DBuffer DStreamCout::read(DValue const& args)
 
 DInt64  DStreamCout::write(DValue const& args)
 {
-  DBuffer buffer = args.get<DBuffer>();
+  DBuffer buffer = args;
 
   const char* data = (const char*)buffer.data();
   int64_t size = buffer.size();
@@ -165,7 +165,7 @@ DStreamString::~DStreamString()
 
 DBuffer DStreamString::read(DValue const& args)
 {
-  DInt64 size = args.get<DInt64>();
+  DInt64 size = args;
   if (size == 0)
     return DBuffer(NULL, 0);
 
@@ -182,7 +182,7 @@ DBuffer DStreamString::read(DValue const& args)
 
 DInt64  DStreamString::write(DValue const& args)
 {
-  DBuffer buffer = args.get<DBuffer>();
+  DBuffer buffer = args;
 
   const char* data = (const char*)buffer.data();
   int64_t size = buffer.size();

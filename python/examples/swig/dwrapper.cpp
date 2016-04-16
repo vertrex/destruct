@@ -57,16 +57,16 @@ void DWrapper::run(Destruct::DObject* module, Destruct::DObject* arguments)
 
 void DWrapper::runValueObject(Destruct::DValue module, Destruct::DValue argument)
 {
-  Destruct::DObject* moduleDObject = module.get<Destruct::DObject*>();
-  Destruct::DObject* argumentDObject = argument.get<Destruct::DObject*>();
+  Destruct::DObject* moduleDObject = module;
+  Destruct::DObject* argumentDObject = argument;
  
   moduleDObject->call("start", Destruct::RealValue<Destruct::DObject*>(argumentDObject));
 }
 
 void DWrapper::runValueMethod(Destruct::DValue module, Destruct::DValue argument)
 {
- Destruct::DFunctionObject* moduleDObject = module.get<Destruct::DFunctionObject*>();
- Destruct::DObject* argumentDObject = argument.get<Destruct::DObject*>();
+ Destruct::DFunctionObject* moduleDObject = module;
+ Destruct::DObject* argumentDObject = argument;
 
  Destruct::DValue value = Destruct::RealValue<Destruct::DFunctionObject*>(moduleDObject);
 

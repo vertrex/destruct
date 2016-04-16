@@ -31,7 +31,7 @@ public:
    
   DValue  get(DValue const& args)
   {
-    DUInt64 index = args.get<DUInt64>();
+    DUInt64 index = args;
     if (index >= this->__vector.size())
       throw DException(std::string("DContainer::get bad index\n"));
       
@@ -50,7 +50,7 @@ public:
 
   DObject*    setItem(DValue const& args)
   {
-    DObject*     argumentsObject = args.get<DObject*>();
+    DObject*     argumentsObject = args;
     DInt64       index = argumentsObject->getValue("index").get<DUInt64>();
     VectorType   item = argumentsObject->getValue("value").get<VectorType>();
 
@@ -144,7 +144,7 @@ inline DVector<DObject*, DType::DObjectType >::~DVector()
 template<>
 inline DUInt64 DVector<DObject*, DType::DObjectType >::push(DValue const& args)
 {
-  DObject* object = args.get<DObject*>();
+  DObject* object = args;
   object->addRef();
   this->__vector.push_back(object);
   return (this->__vector.size() - 1);
@@ -153,7 +153,7 @@ inline DUInt64 DVector<DObject*, DType::DObjectType >::push(DValue const& args)
 template<> 
 inline DValue  DVector<DObject*, DType::DObjectType>::get(DValue const& args)
   {
-    DUInt64 index = args.get<DUInt64>();
+    DUInt64 index = args;
     if (index >= this->__vector.size())
       throw DException(std::string("DContainer::get bad index\n"));
     DObject* object = this->__vector[index];
