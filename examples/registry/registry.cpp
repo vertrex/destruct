@@ -58,9 +58,9 @@ Registry::Registry(DStruct* dstruct, const DValue& args) : DCppObject<Registry>(
   this->init();
 }
 
-Registry::Registry(Registry const& copy) : DCppObject<Registry>(copy), __destruct(Destruct::DStructs::instance())
+Registry::Registry(Registry const& rhs) : DCppObject<Registry>(rhs), __destruct(Destruct::DStructs::instance())
 {
-  this->init();
+  this->copy(this, rhs);
 }
 
 Registry::~Registry()

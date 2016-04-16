@@ -26,11 +26,10 @@ public:
     this->init();
   }
 
-  DIterator(const DIterator& copy) : DCppObject<DIterator<ValueType, ValueTypeId > >(copy), index(copy.index), container(copy.container)
+  DIterator(const DIterator& rhs) : DCppObject<DIterator<ValueType, ValueTypeId > >(rhs), index(rhs.index), container(rhs.container)
   {
-    this->init();
+    this->copy(this, rhs);
   }
-
 
   void  next(void)
   {

@@ -12,9 +12,9 @@ SerializeRaw::SerializeRaw(DStruct* dstruct, DValue const& args) : DCppObject<Se
   this->init(); 
 }
 
-SerializeRaw::SerializeRaw(SerializeRaw const& copy) : DCppObject<SerializeRaw>(copy), __stream(copy.__stream)
+SerializeRaw::SerializeRaw(SerializeRaw const& rhs) : DCppObject<SerializeRaw>(rhs), __stream(rhs.__stream)
 {
-  this->init();
+  this->copy(this, rhs);
 }
 
 SerializeRaw::~SerializeRaw()
@@ -142,9 +142,9 @@ DeserializeRaw::DeserializeRaw(DStruct* dstruct, DValue const& args) : DCppObjec
   this->init(); 
 }
 
-DeserializeRaw::DeserializeRaw(DeserializeRaw const& copy) : DCppObject<DeserializeRaw>(copy), __stream(copy.__stream)
+DeserializeRaw::DeserializeRaw(DeserializeRaw const& rhs) : DCppObject<DeserializeRaw>(rhs), __stream(rhs.__stream)
 {
-  this->init();
+  this->copy(this, rhs);
 }
 
 DeserializeRaw::~DeserializeRaw()

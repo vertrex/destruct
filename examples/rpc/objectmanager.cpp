@@ -7,9 +7,9 @@ ObjectManager::ObjectManager(DStruct* dstruct, DValue const& args) : DCppObjectS
   this->init();
 }
 
-ObjectManager::ObjectManager(ObjectManager const& copy) : DCppObjectSingleton<ObjectManager>(copy),  __currentID(copy.__currentID), __objectsID(copy.__objectsID)
+ObjectManager::ObjectManager(ObjectManager const& rhs) : DCppObjectSingleton<ObjectManager>(rhs),  __currentID(rhs.__currentID), __objectsID(rhs.__objectsID)
 {
-  this->init();
+  this->copy(this, rhs);
 }
 
 ObjectManager::~ObjectManager()

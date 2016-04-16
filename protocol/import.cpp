@@ -12,9 +12,9 @@ Import::Import(DStruct* dstruct, DValue const& args) : DCppObject<Import>(dstruc
   this->init();
 }
 
-Import::Import(const Import& copy) : DCppObject<Import>(copy), __destruct(Destruct::DStructs::instance())
+Import::Import(const Import& rhs) : DCppObject<Import>(rhs), __destruct(Destruct::DStructs::instance())
 {
-  this->init();
+  this->copy(this, rhs);
 }
 
 Import::~Import(void) 

@@ -18,9 +18,9 @@ public:
     this->init();
   }
 
-  DVector(const DVectorType& copy) : DCppObject<DVector<VectorType, VectorTypeId> >(copy), __vector(copy.__vector) 
+  DVector(const DVectorType& rhs) : DCppObject<DVector<VectorType, VectorTypeId> >(rhs), __vector(rhs.__vector) 
   {
-    this->init();
+    this->copy(this, rhs);
   }
 
   DUInt64  push(DValue const& args) 

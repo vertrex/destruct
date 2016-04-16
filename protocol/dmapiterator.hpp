@@ -25,9 +25,9 @@ public:
     this->init();
   }
 
-  DMapItem(const DMapItem& copy) : DCppObject<DMapItemType >(copy), key(copy.key), value(copy.value)
+  DMapItem(const DMapItem& rhs) : DCppObject<DMapItemType >(rhs), key(rhs.key), value(rhs.value)
   {
-    this->init();
+    this->copy(this, rhs);
   }
 
   RealValue<KeyType>       key;

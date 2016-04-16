@@ -21,9 +21,9 @@ public:
     this->init();
   }
 
-  DCppRefCount(DCppRefCount const& copy) : DCppObject<DCppRefCount>(copy)
+  DCppRefCount(DCppRefCount const& rhs) : DCppObject<DCppRefCount>(rhs)
   {
-    this->init();
+    this->copy(this, rhs);
   }
 
   RealValue<DFunctionObject*> _returnObject, _returnObjectAsDValue, _setDObject, _setDObjectEq;

@@ -24,9 +24,9 @@ public:
     this->init();
   }
 
-  Task(const Task& copy) : DCppObject<Task<ArgumentType, ArgumentTypeId, ResultType, ResultTypeId > >(copy), function(copy.function), argument(copy.argument), result(copy.result)
+  Task(const Task& rhs) : DCppObject<Task<ArgumentType, ArgumentTypeId, ResultType, ResultTypeId > >(rhs), function(rhs.function), argument(rhs.argument), result(rhs.result)
   {
-    this->init(); 
+    this->copy(this, rhs); 
   }
 
   RealValue<DFunctionObject* >     function;

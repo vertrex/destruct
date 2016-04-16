@@ -1,0 +1,53 @@
+#define DObject DObject*
+#define X(a, b) Destruct::RealValue<Destruct::a> b;
+#define Y(a, b, c)  a b(DValue const& args); Destruct::RealValue<Destruct::DFunctionObject*>  _##b;  
+  ATTRIBUTES_TABLE
+  METHOD_TABLE
+#undef X
+#undef Y
+#undef DObject
+
+#define X(a, b) Destruct::DAttribute(Destruct::DType::a##Type, #b), 
+#define Y(a, b, c) Destruct::DAttribute(Destruct::DType::a##Type, #b, Destruct::DType::c##Type), 
+static Destruct::DAttribute* ownAttributeBegin()
+{
+  static Destruct::DAttribute  attributes[] =
+  {
+    ATTRIBUTES_TABLE      
+    METHOD_TABLE 
+  };
+  return (attributes);
+}
+#undef X
+#undef Y
+
+#define X(a, b) Destruct::DPointer<Test>(&Test::b),
+#define Y(a, b, c) Destruct::DPointer<Test>(&Test::_##b, &Test::b) 
+  static Destruct::DPointer<Test>* memberBegin()
+  {
+    static Destruct::DPointer<Test> memberPointer[] = 
+    {
+      ATTRIBUTES_TABLE  
+      METHOD_TABLE
+    };
+    return (memberPointer);
+  }
+#undef X
+#undef Y
+
+#define ATTRIBUTE_COUNT(x)\
+  static size_t ownAttributeCount()\
+  {\
+    return (x);\
+  }\
+\
+  static Destruct::DAttribute* ownAttributeEnd()\
+  {\
+    return (ownAttributeBegin() + ownAttributeCount());\
+  }\
+\
+  static Destruct::DPointer<Test>*  memberEnd()\
+  {\
+    return (memberBegin() + ownAttributeCount());\
+  }\
+

@@ -8,9 +8,9 @@ SerializeXML::SerializeXML(DStruct* dstruct, DValue const& args) : DCppObject<Se
   this->init(); 
 }
 
-SerializeXML::SerializeXML(SerializeXML const& copy) : DCppObject<SerializeXML>(copy), __stream(copy.__stream), __depth(1)
+SerializeXML::SerializeXML(SerializeXML const& rhs) : DCppObject<SerializeXML>(rhs), __stream(rhs.__stream), __depth(1)
 {
-  this->init();
+  this->copy(this, rhs);
 }
 
 SerializeXML::~SerializeXML()

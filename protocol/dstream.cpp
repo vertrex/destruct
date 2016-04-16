@@ -19,9 +19,9 @@ DStream::DStream(DStruct* dstruct, DValue const& args) : DCppObject<DStream>(dst
     throw DException("DStream can't open file " + filePath);
 }
 
-DStream::DStream(const DStream& copy) : DCppObject<DStream>(copy)
+DStream::DStream(const DStream& rhs) : DCppObject<DStream>(rhs)
 {
-  this->init();
+  this->copy(this, rhs);
 }
 
 /**

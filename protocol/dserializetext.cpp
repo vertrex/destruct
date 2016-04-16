@@ -14,9 +14,9 @@ SerializeText::SerializeText(DStruct* dstruct, DValue const& args) : DCppObject<
   this->init(); 
 }
 
-SerializeText::SerializeText(SerializeText const& copy) : DCppObject<SerializeText>(copy), __stream(copy.__stream), __depth(0)
+SerializeText::SerializeText(SerializeText const& rhs) : DCppObject<SerializeText>(rhs), __stream(rhs.__stream), __depth(0)
 {
-  this->init();
+  this->copy(this, rhs);
 }
 
 SerializeText::~SerializeText()

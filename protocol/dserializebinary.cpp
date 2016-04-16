@@ -18,9 +18,9 @@ SerializeBinary::SerializeBinary(DStruct* dstruct, DValue const& args) : DCppObj
   this->init(); 
 }
 
-SerializeBinary::SerializeBinary(SerializeBinary const& copy) : DCppObject<SerializeBinary>(copy), __stream(copy.__stream)
+SerializeBinary::SerializeBinary(SerializeBinary const& rhs) : DCppObject<SerializeBinary>(rhs), __stream(rhs.__stream)
 {
-  this->init();
+  this->copy(this, rhs);
 }
 
 SerializeBinary::~SerializeBinary()

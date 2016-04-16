@@ -7,8 +7,9 @@ ServerFunctionObject::ServerFunctionObject(DStruct* dstruct, DValue const& args)
 {
 }
 
-ServerFunctionObject::ServerFunctionObject(ServerFunctionObject const& copy) : DCppObject<ServerFunctionObject>(copy)
+ServerFunctionObject::ServerFunctionObject(ServerFunctionObject const& rhs) : DCppObject<ServerFunctionObject>(rhs)
 {
+  this->copy(this, rhs);
 }
 
 ServerFunctionObject::~ServerFunctionObject()

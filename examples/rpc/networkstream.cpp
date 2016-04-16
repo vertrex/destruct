@@ -23,9 +23,9 @@ NetworkStream::NetworkStream(DStruct* dstruct, DValue const& args) : DCppObject<
 #endif
 }
 
-NetworkStream::NetworkStream(const NetworkStream& copy) : DCppObject<NetworkStream>(copy), __socket(copy.__socket)
+NetworkStream::NetworkStream(const NetworkStream& rhs) : DCppObject<NetworkStream>(rhs), __socket(rhs.__socket)
 {
-  this->init();
+  this->copy(this, rhs);
 }
 
 NetworkStream::~NetworkStream()

@@ -20,9 +20,9 @@ public:
     this->init();
   };
 
-  DMap(const DMapType& copy) : DCppObject<DMap<KeyType, KeyTypeId, ValueType, ValueTypeId> >(copy),  __map(copy.__map), __itemStruct(NULL)
+  DMap(const DMapType& rhs) : DCppObject<DMap<KeyType, KeyTypeId, ValueType, ValueTypeId> >(rhs),  __map(rhs.__map), __itemStruct(NULL)
   {
-    this->init();
+    this->copy(this, rhs);
   }
 
   ~DMap()

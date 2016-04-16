@@ -17,9 +17,9 @@ SerializeRPC::SerializeRPC(DStruct* dstruct, DValue const& args) : DCppObject<Se
   this->__objectManager = DStructs::instance().find("ObjectManager")->newObject();
 }
 
-SerializeRPC::SerializeRPC(SerializeRPC const& copy) : DCppObject<SerializeRPC>(copy), __objectManager(copy.__objectManager), __stream(copy.__stream)
+SerializeRPC::SerializeRPC(SerializeRPC const& rhs) : DCppObject<SerializeRPC>(rhs), __objectManager(rhs.__objectManager), __stream(rhs.__stream)
 {
-  this->init();
+  this->copy(this, rhs);
 }
 
 SerializeRPC::~SerializeRPC()
@@ -153,9 +153,9 @@ DeserializeRPC::DeserializeRPC(DStruct* dstruct, DValue const& args) : DCppObjec
   this->init(); 
 }
 
-DeserializeRPC::DeserializeRPC(DeserializeRPC const& copy) : DCppObject<DeserializeRPC>(copy), __stream(copy.__stream)
+DeserializeRPC::DeserializeRPC(DeserializeRPC const& rhs) : DCppObject<DeserializeRPC>(rhs), __stream(rhs.__stream)
 {
-  this->init();
+  this->copy(this, rhs);
 }
 
 DeserializeRPC::~DeserializeRPC()
