@@ -59,7 +59,7 @@ public:
 
   virtual DObject* clone() const
   {
-    return (new CppClass((const CppClass&)* dynamic_cast<const CppClass *>(this)));
+    return (new CppClass((const CppClass&)* static_cast<const CppClass *>(this)));
   }
 
   using DObject::getValue;
@@ -98,9 +98,9 @@ public:
 protected:
   void copy(DCppObject* self, DCppObject const& rhs)
   {
-    this->init(); //still need to init all as we make copy ? 
+    this->init();
     for (size_t idx = 0; idx != rhs.__baseValue.size(); ++idx)
-       this->__baseValue[idx] = rhs.__baseValue[idx]->clone(self);
+      this->setValue(idx, rhs.__baseValue[idx]->clone(self)->getFinal());
   }
 
   virtual BaseValue* getBaseValue(size_t idx)
