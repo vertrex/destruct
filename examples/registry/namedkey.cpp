@@ -84,7 +84,7 @@ DObject*        NamedKey::deserializeRaw(DValue const& args)
     stream->call("seek", RealValue<DUInt64>(this->valueListOffset + 0x1000)); 
     deserializer->call("DObject", values);
   }
-  ((DObject*)this->values)->destroy();
+  ((DObject*)this->values)->destroy(); //XXX segfault in DFF not in extern exe
   //deserializer->destroy();
   //stream->destroy();
   return (this);

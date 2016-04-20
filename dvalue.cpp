@@ -37,7 +37,7 @@ DValue::DValue(FinalValue const& fv) : __value(fv.clone())
 {
 }
 
-DValue::DValue(DValue const& rhs) : __value(rhs.__value ? rhs.__value->clone() : 0)
+DValue::DValue(DValue const& rhs) : __value(rhs.__value ? rhs.__value->clone() : NULL)
 {
 }
 

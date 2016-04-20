@@ -123,6 +123,7 @@ PyObject* PyDStruct::newObject(PyDStruct::DPyObject* self, PyObject* args, PyObj
 
   PyDObject::DPyObject*   dobjectObject = (PyDObject::DPyObject*)_PyObject_New((PyTypeObject*)PyDObject::pyType());
   dobjectObject->pimpl = dobject;
+  dobjectObject->pimpl->addRef(); //must add ref or object will be destroyed at end of is python life
 
   return ((PyObject*)dobjectObject);
 }

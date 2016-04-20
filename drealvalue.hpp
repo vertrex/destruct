@@ -175,12 +175,15 @@ public:
 
   RealValue<DObject*>& operator=(RealValue<DObject*> const& value)
   {
-    if (this->__val)
-     this->__val->destroy();
+    if (this->__val != value.__val)
+    {
+      if (this->__val)
+       this->__val->destroy();
 
-    this->__val = value.__val;
-    if (this->__val)
-      this->__val->addRef();
+      this->__val = value.__val;
+      if (this->__val)
+        this->__val->addRef();
+    }
 
     return (*this);
   }
