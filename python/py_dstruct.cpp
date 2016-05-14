@@ -121,7 +121,7 @@ PyObject* PyDStruct::newObject(PyDStruct::DPyObject* self, PyObject* args, PyObj
 
   CHECK_ALLOC(dobject)
 
-  PyDObject::DPyObject*   dobjectObject = (PyDObject::DPyObject*)_PyObject_New((PyTypeObject*)PyDObject::pyType());
+  PyDObject::DPyObject*   dobjectObject = (PyDObject::DPyObject*)_PyObject_GC_New((PyTypeObject*)PyDObject::pyType());
   dobjectObject->pimpl = dobject;
   dobjectObject->pimpl->addRef(); //must add ref or object will be destroyed at end of is python life
 

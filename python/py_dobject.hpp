@@ -18,6 +18,9 @@ public:
   static PyMethodDef    pyMethods[];
  
   static int            _init(DPyObject* self, PyObject* args, PyObject* kwds);
+  static int            _traverse(DPyObject* self, visitproc visit, void* arg); 
+  static int            _clear(DPyObject* self);
+
   static void           _dealloc(DPyObject* self);
   static PyObject*      _getattr(DPyObject* self, PyObject* name); 
   static int            _setattr(DPyObject* self, PyObject* name, PyObject *valueObject);
