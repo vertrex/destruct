@@ -48,7 +48,7 @@ PyObject*     PyDObject::asDValue(Destruct::DValue const& v)
     Py_RETURN_NONE;
  
   PyTypeObject* pyType = PyDObject::pyType(); 
-  PyDObject::DPyObject*  dobjectObject = (PyDObject::DPyObject*)_PyObject_GC_New(pyType);
+  PyDObject::DPyObject*  dobjectObject = (PyDObject::DPyObject*)_PyObject_New(pyType);
   dobjectObject->pimpl = value;
 
   return ((PyObject*)dobjectObject);
@@ -63,7 +63,7 @@ PyObject*     PyDObject::asPyObject(PyObject* self, int32_t attributeIndex)
     Py_RETURN_NONE;
   
   PyTypeObject* pyType = PyDObject::pyType(); 
-  PyDObject::DPyObject*  dobjectObject = (PyDObject::DPyObject*)_PyObject_GC_New(pyType);
+  PyDObject::DPyObject*  dobjectObject = (PyDObject::DPyObject*)_PyObject_New(pyType);
   dobjectObject->pimpl = value;
 
   return ((PyObject*)dobjectObject);
@@ -77,7 +77,7 @@ PyDObject::PyDObject()
   pyType->ob_type = &PyType_Type;
   pyType->tp_name = "destruct.DObject";
   pyType->tp_basicsize = sizeof(DPyObject);
-  pyType->tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE  | Py_TPFLAGS_HAVE_GC;
+  pyType->tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE;
   pyType->tp_doc = "destruct.DObject objects";
   pyType->tp_methods = PyDObject::pyMethods;
   pyType->tp_init = (initproc)PyDObject::_init;
@@ -87,8 +87,6 @@ PyDObject::PyDObject()
   pyType->tp_getattro = (getattrofunc)PyDObject::_getattr;
   pyType->tp_setattro = (setattrofunc)PyDObject::_setattr;
   pyType->tp_compare = (cmpfunc)PyDObject::_compare; 
-  pyType->tp_traverse = (traverseproc)PyDObject::_traverse;
-  pyType->tp_clear = (inquiry)PyDObject::_clear;
 
   /**
    *  This cause a real problem when doing if toto.a: print 'exists'
@@ -157,7 +155,7 @@ PyObject* PyDObject::clone(PyDObject::DPyObject* self)
   CHECK_PIMPL
   Destruct::DObject* dobject = self->pimpl->clone();
 
-  PyDObject::DPyObject* pyDObject = (PyDObject::DPyObject*)_PyObject_GC_New(PyDObject::pyType());
+  PyDObject::DPyObject* pyDObject = (PyDObject::DPyObject*)_PyObject_New(PyDObject::pyType());
   pyDObject->pimpl = (Destruct::DObject*)dobject;
    
   return ((PyObject*)pyDObject);
@@ -179,7 +177,6 @@ PyObject* PyDObject::getValue(PyDObject::DPyObject* self, PyObject* attributeObj
   {
     PyObject* utf8Object = PyUnicode_AsUTF8String(attributeObject);
     //XXX check utf8Object is not null or raise py exception
-    Py_XDECREF(utf8Object);
     attributeName = PyString_AsString(utf8Object);
     ///XXXX decref utf8Object
     attributeIndex = self->pimpl->instanceOf()->findAttribute(std::string(attributeName));
@@ -202,7 +199,7 @@ PyObject* PyDObject::getValue(PyDObject::DPyObject* self, PyObject* attributeObj
       errorString += std::string(" instance has no attribute '") + attributeName + "'";
     else
       errorString += " instance has no attribute at this index '";
-    PyErr_SetString(PyExc_AttributeError, errorString.c_str());
+    PyErr_SetString(PyExc_AttributeError, errorString.c_str()); 
     return (0);
   }
 
@@ -399,25 +396,8 @@ int PyDObject::_init(PyDObjectT::DPyObject* self, PyObject *args, PyObject *kwds
   return (-1);
 }
 
-int  PyDObject::_traverse(PyDObjectT::DPyObject* self, visitproc visit, void* arg)
-{  
-  std::cout << "PyDObject::_traverse()" << std::cout;
-  //Py_VISIT(self->args);
-  //Py_VISIT(self->kw);
-  //Py_VISIT(self->dict);
-
-  return (0);
-}
-
-int PyDObject::_clear(PyDObjectT::DPyObject* self)
-{
-  std::cout << "PyDObject::_clear()" << std::cout;
-  return (0);
-}
-
 void PyDObject::_dealloc(PyDObjectT::DPyObject* self)
 {
-   std::cout << "PyDObject::dealloc self" << std::endl;
    if (self->pimpl)
    {
      self->pimpl->destroy();
@@ -494,7 +474,6 @@ PyObject* PyDObject::_repr(PyDObject::DPyObject* self)
 /* This only make sense when pointer is equal */
 int PyDObject::_compare(PyDObject::DPyObject* self, PyDObject::DPyObject* other)
 {
-  std::cout << "rich compare " << std::endl;
   if ((self->pimpl - other->pimpl) == 0)
     return (0);
   if ((self->pimpl - other->pimpl) > 0)
@@ -693,7 +672,7 @@ PyObject* PyDObject::_iter(PyDObject::DPyObject* self)
     }
     Destruct::DObject* iterator = self->pimpl->call("iterator");
   
-    PyDObject::DPyObject*  dobjectObject = (PyDObject::DPyObject*)_PyObject_GC_New(PyDObject::pyType());
+    PyDObject::DPyObject*  dobjectObject = (PyDObject::DPyObject*)_PyObject_New(PyDObject::pyType());
     dobjectObject->pimpl = iterator;
 
     return ((PyObject*)dobjectObject);
