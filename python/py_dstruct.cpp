@@ -78,12 +78,12 @@ PyObject* PyDStruct::attribute(PyDStruct::DPyObject* self, PyObject* args, PyObj
   if (index >= self->pimpl->attributeCount())
     Py_RETURN_NONE;
 
+  PyDAttribute::DPyObject* dattributeObject = (PyDAttribute::DPyObject*) _PyObject_New(PyDAttribute::pyType());
   Destruct::DAttribute* dattribute = new Destruct::DAttribute(self->pimpl->attribute(index));
   CHECK_ALLOC(dattribute)
-  PyDAttribute::DPyObject* dattributeObject = (PyDAttribute::DPyObject*) _PyObject_New(PyDAttribute::pyType());
   dattributeObject->pimpl = dattribute;
 
-  return(Py_BuildValue("O", dattributeObject));
+  return ((PyObject*)dattributeObject);
 }
 
 PyObject* PyDStruct::addAttribute(PyDStruct::DPyObject* self, PyObject* args, PyObject* kwds)

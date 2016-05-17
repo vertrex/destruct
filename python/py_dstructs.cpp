@@ -60,7 +60,7 @@ PyObject* PyDStructs::find(PyDStructs::DPyObject* self, const char* index)
   PyDStruct::DPyObject* dstructObject = (PyDStruct::DPyObject*) _PyObject_New(PyDStruct::pyType());
   dstructObject->pimpl = dstruct;
 
-  return(Py_BuildValue("O", dstructObject)); 
+  return((PyObject*) dstructObject); 
 }
 
 PyObject* PyDStructs::find(PyDStructs::DPyObject* self, size_t index)
@@ -72,7 +72,7 @@ PyObject* PyDStructs::find(PyDStructs::DPyObject* self, size_t index)
   PyDStruct::DPyObject* dstructObject = (PyDStruct::DPyObject*) _PyObject_New(PyDStruct::pyType());
   dstructObject->pimpl = dstruct;
 
-  return(Py_BuildValue("O", dstructObject)); 
+  return((PyObject*)dstructObject); 
 }
 
 PyObject* PyDStructs::registerDStruct(PyDStructs::DPyObject* self, PyObject* args, PyObject* kwds)

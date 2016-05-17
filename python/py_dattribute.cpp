@@ -49,7 +49,7 @@ PyObject* PyDAttribute::dtype(PyDAttribute::DPyObject* self, PyObject*args, PyOb
   PyDType::DPyObject* dtypeObject = (PyDType::DPyObject*) _PyObject_New(PyDType::pyType());
   dtypeObject->pimpl = dtype;
 
-  return (Py_BuildValue("O", dtypeObject));
+  return ((PyObject*)dtypeObject);
 }
 
 PyMethodDef PyDAttribute::pyMethods[] = 
