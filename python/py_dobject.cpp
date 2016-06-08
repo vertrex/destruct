@@ -36,7 +36,7 @@ Destruct::DValue PyDObject::toDValue(PyObject* value)
   }
   if (value == Py_None)
     return Destruct::RealValue<Destruct::DObject* >(Destruct::DNone); 
-  throw Destruct::DException("Can't cast to DObject*");
+  throw Destruct::DException(CAST_ERROR(DObject*));
 }
 
 PyObject*     PyDObject::asDValue(Destruct::DValue const& v)

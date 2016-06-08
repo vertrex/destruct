@@ -5,6 +5,8 @@
 #include "destruct.hpp"
 #include "dvalue.hpp"
 
+#define CAST_ERROR(x) "Can't cast " + std::string(value->ob_type->tp_name) + " to " #x
+
 #define CHECK_PIMPL\
   if (self->pimpl == NULL)\
   {\

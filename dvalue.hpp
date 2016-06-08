@@ -103,6 +103,9 @@ public:
     if (this->__value)
     {
       TypedValue<PlainType> const &tv = dynamic_cast<TypedValue<PlainType> const &>(*this->__value);
+       //try catch bad_cast and rather return DEXception (cast error) so no need to check for dexception and bad cast everywhere ?
+      //this can happen for exemple when object as a default constructor that take an argument and the argument is not of the right type
+      //also need to type constructor argument 
       return (tv);
     }
     else

@@ -13,6 +13,8 @@
 #include "protocol/dserializexml.hpp"
 #include "protocol/dserializeraw.hpp"
 #include "protocol/dstream.hpp"
+#include "protocol/dstreamcout.hpp"
+#include "protocol/dstreamstring.hpp"
 #include "protocol/traceobject.hpp"
 #include "protocol/recursivetraceobject.hpp"
 

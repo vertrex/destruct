@@ -24,7 +24,7 @@ Destruct::DValue PyDMethodObject::toDValue(PyObject* value)
   {
      return Destruct::RealValue<Destruct::DFunctionObject*>(((DPyObject*)value)->pimpl);
   }
-  throw Destruct::DException("Can't cast to DMethodObject*");
+  throw Destruct::DException(CAST_ERROR(DMethodObject*));
 }
 
 /* 
@@ -128,7 +128,7 @@ PyObject* PyDMethodObject::call(PyObject* _self, PyObject* args)
   } 
   catch (Destruct::DException const& exception)
   {  
-    std::cout << exception.error() << std::endl;
+    //std::cout << exception.error() << std::endl;
     PyEval_RestoreThread(_save); 
     PyErr_SetString(PyExc_TypeError, exception.error().c_str());
   }

@@ -12,7 +12,7 @@ Destruct::DValue PyDNullObject::toDValue(PyObject* value)
 {
   if (!value || (value == Py_None) || PyObject_TypeCheck(value, PyDNullObject::pyType()))
     return Destruct::RealValue<Destruct::DObject* >(Destruct::DNone); 
-  throw Destruct::DException("Can't cast to DNone");
+  throw Destruct::DException(CAST_ERROR(DNone));
 }
 
 PyObject*     PyDNullObject::asDValue(Destruct::DValue const& v)

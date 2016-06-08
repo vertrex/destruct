@@ -95,6 +95,8 @@ protocol/dserializetext.cpp
 protocol/dserializexml.cpp
 protocol/dserializeraw.cpp
 protocol/dstream.cpp
+protocol/dstreamcout.cpp
+protocol/dstreamstring.cpp
 protocol/traceobject.cpp
 protocol/recursivetraceobject.cpp
 protocol/import.cpp

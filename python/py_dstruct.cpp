@@ -8,6 +8,8 @@
 #include "dobject.hpp"
 #include "dstructs.hpp"
 
+#include <typeinfo>
+
 PyTypeObject*     PyDStruct::pyType(void)
 {
   static PyTypeObject* pyType = (PyTypeObject*)malloc(sizeof(basePyType));
@@ -108,15 +110,24 @@ PyObject* PyDStruct::newObject(PyDStruct::DPyObject* self, PyObject* args, PyObj
   Destruct::DObject* dobject = NULL;
   PyObject* argsObject = NULL;
 
-  if (PyArg_ParseTuple(args, "O", &argsObject))
+  try
   {
-    Destruct::DValue value = pyObjectToDValue(argsObject);
-    dobject = self->pimpl->newObject(value);
+    if (PyArg_ParseTuple(args, "O", &argsObject))
+    {
+      Destruct::DValue value = pyObjectToDValue(argsObject);
+      dobject = self->pimpl->newObject(value);
+    }
+    else
+    {
+      PyErr_Clear();
+      dobject = self->pimpl->newObject(); 
+    }
   }
-  else
+  catch (std::bad_cast exception)
   {
-    PyErr_Clear();
-    dobject = self->pimpl->newObject(); 
+    std::string error = std::string("Error casting constructor argument : ");
+    PyErr_SetString(PyExc_TypeError, error.c_str()); 
+    return (0);
   }
 
   CHECK_ALLOC(dobject)

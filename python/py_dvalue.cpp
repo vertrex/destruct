@@ -27,7 +27,7 @@ Destruct::DValue PyDInt8::toDValue(PyObject* value)
     DInt8  fvalue = (DInt8)PyLong_AsLong(value);
     return Destruct::RealValue<DInt8>(fvalue);
   }
-  throw Destruct::DException("Can't cast to DInt8");
+  throw Destruct::DException(CAST_ERROR(DInt8));
 }
 
 PyObject*     PyDInt8::asDValue(Destruct::DValue const& v)
@@ -75,7 +75,7 @@ Destruct::DValue PyDInt16::toDValue(PyObject* value)
     DInt16  fvalue = (DInt16)PyLong_AsLong(value);
     return (Destruct::RealValue<DInt16>(fvalue));
   }
-  throw Destruct::DException("Can't cast to DInt16");
+  throw Destruct::DException(CAST_ERROR(DInt16));
 }
 
 PyObject*     PyDInt16::asDValue(Destruct::DValue const& v)
@@ -123,7 +123,7 @@ Destruct::DValue PyDInt32::toDValue(PyObject* value)
       DInt32  fvalue = PyLong_AsLong(value);
       return (Destruct::RealValue<DInt32>(fvalue));
   }
-  throw Destruct::DException("Can't cast to DInt32");
+  throw Destruct::DException(CAST_ERROR(DInt32));
 }
 
 PyObject*        PyDInt32::asDValue(Destruct::DValue const& v)
@@ -171,7 +171,7 @@ Destruct::DValue PyDInt64::toDValue(PyObject* value)
     DInt64 fvalue = PyLong_AsLong(value);
     return (Destruct::RealValue<DInt64>(fvalue));
   }
-  throw Destruct::DException("Can't cast to DInt64");
+  throw Destruct::DException(CAST_ERROR(DInt64));
 }
 
 PyObject*     PyDInt64::asDValue(Destruct::DValue const& v)
@@ -219,7 +219,7 @@ Destruct::DValue PyDUInt8::toDValue(PyObject* value)
     DUInt8  fvalue = (DUInt8)PyLong_AsLong(value);
     return Destruct::RealValue<DUInt8>(fvalue);
   }
-  throw Destruct::DException("Can't cast to DUInt8");
+  throw Destruct::DException(CAST_ERROR(DUInt8));
 }
 
 PyObject*     PyDUInt8::asDValue(Destruct::DValue const& v)
@@ -267,7 +267,7 @@ Destruct::DValue PyDUInt16::toDValue(PyObject* value)
     DUInt16  fvalue = (DUInt16)PyLong_AsLong(value);
     return (Destruct::RealValue<DUInt16>(fvalue));
   }
-  throw Destruct::DException("Can't cast to DUInt16");
+  throw Destruct::DException(CAST_ERROR(DUInt16));
 }
 
 PyObject*     PyDUInt16::asDValue(Destruct::DValue const& v)
@@ -315,7 +315,7 @@ Destruct::DValue PyDUInt32::toDValue(PyObject* value)
     DUInt32  fvalue = PyLong_AsLong(value);
     return (Destruct::RealValue<DUInt32>(fvalue));
   }
-  throw Destruct::DException("Can't cast to DUInt32");
+  throw Destruct::DException(CAST_ERROR(DUInt32));
 }
 
 PyObject*     PyDUInt32::asDValue(Destruct::DValue const& v)
@@ -363,7 +363,7 @@ Destruct::DValue PyDUInt64::toDValue(PyObject* value)
       DUInt64 fvalue = PyLong_AsLong(value);
       return (Destruct::RealValue<DUInt64>(fvalue));
   }
-  throw Destruct::DException("Can't cast to DUInt64");
+  throw Destruct::DException(CAST_ERROR(DUInt64));
 }
 
 PyObject*     PyDUInt64::asDValue(Destruct::DValue const& v)
@@ -419,7 +419,7 @@ Destruct::DValue PyDUnicodeString::toDValue(PyObject* value)
     Destruct::DUnicodeString fvalue = std::string(PyString_AsString(value));
     return Destruct::RealValue<Destruct::DUnicodeString>(fvalue);
   }
-  throw Destruct::DException("Can't cast to DUnicodeString");
+  throw Destruct::DException(CAST_ERROR(DUnicodeString));
 }
 
 PyObject*     PyDUnicodeString::asDValue(Destruct::DValue const& v)
@@ -465,13 +465,21 @@ PyDBuffer::PyDBuffer()
 
 Destruct::DValue PyDBuffer::toDValue(PyObject* value) 
 {
+  if (PyObject_CheckBuffer(value))
+  {
+    Py_buffer pyBuffer;
+    PyObject_GetBuffer(value, &pyBuffer, PyBUF_SIMPLE);
+    Destruct::DBuffer fvalue((uint8_t*)pyBuffer.buf, pyBuffer.len);
+    PyBuffer_Release(&pyBuffer);
+    return Destruct::RealValue<Destruct::DBuffer>(fvalue);
+  }
   if (PyByteArray_Check(value))
   {
     Destruct::DBuffer fvalue((uint8_t*)PyByteArray_AsString(value), PyByteArray_Size(value));
     return Destruct::RealValue<Destruct::DBuffer>(fvalue);
   }
-
-  throw Destruct::DException("Can't cast to DBuffer");
+  //throw Destruct::DException("Can't cast " + std::string(value->ob_type->tp_name) + " to DBuffer");
+  throw Destruct::DException(CAST_ERROR(DBuffer));
 }
 
 PyObject*     PyDBuffer::asDValue(Destruct::DValue const& v)
