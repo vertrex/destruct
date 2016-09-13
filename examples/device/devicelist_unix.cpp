@@ -100,6 +100,8 @@ DObject* DeviceList::list(void)
           device->serialNumber = serialNumber;
           device->model = model;
           device->size = realSize;
+          //XXX try stat or open here so we don't push device that can't be opened !
+
           deviceList->call("push", RealValue<DObject*>(device));
         }
       }
