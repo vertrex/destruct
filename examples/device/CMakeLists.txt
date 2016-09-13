@@ -19,10 +19,13 @@ include_directories("../rpc")
 set(device_libfiles
   devicerpc.cpp
   deviceserver.cpp
+  devicelist_unix.cpp
+  device_unix.cpp
+  devicestream_unix.cpp
 )
 
 add_library(destruct_device SHARED ${device_libfiles})
-target_link_libraries(destruct_device destruct destruct_rpc)
+target_link_libraries(destruct_device destruct destruct_rpc udev)
 
 set(device_files
 devicerpc.cpp)

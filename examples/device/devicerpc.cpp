@@ -5,13 +5,18 @@
 
 #include "client.hpp"
 
+#include "dstructs.hpp"
+
 using namespace Destruct;
 
 DeviceRPC::DeviceRPC()
 {
   Destruct::DType::init();
   //Device::declare(); //not used as we only return a dstream yet
-  Client::declare();
+//  Client::declare(); use import it's better :) 
+  DObject* import = Destruct::DStructs::instance().generate("Import");
+  import->call("file", RealValue<DUnicodeString>("../modules/libdestruct_rpc.so"));
+  import->call("file", RealValue<DUnicodeString>("../modules/libdestruct_device.so"));
 }
 
 DeviceRPC::~DeviceRPC()

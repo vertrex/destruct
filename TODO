@@ -1,3 +1,7 @@
+Handle function /static function in object via DFunction ? to be able to create colletion of function for parser (repeater, string deserialization, etc..)
+  So we could write a kind of language that called the function/object function if exist in the base to parse automatically structure etc...
+
+============== old todo ====================
 dmop -> base
 dstruct -> serialization , map, list protocol -> gestion thread /erreur ,exception / type objet -> cow , read etc...
 dforensicslib -> ntfs, fat , ... que du dstruct (description des structure
