@@ -23,6 +23,7 @@ public:
   EXPORT static void                   declare(void);
   EXPORT virtual DObject*              start(void);
   EXPORT DValue                        findObject(void); ///XXX:
+  EXPORT DValue                        createRoot(DUnicodeString objectName); ///XXX:
 
   EXPORT DStruct*	                remoteFind(const DUnicodeString name);
   EXPORT bool                          print(DObject* dobject) const;
@@ -48,17 +49,19 @@ public:
  *  Destruct definition
  */
   RealValue<DFunctionObject*>   _findObject;
+  RealValue<DFunctionObject*>   _createRoot;
  
   static size_t ownAttributeCount()
   {
-    return (1);
+    return (2);
   }
 
   static DAttribute* ownAttributeBegin()
   {
     static DAttribute attributes[] = 
     {
-      DAttribute(DType::DObjectType, "findObject", DType::DNoneType), 
+      DAttribute(DType::DObjectType, "findObject", DType::DNoneType), //useless
+      DAttribute(DType::DObjectType, "createRoot", DType::DUnicodeStringType), 
     };
 
     return (attributes);
@@ -68,7 +71,8 @@ public:
   {
      static DPointer<Client> memberPointer[] =
      {
-       DPointer<Client>(&Client::_findObject, &Client::findObject),
+       DPointer<Client>(&Client::_findObject, &Client::findObject), //useless use creatRoot (registry ...)
+       DPointer<Client>(&Client::_createRoot, &Client::createRoot),
      };
 
     return (memberPointer);

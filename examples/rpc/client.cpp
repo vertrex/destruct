@@ -158,11 +158,23 @@ DValue     Client::findObject(void) //getRoot XXX ?
 {
   Destruct::DStructs& destruct = Destruct::DStructs::instance();
 
-  DStruct* registryS = destruct.find("Registry");
+  DStruct* registryS = destruct.find("Registry"); //replaced bu create root !
 
   ClientObject* root = new ClientObject(RealValue<DObject*>(this->__networkStream), RealValue<DObject*>(this->__serialize), RealValue<DObject*>(this->__deserialize), 0, registryS); 
 
   return (RealValue<DObject*>(root));
+}
+
+DValue  Client::createRoot(DUnicodeString objectName)
+{
+  Destruct::DStructs& destruct = Destruct::DStructs::instance();
+
+  DStruct* registryS = destruct.find(objectName);
+
+  ClientObject* root = new ClientObject(RealValue<DObject*>(this->__networkStream), RealValue<DObject*>(this->__serialize), RealValue<DObject*>(this->__deserialize), 0, registryS); 
+
+  return (RealValue<DObject*>(root));
+
 }
 
 Destruct::DStruct* Client::remoteFind(const DUnicodeString name)

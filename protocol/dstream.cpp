@@ -83,8 +83,13 @@ void    DStream::seek(DValue const& args)
 
 DUInt64 DStream::size(void)
 {
-//if input
-  return (this->__stream.tellg());
+  uint64_t current = this->__stream.tellg();
+
+  this->__stream.seekg(0, std::ios::end);
+  uint64_t size = this->__stream.tellg();
+
+  this->__stream.seekg(current);
+  return (size);
 }
 
 DUInt64 DStream::tell(void)

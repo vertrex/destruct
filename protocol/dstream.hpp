@@ -59,7 +59,7 @@ public:
        DAttribute(DType::DBufferType, "read",  DType::DInt64Type), 
        DAttribute(DType::DInt64Type,  "write", DType::DBufferType),
        DAttribute(DType::DNoneType, "flush", DType::DNoneType),
-       DAttribute(DType::DUInt64Type, "size", DType::DUInt64Type),
+       DAttribute(DType::DUInt64Type, "size", DType::DNoneType),
        DAttribute(DType::DNoneType, "seek", DType::DUInt64Type),
        DAttribute(DType::DUInt64Type, "tell", DType::DNoneType),
     };
