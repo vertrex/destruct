@@ -10,7 +10,7 @@ using namespace Destruct;
 DeviceRPC::DeviceRPC()
 {
   Destruct::DType::init();
-  //Device::declare(); //XXX Device::declare()
+  //Device::declare(); //not used as we only return a dstream yet
   Client::declare();
 }
 
@@ -24,8 +24,8 @@ void DeviceRPC::serve(uint32_t port)
  //use destruct import
  DeviceServer  server(port);
  server.initRoot();
- //server.daemonize();
- server.serve();
+ server.daemonize();
+ //server.serve();
 }
 
 const std::string DeviceRPC::usage(void)
