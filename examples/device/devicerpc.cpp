@@ -1,5 +1,4 @@
 #include "devicerpc.hpp"
-#include "device.hpp"
 
 #include "server.hpp"
 #include "deviceserver.hpp"
