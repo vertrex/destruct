@@ -78,6 +78,7 @@ private:
   RealValue<DFunctionObject*>   _read, _size, _seek, _tell, _close;
   DUnicodeString                __path;
   DUInt64                       __size;
+  DUInt64						__offset;
   DeviceBuffer*                 __deviceBuffer;
 };
 

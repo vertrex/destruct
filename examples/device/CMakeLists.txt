@@ -37,7 +37,11 @@ endif (UNIX)
 
 
 add_library(destruct_device SHARED ${device_libfiles})
-target_link_libraries(destruct_device destruct destruct_rpc udev)
+if (UNIX)
+  target_link_libraries(destruct_device destruct destruct_rpc udev)
+else (UNIX)
+  target_link_libraries(destruct_device destruct destruct_rpc)
+endif (UNIX)
 
 set(device_files
 devicerpc.cpp)

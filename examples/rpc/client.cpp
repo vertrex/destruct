@@ -26,7 +26,7 @@
  */
 extern "C"
 {
-  void DestructExport()
+  EXPORT void DestructExport()
   {
     Client::declare();
   }

@@ -14,14 +14,13 @@
  *  Solal Jacob <sja@digital-forensic.org>
  */
 
-#include <fcntl.h>
-#include <errno.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/stat.h>
+#include <string>
+#include <windows.h>
+#include <Shlwapi.h>
+
 
 #include "dstructs.hpp"
-#include "devicestream.hpp"
+#include "devicestream_windows.hpp"
 
 using namespace Destruct;
 
@@ -82,7 +81,7 @@ uint32_t	DeviceBuffer::getData(void *buff, uint32_t size, uint64_t offset)
 /**
  *  DeviceStream Windows 
  */
-DeviceStream::DeviceStream(DStruct* dstruct, DValue const& args) : DCppObject<DeviceStream>(dstruct, args)
+DeviceStream::DeviceStream(DStruct* dstruct, DValue const& args) : DCppObject<DeviceStream>(dstruct, args), __offset(0)
 {
   this->init();
   this->__size = ((DObject*)args)->getValue("size");
@@ -92,20 +91,21 @@ DeviceStream::DeviceStream(DStruct* dstruct, DValue const& args) : DCppObject<De
  if (((HANDLE)hnd) == INVALID_HANDLE_VALUE)
     throw DException("Can't open device");
 
- this->__deviceBuffer = new DeviceBuffer((HANDLE)hnd, 100 * sizeof(uint8_t), 4096, node->size());
+ this->__deviceBuffer = new DeviceBuffer((HANDLE)hnd, 100 * sizeof(uint8_t), 4096, this->__size);
 }
 
 DeviceStream::~DeviceStream()
 {
-  ::close(this->__fd);
+	delete this->__deviceBuffer;
 }
 
 DBuffer DeviceStream::read(DValue const& args)
 {
+  uint32_t				origSize = (int32_t)args.get<DInt64>();
   uint32_t              readed;
   uint32_t              aReaded = 0;
 
-  DBuffer dbuffer(args.get<DUInt64>);
+  DBuffer dbuffer(origSize);
 
   while (aReaded < origSize)
   {
@@ -114,7 +114,7 @@ DBuffer DeviceStream::read(DValue const& args)
     aReaded += readed;
     if (this->__offset > this->__size)
     {
-      this->__offset = this->__size();
+      this->__offset = this->__size;
       return dbuffer;
       //return (aReaded);
     }
@@ -134,7 +134,7 @@ DUInt64 DeviceStream::size(void)
 void    DeviceStream::seek(DValue const& args)
 {
   if (this->__offset + args.get<DUInt64>() < this->__size)
-    this->__offset += args.get<DUInt64>();
+    this->__offset = args.get<DUInt64>();
  return ;// (n);
 }
 
@@ -146,4 +146,5 @@ DUInt64 DeviceStream::tell(void)
 void    DeviceStream::close(void)
 {
   delete this->__deviceBuffer;
+  this->__deviceBuffer = NULL;
 }
