@@ -1,0 +1,150 @@
+/*
+ * DFF -- An Open Source Digital Forensics Framework
+ * Copyright (C) 2009-2011 ArxSys
+ * This program is free software, distributed under the terms of
+ * the GNU General Public License Version 2. See the LICENSE file
+ * at the top of the source tree.
+ *  
+ * See http: *www.digital-forensic.org for more information about this
+ * project. Please do not directly contact any of the maintainers of
+ * DFF for assistance; the project provides a web site, mailing lists
+ * and IRC channels for your use.
+ * 
+ * Author(s):
+ *  Solal Jacob <sja@digital-forensic.org>
+ */
+
+#include "dstructs.hpp"
+#include "dexception.hpp"
+
+#include <libudev.h>
+
+#include "device.hpp"
+#include "devicelist.hpp"
+
+#define _WIN32_DCOM
+
+#include <comdef.h>
+#include <Wbemidl.h>
+# pragma comment(lib, "wbemuuid.lib")
+
+using namespace Destruct;
+
+/**
+ *  DeviceList 
+ */
+DeviceList::DeviceList(DStruct* dstruct, DValue const& args) : DCppObject<DeviceList>(dstruct, args)
+{
+  this->init();
+}
+
+DeviceList::~DeviceList()
+{
+
+}
+
+DObject* DeviceList::list(void)
+{
+  HRESULT hres;
+
+  IWbemLocator	*pLoc = NULL; 
+  IWbemServices	*pSvc = NULL;
+
+  hres =  CoInitializeEx(NULL, COINIT_APARTMENTTHREADED); 
+  if (FAILED(hres))
+    return;
+
+  hres =  CoInitializeSecurity(NULL, -1, NULL, NULL, RPC_C_AUTHN_LEVEL_DEFAULT,
+                               RPC_C_IMP_LEVEL_IMPERSONATE, NULL, EOAC_NONE, NULL );
+       
+  if (FAILED(hres) &&  !(hres == RPC_E_TOO_LATE))
+    return;
+ 
+
+  hres = CoCreateInstance(CLSID_WbemAdministrativeLocator,
+			  NULL, CLSCTX_INPROC_SERVER, IID_IWbemLocator, (LPVOID *) &(this->pLoc));
+  if (FAILED(hres))
+    return ;
+  
+  hres = pLoc->ConnectServer(_bstr_t(L"ROOT\\CIMV2"), NULL , NULL, 0,
+                             NULL, 0, 0, &(this->pSvc));
+  if (FAILED(hres))
+    return;
+
+  hres = CoSetProxyBlanket(this->pSvc, RPC_C_AUTHN_WINNT, RPC_C_AUTHZ_NONE,
+           	           NULL, RPC_C_AUTHN_LEVEL_CALL, RPC_C_IMP_LEVEL_IMPERSONATE, NULL, EOAC_NONE);
+  if (FAILED(hres))
+    return; 
+
+  IEnumWbemClassObject* pEnumerator = NULL;
+  hres = this->pSvc->ExecQuery(bstr_t("WQL"), bstr_t("SELECT * FROM Win32_DiskDrive"),
+			       WBEM_FLAG_FORWARD_ONLY | WBEM_FLAG_RETURN_IMMEDIATELY,  NULL,&pEnumerator);
+  if (FAILED(hres))
+	return;
+
+  IWbemClassObject *pclsObj;
+  ULONG uReturn = 0;
+   
+  DObject* deviceList = Destruct::DStructs::instance().generate("DVectorObject");
+  while (pEnumerator)
+  {
+    HRESULT hr = pEnumerator->Next(WBEM_INFINITE, 1, &pclsObj, &uReturn);
+
+    if (!uReturn)
+      break;
+
+    WMIDevice* dev = new WMIDevice(pclsObj);
+
+    Device* device = static_cast<Device*>(Destruct::DStructs::instance().generate("Device"));
+    HRESULT	hr;
+    _variant_t vtProp;
+
+    hr = this->pclsObj->Get(L"Name", 0, &vtProp, 0, 0);
+    if (SUCCEEDED(hr))
+      device->blockDevice = DUnicodeString((wchar_t*)vtProp.pbstrVal); //, length?, "UTF-16LE")
+    else 
+      continue;
+
+    hr = this->pclsObj->Get(L"SerialNumber", 0, &vtProp, 0, 0);
+    device->serialNumber = DUnicodeString((wchar_t*)vtProp.pbstrVal);
+
+    hr = this->pclsObj->Get(L"Model", 0, &vtProp, 0, 0);
+    device->model = DUnicodeString((wchar_t*)vtProp.pbstrVal);
+
+    /*
+     * Get Size 
+     */
+
+    hr = this->pclsObj->Get(L"Name", 0, &vtProp, NULL, NULL);
+    if (SUCCEEDED(hr))
+    {
+      wchar_t*	var = (wchar_t*)vtProp.pbstrVal;
+	      
+      HANDLE hnd = CreateFileW(var , GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+      if (hnd == INVALID_HANDLE_VALUE)
+        continue;
+      else
+      {
+        GET_LENGTH_INFORMATION diskSize;
+        DWORD lpBytesReturned = 0;
+        DeviceIoControl(hnd, FSCTL_ALLOW_EXTENDED_DASD_IO, NULL, 0, NULL, 0, &lpBytesReturned, NULL);
+        if (DeviceIoControl(hnd, IOCTL_DISK_GET_LENGTH_INFO, NULL, 0, &diskSize, sizeof(diskSize), &lpBytesReturned,0) == 0)
+        {
+	 CloseHandle(hnd);
+         continue; 
+        } 
+        device->size = ((uint64_t)diskSize.Length.QuadPart);
+        CloseHandle(hnd);
+      }
+    }
+    this->deviceList.push_back(dev);
+  }
+  pEnumerator->Release();
+
+  if (pSvc)
+    pSvc->Release();
+  if (pLoc)
+    pLoc->Release();
+
+  return (deviceList);
+}

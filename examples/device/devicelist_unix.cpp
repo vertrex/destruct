@@ -19,23 +19,8 @@
 
 #include <libudev.h>
 
-#include "devicelist.hpp"
 #include "device.hpp"
-#include "devicestream.hpp"
-
-using namespace Destruct;
-
-extern "C"
-{
-  EXPORT void DestructExport()
-  {
-    Destruct::DStructs& destruct = Destruct::DStructs::instance();
-
-    registerDCpp(DeviceList)
-    registerDCpp(Device)
-    registerDCpp(DeviceStream)
-  }
-}
+#include "devicelist.hpp"
 
 /**
  *  DeviceList 

@@ -16,7 +16,26 @@
 
 #include "device.hpp"
 #include "dstructs.hpp"
+#include "devicelist.hpp"
+
+#ifdef WIN32
+#include "devicestream_windows.hpp"
+#else
+#include "devicestream_unix.hpp"
+#endif
 #include "protocol/dmutableobject.hpp"
+
+extern "C"
+{
+  EXPORT void DestructExport()
+  {
+    Destruct::DStructs& destruct = Destruct::DStructs::instance();
+
+    registerDCpp(DeviceList)
+    registerDCpp(Device)
+    registerDCpp(DeviceStream)
+  }
+}
 
 using namespace Destruct;
 
