@@ -19,8 +19,8 @@ include_directories("../rpc")
 set(device_libfiles
   devicerpc.cpp
   deviceserver.cpp
+  device.cpp
   devicelist_unix.cpp
-  device_unix.cpp
   devicestream_unix.cpp
 )
 

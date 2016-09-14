@@ -19,10 +19,9 @@
 
 #include <libudev.h>
 
-//#IFDEF UNIX
-#include "devicelist_unix.hpp"
-#include "device_unix.hpp"
-#include "devicestream_unix.hpp"
+#include "devicelist.hpp"
+#include "device.hpp"
+#include "devicestream.hpp"
 
 using namespace Destruct;
 

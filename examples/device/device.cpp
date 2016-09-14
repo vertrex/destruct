@@ -14,7 +14,7 @@
  *  Solal Jacob <sja@digital-forensic.org>
  */
 
-#include "device_unix.hpp"
+#include "device.hpp"
 #include "dstructs.hpp"
 #include "protocol/dmutableobject.hpp"
 

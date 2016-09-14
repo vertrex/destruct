@@ -21,7 +21,7 @@
 #include <sys/stat.h>
 
 #include "dstructs.hpp"
-#include "devicestream_unix.hpp"
+#include "devicestream.hpp"
 
 using namespace Destruct;
 
