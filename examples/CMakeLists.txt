@@ -26,6 +26,7 @@ add_subdirectory(xmacro)
 #add_subdirectory(filetype)
 
 add_subdirectory(rpc)
+add_subdirectory(rpczmq)
 add_subdirectory(registry)
 add_subdirectory(device)
 
