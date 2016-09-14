@@ -30,14 +30,16 @@ public:
   DUInt64       size(void);
   void          seek(DValue const& args);
   DUInt64       tell(void);
+  void          close(void);
 
-  attributeCount(DeviceStream, 4)
+  attributeCount(DeviceStream, 5)
 
   attributeList(
                 function(DBuffer, read, DInt64)
                 function(DUInt64, size, DNone)
                 function(DNone, seek, DUInt64)
                 function(DUInt64, tell, DNone)
+                function(DNone, close, DNone)
                )
 
   memberList(DeviceStream, 
@@ -45,12 +47,13 @@ public:
               method(DeviceStream, size)
               method(DeviceStream, seek)
               method(DeviceStream, tell)
+              method(DeviceStream, close)
             )
 
 protected:
   ~DeviceStream();
 private:
-  RealValue<DFunctionObject*>   _read, _size, _seek, _tell;
+  RealValue<DFunctionObject*>   _read, _size, _seek, _tell, _close;
   DUnicodeString                __path;
   DUInt64                       __size;
   DInt32                        __fd;

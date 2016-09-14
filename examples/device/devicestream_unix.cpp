@@ -44,7 +44,7 @@ DeviceStream::DeviceStream(DStruct* dstruct, DValue const& args) : DCppObject<De
 
 DeviceStream::~DeviceStream()
 {
-  close(this->__fd);
+  ::close(this->__fd);
 }
 
 DBuffer DeviceStream::read(DValue const& args)
@@ -73,7 +73,7 @@ DUInt64 DeviceStream::size(void)
 
 void    DeviceStream::seek(DValue const& args)
 {
- uint64_t n = lseek64(this->__fd, this->__fd, SEEK_SET);
+ uint64_t n = lseek64(this->__fd, args.get<DUInt64>(), SEEK_SET);
  if (n == ((uint64_t)-1))
     throw DException("devices::vseek can't seek error " + std::string(strerror(errno)));
 
@@ -83,4 +83,9 @@ void    DeviceStream::seek(DValue const& args)
 DUInt64 DeviceStream::tell(void)
 {
   return lseek64(this->__fd, 0, SEEK_CUR);
+}
+
+void    DeviceStream::close(void)
+{
+  ::close(this->__fd);
 }
