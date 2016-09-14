@@ -27,9 +27,7 @@ add_subdirectory(xmacro)
 
 add_subdirectory(rpc)
 add_subdirectory(registry)
-if (UNIX)
 add_subdirectory(device)
-endif (UNIX)
 
 set (test_files
 test.cpp
