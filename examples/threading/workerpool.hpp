@@ -81,7 +81,7 @@ public:
 class Queue : public DCppObject<Queue> 
 {
 public: 
-  Queue(DStruct* dstruct, DValue const& args);
+  EXPORT Queue(DStruct* dstruct, DValue const& args);
 
   void                        enqueue(DValue const& args);
   DValue                      dequeue(void);

@@ -85,7 +85,7 @@ public:
   ThreadSafeObject(ThreadSafeObject const&);
   //ThreadSafeObject(DObject*); //untested
 
-  static DObject*   newObject(DStruct *, DValue const& args);
+  EXPORT static DObject*   newObject(DStruct *, DValue const& args);
 
   DObject*          clone() const;
   virtual DValue    getValue(size_t index) const;
