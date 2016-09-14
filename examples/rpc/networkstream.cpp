@@ -99,7 +99,7 @@ void NetworkStream::flush(void)// const
 /**
  *  StreamBuffer
  */
-StreamBuffer::StreamBuffer() : __buffer(new char[4096]), __currentRead(0), __currentWrite(0), __maxSize(4096)
+StreamBuffer::StreamBuffer() : __buffer(new char[4096]), __currentRead(0), __currentWrite(0), __maxSize(8192)
 {
 }
 
