@@ -17,8 +17,6 @@
 #include "dstructs.hpp"
 #include "dexception.hpp"
 
-#include <libudev.h>
-
 #include "device.hpp"
 #include "devicelist.hpp"
 
@@ -52,35 +50,34 @@ DObject* DeviceList::list(void)
 
   hres =  CoInitializeEx(NULL, COINIT_APARTMENTTHREADED); 
   if (FAILED(hres))
-    return;
+    return DNone;
 
   hres =  CoInitializeSecurity(NULL, -1, NULL, NULL, RPC_C_AUTHN_LEVEL_DEFAULT,
                                RPC_C_IMP_LEVEL_IMPERSONATE, NULL, EOAC_NONE, NULL );
        
   if (FAILED(hres) &&  !(hres == RPC_E_TOO_LATE))
-    return;
+    return DNone;//throw
  
-
   hres = CoCreateInstance(CLSID_WbemAdministrativeLocator,
-			  NULL, CLSCTX_INPROC_SERVER, IID_IWbemLocator, (LPVOID *) &(this->pLoc));
+			  NULL, CLSCTX_INPROC_SERVER, IID_IWbemLocator, (LPVOID *) &(pLoc));
   if (FAILED(hres))
-    return ;
+    return DNone;//throw
   
   hres = pLoc->ConnectServer(_bstr_t(L"ROOT\\CIMV2"), NULL , NULL, 0,
-                             NULL, 0, 0, &(this->pSvc));
+                             NULL, 0, 0, &(pSvc));
   if (FAILED(hres))
-    return;
+    return DNone;//throw
 
-  hres = CoSetProxyBlanket(this->pSvc, RPC_C_AUTHN_WINNT, RPC_C_AUTHZ_NONE,
+  hres = CoSetProxyBlanket(pSvc, RPC_C_AUTHN_WINNT, RPC_C_AUTHZ_NONE,
            	           NULL, RPC_C_AUTHN_LEVEL_CALL, RPC_C_IMP_LEVEL_IMPERSONATE, NULL, EOAC_NONE);
   if (FAILED(hres))
-    return; 
+    return DNone; //throw
 
   IEnumWbemClassObject* pEnumerator = NULL;
-  hres = this->pSvc->ExecQuery(bstr_t("WQL"), bstr_t("SELECT * FROM Win32_DiskDrive"),
+  hres = pSvc->ExecQuery(bstr_t("WQL"), bstr_t("SELECT * FROM Win32_DiskDrive"),
 			       WBEM_FLAG_FORWARD_ONLY | WBEM_FLAG_RETURN_IMMEDIATELY,  NULL,&pEnumerator);
   if (FAILED(hres))
-	return;
+	return DNone;//throw
 
   IWbemClassObject *pclsObj;
   ULONG uReturn = 0;
@@ -93,29 +90,31 @@ DObject* DeviceList::list(void)
     if (!uReturn)
       break;
 
-    WMIDevice* dev = new WMIDevice(pclsObj);
-
     Device* device = static_cast<Device*>(Destruct::DStructs::instance().generate("Device"));
-    HRESULT	hr;
-    _variant_t vtProp;
+//    _variant_t vtProp;
+	VARIANT vtProp;
 
-    hr = this->pclsObj->Get(L"Name", 0, &vtProp, 0, 0);
+    hr = pclsObj->Get(L"Name", 0, &vtProp, 0, 0);
     if (SUCCEEDED(hr))
-      device->blockDevice = DUnicodeString((wchar_t*)vtProp.pbstrVal); //, length?, "UTF-16LE")
+      device->blockDevice = DUnicodeString((char*)vtProp.pbstrVal, (int32_t)wcslen((wchar_t*)vtProp.pbstrVal) * 2, "UTF-16LE"); //, wchar_t* length?, "UTF-16LE")
     else 
       continue;
+	VariantClear(&vtProp);
 
-    hr = this->pclsObj->Get(L"SerialNumber", 0, &vtProp, 0, 0);
-    device->serialNumber = DUnicodeString((wchar_t*)vtProp.pbstrVal);
+    hr = pclsObj->Get(L"SerialNumber", 0, &vtProp, 0, 0);
+	if (SUCCEEDED(hr))
+      device->serialNumber = DUnicodeString((char*)vtProp.pbstrVal, (int32_t)wcslen((wchar_t*)vtProp.pbstrVal) * 2, "UTF-16LE");
+	VariantClear(&vtProp);
 
-    hr = this->pclsObj->Get(L"Model", 0, &vtProp, 0, 0);
-    device->model = DUnicodeString((wchar_t*)vtProp.pbstrVal);
-
+    hr = pclsObj->Get(L"Model", 0, &vtProp, 0, 0);
+	if (SUCCEEDED(hr))
+      device->model = DUnicodeString((char*)vtProp.pbstrVal, (int32_t)wcslen((wchar_t*)vtProp.pbstrVal) * 2, "UTF-16LE");
+	VariantClear(&vtProp);
     /*
      * Get Size 
      */
 
-    hr = this->pclsObj->Get(L"Name", 0, &vtProp, NULL, NULL);
+    hr = pclsObj->Get(L"Name", 0, &vtProp, NULL, NULL);
     if (SUCCEEDED(hr))
     {
       wchar_t*	var = (wchar_t*)vtProp.pbstrVal;
@@ -130,14 +129,14 @@ DObject* DeviceList::list(void)
         DeviceIoControl(hnd, FSCTL_ALLOW_EXTENDED_DASD_IO, NULL, 0, NULL, 0, &lpBytesReturned, NULL);
         if (DeviceIoControl(hnd, IOCTL_DISK_GET_LENGTH_INFO, NULL, 0, &diskSize, sizeof(diskSize), &lpBytesReturned,0) == 0)
         {
-	 CloseHandle(hnd);
+	     CloseHandle(hnd);
          continue; 
         } 
         device->size = ((uint64_t)diskSize.Length.QuadPart);
         CloseHandle(hnd);
       }
     }
-    this->deviceList.push_back(dev);
+	deviceList->call("push", RealValue<DObject*>(device));
   }
   pEnumerator->Release();
 
