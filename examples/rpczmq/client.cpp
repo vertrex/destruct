@@ -94,7 +94,7 @@ Client::~Client()
 void    Client::__connect(DUnicodeString const& addr, uint32_t port)
 {
   this->__context = zmq_ctx_new();
-  this->__socket = zmq_socket(this->__context, ZMQ_PAIR);
+  this->__socket = zmq_socket(this->__context, ZMQ_PAIR);//ZMQ_REQ
  
   std::string faddr =  "tcp://" + std::string(addr) + ":" + "3583";
   int rc = zmq_connect(this->__socket, faddr.c_str()); //XXX port to string !
@@ -138,7 +138,7 @@ Destruct::DStruct* Client::remoteFind(const DUnicodeString name)
 {
   this->__serialize->call("DUnicodeString", RealValue<DUnicodeString>("findDStruct"));
   this->__serialize->call("DUnicodeString", RealValue<DUnicodeString>(name));
-  this->__networkStream->call("flush");
+  //this->__networkStream->call("flush");
  
   DStruct* dstruct = this->__deserialize->call("DStruct");
   if (dstruct)

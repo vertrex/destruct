@@ -74,13 +74,7 @@ protected:
   EXPORT                                virtual ~Server();
 private:
    void                                 showRoot(void);
-//#ifdef WIN32
-  //SOCKET			        __listenSocket;
-  //SOCKET			        __connectionSocket;
-//#else
-  //int                                   __listenSocket;
-  //int32_t                               __connectionSocket;
-//#endif
+
   void*                                 __socket;
   void*                                 __context;
 

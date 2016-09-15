@@ -40,7 +40,7 @@ DValue ClientObject::getValue(DUnicodeString const& name) const
   ((DObject*)this->__serializer)->call("DUnicodeString", RealValue<DUnicodeString>("getValue")); 
   ((DObject*)this->__serializer)->call("DUInt64", RealValue<DUInt64>(this->__id)); 
   ((DObject*)this->__serializer)->call("DUnicodeString", RealValue<DUnicodeString>(name));
-  ((DObject*)this->__networkStream)->call("flush");
+  //((DObject*)this->__networkStream)->call("flush");
 
   DType  dtype = this->instanceOf()->attribute(name).type();
  
@@ -65,7 +65,7 @@ void ClientObject::setValue(DUnicodeString const& name, DValue const &v)
   ((DObject*)this->__serializer)->call("DUnicodeString", RealValue<DUnicodeString>(name));
  
   ((DObject*)this->__serializer)->call(this->instanceOf()->attribute(name).type().name(), v);
-  ((DObject*)this->__networkStream)->call("flush");
+  //((DObject*)this->__networkStream)->call("flush");
 }
                                         
 DValue ClientObject::call(DUnicodeString const& name, DValue const &args)
@@ -85,7 +85,7 @@ DValue ClientObject::call(DUnicodeString const& name, DValue const &args)
 
   /* Send argument (object is not compatible) */
   ((DObject*)this->__serializer)->call(dtype.argumentName(), args);
-  ((DObject*)this->__networkStream)->call("flush");
+  //((DObject*)this->__networkStream)->call("flush");
  
   /* get return value */
   return (((DObject*)this->__deserializer)->call(dtype.returnName()));
@@ -97,7 +97,7 @@ DValue ClientObject::call(DUnicodeString const& name)
   ((DObject*)this->__serializer)->call("DUInt64", RealValue<DUInt64>(this->__id));
   ((DObject*)this->__serializer)->call("DUnicodeString", RealValue<DUnicodeString>(name));
 
-  ((DObject*)this->__networkStream)->call("flush");
+  //((DObject*)this->__networkStream)->call("flush");
 
   DType  dtype = this->instanceOf()->attribute(name).type();
   return (((DObject*)this->__deserializer)->call(dtype.returnName()));

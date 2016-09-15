@@ -60,7 +60,7 @@ void    ServerObject::getValue(void)
   }
   else
     this->__serializer->call(type.name(), value);
-  this->__networkStream->call("flush");
+  //this->__networkStream->call("flush");
 }
 
 void    ServerObject::call(void)
@@ -74,7 +74,7 @@ void    ServerObject::call(void)
   DValue value = object->call(name, args);
 
   this->__serializer->call(type.returnName(), value);
-  this->__networkStream->call("flush");
+  //this->__networkStream->call("flush");
 }
 
 void    ServerObject::call0(void)
@@ -87,7 +87,7 @@ void    ServerObject::call0(void)
   
   DType type = object->instanceOf()->attribute(name).type();
   this->__serializer->call(type.returnName(), value);
-  this->__networkStream->call("flush");
+  //this->__networkStream->call("flush");
 }
 
 void    ServerObject::functionCall(void)
@@ -99,7 +99,7 @@ void    ServerObject::functionCall(void)
   DValue value = ((DFunctionObject*)object->functionObject)->call(args);
   this->__serializer->call(DType((DType::Type_t)(DUInt64)object->returnType).name(), value); 
 
-  this->__networkStream->call("flush");
+  //this->__networkStream->call("flush");
 }
 
 void    ServerObject::functionCall0(void)
@@ -111,7 +111,7 @@ void    ServerObject::functionCall0(void)
   DValue value = ((DFunctionObject*)object->functionObject)->call();
   this->__serializer->call(DType((DType::Type_t)(DUInt64)object->returnType).name(), value); 
 
-  this->__networkStream->call("flush");
+  //this->__networkStream->call("flush");
 }
 
 void    ServerObject::findDStruct(void)
@@ -124,7 +124,7 @@ void    ServerObject::findDStruct(void)
    throw DException("Server::findDStruct DStruct not found");
 
   this->__serializer->call("DStruct", RealValue<DStruct*>(dstruct));
-  this->__networkStream->call("flush");
+  //this->__networkStream->call("flush");
 }
  
 void    ServerObject::unknown(DUnicodeString const& cmd)
@@ -132,7 +132,7 @@ void    ServerObject::unknown(DUnicodeString const& cmd)
   std::cout << "Receive unknown command : " << cmd << std::endl;
 
   this->__serializer->call("DUnicodeString", RealValue<DUnicodeString>("Unknown command : " + cmd));
-  this->__networkStream->call("flush");
+  //this->__networkStream->call("flush");
 }
 
 DUnicodeString  ServerObject::cmd(void)

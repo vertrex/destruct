@@ -38,13 +38,13 @@ endif (UNIX)
 
 add_library(destruct_device SHARED ${device_libfiles})
 if (UNIX)
-  target_link_libraries(destruct_device destruct destruct_rpc udev)
+  target_link_libraries(destruct_device destruct destruct_rpczmq udev)
 else (UNIX)
-  target_link_libraries(destruct_device destruct destruct_rpc)
+  target_link_libraries(destruct_device destruct destruct_rpczmq)
 endif (UNIX)
 
 set(device_files
 devicerpc.cpp)
 
 add_executable(devicerpc ${device_files})
-target_link_libraries(devicerpc destruct destruct_rpc destruct_device) #can import now
+target_link_libraries(devicerpc destruct destruct_rpczmq destruct_device) #can import now

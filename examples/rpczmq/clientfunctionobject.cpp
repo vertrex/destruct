@@ -22,7 +22,7 @@ DValue ClientFunctionObject::call(DValue const& args) const
 
   ///* Send argument (object is not compatible) */
   this->__serializer->call(DType(this->__argumentType).name(), args);
-  this->__networkStream->call("flush");
+  //this->__networkStream->call("flush");
 ;
   /* get return value */
   return (this->__deserializer->call(DType(this->__returnType).name()));
@@ -32,7 +32,7 @@ DValue ClientFunctionObject::call(void) const
 {
   this->__serializer->call("DUnicodeString", RealValue<DUnicodeString>("functionCall0"));
   this->__serializer->call("DUInt64", RealValue<DUInt64>(this->__id));
-  this->__networkStream->call("flush");
+  //this->__networkStream->call("flush");
 
   return (this->__deserializer->call(DType(this->__returnType).name()));
 }

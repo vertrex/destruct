@@ -16,10 +16,10 @@ DeviceRPC::DeviceRPC()
 //  Client::declare(); use import it's better :) 
   DObject* import = Destruct::DStructs::instance().generate("Import");
 #ifdef WIN32
-  import->call("file", RealValue<DUnicodeString>("destruct_rpc.dll"));
+  import->call("file", RealValue<DUnicodeString>("destruct_rpczmq.dll"));
   import->call("file", RealValue<DUnicodeString>("destruct_device.dll"));
 #else
-  import->call("file", RealValue<DUnicodeString>("../modules/libdestruct_rpc.so"));
+  import->call("file", RealValue<DUnicodeString>("../modules/libdestruct_rpczmq.so"));
   import->call("file", RealValue<DUnicodeString>("../modules/libdestruct_device.so"));
 #endif
 }
