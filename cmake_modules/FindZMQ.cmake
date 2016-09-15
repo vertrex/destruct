@@ -48,6 +48,7 @@ FIND_LIBRARY(LIBZMQ_LIBRARY
   DOC "Location of LIBZMQ Libraries"
   )
 
+message(${LIBZMQ_LIBRARY})
 
 if(EXISTS "${LIBZMQ_INCLUDE_DIR}/zmq.h")
   file(READ "${LIBZMQ_INCLUDE_DIR}/zmq.h" LIBZMQ_DEFINITIONS)

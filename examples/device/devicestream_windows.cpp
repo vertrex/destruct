@@ -31,6 +31,7 @@ using namespace Destruct;
 
 DeviceBuffer::DeviceBuffer(HANDLE hndl, uint32_t size,  uint32_t bps, uint64_t devSize) : __handle(hndl), __offset(0), __BPS(bps), __currentSize(0), __devSize(devSize), __size(size * bps) 
 {
+  std::cout << "cache size " << this->__size << std::endl;
   this->__buffer = (uint8_t *)malloc(this->__size);
   this->fillBuff(0);
 }
@@ -91,7 +92,8 @@ DeviceStream::DeviceStream(DStruct* dstruct, DValue const& args) : DCppObject<De
  if (((HANDLE)hnd) == INVALID_HANDLE_VALUE)
     throw DException("Can't open device");
 
- this->__deviceBuffer = new DeviceBuffer((HANDLE)hnd, 100 * sizeof(uint8_t), 4096, this->__size);
+ //this->__deviceBuffer = new DeviceBuffer((HANDLE)hnd, 100 * sizeof(uint8_t), 4096, this->__size);
+  this->__deviceBuffer = new DeviceBuffer((HANDLE)hnd, 8, 1024, this->__size);
 }
 
 DeviceStream::~DeviceStream()

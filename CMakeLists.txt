@@ -64,6 +64,7 @@ include_directories(ICU_INCLUDE_PATH)
 include_directories(${ICU_INCLUDE_DIRS})
 
 find_package(ZMQ)
+include_directories(${LIBZMQ_INCLUDE_DIR})
 
 IF (NOT ${CMAKE_BINARY_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})
   SET(DEDICATED_BUILD_DIR 1)

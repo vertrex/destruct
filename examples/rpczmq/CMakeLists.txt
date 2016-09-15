@@ -29,7 +29,7 @@ clientfunctionobject.cpp
 
 add_library(destruct_rpczmq SHARED ${rpczmq_libfiles})
 if (MSVC)
-  target_link_libraries(destruct_rpczmq destruct Ws2_32.lib) #zmq
+  target_link_libraries(destruct_rpczmq destruct Ws2_32.lib ${LIBZMQ_LIBRARY}) 
 else (MSVC)
   target_link_libraries(destruct_rpczmq destruct zmq)
 endif (MSVC)
