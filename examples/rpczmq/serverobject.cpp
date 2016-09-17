@@ -30,12 +30,10 @@ ServerObject::~ServerObject()
 void    ServerObject::find(void)
 {
   DUnicodeString name = this->__deserializer->call("DUnicodeString"); 
-  std::cout << "Send DStruct " << name << std::endl;
   Destruct::DStructs& destruct = Destruct::DStructs::instance();
   DStruct* dstruct = destruct.find(name);
-  if (!dstruct)
-   throw DException("Server::findDStruct DStruct not found");
-
+  if (!dstruct) //XXX must send exception to client !
+    throw DException("Server::generate DStruct " + name + " not found"); 
   this->__serializer->call("DStruct", RealValue<DStruct*>(dstruct));
   //this->__networkStream->call("flush");
 }
@@ -46,8 +44,9 @@ void    ServerObject::generate(void)
   std::cout << "Generate object " << name << std::endl;
   Destruct::DStructs& destruct = Destruct::DStructs::instance();
   DStruct* dstruct = destruct.find(name);
-  if (!dstruct)
-   throw DException("Server::generate error : DStruct " + name + " not found");
+  if (!dstruct) ///XXX must send exception to client !
+    throw DException("Server::generate DStruct " + name + " not found"); 
+  this->__networkStream->call("reply", RealValue<DInt8>(1));
   DObject* object = dstruct->newObject(); 
   DUInt64 objectId = this->__objectManager->call("registerObject", RealValue<DObject*>(object));
   this->__serializer->call("DUInt64", RealValue<DUInt64>(objectId));
@@ -124,7 +123,6 @@ void    ServerObject::functionCall(void)
   DValue args = this->__deserializer->call(DType((DType::Type_t)(DUInt64)object->argumentType).name()); //XXX get name directly ? 
   DValue value = ((DFunctionObject*)object->functionObject)->call(args);
   this->__serializer->call(DType((DType::Type_t)(DUInt64)object->returnType).name(), value); 
-
   //this->__networkStream->call("flush");
 }
 
@@ -139,8 +137,6 @@ void    ServerObject::functionCall0(void)
 
   //this->__networkStream->call("flush");
 }
-
-
  
 void    ServerObject::unknown(DUnicodeString const& cmd)
 {
@@ -150,7 +146,34 @@ void    ServerObject::unknown(DUnicodeString const& cmd)
   //this->__networkStream->call("flush");
 }
 
-DUnicodeString  ServerObject::cmd(void)
+void    ServerObject::dispatch(void)
 {
-  return (this->__deserializer->call("DUnicodeString").get<DUnicodeString>());
+  DUnicodeString msg = this->__deserializer->call("DUnicodeString").get<DUnicodeString>();
+
+  try
+  {
+    if (msg == "find")
+      this->find();
+    else if (msg == "generate")
+      this->generate();
+     //object call 
+    else if(msg == "setValue")
+      this->setValue();
+    else if(msg == "getValue")
+      this->getValue();
+    else if(msg == "call")
+      this->call();
+    else if(msg == "call0")
+      this->call0();
+      // functionObject call
+    else if(msg == "functionCall")
+      this->functionCall();
+    else if(msg == "functionCall0")
+      this->functionCall0();
+  }
+  catch (DException const& exception)
+  {
+    this->__networkStream->call("reply", RealValue<DInt8>(-1));
+    this->__serializer->call("DUnicodeString", RealValue<DUnicodeString>(exception.error()));
+  }
 }

@@ -80,26 +80,7 @@ void    Server::serve(void)
   while (true)
   {
     //std::cout << "Wait for message..." << std::endl;
-    DUnicodeString msg = serverObject.cmd();
-
-    if (msg == "find")
-      serverObject.find();
-    else if (msg == "generate")
-      serverObject.generate();
-    else if(msg == "setValue")
-      serverObject.setValue();
-    else if(msg == "getValue")
-      serverObject.getValue();
-    else if(msg == "call")
-      serverObject.call();
-    else if(msg == "call0")
-      serverObject.call0();
-    else if(msg == "functionCall")
-      serverObject.functionCall();
-    else if(msg == "functionCall0")
-      serverObject.functionCall0();
-    else
-      serverObject.unknown(msg);
+    serverObject.dispatch();
   }
 }
 

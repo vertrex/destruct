@@ -54,4 +54,23 @@ DInt64  NetworkStream::write(DValue const& args)
   return (buffer.size()); //XXX check
 }
 
+DInt8   NetworkStream::request(void)
+{
+  int8_t result;
+  int num = zmq_recv(this->__socket,  &result, sizeof(int8_t), 0);
+  if (num != sizeof(int8_t))
+    std::cout << "NetworkStream::reply can't get reply got " << num << std::endl;
+  return (result);
+}
+
+void    NetworkStream::reply(DValue const& args)
+{
+  DInt8 result = args;
+
+  int num = zmq_send(this->__socket, &result, sizeof(int8_t), 0);
+  //if (num != buffer.size())
+//std::cout << "NetworkStream::write got " << num << " asked " << buffer.size() << std::endl;
+  
+}
+
 }

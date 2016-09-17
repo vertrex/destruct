@@ -18,17 +18,19 @@ public:
 
   DBuffer  read(DValue const& args); 
   DInt64   write(DValue const& args);
+  DInt8    request(void);
+  void     reply(DValue const& args);
 
   void*         __socket; //XXX should be private but need to copy by cast...
   void*         __context;
 protected: 
   ~NetworkStream();
 public:
-  RealValue<DFunctionObject* > _read, _write;
+  RealValue<DFunctionObject* > _read, _write, _request, _reply;
 
   static size_t ownAttributeCount()
   {
-    return (2);
+    return (4);
   }
 
   static DAttribute* ownAttributeBegin()
@@ -37,6 +39,8 @@ public:
     {
        DAttribute(DType::DBufferType, "read",  DType::DInt64Type), 
        DAttribute(DType::DInt64Type,  "write", DType::DBufferType),
+       DAttribute(DType::DInt8Type,  "request", DType::DNoneType),
+       DAttribute(DType::DNoneType,  "reply", DType::DInt8Type),
     };
     return (attributes);
   }
@@ -47,6 +51,8 @@ public:
     {
        DPointer<NetworkStream>(&NetworkStream::_read, &NetworkStream::read),
        DPointer<NetworkStream>(&NetworkStream::_write, &NetworkStream::write),
+       DPointer<NetworkStream>(&NetworkStream::_request, &NetworkStream::request),
+       DPointer<NetworkStream>(&NetworkStream::_reply, &NetworkStream::reply),
     };
     return (memberPointer);
   }

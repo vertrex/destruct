@@ -25,7 +25,7 @@ public:
   void                                  functionCall(void);
   void                                  functionCall0(void);
   void                                  unknown(const DUnicodeString& cmd);
-  DUnicodeString                        cmd(void);
+  void                                  dispatch(void);
 private:
   DObject*                              __networkStream;
   DObject*                              __serializer;

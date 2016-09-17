@@ -112,14 +112,20 @@ Destruct::DObject* Client::generate(DValue const& args)
   this->__serialize->call("DUnicodeString", RealValue<DUnicodeString>("generate"));
   this->__serialize->call("DUnicodeString", RealValue<DUnicodeString>(args.get<DUnicodeString>()));
 
+  std::cout << "Get request result " << std::endl;
+  if (this->__networkStream->call("request").get<DInt8>() == -1)
+    throw DException(this->__deserialize->call("DUnicodeString").get<DUnicodeString>());
+  
+  std::cout << "get object id " << std::endl;
+  DUInt64 objectId = this->__deserialize->call("DUInt64");
   //hanle argument name + value ... XXX
   //if struct not found in local deserialize it !
   DUnicodeString objectName = args.get<DUnicodeString>();
-  DStruct* registryS = destruct.find(objectName);
+  DStruct* objectStruct = destruct.find(objectName);
 
-  DUInt64 objectId = this->__deserialize->call("DUInt64");
+  //send message :
 
-  ClientObject* root = new ClientObject(RealValue<DObject*>(this->__networkStream), RealValue<DObject*>(this->__serialize), RealValue<DObject*>(this->__deserialize), objectId, registryS); 
+  ClientObject* root = new ClientObject(RealValue<DObject*>(this->__networkStream), RealValue<DObject*>(this->__serialize), RealValue<DObject*>(this->__deserialize), objectId, objectStruct); 
 
   return (RealValue<DObject*>(root));
 
@@ -127,7 +133,7 @@ Destruct::DObject* Client::generate(DValue const& args)
 
 Destruct::DStruct* Client::find(DValue const& name)
 {
-  this->__serialize->call("DUnicodeString", RealValue<DUnicodeString>("findDStruct"));
+  this->__serialize->call("DUnicodeString", RealValue<DUnicodeString>("find"));
   this->__serialize->call("DUnicodeString", RealValue<DUnicodeString>(name.get<DUnicodeString>()));
   //this->__networkStream->call("flush");
  
