@@ -33,13 +33,6 @@ Server::Server(DStruct* dstruct, DValue const& args) : DCppObject<Server>(dstruc
 
 Server::~Server()
 {
-//#ifdef WIN32
-  //closesocket(this->__connectionSocket);
-  //closesocket(this->__listenSocket);
-//#else
-  //close(this->__connectionSocket);
-  //close(this->__listenSocket);
-//#endif
   zmq_close(this->__socket);
   zmq_ctx_destroy(this->__context);
 
@@ -81,22 +74,18 @@ void    Server::daemonize(void)
 
 void    Server::serve(void)
 {
-  std::cout << "Sever::serve listen" << std::endl;
-  //this->__listen();
-  std::cout << "Create serverObject " << std::endl;
+  std::cout << "Create destruct server" << std::endl;
   ServerObject serverObject(this->__socket, this->__context);
   
-  this->showRoot();
-
   while (true)
   {
     //std::cout << "Wait for message..." << std::endl;
     DUnicodeString msg = serverObject.cmd();
 
-    if (msg == "show") 
-      this->showRoot();
-    else if (msg == "findDStruct")
-      serverObject.findDStruct();
+    if (msg == "find")
+      serverObject.find();
+    else if (msg == "generate")
+      serverObject.generate();
     else if(msg == "setValue")
       serverObject.setValue();
     else if(msg == "getValue")
@@ -119,13 +108,3 @@ DObject* Server::objectManager(void)
   return (this->__objectManager);
 }
 
-void    Server::showRoot(void)
-{
-  Destruct::DStructs& destruct = Destruct::DStructs::instance();
-  DObject* stream = destruct.generate("DStreamCout");
-  DObject* serializer = destruct.generate("SerializeText", RealValue<DObject*>(stream));
-
-  serializer->call("DObject", this->__objectManager->call("object", RealValue<DUInt64>(0)));
-  stream->destroy();
-  serializer->destroy();
-}

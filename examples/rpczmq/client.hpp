@@ -19,21 +19,17 @@ class Client : public DCppObject<Client>
 public:
   EXPORT Client(DUnicodeString const& addr, uint32_t port);
   EXPORT Client(DStruct* dstruct, DValue const& args);
+  EXPORT ~Client();
 
-  EXPORT static void                   declare(void);
-  EXPORT virtual DObject*              start(void);
-  EXPORT DValue                        findObject(void); ///XXX:
-  EXPORT DValue                        createRoot(DUnicodeString objectName); ///XXX:
+  EXPORT static void            declare(void);
+  
+  EXPORT DStruct*               find(DValue const& args);
+  EXPORT DObject*               generate(DValue const& args);
+  //EXPORT DObject*             generate(DUnicodeString const& name, DValue const& args);
 
-  EXPORT DStruct*	               remoteFind(const DUnicodeString name);
-  EXPORT bool                          print(DObject* dobject) const;
-  EXPORT bool                          print(DStruct* dstruct) const;
-
-  //EXPORT int32_t                       connectionSocket(void) const;
-  EXPORT DObject*                      networkStream(void) const;
-  EXPORT DObject*                      serializeRPC(void) const;
-  EXPORT DObject*                      deserializeRPC(void) const;
-
+  EXPORT DObject*               networkStream(void) const;
+  EXPORT DObject*               serializeRPC(void) const;
+  EXPORT DObject*               deserializeRPC(void) const;
 private:
   void                          __connect(DUnicodeString const& addr, uint32_t port);
   void                          __close(void);
@@ -45,14 +41,14 @@ private:
   DObject*                      __serialize;
   DObject*                      __deserialize;
 
-protected:
-  EXPORT ~Client();
+  //protected:
+  //EXPORT ~Client();
 public:
 /**
  *  Destruct definition
  */
-  RealValue<DFunctionObject*>   _findObject;
-  RealValue<DFunctionObject*>   _createRoot;
+  RealValue<DFunctionObject*>   _find;
+  RealValue<DFunctionObject*>   _generate;
  
   static size_t ownAttributeCount()
   {
@@ -63,8 +59,8 @@ public:
   {
     static DAttribute attributes[] = 
     {
-      DAttribute(DType::DObjectType, "findObject", DType::DNoneType), //useless
-      DAttribute(DType::DObjectType, "createRoot", DType::DUnicodeStringType), 
+      DAttribute(DType::DObjectType, "find", DType::DUnicodeStringType),
+      DAttribute(DType::DObjectType, "generate", DType::DUnicodeStringType), //can't pass argument ... 
     };
 
     return (attributes);
@@ -74,8 +70,8 @@ public:
   {
      static DPointer<Client> memberPointer[] =
      {
-       DPointer<Client>(&Client::_findObject, &Client::findObject), //useless use creatRoot (registry ...)
-       DPointer<Client>(&Client::_createRoot, &Client::createRoot),
+       DPointer<Client>(&Client::_find, &Client::find),
+       DPointer<Client>(&Client::_generate, &Client::generate),
      };
 
     return (memberPointer);

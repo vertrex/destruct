@@ -27,6 +27,32 @@ ServerObject::~ServerObject()
   this->__networkStream->destroy();
 }
 
+void    ServerObject::find(void)
+{
+  DUnicodeString name = this->__deserializer->call("DUnicodeString"); 
+  std::cout << "Send DStruct " << name << std::endl;
+  Destruct::DStructs& destruct = Destruct::DStructs::instance();
+  DStruct* dstruct = destruct.find(name);
+  if (!dstruct)
+   throw DException("Server::findDStruct DStruct not found");
+
+  this->__serializer->call("DStruct", RealValue<DStruct*>(dstruct));
+  //this->__networkStream->call("flush");
+}
+
+void    ServerObject::generate(void)
+{
+  DUnicodeString name = this->__deserializer->call("DUnicodeString"); 
+  std::cout << "Generate object " << name << std::endl;
+  Destruct::DStructs& destruct = Destruct::DStructs::instance();
+  DStruct* dstruct = destruct.find(name);
+  if (!dstruct)
+   throw DException("Server::generate error : DStruct " + name + " not found");
+  DObject* object = dstruct->newObject(); 
+  DUInt64 objectId = this->__objectManager->call("registerObject", RealValue<DObject*>(object));
+  this->__serializer->call("DUInt64", RealValue<DUInt64>(objectId));
+}
+
 void    ServerObject::setValue(void)
 {
   DValue id = this->__deserializer->call("DUInt64");
@@ -114,18 +140,7 @@ void    ServerObject::functionCall0(void)
   //this->__networkStream->call("flush");
 }
 
-void    ServerObject::findDStruct(void)
-{
-  DUnicodeString name = this->__deserializer->call("DUnicodeString"); 
-  std::cout << "Send DStruct " << name << std::endl;
-  Destruct::DStructs& destruct = Destruct::DStructs::instance();
-  DStruct* dstruct = destruct.find(name);
-  if (!dstruct)
-   throw DException("Server::findDStruct DStruct not found");
 
-  this->__serializer->call("DStruct", RealValue<DStruct*>(dstruct));
-  //this->__networkStream->call("flush");
-}
  
 void    ServerObject::unknown(DUnicodeString const& cmd)
 {

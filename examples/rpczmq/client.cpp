@@ -106,38 +106,29 @@ void    Client::__close(void)
   zmq_ctx_destroy(this->__context); 
 }
 
-DObject*   Client::start(void)
-{
-  throw DException("Client::start Not implemented.");
-}
-
-DValue     Client::findObject(void) //getRoot XXX ?
+Destruct::DObject* Client::generate(DValue const& args)
 {
   Destruct::DStructs& destruct = Destruct::DStructs::instance();
+  this->__serialize->call("DUnicodeString", RealValue<DUnicodeString>("generate"));
+  this->__serialize->call("DUnicodeString", RealValue<DUnicodeString>(args.get<DUnicodeString>()));
 
-  DStruct* registryS = destruct.find("Registry"); //replaced bu create root !
-
-  ClientObject* root = new ClientObject(RealValue<DObject*>(this->__networkStream), RealValue<DObject*>(this->__serialize), RealValue<DObject*>(this->__deserialize), 0, registryS); 
-
-  return (RealValue<DObject*>(root));
-}
-
-DValue  Client::createRoot(DUnicodeString objectName)
-{
-  Destruct::DStructs& destruct = Destruct::DStructs::instance();
-
+  //hanle argument name + value ... XXX
+  //if struct not found in local deserialize it !
+  DUnicodeString objectName = args.get<DUnicodeString>();
   DStruct* registryS = destruct.find(objectName);
 
-  ClientObject* root = new ClientObject(RealValue<DObject*>(this->__networkStream), RealValue<DObject*>(this->__serialize), RealValue<DObject*>(this->__deserialize), 0, registryS); 
+  DUInt64 objectId = this->__deserialize->call("DUInt64");
+
+  ClientObject* root = new ClientObject(RealValue<DObject*>(this->__networkStream), RealValue<DObject*>(this->__serialize), RealValue<DObject*>(this->__deserialize), objectId, registryS); 
 
   return (RealValue<DObject*>(root));
 
 }
 
-Destruct::DStruct* Client::remoteFind(const DUnicodeString name)
+Destruct::DStruct* Client::find(DValue const& name)
 {
   this->__serialize->call("DUnicodeString", RealValue<DUnicodeString>("findDStruct"));
-  this->__serialize->call("DUnicodeString", RealValue<DUnicodeString>(name));
+  this->__serialize->call("DUnicodeString", RealValue<DUnicodeString>(name.get<DUnicodeString>()));
   //this->__networkStream->call("flush");
  
   DStruct* dstruct = this->__deserialize->call("DStruct");
@@ -151,39 +142,8 @@ Destruct::DStruct* Client::remoteFind(const DUnicodeString name)
     //this->print(dstruct); 
   } 
   else
-    std::cout << "Struct " << name << " is NULL can't show content " << std::endl;
+    std::cout << "Struct " << name.get<DUnicodeString>() << " is NULL can't show content " << std::endl;
   return (dstruct);
-}
-
-bool    Client::print(DStruct* dstruct) const
-{
-  Destruct::DStructs& destruct = Destruct::DStructs::instance();
-  DObject* stream = destruct.generate("DStreamCout");
-
-  if (!dstruct)
-    return (false);
- 
-  DObject* serializer = destruct.generate("SerializeText", RealValue<DObject*>(stream));
-  serializer->call("DStruct", RealValue<DStruct*>(dstruct));
-
-  serializer->destroy();
-  stream->destroy();
-  return (true);
-}
-
-bool    Client::print(DObject* dobject) const
-{
-  Destruct::DStructs& destruct = Destruct::DStructs::instance();
-  DObject* stream = destruct.generate("DStreamCout");
-  if (!dobject)
-    return (false);
-
-  DObject* serializer = destruct.generate("SerializeText", RealValue<DObject*>(stream));
-  serializer->call("DObject", RealValue<DObject*>(dobject));
-  
-  serializer->destroy();
-  stream->destroy();
-  return (true);
 }
 
 //int32_t Client::connectionSocket(void) const

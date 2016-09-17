@@ -16,7 +16,10 @@ if __name__ == "__main__":
    #arg.address = "10.42.1.195"
    arg.port = 0xdff
    client = DStructs().find("Client").newObject(arg)
-   deviceList  = client.createRoot("DeviceList")
+   print "generate devicelist" 
+   serverLoader = client.generate("Import")
+   serverLoader.file("../modules/libdestruct_device.so")
+   deviceList = client.generate("DeviceList")
    devs = deviceList.list()
    for dev in devs:
      print dev.blockDevice, dev.serialNumber, dev.model, dev.size

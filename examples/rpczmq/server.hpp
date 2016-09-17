@@ -18,6 +18,7 @@ class Server : public DCppObject<Server>
 public:
   EXPORT Server(uint32_t port);
   EXPORT Server(DStruct* dstruct, DValue const& args);
+  EXPORT ~Server();
 
   EXPORT void                           setRoot(RealValue<DObject*> root);
   EXPORT void                           serve();
@@ -70,11 +71,9 @@ public:
     return (memberBegin() + ownAttributeCount());
   }
 
-protected:
-  EXPORT                                virtual ~Server();
+  //protected:
+  //EXPORT                                virtual ~Server();
 private:
-   void                                 showRoot(void);
-
   void*                                 __socket;
   void*                                 __context;
 

@@ -10,22 +10,6 @@
 #include "clientobject.hpp"
 #include "fsobject.hpp"
 
-class TestClient : public Client
-{
-public:
-  TestClient(std::string const& addr, uint32_t port);
-  DObject*  start(void); 
-};
-
-class TestServer : public Server
-{
-public:
-  TestServer(uint32_t port);
-
-  static void  declare(void);
-  DObject*     initRoot(void);
-};
-
 class RPC
 {
 public:

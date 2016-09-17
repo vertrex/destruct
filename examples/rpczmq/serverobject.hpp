@@ -15,13 +15,15 @@ public:
   ServerObject(void* context, void* socket);
   ~ServerObject();
 
+  void                                  find(void);
+  void                                  generate(void);
+
   void                                  getValue(void);
   void                                  setValue(void);
   void                                  call(void);
   void                                  call0(void);
   void                                  functionCall(void);
   void                                  functionCall0(void);
-  void                                  findDStruct(void);
   void                                  unknown(const DUnicodeString& cmd);
   DUnicodeString                        cmd(void);
 private:
