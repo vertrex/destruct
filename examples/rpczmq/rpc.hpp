@@ -8,7 +8,6 @@
 #include "client.hpp"
 #include "server.hpp"
 #include "clientobject.hpp"
-#include "fsobject.hpp"
 
 class RPC
 {

@@ -15,7 +15,6 @@
 include_directories("../../")
 
 set (rpczmq_libfiles
-fsobject.cpp
 networkstream.cpp
 serializerpc.cpp
 server.cpp
