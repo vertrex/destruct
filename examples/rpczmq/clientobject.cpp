@@ -49,7 +49,6 @@ DValue ClientObject::getValue(DUnicodeString const& name) const
     DUInt64 id = ((DObject*)this->__deserializer)->call("DUInt64");
     ((DObject*)this->__networkStream)->call("flushRead");
     
-
     //Not directly returned as dvalue and DRef by a DFunction* () function so must deref ourself or memory will leak
     DFunctionObject* clientFunctionObject = new ClientFunctionObject(((DObject*)this->__networkStream), ((DObject*)this->__serializer), ((DObject*)this->__deserializer), id, dtype.getArgumentType(), dtype.getReturnType()); 
     DValue functionObject = RealValue<DFunctionObject*>(clientFunctionObject);

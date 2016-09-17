@@ -42,7 +42,6 @@ void    ServerObject::find(void)
 void    ServerObject::generate(void)
 {
   DUnicodeString name = this->__deserializer->call("DUnicodeString"); 
-  std::cout << "Generate object " << name << std::endl;
   Destruct::DStructs& destruct = Destruct::DStructs::instance();
   DStruct* dstruct = destruct.find(name);
   if (!dstruct) ///XXX must send exception to client !
@@ -133,6 +132,7 @@ void    ServerObject::functionCall(void)
   DValue id= this->__deserializer->call("DUInt64");
 
   ServerFunctionObject* object = static_cast<ServerFunctionObject*>(this->__objectManager->call("object", id).get<DObject*>());
+
   DValue args = this->__deserializer->call(DType((DType::Type_t)(DUInt64)object->argumentType).name()); //XXX get name directly ? 
   DValue value = ((DFunctionObject*)object->functionObject)->call(args);
 
@@ -173,7 +173,6 @@ void    ServerObject::dispatch(void)
       this->find();
     else if (msg == "generate")
       this->generate();
-     //object call 
     else if(msg == "setValue")
       this->setValue();
     else if(msg == "getValue")
@@ -182,7 +181,6 @@ void    ServerObject::dispatch(void)
       this->call();
     else if(msg == "call0")
       this->call0();
-      // functionObject call
     else if(msg == "functionCall")
       this->functionCall();
     else if(msg == "functionCall0")

@@ -48,8 +48,12 @@ void    Server::setRoot(RealValue<DObject*> root)
 void    Server::__bind(int32_t port)
 {
   this->__context = zmq_ctx_new();
-  this->__socket = zmq_socket(this->__context, ZMQ_REP);//rep
-  int rc = zmq_bind(this->__socket, "tcp://*:3583"); //XXX port
+  this->__socket = zmq_socket(this->__context, ZMQ_REP);
+
+  std::stringstream address;
+  address << "tcp://*:" << port;
+
+  zmq_bind(this->__socket, address.str().c_str());
 }
 
 void    Server::daemonize(void)
@@ -58,7 +62,6 @@ void    Server::daemonize(void)
   {
     try
     {
-      std::cout << "Daemonize this->Server()" << std::endl;
       this->serve();
     }
     catch (DException const& exception)
@@ -74,12 +77,11 @@ void    Server::daemonize(void)
 
 void    Server::serve(void)
 {
-  std::cout << "Create destruct server" << std::endl;
   ServerObject serverObject(this->__socket, this->__context);
+  std::cout << "Destruct server started" << std::endl;
   
   while (true)
   {
-    //std::cout << "Wait for message..." << std::endl;
     serverObject.dispatch();
   }
 }

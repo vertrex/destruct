@@ -94,10 +94,11 @@ Client::~Client()
 void    Client::__connect(DUnicodeString const& addr, uint32_t port)
 {
   this->__context = zmq_ctx_new();
-  this->__socket = zmq_socket(this->__context, ZMQ_REQ);//ZMQ_REQ
- 
-  std::string faddr =  "tcp://" + std::string(addr) + ":" + "3583";
-  int rc = zmq_connect(this->__socket, faddr.c_str()); //XXX port to string !
+  this->__socket = zmq_socket(this->__context, ZMQ_REQ);
+
+  std::stringstream address;
+  address << "tcp://" + std::string(addr) << ":" << port;
+  zmq_connect(this->__socket, address.str().c_str()); 
 }
 
 void    Client::__close(void)
@@ -132,9 +133,8 @@ Destruct::DStruct* Client::find(DValue const& name)
 {
   this->__serialize->call("DUnicodeString", RealValue<DUnicodeString>("find"));
   this->__serialize->call("DUnicodeString", RealValue<DUnicodeString>(name.get<DUnicodeString>()));
-  //this->__networkStream->call("flush");
- 
   this->__networkStream->call("request");
+
   DStruct* dstruct = this->__deserialize->call("DStruct");
   this->__networkStream->call("flushRead");
   if (dstruct)
@@ -144,17 +144,11 @@ Destruct::DStruct* Client::find(DValue const& name)
       destruct.registerDStruct(dstruct);
     else
       std::cout << dstruct->name() << " already registered" << std::endl;
-    //this->print(dstruct); 
   } 
   else
     std::cout << "Struct " << name.get<DUnicodeString>() << " is NULL can't show content " << std::endl;
   return (dstruct);
 }
-
-//int32_t Client::connectionSocket(void) const
-//{
-  //return (this->__connectionSocket);
-//}
 
 DObject*     Client::networkStream(void) const
 {

@@ -1,4 +1,4 @@
-#!/usr/bin/python -i 
+#!/usr/bin/python 
 import sys
 
 sys.path.append('../../')
@@ -24,3 +24,10 @@ if __name__ == "__main__":
    devs = deviceList.list()
    for dev in devs:
      print dev.blockDevice, dev.serialNumber, dev.model, dev.size
+
+   s = devs[0].open()
+   b = ""
+   size = 0
+   while len(b) < 4096*1000*100:
+    b += s.read(4096* 1)
+   print len(b)
