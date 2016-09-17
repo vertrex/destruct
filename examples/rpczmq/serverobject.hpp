@@ -3,11 +3,16 @@
 
 #include "networkstream.hpp"
 #include "objectmanager.hpp"
-//#include "protocol/dserialize.hpp"
-
-using namespace Destruct;
 
 class ServerFunctionObject;
+
+namespace Destruct
+{
+class SerializeRPC;
+class DeserializeRPC;
+}
+
+using namespace Destruct;
 
 class ServerObject
 {
@@ -27,9 +32,9 @@ public:
   void                                  unknown(const DUnicodeString& cmd);
   void                                  dispatch(void);
 private:
-  DObject*                              __networkStream;
-  DObject*                              __serializer;
-  DObject*                              __deserializer;
+  NetworkStream*                        __networkStream;
+  SerializeRPC*                         __serializer;
+  DeserializeRPC*                       __deserializer;
   DObject*                              __objectManager;
 };
 

@@ -12,8 +12,6 @@ using namespace Destruct;
 DeviceRPC::DeviceRPC()
 {
   Destruct::DType::init();
-  //Device::declare(); //not used as we only return a dstream yet
-//  Client::declare(); use import it's better :) 
   DObject* import = Destruct::DStructs::instance().generate("Import");
 #ifdef WIN32
   import->call("file", RealValue<DUnicodeString>("destruct_rpczmq.dll"));

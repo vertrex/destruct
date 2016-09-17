@@ -28,6 +28,7 @@ if __name__ == "__main__":
    s = devs[0].open()
    b = ""
    size = 0
-   while len(b) < 4096*1000*100:
-    b += s.read(4096* 1)
+   while size < 4096*1000*100:
+      b += s.read(4096)
+      size += 4096
    print len(b)

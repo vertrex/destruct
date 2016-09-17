@@ -19,7 +19,7 @@ public:
   DBuffer       read(DValue const& args); 
   DInt64        write(DValue const& args);
   void          request(void);
-  void          reply(DValue const& args);
+  void          reply(void);
   void          replyError(DValue const& args);
   void          flushWrite(void);
   void          flushRead(void);
@@ -45,7 +45,7 @@ public:
        DAttribute(DType::DInt64Type,  "write", DType::DBufferType),
 
        DAttribute(DType::DNoneType,  "request", DType::DNoneType),
-       DAttribute(DType::DNoneType,  "reply", DType::DInt8Type),
+       DAttribute(DType::DNoneType,  "reply", DType::DNoneType),
        DAttribute(DType::DNoneType,  "replyError", DType::DInt8Type),
 
        DAttribute(DType::DNoneType, "flushWrite",  DType::DNoneType),

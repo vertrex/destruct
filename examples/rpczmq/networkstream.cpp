@@ -79,7 +79,7 @@ void    NetworkStream::request(void)
   zmq_msg_close(&resultmsg);
 }
 
-void NetworkStream::reply(DValue const& args)
+void NetworkStream::reply(void)
 {
   zmq_msg_t end;
   zmq_msg_init(&end);

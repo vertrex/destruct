@@ -45,6 +45,7 @@ public:
                                _DUInt8, _DUInt16, _DUInt32, _DUInt64;
 
   RealValue<DObject*>          __stream;
+  NetworkStream*               __networkStream;
 
   static size_t ownAttributeCount()
   {
@@ -150,6 +151,7 @@ public:
                                _DUInt8, _DUInt16, _DUInt32, _DUInt64;
 
   RealValue<DObject*>          __stream;
+  NetworkStream*               __networkStream;
 
   static size_t ownAttributeCount()
   {

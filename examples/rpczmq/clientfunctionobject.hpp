@@ -7,8 +7,13 @@
 #include "objectmanager.hpp"
 #include "serverfunctionobject.hpp"
 
-using namespace Destruct;
+namespace Destruct
+{
+  class SerializeRPC;
+  class DeserializeRPC;
+}
 
+using namespace Destruct;
 
 /**
  * Client FunctionObject proxy
@@ -23,12 +28,12 @@ public:
 protected:
   virtual ~ClientFunctionObject();
 private:
-  uint64_t       __id;
-  DObject*       __networkStream;
-  DObject*       __serializer;
-  DObject*       __deserializer;
-  DType::Type_t  __argumentType;
-  DType::Type_t  __returnType;
+  uint64_t             __id;
+  NetworkStream*       __networkStream;
+  SerializeRPC*        __serializer;
+  DeserializeRPC*      __deserializer;
+  DType::Type_t        __argumentType;
+  DType::Type_t        __returnType;
 };
 
 #endif

@@ -1,5 +1,5 @@
 #include "dstructs.hpp"
-//#include "protocol/dserialize.hpp"
+#include "serializerpc.hpp"
 
 #include "networkstream.hpp"
 #include "serializerpc.hpp"
@@ -11,17 +11,17 @@ namespace Destruct {
 /**
  *  ClientObject Proxy object that handle transparent remote communication and let you use your object as a local object
  */
-ClientObject::ClientObject(DValue const& stream, DValue const& serializer, DValue const& deserializer, uint64_t id, DStruct* dstruct) : DObject(dstruct, RealValue<DObject*>(DNone)), __networkStream(stream), __serializer(serializer), __deserializer(deserializer), __id(id)
+ClientObject::ClientObject(DValue const& stream, DValue const& serializer, DValue const& deserializer, uint64_t id, DStruct* dstruct) : DObject(dstruct, RealValue<DObject*>(DNone)), __networkStreamObject(stream), __serializerObject(serializer), __deserializerObject(deserializer), __id(id), __serializer(static_cast<SerializeRPC*>((DObject*)serializer)), __deserializer(static_cast<DeserializeRPC*>((DObject*)deserializer)), __networkStream(static_cast<NetworkStream*>((DObject*)stream))
 {
   //this->init(this);
 }
 
-ClientObject::ClientObject(DStruct* dstruct, DValue const& args) : DObject(dstruct, args),  __networkStream(DNone), __serializer(DNone), __deserializer(DNone), __id(-1)
+ClientObject::ClientObject(DStruct* dstruct, DValue const& args) : DObject(dstruct, args),  __networkStreamObject(DNone), __serializerObject(DNone), __deserializerObject(DNone), __id(-1), __serializer(NULL), __deserializer(NULL), __networkStream(NULL)
 {
   //this->init(this);
 }
 
-ClientObject::ClientObject(ClientObject const & rhs) : DObject(rhs),  __networkStream(rhs.__networkStream), __serializer(rhs.__serializer), __deserializer(rhs.__serializer), __id(rhs.__id)
+ClientObject::ClientObject(ClientObject const & rhs) : DObject(rhs),  __networkStreamObject(rhs.__networkStream), __serializerObject(rhs.__serializer), __deserializerObject(rhs.__serializer), __id(rhs.__id), __serializer(static_cast<SerializeRPC*>((DObject*)rhs.__serializerObject)), __deserializer(static_cast<DeserializeRPC*>((DObject*)rhs.__deserializerObject)), __networkStream(static_cast<NetworkStream*>((DObject*)rhs.__networkStreamObject))
 {
   //this->copy(this, rhs);
 }
@@ -37,17 +37,17 @@ DObject* ClientObject::newObject(DStruct* dstruct, DValue const& args)
 
 DValue ClientObject::getValue(DUnicodeString const& name) const
 {
-  ((DObject*)this->__serializer)->call("DUnicodeString", RealValue<DUnicodeString>("getValue")); 
-  ((DObject*)this->__serializer)->call("DUInt64", RealValue<DUInt64>(this->__id)); 
-  ((DObject*)this->__serializer)->call("DUnicodeString", RealValue<DUnicodeString>(name));
+  this->__serializer->sDUnicodeString(RealValue<DUnicodeString>("getValue")); 
+  this->__serializer->sDUInt64(RealValue<DUInt64>(this->__id)); 
+  this->__serializer->sDUnicodeString(RealValue<DUnicodeString>(name));
 
   DType  dtype = this->instanceOf()->attribute(name).type();
  
   if (dtype.getType() == DType::DMethodType)
   {
-    ((DObject*)this->__networkStream)->call("request");
-    DUInt64 id = ((DObject*)this->__deserializer)->call("DUInt64");
-    ((DObject*)this->__networkStream)->call("flushRead");
+    this->__networkStream->request();
+    DUInt64 id = this->__deserializer->dDUInt64();
+    this->__networkStream->flushRead();
     
     //Not directly returned as dvalue and DRef by a DFunction* () function so must deref ourself or memory will leak
     DFunctionObject* clientFunctionObject = new ClientFunctionObject(((DObject*)this->__networkStream), ((DObject*)this->__serializer), ((DObject*)this->__deserializer), id, dtype.getArgumentType(), dtype.getReturnType()); 
@@ -56,49 +56,49 @@ DValue ClientObject::getValue(DUnicodeString const& name) const
     return (functionObject);
   } 
 
-  ((DObject*)this->__networkStream)->call("request");
+  this->__networkStream->request();
   DValue value = (((DObject*)this->__deserializer)->call(dtype.name()));
-  ((DObject*)this->__networkStream)->call("flushRead");
+  this->__networkStream->flushRead();
   return (value);
 }
 
 void ClientObject::setValue(DUnicodeString const& name, DValue const &v)
 {
-  ((DObject*)this->__serializer)->call("DUnicodeString", RealValue<DUnicodeString>("setValue"));
-  ((DObject*)this->__serializer)->call("DUInt64", RealValue<DUInt64>(this->__id));
-  ((DObject*)this->__serializer)->call("DUnicodeString", RealValue<DUnicodeString>(name));
+  this->__serializer->sDUnicodeString(RealValue<DUnicodeString>("setValue"));
+  this->__serializer->sDUInt64(RealValue<DUInt64>(this->__id));
+  this->__serializer->sDUnicodeString(RealValue<DUnicodeString>(name));
  
-  ((DObject*)this->__serializer)->call(this->instanceOf()->attribute(name).type().name(), v);
-  ((DObject*)this->__networkStream)->call("request");
+  this->__serializer->call(this->instanceOf()->attribute(name).type().name(), v);
+  this->__networkStream->request();
 }
                                         
 DValue ClientObject::call(DUnicodeString const& name, DValue const &args)
 {
   DType  dtype = this->instanceOf()->attribute(name).type();
 
-  ((DObject*)this->__serializer)->call("DUnicodeString", RealValue<DUnicodeString>("call"));
-  ((DObject*)this->__serializer)->call("DUInt64", RealValue<DUInt64>(this->__id));
-  ((DObject*)this->__serializer)->call("DUnicodeString", RealValue<DUnicodeString>(name));
+  this->__serializer->sDUnicodeString(RealValue<DUnicodeString>("call"));
+  this->__serializer->sDUInt64(RealValue<DUInt64>(this->__id));
+  this->__serializer->sDUnicodeString(RealValue<DUnicodeString>(name));
 
   /* Send argument (object is not compatible)  XXX implement it */
   ((DObject*)this->__serializer)->call(dtype.argumentName(), args);
-  ((DObject*)this->__networkStream)->call("request");
+  this->__networkStream->request();
 
   DValue value = (((DObject*)this->__deserializer)->call(dtype.returnName()));
-  ((DObject*)this->__networkStream)->call("flushRead");
+  this->__networkStream->flushRead();
   return (value);
 }
 
 DValue ClientObject::call(DUnicodeString const& name)
 {
-  ((DObject*)this->__serializer)->call("DUnicodeString", RealValue<DUnicodeString>("call0"));
-  ((DObject*)this->__serializer)->call("DUInt64", RealValue<DUInt64>(this->__id));
-  ((DObject*)this->__serializer)->call("DUnicodeString", RealValue<DUnicodeString>(name));
+  this->__serializer->sDUnicodeString(RealValue<DUnicodeString>("call0"));
+  this->__serializer->sDUInt64(RealValue<DUInt64>(this->__id));
+  this->__serializer->sDUnicodeString(RealValue<DUnicodeString>(name));
 
-  ((DObject*)this->__networkStream)->call("request");
+  this->__networkStream->request();
   DType  dtype = this->instanceOf()->attribute(name).type();
   DValue value = (((DObject*)this->__deserializer)->call(dtype.returnName()));
-  ((DObject*)this->__networkStream)->call("flushRead");
+  this->__networkStream->flushRead();
 
   return (value);
 }

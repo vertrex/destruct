@@ -9,8 +9,6 @@
 
 namespace Destruct {
 
-class DSerialize;
-
 /**
  * Client Object proxy 
  */
@@ -37,11 +35,14 @@ public:
   EXPORT BaseValue*            getBaseValue(size_t index);
   EXPORT BaseValue const*      getBaseValue(size_t index) const;
 
-  RealValue<DObject*>   __networkStream, __serializer, __deserializer;
+  RealValue<DObject*>           __networkStreamObject, __serializerObject, __deserializerObject;
 protected:
   ~ClientObject();
 private:
-  uint64_t              __id;
+  uint64_t                      __id;
+  SerializeRPC*                 __serializer;
+  DeserializeRPC*               __deserializer;
+  NetworkStream*                __networkStream;
 };
 
 }

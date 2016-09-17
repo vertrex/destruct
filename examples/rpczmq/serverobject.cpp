@@ -10,13 +10,12 @@ using namespace Destruct;
 ServerObject::ServerObject(void* socket, void * context): __networkStream(NULL), __serializer(NULL), __deserializer(NULL), __objectManager(NULL)
 {
   this->__objectManager = DStructs::instance().find("ObjectManager")->newObject();
-  this->__networkStream = DStructs::instance().generate("NetworkStream");
-  NetworkStream* ns = static_cast<NetworkStream*>(this->__networkStream);
-  ns->__context = context;
-  ns->__socket = socket;
+  this->__networkStream = static_cast<NetworkStream*>(DStructs::instance().generate("NetworkStream"));
+  this->__networkStream->__context = context;
+  this->__networkStream->__socket = socket;
 
-  this->__serializer = DStructs::instance().generate("SerializeRPC", RealValue<DObject*>(this->__networkStream));
-  this->__deserializer = DStructs::instance().generate("DeserializeRPC", RealValue<DObject*>(this->__networkStream));
+  this->__serializer = static_cast<SerializeRPC*>(DStructs::instance().generate("SerializeRPC", RealValue<DObject*>(this->__networkStream)));
+  this->__deserializer = static_cast<DeserializeRPC*>(DStructs::instance().generate("DeserializeRPC", RealValue<DObject*>(this->__networkStream)));
 }
 
 ServerObject::~ServerObject()
@@ -34,9 +33,9 @@ void    ServerObject::find(void)
   DStruct* dstruct = destruct.find(name);
   if (!dstruct) //XXX must send exception to client !
     throw DException("Server::generate DStruct " + name + " not found"); 
-  this->__networkStream->call("reply");
-  this->__serializer->call("DStruct", RealValue<DStruct*>(dstruct));
-  this->__networkStream->call("flushWrite");
+  this->__networkStream->reply();
+  this->__serializer->sDStruct(RealValue<DStruct*>(dstruct));
+  this->__networkStream->flushWrite();
 }
 
 void    ServerObject::generate(void)
@@ -49,28 +48,28 @@ void    ServerObject::generate(void)
   DObject* object = dstruct->newObject(); 
   RealValue<DUInt64> objectId = this->__objectManager->call("registerObject", RealValue<DObject*>(object));
 
-  this->__networkStream->call("reply");
-  this->__serializer->call("DUInt64", RealValue<DUInt64>(objectId));
-  this->__networkStream->call("flushWrite");
+  this->__networkStream->reply();
+  this->__serializer->sDUInt64(RealValue<DUInt64>(objectId));
+  this->__networkStream->flushWrite();
 }
 
 void    ServerObject::setValue(void)
 {
-  DValue id = this->__deserializer->call("DUInt64");
-  DUnicodeString name = this->__deserializer->call("DUnicodeString");
+  DUInt64 id = this->__deserializer->dDUInt64();
+  DUnicodeString name = this->__deserializer->dDUnicodeString();
 
-  DObject* object = this->__objectManager->call("object", id);
+  DObject* object = this->__objectManager->call("object", RealValue<DUInt64>(id));
 
   DValue value = this->__deserializer->call(object->instanceOf()->attribute(name).type().name());
   object->setValue(name, value);
-  this->__networkStream->call("reply");
+  this->__networkStream->reply();
 }
 
 void    ServerObject::getValue(void)
 {
-  DValue id = this->__deserializer->call("DUInt64");
-  DUnicodeString name = this->__deserializer->call("DUnicodeString");
-  DObject* object = this->__objectManager->call("object", id);
+  DUInt64 id = this->__deserializer->dDUInt64();
+  DUnicodeString name = this->__deserializer->dDUnicodeString();
+  DObject* object = this->__objectManager->call("object", RealValue<DUInt64>(id));
   
   DValue value = object->getValue(name);
 
@@ -83,75 +82,75 @@ void    ServerObject::getValue(void)
     serverFunctionObject->functionObject = value.get<DFunctionObject*>();
 
     DValue id = this->__objectManager->call("registerObject", RealValue<DObject*>(serverFunctionObject));
-    this->__networkStream->call("reply");
-    this->__serializer->call("DUInt64", id);
-    this->__networkStream->call("flushWrite");
+    this->__networkStream->reply();
+    this->__serializer->sDUInt64(id);
+    this->__networkStream->flushWrite();
     serverFunctionObject->destroy();
   }
   else
   {
-    this->__networkStream->call("reply"); 
+    this->__networkStream->reply(); 
     this->__serializer->call(type.name(), value);
-    this->__networkStream->call("flushWrite");
+    this->__networkStream->flushWrite();
   }
 }
 
 //XXX not tested because there is no function in python !
 void    ServerObject::call(void)
 {
-  DValue id = this->__deserializer->call("DUInt64");
-  DObject* object = this->__objectManager->call("object", id);
-  DUnicodeString name = this->__deserializer->call("DUnicodeString");
+  DUInt64 id = this->__deserializer->dDUInt64();
+  DObject* object = this->__objectManager->call("object", RealValue<DUInt64>(id));
+  DUnicodeString name = this->__deserializer->dDUnicodeString();
   DType type = object->instanceOf()->attribute(name).type();
 
   DValue args = this->__deserializer->call(type.argumentName());
   DValue value = object->call(name, args);
 
-  this->__networkStream->call("reply");
+  this->__networkStream->reply();
   this->__serializer->call(type.returnName(), value);
-  this->__networkStream->call("flushWrite");
+  this->__networkStream->flushWrite();
 }
 
 //XXX not tested because tehre is no function in python
 void    ServerObject::call0(void)
 {
-  DValue id = this->__deserializer->call("DUInt64");
-  DObject* object = this->__objectManager->call("object", id);
-  DUnicodeString name = this->__deserializer->call("DUnicodeString");
+  DUInt64 id = this->__deserializer->dDUInt64();
+  DObject* object = this->__objectManager->call("object", RealValue<DUInt64>(id));
+  DUnicodeString name = this->__deserializer->dDUnicodeString();
 
   DValue value = object->call(name); 
   
   DType type = object->instanceOf()->attribute(name).type();
-  this->__networkStream->call("reply"); 
+  this->__networkStream->reply(); 
   this->__serializer->call(type.returnName(), value);
-  this->__networkStream->call("flushWrite");
+  this->__networkStream->flushWrite();
 }
 
 void    ServerObject::functionCall(void)
 {
-  DValue id= this->__deserializer->call("DUInt64");
+  DUInt64 id = this->__deserializer->dDUInt64();
 
-  ServerFunctionObject* object = static_cast<ServerFunctionObject*>(this->__objectManager->call("object", id).get<DObject*>());
+  ServerFunctionObject* object = static_cast<ServerFunctionObject*>(this->__objectManager->call("object", RealValue<DUInt64>(id)).get<DObject*>());
 
   DValue args = this->__deserializer->call(DType((DType::Type_t)(DUInt64)object->argumentType).name()); //XXX get name directly ? 
   DValue value = ((DFunctionObject*)object->functionObject)->call(args);
 
-  this->__networkStream->call("reply");
+  this->__networkStream->reply();
   this->__serializer->call(DType((DType::Type_t)(DUInt64)object->returnType).name(), value); 
-  this->__networkStream->call("flushWrite");
+  this->__networkStream->flushWrite();
 }
 
 void    ServerObject::functionCall0(void)
 {
-  DValue id = this->__deserializer->call("DUInt64");
+  DUInt64 id = this->__deserializer->dDUInt64();
 
-  ServerFunctionObject* object = static_cast<ServerFunctionObject*>(this->__objectManager->call("object", id).get<DObject*>());
+  ServerFunctionObject* object = static_cast<ServerFunctionObject*>(this->__objectManager->call("object", RealValue<DUInt64>(id)).get<DObject*>());
 
   DValue value = ((DFunctionObject*)object->functionObject)->call();
 
-  this->__networkStream->call("reply");
+  this->__networkStream->reply();
   this->__serializer->call(DType((DType::Type_t)(DUInt64)object->returnType).name(), value); 
-  this->__networkStream->call("flushWrite");
+  this->__networkStream->flushWrite();
 }
  
 void    ServerObject::unknown(DUnicodeString const& cmd)
