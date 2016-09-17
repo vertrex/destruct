@@ -35,7 +35,7 @@ public:
   void       sDStruct(DValue const& args);
   void       sDBuffer(DValue const& args);
 
-  DObject*   __objectManager; //RV 
+  DObject*   __objectManager; //RV
 protected:
   ~SerializeRPC();
 

@@ -94,7 +94,7 @@ Client::~Client()
 void    Client::__connect(DUnicodeString const& addr, uint32_t port)
 {
   this->__context = zmq_ctx_new();
-  this->__socket = zmq_socket(this->__context, ZMQ_PAIR);//ZMQ_REQ
+  this->__socket = zmq_socket(this->__context, ZMQ_REQ);//ZMQ_REQ
  
   std::string faddr =  "tcp://" + std::string(addr) + ":" + "3583";
   int rc = zmq_connect(this->__socket, faddr.c_str()); //XXX port to string !
@@ -112,18 +112,15 @@ Destruct::DObject* Client::generate(DValue const& args)
   this->__serialize->call("DUnicodeString", RealValue<DUnicodeString>("generate"));
   this->__serialize->call("DUnicodeString", RealValue<DUnicodeString>(args.get<DUnicodeString>()));
 
-  std::cout << "Get request result " << std::endl;
-  if (this->__networkStream->call("request").get<DInt8>() == -1)
-    throw DException(this->__deserialize->call("DUnicodeString").get<DUnicodeString>());
-  
-  std::cout << "get object id " << std::endl;
+  //DUInt64 objectId = this->__deserialize->call("DUInt64");
+  this->__networkStream->call("request");
   DUInt64 objectId = this->__deserialize->call("DUInt64");
+  this->__networkStream->call("flushRead");
+
   //hanle argument name + value ... XXX
   //if struct not found in local deserialize it !
   DUnicodeString objectName = args.get<DUnicodeString>();
   DStruct* objectStruct = destruct.find(objectName);
-
-  //send message :
 
   ClientObject* root = new ClientObject(RealValue<DObject*>(this->__networkStream), RealValue<DObject*>(this->__serialize), RealValue<DObject*>(this->__deserialize), objectId, objectStruct); 
 
@@ -137,7 +134,9 @@ Destruct::DStruct* Client::find(DValue const& name)
   this->__serialize->call("DUnicodeString", RealValue<DUnicodeString>(name.get<DUnicodeString>()));
   //this->__networkStream->call("flush");
  
+  this->__networkStream->call("request");
   DStruct* dstruct = this->__deserialize->call("DStruct");
+  this->__networkStream->call("flushRead");
   if (dstruct)
   {
     Destruct::DStructs& destruct = Destruct::DStructs::instance();

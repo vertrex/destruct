@@ -48,7 +48,7 @@ void    Server::setRoot(RealValue<DObject*> root)
 void    Server::__bind(int32_t port)
 {
   this->__context = zmq_ctx_new();
-  this->__socket = zmq_socket(this->__context, ZMQ_PAIR);//rep
+  this->__socket = zmq_socket(this->__context, ZMQ_REP);//rep
   int rc = zmq_bind(this->__socket, "tcp://*:3583"); //XXX port
 }
 

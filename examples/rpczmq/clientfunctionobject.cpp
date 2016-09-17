@@ -25,7 +25,12 @@ DValue ClientFunctionObject::call(DValue const& args) const
   //this->__networkStream->call("flush");
 ;
   /* get return value */
-  return (this->__deserializer->call(DType(this->__returnType).name()));
+//return (this->__deserializer->call(DType(this->__returnType).name()));
+
+  ((DObject*)this->__networkStream)->call("request");
+  DValue value = (this->__deserializer->call(DType(this->__returnType).name()));
+  ((DObject*)this->__networkStream)->call("flushRead");
+  return (value);
 }
 
 DValue ClientFunctionObject::call(void) const
@@ -33,6 +38,9 @@ DValue ClientFunctionObject::call(void) const
   this->__serializer->call("DUnicodeString", RealValue<DUnicodeString>("functionCall0"));
   this->__serializer->call("DUInt64", RealValue<DUInt64>(this->__id));
   //this->__networkStream->call("flush");
+  ((DObject*)this->__networkStream)->call("request");
+  DValue value = this->__deserializer->call(DType(this->__returnType).name());
+  ((DObject*)this->__networkStream)->call("flushRead");
 
-  return (this->__deserializer->call(DType(this->__returnType).name()));
+  return (value);
 }

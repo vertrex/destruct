@@ -18,6 +18,7 @@ if __name__ == "__main__":
    client = DStructs().find("Client").newObject(arg)
    print "generate devicelist" 
    serverLoader = client.generate("Import")
+   print "call server load"
    serverLoader.file("../modules/libdestruct_device.so")
    deviceList = client.generate("DeviceList")
    devs = deviceList.list()
