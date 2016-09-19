@@ -36,7 +36,7 @@ DBuffer NetworkStream::read(DValue const& args)
   zmq_msg_init(&msg);
   zmq_msg_recv(&msg, this->__socket, 0);
 
-  DBuffer buffer((uint8_t*)zmq_msg_data(&msg), zmq_msg_size(&msg));
+  DBuffer buffer((uint8_t*)zmq_msg_data(&msg), (int32_t)zmq_msg_size(&msg));
   zmq_msg_close(&msg);
 
   return (buffer);

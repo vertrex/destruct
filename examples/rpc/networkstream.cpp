@@ -56,7 +56,7 @@ DBuffer NetworkStream::read(DValue const& args)
     } while (readed == 4096 || readed == -1);
   }
 
-  DBuffer buffer(size);
+  DBuffer buffer((int32_t)size);
   
   this->__readStream.read((char*)buffer.data(), (uint32_t)size);
   //if buffer[0] == ERROR_FLAG;
