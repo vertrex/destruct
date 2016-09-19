@@ -18,8 +18,6 @@ include_directories("../rpc")
 
 
 set(device_libfiles
-  devicerpc.cpp
-  deviceserver.cpp
   device.cpp
   )
 
@@ -43,8 +41,8 @@ else (UNIX)
   target_link_libraries(destruct_device destruct destruct_rpczmq)
 endif (UNIX)
 
-set(device_files
-devicerpc.cpp)
+#set(device_files
+#devicerpc.cpp)
 
-add_executable(devicerpc ${device_files})
-target_link_libraries(devicerpc destruct destruct_rpczmq destruct_device) #can import now
+#add_executable(devicerpc ${device_files})
+#target_link_libraries(devicerpc destruct destruct_rpczmq destruct_device) #can import now
