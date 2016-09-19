@@ -469,13 +469,13 @@ Destruct::DValue PyDBuffer::toDValue(PyObject* value)
   {
     Py_buffer pyBuffer;
     PyObject_GetBuffer(value, &pyBuffer, PyBUF_SIMPLE);
-    Destruct::DBuffer fvalue((uint8_t*)pyBuffer.buf, pyBuffer.len);
+    Destruct::DBuffer fvalue((uint8_t*)pyBuffer.buf, (int32_t)pyBuffer.len);
     PyBuffer_Release(&pyBuffer);
     return Destruct::RealValue<Destruct::DBuffer>(fvalue);
   }
   if (PyByteArray_Check(value))
   {
-    Destruct::DBuffer fvalue((uint8_t*)PyByteArray_AsString(value), PyByteArray_Size(value));
+    Destruct::DBuffer fvalue((uint8_t*)PyByteArray_AsString(value), PyByteArray_Size((int32_t)value));
     return Destruct::RealValue<Destruct::DBuffer>(fvalue);
   }
   //throw Destruct::DException("Can't cast " + std::string(value->ob_type->tp_name) + " to DBuffer");

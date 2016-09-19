@@ -62,7 +62,7 @@ DObject*       ValueKey::deserializeRaw(DValue const& arg)
   if (this->minor == 3 ||  this->realDataSize < 16344)
   {
     this->dataOffsets = DStructs::instance().generate("DVectorUInt32");
-    ((DObject*)this->dataOffsets)->call("push", RealValue<DUInt32>(this->realDataOffset));
+    ((DObject*)this->dataOffsets)->call("push", RealValue<DUInt32>((DUInt32)this->realDataOffset));
     ((DObject*)this->dataOffsets)->destroy();
   }
   else
