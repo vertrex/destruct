@@ -40,7 +40,6 @@ void    ServerObject::find(void)
 
 void    ServerObject::generate(void)
 {
-  std::cout << "Generate get value " << std::endl; 
   DUnicodeString name = this->__deserializer->dDUnicodeString(); 
   Destruct::DStructs& destruct = Destruct::DStructs::instance();
   DStruct* dstruct = destruct.find(name);
