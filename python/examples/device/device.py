@@ -1,5 +1,6 @@
 #!/usr/bin/python 
 import sys
+import time
 
 sys.path.append('../../')
 sys.path.append('../')
@@ -14,8 +15,9 @@ print 'ok loaded'
 arg = DStructs().find("ClientArgument").newObject()
 #arg.address = "127.0.0.1"
 #arg.address = "127.0.0.1"
-arg.address = "10.42.1.197"
-#arg.address = "10.42.1.195"
+#arg.address = "10.42.1.197"
+arg.address = "10.42.1.195"
+#arg.address = "10.42.1.1"
 arg.port = 0xdff
 client = DStructs().find("Client").newObject(arg)
 print "generate devicelist" 
@@ -31,8 +33,15 @@ for dev in devs:
 s = devs[0].open()
 b = ""
 size = 0
-toread = 10000000
-while size < toread * 1000:
-  b = s.read(toread)
-  size += toread
+MO = 1024*1024
+GO = 1024 * MO
+sizeToRead = GO
+timeStart = time.time()
+while size < sizeToRead:
+  b = s.read(10*MO)
+  size += 10*MO 
+totalTime = time.time() - timeStart
+print 'speed ' , str(int( ((sizeToRead) / totalTime)/ MO)) + ' MO' #in byte /sec
+
+  #print size
 #print len(b)
