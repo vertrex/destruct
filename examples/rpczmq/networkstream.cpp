@@ -30,7 +30,7 @@ NetworkStream::~NetworkStream()
 {
 }
 
-DBuffer NetworkStream::read(DValue const& args)
+DBuffer NetworkStream::read(void)
 {
   zmq_msg_t msg;
   zmq_msg_init(&msg);

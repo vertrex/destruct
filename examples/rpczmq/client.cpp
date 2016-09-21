@@ -8,7 +8,9 @@
 #include "dsimpleobject.hpp"
 #include "server.hpp"
 #include "objectmanager.hpp"
+#include "serverobject.hpp"
 #include "serverfunctionobject.hpp"
+
 
 #include "zmq.h"
 /**
@@ -52,15 +54,13 @@ Client::Client(DUnicodeString const& addr, uint32_t port) : DCppObject<Client>(N
 {
   this->init();
   this->__connect(addr, port);
-  this->__networkStream = DStructs::instance().find("NetworkStream")->newObject();
+  this->__networkStream = static_cast<NetworkStream*>(DStructs::instance().find("NetworkStream")->newObject());
 
-//XXX NOT REALLY CLEAN
-  NetworkStream* ns = static_cast<NetworkStream*>(this->__networkStream);
-  ns->__context = this->__context;
-  ns->__socket = this->__socket;
+  this->__networkStream->__context = this->__context;
+  this->__networkStream->__socket = this->__socket;
 
-  this->__serialize = DStructs::instance().find("SerializeRPC")->newObject(RealValue<DObject*>(this->__networkStream));
-  this->__deserialize = DStructs::instance().find("DeserializeRPC")->newObject(RealValue<DObject*>(this->__networkStream));
+  this->__serialize = static_cast<SerializeRPC*>(DStructs::instance().find("SerializeRPC")->newObject(RealValue<DObject*>(this->__networkStream)));
+  this->__deserialize = static_cast<DeserializeRPC*>(DStructs::instance().find("DeserializeRPC")->newObject(RealValue<DObject*>(this->__networkStream)));
 }
 
 Client::Client(DStruct* dstruct, DValue const& value) : DCppObject<Client>(dstruct, value), __networkStream(NULL), __serialize(NULL), __deserialize(NULL)
@@ -71,15 +71,13 @@ Client::Client(DStruct* dstruct, DValue const& value) : DCppObject<Client>(dstru
   DUnicodeString addr = args->getValue("address");
   uint32_t port = args->getValue("port").get<DUInt32>();
   this->__connect(addr, port);
-  this->__networkStream = DStructs::instance().find("NetworkStream")->newObject();
+  this->__networkStream = static_cast<NetworkStream*>(DStructs::instance().find("NetworkStream")->newObject());
 
-//NOT REALLY CLEAN
-  NetworkStream* ns = static_cast<NetworkStream*>(this->__networkStream);
-  ns->__context = this->__context;
-  ns->__socket = this->__socket;
+  this->__networkStream->__context = this->__context;
+  this->__networkStream->__socket = this->__socket;
 
-  this->__serialize = DStructs::instance().find("SerializeRPC")->newObject(RealValue<DObject*>(this->__networkStream));
-  this->__deserialize = DStructs::instance().find("DeserializeRPC")->newObject(RealValue<DObject*>(this->__networkStream));
+  this->__serialize = static_cast<SerializeRPC*>(DStructs::instance().find("SerializeRPC")->newObject(RealValue<DObject*>(this->__networkStream)));
+  this->__deserialize = static_cast<DeserializeRPC*>(DStructs::instance().find("DeserializeRPC")->newObject(RealValue<DObject*>(this->__networkStream)));
 }
 
 Client::~Client()
@@ -110,17 +108,17 @@ void    Client::__close(void)
 Destruct::DObject* Client::generate(DValue const& args)
 {
   Destruct::DStructs& destruct = Destruct::DStructs::instance();
-  this->__serialize->call("DUnicodeString", RealValue<DUnicodeString>("generate"));
-  this->__serialize->call("DUnicodeString", RealValue<DUnicodeString>(args.get<DUnicodeString>()));
+  this->__serialize->sDUInt8(RealValue<DUInt8>(CMD_GENERATE));
+  this->__serialize->sDUnicodeString(args);
 
   //DUInt64 objectId = this->__deserialize->call("DUInt64");
-  this->__networkStream->call("request");
-  DUInt64 objectId = this->__deserialize->call("DUInt64");
-  this->__networkStream->call("flushRead");
+  this->__networkStream->request();
+  DUInt64 objectId = this->__deserialize->dDUInt64();
+  this->__networkStream->flushRead();
 
   //hanle argument name + value ... XXX
   //if struct not found in local deserialize it !
-  DUnicodeString objectName = args.get<DUnicodeString>();
+  DUnicodeString objectName = args;
   DStruct* objectStruct = destruct.find(objectName);
 
   ClientObject* root = new ClientObject(RealValue<DObject*>(this->__networkStream), RealValue<DObject*>(this->__serialize), RealValue<DObject*>(this->__deserialize), objectId, objectStruct); 
@@ -131,12 +129,12 @@ Destruct::DObject* Client::generate(DValue const& args)
 
 Destruct::DStruct* Client::find(DValue const& name)
 {
-  this->__serialize->call("DUnicodeString", RealValue<DUnicodeString>("find"));
-  this->__serialize->call("DUnicodeString", RealValue<DUnicodeString>(name.get<DUnicodeString>()));
-  this->__networkStream->call("request");
+  this->__serialize->sDUInt8(RealValue<DUInt8>(CMD_GENERATE));
+  this->__serialize->sDUnicodeString(name);
+  this->__networkStream->request();
 
   DStruct* dstruct = this->__deserialize->call("DStruct");
-  this->__networkStream->call("flushRead");
+  this->__networkStream->flushRead();
   if (dstruct)
   {
     Destruct::DStructs& destruct = Destruct::DStructs::instance();

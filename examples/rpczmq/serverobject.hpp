@@ -12,6 +12,15 @@ class SerializeRPC;
 class DeserializeRPC;
 }
 
+#define CMD_FIND                0
+#define CMD_GENERATE            1
+#define CMD_SETVALUE            2
+#define CMD_GETVALUE            3
+#define CMD_CALL                4
+#define CMD_CALL0               5
+#define CMD_FUNCTIONCALL        6
+#define CMD_FUNCTIONCALL0       7
+
 using namespace Destruct;
 
 class ServerObject
@@ -29,7 +38,6 @@ public:
   void                                  call0(void);
   void                                  functionCall(void);
   void                                  functionCall0(void);
-  void                                  unknown(const DUnicodeString& cmd);
   void                                  dispatch(void);
 private:
   NetworkStream*                        __networkStream;

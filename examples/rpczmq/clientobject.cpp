@@ -5,6 +5,7 @@
 #include "serializerpc.hpp"
 #include "clientobject.hpp"
 #include "clientfunctionobject.hpp"
+#include "serverobject.hpp"
 
 namespace Destruct {
 
@@ -37,7 +38,7 @@ DObject* ClientObject::newObject(DStruct* dstruct, DValue const& args)
 
 DValue ClientObject::getValue(DUnicodeString const& name) const
 {
-  this->__serializer->sDUnicodeString(RealValue<DUnicodeString>("getValue")); 
+  this->__serializer->sDUInt8(RealValue<DUInt8>(CMD_GETVALUE)); 
   this->__serializer->sDUInt64(RealValue<DUInt64>(this->__id)); 
   this->__serializer->sDUnicodeString(RealValue<DUnicodeString>(name));
 
@@ -64,7 +65,7 @@ DValue ClientObject::getValue(DUnicodeString const& name) const
 
 void ClientObject::setValue(DUnicodeString const& name, DValue const &v)
 {
-  this->__serializer->sDUnicodeString(RealValue<DUnicodeString>("setValue"));
+  this->__serializer->sDUInt8(RealValue<DUInt8>(CMD_SETVALUE)); 
   this->__serializer->sDUInt64(RealValue<DUInt64>(this->__id));
   this->__serializer->sDUnicodeString(RealValue<DUnicodeString>(name));
  
@@ -76,7 +77,7 @@ DValue ClientObject::call(DUnicodeString const& name, DValue const &args)
 {
   DType  dtype = this->instanceOf()->attribute(name).type();
 
-  this->__serializer->sDUnicodeString(RealValue<DUnicodeString>("call"));
+  this->__serializer->sDUInt8(RealValue<DUInt8>(CMD_CALL)); 
   this->__serializer->sDUInt64(RealValue<DUInt64>(this->__id));
   this->__serializer->sDUnicodeString(RealValue<DUnicodeString>(name));
 
@@ -91,7 +92,7 @@ DValue ClientObject::call(DUnicodeString const& name, DValue const &args)
 
 DValue ClientObject::call(DUnicodeString const& name)
 {
-  this->__serializer->sDUnicodeString(RealValue<DUnicodeString>("call0"));
+  this->__serializer->sDUInt8(RealValue<DUInt8>(CMD_CALL0)); 
   this->__serializer->sDUInt64(RealValue<DUInt64>(this->__id));
   this->__serializer->sDUnicodeString(RealValue<DUnicodeString>(name));
 

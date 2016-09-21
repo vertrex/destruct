@@ -37,9 +37,9 @@ private:
   void*                         __context;
   void*                         __socket;
 
-  DObject*                      __networkStream;
-  DObject*                      __serialize;
-  DObject*                      __deserialize;
+  NetworkStream*                __networkStream;
+  SerializeRPC*                 __serialize;
+  DeserializeRPC*               __deserialize;
 
   //protected:
   //EXPORT ~Client();

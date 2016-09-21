@@ -28,7 +28,7 @@ ServerObject::~ServerObject()
 
 void    ServerObject::find(void)
 {
-  DUnicodeString name = this->__deserializer->call("DUnicodeString"); 
+  DUnicodeString name = this->__deserializer->dDUnicodeString(); 
   Destruct::DStructs& destruct = Destruct::DStructs::instance();
   DStruct* dstruct = destruct.find(name);
   if (!dstruct) //XXX must send exception to client !
@@ -40,7 +40,8 @@ void    ServerObject::find(void)
 
 void    ServerObject::generate(void)
 {
-  DUnicodeString name = this->__deserializer->call("DUnicodeString"); 
+  std::cout << "Generate get value " << std::endl; 
+  DUnicodeString name = this->__deserializer->dDUnicodeString(); 
   Destruct::DStructs& destruct = Destruct::DStructs::instance();
   DStruct* dstruct = destruct.find(name);
   if (!dstruct) ///XXX must send exception to client !
@@ -153,42 +154,31 @@ void    ServerObject::functionCall0(void)
   this->__networkStream->flushWrite();
 }
  
-void    ServerObject::unknown(DUnicodeString const& cmd)
-{
-  std::cout << "Receive unknown command : " << cmd << std::endl;
-
-  //XXX
-  this->__serializer->call("DUnicodeString", RealValue<DUnicodeString>("Unknown command : " + cmd));
-  //this->__networkStream->call("flush");
-}
-
 void    ServerObject::dispatch(void)
 {
-  DUnicodeString msg = this->__deserializer->call("DUnicodeString").get<DUnicodeString>();
-
+  DUInt8 msg = this->__deserializer->dDUInt8();
   try
   {
-    if (msg == "find")
+    //XXX use a dobject it's already a call table :) faster tahn if /else if /else 
+    if (msg == CMD_FIND)
       this->find();
-    else if (msg == "generate")
+    else if (msg == CMD_GENERATE)
       this->generate();
-    else if(msg == "setValue")
+    else if(msg == CMD_SETVALUE)
       this->setValue();
-    else if(msg == "getValue")
+    else if(msg == CMD_GETVALUE)
       this->getValue();
-    else if(msg == "call")
+    else if(msg == CMD_CALL)
       this->call();
-    else if(msg == "call0")
+    else if(msg == CMD_CALL0)
       this->call0();
-    else if(msg == "functionCall")
+    else if(msg == CMD_FUNCTIONCALL)
       this->functionCall();
-    else if(msg == "functionCall0")
+    else if(msg == CMD_FUNCTIONCALL0)
       this->functionCall0();
   }
   catch (DException const& exception)
   {
-    //this->__networkStream->call("reply", RealValue<DInt8>(-1));
-    //this->__serializer->call("DUnicodeString", RealValue<DUnicodeString>(exception.error()));
     this->__networkStream->call("replyError", RealValue<DUnicodeString>(exception.error()));
   }
 }

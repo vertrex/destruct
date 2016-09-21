@@ -76,20 +76,11 @@ void    SerializeRPC::sDMethod(DValue const& args)
 
 void    SerializeRPC::sDUnicodeString(DValue const& args)
 {
-  DUnicodeString str = args;
-  RealValue<DInt64>  dsize((int64_t)str.size());
-
-  this->__networkStream->write(RealValue<DBuffer>(dsize.asDBuffer()));
-  if (dsize != 0)
     this->__networkStream->write(RealValue<DBuffer>(args.asDBuffer()));
 }
 
 void    SerializeRPC::sDBuffer(DValue const& args)
 {
-  DBuffer buffer = args;
-  RealValue<DInt64>  dsize((DInt64)buffer.size());
-
-  this->__networkStream->write(RealValue<DBuffer>(dsize.asDBuffer()));
   this->__networkStream->write(args);
 }
 
@@ -212,65 +203,60 @@ DFunctionObject* DeserializeRPC::dDMethod(void)
 
 DUnicodeString  DeserializeRPC::dDUnicodeString(void)
 {
-  DInt64  size = this->dDInt64();
-  if (size == 0)
-    return ("");
-
-  DBuffer buffer = this->__networkStream->read(RealValue<DInt64>(size));
+  DBuffer buffer = this->__networkStream->read();
   return (std::string((const char*)buffer.data(), buffer.size()));
 }
 
 DBuffer         DeserializeRPC::dDBuffer(void)
 {
-  DInt64  size = this->dDInt64();
-  return (this->__networkStream->read(RealValue<DInt64>(size)));
+  return (this->__networkStream->read());
 }
 
 DInt8           DeserializeRPC::dDInt8(void)
 {
-  DBuffer buffer = this->__networkStream->read(RealValue<DInt64>(sizeof(DInt8)));
+  DBuffer buffer = this->__networkStream->read();
   return (*((DInt8*)buffer.data()));
 }
 
 DInt16          DeserializeRPC::dDInt16(void)
 {
-  DBuffer buffer = this->__networkStream->read(RealValue<DInt64>(sizeof(DInt16)));
+  DBuffer buffer = this->__networkStream->read();
   return (*((DInt16*)buffer.data()));
 }
 
 DInt32          DeserializeRPC::dDInt32(void)
 {
-  DBuffer buffer = this->__networkStream->read(RealValue<DInt64>(sizeof(DInt32)));
+  DBuffer buffer = this->__networkStream->read();
   return (*((DInt32*)buffer.data()));
 }
 
 DInt64          DeserializeRPC::dDInt64(void)
 {
-  DBuffer buffer = this->__networkStream->read(RealValue<DInt64>(sizeof(DInt64)));
+  DBuffer buffer = this->__networkStream->read();
   return (*((DInt64*)buffer.data()));
 }
 
 DUInt8          DeserializeRPC::dDUInt8(void)
 {
-  DBuffer buffer = this->__networkStream->read(RealValue<DInt64>(sizeof(DUInt8)));
+  DBuffer buffer = this->__networkStream->read();
   return (*((DUInt8*)buffer.data()));
 }
 
 DUInt16         DeserializeRPC::dDUInt16(void)
 {
-  DBuffer buffer = this->__networkStream->read(RealValue<DInt64>(sizeof(DUInt16)));
+  DBuffer buffer = this->__networkStream->read();
   return (*((DUInt16*)buffer.data()));
 }
 
 DUInt32         DeserializeRPC::dDUInt32(void)
 {
-  DBuffer buffer = this->__networkStream->read(RealValue<DInt64>(sizeof(DUInt32)));
+  DBuffer buffer = this->__networkStream->read();
   return (*((DUInt32*)buffer.data()));
 }
 
 DUInt64         DeserializeRPC::dDUInt64(void)
 {
-  DBuffer buffer = this->__networkStream->read(RealValue<DInt64>(sizeof(DUInt64)));
+  DBuffer buffer = this->__networkStream->read();
   return (*((DUInt64*)buffer.data()));
 }
 

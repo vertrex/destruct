@@ -1,4 +1,5 @@
 #include "clientfunctionobject.hpp"
+#include "serverobject.hpp"
 #include "serializerpc.hpp"
 
 /**
@@ -17,7 +18,7 @@ DValue ClientFunctionObject::call(DValue const& args) const
   if (args.asUnicodeString() == "None *") // XXX must be able to serialize None object 
     return (this->call());
 
-  this->__serializer->sDUnicodeString(RealValue<DUnicodeString>("functionCall"));
+  this->__serializer->sDUInt8(RealValue<DUInt8>(CMD_FUNCTIONCALL)); 
   this->__serializer->sDUInt64(RealValue<DUInt64>(this->__id));
 
   ///* Send argument (object is not compatible) */
@@ -34,7 +35,7 @@ DValue ClientFunctionObject::call(DValue const& args) const
 
 DValue ClientFunctionObject::call(void) const
 {
-  this->__serializer->sDUnicodeString(RealValue<DUnicodeString>("functionCall0"));
+  this->__serializer->sDUInt8(RealValue<DUInt8>(CMD_FUNCTIONCALL0)); 
   this->__serializer->sDUInt64(RealValue<DUInt64>(this->__id));
   //this->__networkStream->call("flush");
   this->__networkStream->request();

@@ -16,7 +16,7 @@ public:
   NetworkStream(DStruct* dstruct, DValue const& args);
   NetworkStream(const NetworkStream& copy);
 
-  DBuffer       read(DValue const& args); 
+  DBuffer       read(void); 
   DInt64        write(DValue const& args);
   void          request(void);
   void          reply(void);
@@ -41,7 +41,7 @@ public:
   {
     static DAttribute  attributes[] = 
     {
-       DAttribute(DType::DBufferType, "read",  DType::DInt64Type), 
+       DAttribute(DType::DBufferType, "read",  DType::DNoneType),  //no size because get a message
        DAttribute(DType::DInt64Type,  "write", DType::DBufferType),
 
        DAttribute(DType::DNoneType,  "request", DType::DNoneType),
