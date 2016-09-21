@@ -41,6 +41,7 @@ public:
   ~DeviceBuffer();
   uint32_t			__size;
   uint32_t			getData(void* buff, uint32_t size, uint64_t offset);
+  uint32_t			readLarge(void* buff, uint32_t size, uint64_t offset);
 };
 
 class DeviceStream : public DCppObject<DeviceStream>

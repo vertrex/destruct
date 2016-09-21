@@ -44,6 +44,7 @@ DeviceBuffer::~DeviceBuffer()
 
 void DeviceBuffer::fillBuff(uint64_t offset)
 {
+  //std::cout << "DeviceBuffer::fillBuff" << std::endl;
   LARGE_INTEGER sizeConv;
   LARGE_INTEGER newOffset;
 	
@@ -65,6 +66,8 @@ void DeviceBuffer::fillBuff(uint64_t offset)
 
 uint32_t	DeviceBuffer::getData(void *buff, uint32_t size, uint64_t offset)
 {
+ // if (size 
+
   if ((offset < this->__offset) || (offset > this->__offset + this->__currentSize) 
       ||(offset + size > this->__offset + this->__currentSize))
   {
@@ -78,6 +81,46 @@ uint32_t	DeviceBuffer::getData(void *buff, uint32_t size, uint64_t offset)
 
   return (size);
 }
+
+  uint32_t			DeviceBuffer::readLarge(void* largeBuff, uint32_t size, uint64_t offset)
+  {
+	 // std::cout << "Read large " << size << std::endl;
+    uint64_t  newSize;
+	LARGE_INTEGER newOffset;	
+	LARGE_INTEGER newOffsetRes;
+
+	if (size % 512)
+       newSize = ((size/512)+1) * 512;
+	else
+		newSize = size;
+
+	if (offset % 512)
+       newOffset.QuadPart = (offset/512) * 512;
+	else
+	  newOffset.QuadPart = offset;
+
+	uint64_t leak = offset - newOffset.QuadPart;
+
+	
+ /* if (this->__offset > this->__devSize)
+  {
+    this->__currentSize = 0;
+    return;
+  }*/
+
+//	if (newOffset.QuadPart != this->__offset)
+  SetFilePointerEx(this->__handle, newOffset, &newOffsetRes, 0);
+  DWORD readed;
+
+  uint8_t* newBuffer = new uint8_t[newSize];
+  ReadFile(this->__handle, (void*)(newBuffer), (DWORD)newSize,  &readed ,0);
+
+  memcpy((void*)largeBuff, (void*)((uint8_t*)newBuffer+ leak), size);
+  delete[] newBuffer;
+  //this->__offset += size;
+
+   return (size);
+  }
 
 /**
  *  DeviceStream Windows 
@@ -93,7 +136,7 @@ DeviceStream::DeviceStream(DStruct* dstruct, DValue const& args) : DCppObject<De
     throw DException("Can't open device");
 
  //this->__deviceBuffer = new DeviceBuffer((HANDLE)hnd, 100 * sizeof(uint8_t), 4096, this->__size);
-  this->__deviceBuffer = new DeviceBuffer((HANDLE)hnd, 8, 1024, this->__size);
+  this->__deviceBuffer = new DeviceBuffer((HANDLE)hnd, 2 , 4096, this->__size);
 }
 
 DeviceStream::~DeviceStream()
@@ -109,6 +152,15 @@ DBuffer DeviceStream::read(DValue const& args)
 
   DBuffer dbuffer(origSize);
 
+ // if (origSize > 4096 * 2) // cache SIZE avoir ici
+//  {
+     this->__deviceBuffer->readLarge((void*)dbuffer.data(), origSize, this->__offset);
+	 this->__offset += ((uint64_t)readed);
+     return dbuffer;
+//  }
+
+
+  //std::cout << "DeviceStream::read " << origSize << std::endl;
   while (aReaded < origSize)
   {
     readed = this->__deviceBuffer->getData(((uint8_t *)dbuffer.data() + aReaded), origSize - aReaded, this->__offset);
@@ -117,13 +169,19 @@ DBuffer DeviceStream::read(DValue const& args)
     if (this->__offset > this->__size)
     {
       this->__offset = this->__size;
+	  std::cout << "DeviceStream::read this->__offset > this->__size " << std::endl;
       return dbuffer;
       //return (aReaded);
     }
-    if (readed < this->__deviceBuffer->__size)
+/*    if (readed < this->__deviceBuffer->__size)
+	{
+	  std::cout << "readed < this->__deviceBuffer->__size readed " << readed << " aReaded  " << aReaded <<  " origSize "  << origSize << std::endl;
       return dbuffer;
+	}*/
             //return (aReaded); 
   }
+  if (aReaded != origSize)
+	 std::cout << "aReaded != origSize aReaded "  << aReaded << " origSize " << origSize << std::endl;
   return dbuffer;
   //return aReaded;
 }

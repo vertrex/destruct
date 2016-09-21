@@ -42,13 +42,20 @@ DBuffer NetworkStream::read(void)
   return (buffer);
 }
 
+void my_free (void *data, void *hint)
+{
+	DBuffer* buffer = static_cast<DBuffer*>(hint);
+	delete buffer;
+}
+
 DInt64  NetworkStream::write(DValue const& args)
 {
   DBuffer buffer = args;
 
   zmq_msg_t msg;
-  zmq_msg_init_size(&msg, buffer.size());
-  memcpy(zmq_msg_data(&msg), buffer.data(), buffer.size());
+
+  DBuffer* copy = new DBuffer(buffer);
+  zmq_msg_init_data(&msg, buffer.data(), buffer.size(), my_free , (void*)copy);
   zmq_msg_send(&msg, this->__socket, ZMQ_SNDMORE);
   
   return (buffer.size()); //XXX check
