@@ -28,7 +28,7 @@ if serverLoader.file("../modules/libdestruct_device.so") == 0:
 deviceList = client.generate("DeviceList")
 devs = deviceList.list()
 for dev in devs:
-  print dev.blockDevice, dev.serialNumber, dev.model, dev.size
+  print dev.blockDevice, "-", dev.serialNumber,  "-", dev.model, dev.size
 
 s = devs[0].open()
 b = ""

@@ -103,16 +103,16 @@ DObject* DeviceList::list(void)
 
 	
 	DUnicodeString type;
-    hr = pclsObj->Get(L"InterfaceType", 0, &vtProp, 0, 0);
+         hr = pclsObj->Get(L"InterfaceType", 0, &vtProp, 0, 0);
 	if (SUCCEEDED(hr))
         type = DUnicodeString((char*)vtProp.pbstrVal, (int32_t)wcslen((wchar_t*)vtProp.pbstrVal) * 2, "UTF-16LE");
 	VariantClear(&vtProp);
 
 	if (type != "USB")
 	{
-      hr = pclsObj->Get(L"SerialNumber", 0, &vtProp, 0, 0);
+          hr = pclsObj->Get(L"SerialNumber", 0, &vtProp, 0, 0);
 	  if (SUCCEEDED(hr))
-        device->serialNumber = DUnicodeString((char*)vtProp.pbstrVal, (int32_t)wcslen((wchar_t*)vtProp.pbstrVal) * 2, "UTF-16LE");
+            device->serialNumber = DUnicodeString((char*)vtProp.pbstrVal, (int32_t)wcslen((wchar_t*)vtProp.pbstrVal) * 2, "UTF-16LE");
 	  VariantClear(&vtProp);
 	}
 	else
@@ -120,16 +120,16 @@ DObject* DeviceList::list(void)
 	  hr = pclsObj->Get(L"PnPDeviceID", 0, &vtProp, 0, 0);
 	  if (SUCCEEDED(hr))
 	  {
-         DUnicodeString pnpDeviceId((char*)vtProp.pbstrVal, (int32_t)wcslen((wchar_t*)vtProp.pbstrVal) * 2, "UTF-16LE");
-		 std::size_t pos = std::string(pnpDeviceId).rfind("\\");
-		 if (pos != std::string::npos)
-		 {	
-		   std::string serialNumber = std::string(pnpDeviceId).substr(pos + 1);
-		   pos = serialNumber.rfind("&");
-		   if (pos != std::string::npos)
-			 serialNumber = serialNumber.substr(0, pos);
-		   device->serialNumber = DUnicodeString(serialNumber);
-		 }
+            DUnicodeString pnpDeviceId((char*)vtProp.pbstrVal, (int32_t)wcslen((wchar_t*)vtProp.pbstrVal) * 2, "UTF-16LE");
+	    std::size_t pos = std::string(pnpDeviceId).rfind("\\");
+	    if (pos != std::string::npos)
+	    {	
+	      std::string serialNumber = std::string(pnpDeviceId).substr(pos + 1);
+	      pos = serialNumber.rfind("&");
+	      if (pos != std::string::npos)
+	        serialNumber = serialNumber.substr(0, pos);
+	      device->serialNumber = DUnicodeString(serialNumber);
+	    }
 	  }
 	  VariantClear(&vtProp);
 	}
