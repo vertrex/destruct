@@ -63,9 +63,7 @@ DInt64  NetworkStream::write(DValue const& args)
 
 void    NetworkStream::request(void)
 {
-  zmq_msg_t end;
-  zmq_msg_init_size(&end, 0);
-  zmq_msg_send(&end, this->__socket, 0);
+  this->flushWrite();
 
   zmq_msg_t resultmsg;
   zmq_msg_init(&resultmsg);
@@ -88,10 +86,7 @@ void    NetworkStream::request(void)
 
 void NetworkStream::reply(void)
 {
-  zmq_msg_t end;
-  zmq_msg_init(&end);
-  zmq_msg_recv(&end, this->__socket, 0);
-  zmq_msg_close(&end);
+  this->flushRead();
 
   uint8_t result = 1;
   zmq_msg_t resultmsg;
@@ -104,10 +99,7 @@ void NetworkStream::reply(void)
 
 void    NetworkStream::replyError(DValue const& args)
 {
-  zmq_msg_t end;
-  zmq_msg_init(&end);
-  zmq_msg_recv(&end, this->__socket, 0);
-  zmq_msg_close(&end);
+  this->flushRead();
 
   int8_t result = -1;
   zmq_msg_t resultmsg;

@@ -43,7 +43,7 @@ private:
   NetworkStream*                        __networkStream;
   SerializeRPC*                         __serializer;
   DeserializeRPC*                       __deserializer;
-  DObject*                              __objectManager;
+  ObjectManager*                        __objectManager;
 };
 
 #endif

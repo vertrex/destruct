@@ -18,6 +18,7 @@ arg = DStructs().find("ClientArgument").newObject()
 #arg.address = "10.42.1.197"
 arg.address = "10.42.1.195"
 #arg.address = "10.42.1.1"
+#arg.address = "10.42.1.2"
 arg.port = 0xdff
 client = DStructs().find("Client").newObject(arg)
 print "generate devicelist" 
@@ -35,13 +36,16 @@ b = ""
 size = 0
 MO = 1024*1024
 GO = 1024 * MO
-sizeToRead = GO
+#sizeToRead = GO * 5
+sizeToRead = 100*MO
+buffSize = 10*MO
+print "Reading ", sizeToRead, " with buff of size ", 10*MO
 timeStart = time.time()
 while size < sizeToRead:
-  b = s.read(10*MO)
-  size += 10*MO 
+  b = s.read(buffSize)
+  size += buffSize
 totalTime = time.time() - timeStart
-print 'speed ' , str(int( ((sizeToRead) / totalTime)/ MO)) + ' MO' #in byte /sec
+print 'speed ' , str(int(((sizeToRead) / totalTime)/ MO)) + ' MO' #in byte /sec
 
   #print size
 #print len(b)

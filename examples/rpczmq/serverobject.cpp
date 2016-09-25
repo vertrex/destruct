@@ -1,6 +1,7 @@
 #include "serverobject.hpp"
 #include "serializerpc.hpp"
 #include "serverfunctionobject.hpp"
+#include "objectmanager.hpp"
 
 using namespace Destruct;
 
@@ -9,7 +10,7 @@ using namespace Destruct;
  */
 ServerObject::ServerObject(void* socket, void * context): __networkStream(NULL), __serializer(NULL), __deserializer(NULL), __objectManager(NULL)
 {
-  this->__objectManager = DStructs::instance().find("ObjectManager")->newObject();
+  this->__objectManager = static_cast<ObjectManager*>(DStructs::instance().find("ObjectManager")->newObject());
   this->__networkStream = static_cast<NetworkStream*>(DStructs::instance().generate("NetworkStream"));
   this->__networkStream->__context = context;
   this->__networkStream->__socket = socket;
@@ -58,7 +59,7 @@ void    ServerObject::setValue(void)
   DUInt64 id = this->__deserializer->dDUInt64();
   DUnicodeString name = this->__deserializer->dDUnicodeString();
 
-  DObject* object = this->__objectManager->call("object", RealValue<DUInt64>(id));
+  DObject* object = this->__objectManager->object(RealValue<DUInt64>(id));
 
   DValue value = this->__deserializer->call(object->instanceOf()->attribute(name).type().name());
   object->setValue(name, value);
@@ -69,7 +70,7 @@ void    ServerObject::getValue(void)
 {
   DUInt64 id = this->__deserializer->dDUInt64();
   DUnicodeString name = this->__deserializer->dDUnicodeString();
-  DObject* object = this->__objectManager->call("object", RealValue<DUInt64>(id));
+  DObject* object = this->__objectManager->object(RealValue<DUInt64>(id));
   
   DValue value = object->getValue(name);
 
@@ -99,7 +100,7 @@ void    ServerObject::getValue(void)
 void    ServerObject::call(void)
 {
   DUInt64 id = this->__deserializer->dDUInt64();
-  DObject* object = this->__objectManager->call("object", RealValue<DUInt64>(id));
+  DObject* object = this->__objectManager->object(RealValue<DUInt64>(id));
   DUnicodeString name = this->__deserializer->dDUnicodeString();
   DType type = object->instanceOf()->attribute(name).type();
 
@@ -115,7 +116,7 @@ void    ServerObject::call(void)
 void    ServerObject::call0(void)
 {
   DUInt64 id = this->__deserializer->dDUInt64();
-  DObject* object = this->__objectManager->call("object", RealValue<DUInt64>(id));
+  DObject* object = this->__objectManager->object(RealValue<DUInt64>(id));
   DUnicodeString name = this->__deserializer->dDUnicodeString();
 
   DValue value = object->call(name); 
@@ -130,7 +131,7 @@ void    ServerObject::functionCall(void)
 {
   DUInt64 id = this->__deserializer->dDUInt64();
 
-  ServerFunctionObject* object = static_cast<ServerFunctionObject*>(this->__objectManager->call("object", RealValue<DUInt64>(id)).get<DObject*>());
+  ServerFunctionObject* object = static_cast<ServerFunctionObject*>(this->__objectManager->object(RealValue<DUInt64>(id)));
 
   DValue args = this->__deserializer->call(DType((DType::Type_t)(DUInt64)object->argumentType).name()); //XXX get name directly ? 
   DValue value = ((DFunctionObject*)object->functionObject)->call(args);
@@ -144,7 +145,7 @@ void    ServerObject::functionCall0(void)
 {
   DUInt64 id = this->__deserializer->dDUInt64();
 
-  ServerFunctionObject* object = static_cast<ServerFunctionObject*>(this->__objectManager->call("object", RealValue<DUInt64>(id)).get<DObject*>());
+  ServerFunctionObject* object = static_cast<ServerFunctionObject*>(this->__objectManager->object(RealValue<DUInt64>(id)));
 
   DValue value = ((DFunctionObject*)object->functionObject)->call();
 
