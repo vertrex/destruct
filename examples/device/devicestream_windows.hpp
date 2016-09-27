@@ -26,24 +26,6 @@ using namespace Destruct;
 #include <stdio.h>
 #include <aclapi.h>
 
-class DeviceBuffer
-{
-private:
-  HANDLE			__handle;
-  uint8_t*			__buffer;
-  uint64_t			__offset;
-  uint32_t			__BPS;
-  DWORD				__currentSize;
-  uint64_t			__devSize;
-  void				fillBuff(uint64_t offset);
-public:
-  DeviceBuffer(HANDLE handle, uint32_t size, uint32_t BPS,  uint64_t DevSize);
-  ~DeviceBuffer();
-  uint32_t			__size;
-  uint32_t			getData(void* buff, uint32_t size, uint64_t offset);
-  uint32_t			readLarge(void* buff, uint32_t size, uint64_t offset);
-};
-
 class DeviceStream : public DCppObject<DeviceStream>
 {
 public:
@@ -79,8 +61,9 @@ private:
   RealValue<DFunctionObject*>   _read, _size, _seek, _tell, _close;
   DUnicodeString                __path;
   DUInt64                       __size;
-  DUInt64			__offset;
-  DeviceBuffer*                 __deviceBuffer;
+  DUInt64						__offset;
+  DUInt64						__lastOffset;
+  HANDLE						__handle;
 };
 
 #endif
