@@ -17,7 +17,7 @@ ThreadSafeObject::ThreadSafeObject(DStruct* dstruct, DValue const& args) : DObje
 
 ThreadSafeObject::ThreadSafeObject(ThreadSafeObject const& copy) : DObject(copy), __dobject(copy.__dobject)
 {
-  //std::cout << "copy threadsafe object" << std::endl;
+  //use same mutex than ref object and refcount ?
   mutex_init(&this->__mutex);
 }
 
@@ -28,6 +28,7 @@ ThreadSafeObject::ThreadSafeObject(ThreadSafeObject const& copy) : DObject(copy)
 
 ThreadSafeObject::~ThreadSafeObject()
 {
+  //XXX use same mutex and refcount ?
   mutex_lock(&this->__mutex);
   this->__dobject->destroy();
   mutex_unlock(&this->__mutex);
@@ -46,7 +47,9 @@ DObject*         ThreadSafeObject::clone() const //no lock on const
 
 DValue           ThreadSafeObject::getValue(size_t index) const //no lock on const
 {
+  mutex_lock((mutex*)&(this->__mutex));
   DValue result = this->__dobject->getValue(index);
+  mutex_unlock((mutex*)&this->__mutex);
   return (result);
 }
 
@@ -59,11 +62,8 @@ void             ThreadSafeObject::setValue(size_t index, DValue const& args)
 
 DValue           ThreadSafeObject::call(size_t index, DValue const& args)
 {
-  //std::cout << "Lock call index " << std::endl;
   mutex_lock(&this->__mutex);
-  //std::cout << "call " << std::endl;
   DValue result = this->__dobject->call(index, args);
-  //std::cout << "Unlock call " << std::endl;
   mutex_unlock(&this->__mutex);
 
   return (result);
@@ -71,25 +71,24 @@ DValue           ThreadSafeObject::call(size_t index, DValue const& args)
 
 DValue           ThreadSafeObject::getValue(DUnicodeString const& name) const//...
 {
+  mutex_lock((mutex*)&(this->__mutex));
   DValue result = this->__dobject->getValue(name);
+  mutex_unlock((mutex*)&this->__mutex);
   return (result);
 }
 
 void             ThreadSafeObject::setValue(DUnicodeString const& name, DValue const& args)
 {
-  //pthread_mutex_lock(&this->__mutex);
+  pthread_mutex_lock(&this->__mutex);
   this->__dobject->setValue(name, args);
-  //pthread_mutex_unlock(&this->__mutex);
+  pthread_mutex_unlock(&this->__mutex);
 }
 
 
 DValue           ThreadSafeObject::call(DUnicodeString const& name, DValue const& args)
 {
-  //std::cout << "Lock call name " << std::endl;
   mutex_lock(&this->__mutex);
-  //std::cout << "call thread safe name " << std::endl;
   DValue result = this->__dobject->call(name, args);
-  //std::cout << "Unlock call name " << std::endl;
   mutex_unlock(&this->__mutex);
 
   return (result);
@@ -97,17 +96,13 @@ DValue           ThreadSafeObject::call(DUnicodeString const& name, DValue const
 
 DValue           ThreadSafeObject::call(DUnicodeString const& name)
 {
-  //if (name != "dequeue")
   mutex_lock(&this->__mutex);
-//  DValue result = this->__dobject->call(name);
-  DValue func = this->__dobject->getValue(name);
-  DFunctionObject* funcObj = func.get<DFunctionObject*>();
-
+  DValue result = this->__dobject->call(name);
+  //DValue func = this->__dobject->getValue(name);
+  //DFunctionObject* funcObj = func.get<DFunctionObject*>();
+  //
+  //DValue result = funcObj->call();
   mutex_unlock(&this->__mutex);
-  DValue result = funcObj->call(); //because of "Dequeue" call who lock himself ... XXX must be lock but...
-
-  //if (name != "dequeue")
-  //pthread_mutex_unlock(&this->__mutex);
 
   return (result);
 }

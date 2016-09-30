@@ -12,7 +12,6 @@ namespace Destruct
 
 class SerializeRPC : public DCppObject<SerializeRPC> 
 {
-
 public:
   SerializeRPC(DStruct* dstruct, DValue const& args);
   SerializeRPC(SerializeRPC const& copy);

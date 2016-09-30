@@ -14,7 +14,7 @@ class NetworkStream : public DCppObject<NetworkStream>
 {
 public:
   NetworkStream(DStruct* dstruct, DValue const& args);
-  NetworkStream(const NetworkStream& copy);
+  NetworkStream(NetworkStream const& copy);
 
   DBuffer       read(void); 
   DInt64        write(DValue const& args);
