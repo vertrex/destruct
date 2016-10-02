@@ -153,24 +153,7 @@ public:
 class WorkerPool : public DCppObject<WorkerPool> 
 {
 public:
-  static void Declare(void)
-  {
-    DStructs& dstructs = Destruct::DStructs::instance();
-
-    DStruct* queue = makeNewDCpp<Queue>("Queue");
-    dstructs.registerDStruct(queue);
-
-    DStruct* workerPool = makeNewDCpp<WorkerPool>("WorkerPool");
-    dstructs.registerDStruct(workerPool);
-    DStruct* task = makeNewDCpp<Task<DUInt64, DType::DUInt64Type, DUInt64, DType::DUInt64Type> >("Task"); //XXX mus derivate to other possible type 
-    dstructs.registerDStruct(task);
-  
-    DStruct* taskObject = makeNewDCpp<Task<DObject*, DType::DObjectType, DUInt64, DType::DUInt64Type > >("TaskObject");//mutable etc... ?
-    dstructs.registerDStruct(taskObject);
-
-    DStruct* threadSafeObject = new DStruct(NULL, "ThreadSafeObject", ThreadSafeObject::newObject);
-    dstructs.registerDStruct(threadSafeObject);
-  }
+  static void Declare(void);
 
   EXPORT WorkerPool(DStruct* dstruct, DValue const& args);
 

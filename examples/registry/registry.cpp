@@ -22,9 +22,6 @@
 #include "valuekey.hpp"
 #include "protocol/traceobject.hpp"
 
-#include "client.hpp"
-
-
 extern "C"
 {
   EXPORT void DestructExport()

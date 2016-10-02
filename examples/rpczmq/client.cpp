@@ -105,21 +105,20 @@ void    Client::__close(void)
   zmq_ctx_destroy(this->__context); 
 }
 
+                                    //(DUnicodeString const& name ? work au lieu de dvalue ?
 Destruct::DObject* Client::generate(DValue const& args)
 {
   Destruct::DStructs& destruct = Destruct::DStructs::instance();
   this->__serialize->sDUInt8(RealValue<DUInt8>(CMD_GENERATE));
   this->__serialize->sDUnicodeString(args);
 
-  //DUInt64 objectId = this->__deserialize->call("DUInt64");
   this->__networkStream->request();
   DUInt64 objectId = this->__deserialize->dDUInt64();
   this->__networkStream->flushRead();
 
   //hanle argument name + value ... XXX
   //if struct not found in local deserialize it !
-  DUnicodeString objectName = args;
-  DStruct* objectStruct = destruct.find(objectName);
+  DStruct* objectStruct = destruct.find(args.get<DUnicodeString>());
 
   ClientObject* root = new ClientObject(RealValue<DObject*>(this->__networkStream), RealValue<DObject*>(this->__serialize), RealValue<DObject*>(this->__deserialize), objectId, objectStruct); 
 

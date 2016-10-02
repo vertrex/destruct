@@ -43,15 +43,15 @@ TestClient::TestClient(std::string const& addr, uint32_t port) : Client(addr, po
 
 DObject* TestClient::start(void)
 {
-  Destruct::DStruct* fileS = this->remoteFind("File"); 
+  Destruct::DStruct* fileS = this->find(RealValue<DUnicodeString>("File")); 
   if (!fileS)
     throw DException("TestClient::start Directory struct not found");
 
-  Destruct::DStruct* directoryS = this->remoteFind("Directory"); 
+  Destruct::DStruct* directoryS = this->find(RealValue<DUnicodeString>("Directory")); 
   if (!directoryS)
     throw DException("TestClient::start Directory struct not found");
 
-  Destruct::DStruct* vectorS = this->remoteFind("DVectorObject"); 
+  Destruct::DStruct* vectorS = this->find(RealValue<DUnicodeString>("DVectorObject")); 
   if (!vectorS)
     throw DException("TestClient::start Directory struct not found");
 

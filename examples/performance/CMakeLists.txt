@@ -15,21 +15,15 @@
 
 include_directories("../../")
 
-set(threading_libfiles
-  workerpool.cpp
-  threadsafeobject.cpp
-  recursivethreadsafeobject.cpp
+set(performance_libfiles
+  performance.cpp
 )
 
-add_library(destruct_threading SHARED ${threading_libfiles})
-if (MSVC)
-target_link_libraries(destruct_threading destruct)
-else (MSVC)
-target_link_libraries(destruct_threading pthread destruct)
-endif(MSVC)
+add_library(destruct_performance SHARED ${performance_libfiles})
+target_link_libraries(destruct_performance destruct)
 
-set(threading_files
-threading.cpp)
+set(performance_files
+perf.cpp)
 
-add_executable(threading ${threading_files})
-target_link_libraries(threading destruct_threading)
+add_executable(perf ${performance_files})
+target_link_libraries(perf destruct destruct_performance)

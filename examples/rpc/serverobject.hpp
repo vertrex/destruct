@@ -21,7 +21,8 @@ public:
   void                                  call0(void);
   void                                  functionCall(void);
   void                                  functionCall0(void);
-  void                                  findDStruct(void);
+  void                                  find(void);
+  void                                  generate(void);
   void                                  unknown(const DUnicodeString& cmd);
   DUnicodeString                        cmd(void);
 private:

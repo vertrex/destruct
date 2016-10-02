@@ -15,8 +15,8 @@ print 'ok loaded'
 arg = DStructs().find("ClientArgument").newObject()
 #arg.address = "127.0.0.1"
 #arg.address = "127.0.0.1"
-#arg.address = "10.42.1.197"
-arg.address = "10.42.1.195"
+arg.address = "10.42.1.197"
+#arg.address = "10.42.1.195"
 #arg.address = "10.42.1.1"
 #arg.address = "10.42.1.2"
 arg.port = 0xdff
@@ -38,7 +38,7 @@ MO = 1024*1024
 GO = 1024 * MO
 #sizeToRead = GO * 5
 sizeToRead = 100*MO
-buffSize = 10*MO
+buffSize = 4096*25 #0#1*MO
 print "Reading ", sizeToRead, " with buff of size ", 10*MO
 timeStart = time.time()
 while size < sizeToRead:

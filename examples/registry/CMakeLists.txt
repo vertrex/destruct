@@ -14,7 +14,6 @@
 #  Solal Jacob <sja@digital-forensic.org>
 
 include_directories("../../")
-include_directories("../rpc")
 
 set(registry_libfiles
   registry.cpp
@@ -24,8 +23,6 @@ set(registry_libfiles
   namedkey.cpp
   valuekey.cpp
   registryrpc.cpp
-  registryserver.cpp
-  registryclient.cpp
 )
 
 add_library(destruct_registry SHARED ${registry_libfiles})
@@ -34,5 +31,5 @@ target_link_libraries(destruct_registry destruct)
 set(registry_files
 registryrpc.cpp)
 
-#add_executable(registryrpc ${registry_files})
-#target_link_libraries(registryrpc destruct destruct_rpczmq destruct_registry) #can import now
+add_executable(registryrpc ${registry_files})
+target_link_libraries(registryrpc destruct destruct_registry)

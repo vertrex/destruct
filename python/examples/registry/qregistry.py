@@ -136,6 +136,7 @@ class MainWindow(QMainWindow):
     localAction.triggered.connect(self.local);
     self.menuBar().addAction(localAction)
     loader = DStructs().find("Import").newObject()
+    #loader.file("../../../examples/modules/libdestruct_rpczmq.so")
     loader.file("../../../examples/modules/libdestruct_rpc.so")
     loader.file("../../../examples/modules/libdestruct_registry.so")
 
@@ -161,8 +162,10 @@ class MainWindow(QMainWindow):
     arg.port = connectionDialog.port.value() 
     arg.address = str(connectionDialog.ipAddress.text())
     self.client = DStructs().find("Client").newObject(arg)
-    #self.registry = self.client.findObject() #registry is hardcoded in rpc client change that 
-    self.registry = self.client.createRoot("Registry") #registry is hardcoded in rpc client change that 
+    serverLoader = self.client.generate("Import")
+    if serverLoader.file("../modules/libdestruct_registry.so") == 0:
+       serverLoader.file("destruct_registry.dll")
+    self.registry = self.client.generate("Registry")
     regf = self.registry.open(str(connectionDialog.filePath.text()))
     self.addRegistryBrowserWidget(regf)
 

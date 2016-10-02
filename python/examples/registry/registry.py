@@ -55,7 +55,7 @@ if __name__ == "__main__":
  else:
    registry = None
    loader = DStructs().find("Import").newObject()
-   loader.file("../../../examples/modules/libdestruct_rpc.so")
+   loader.file("../../../examples/modules/libdestruct_rpczmq.so")
    loader.file("../../../examples/modules/libdestruct_registry.so")
    print 'ok loaded'
    if sys.argv[1] == '-l':
@@ -70,15 +70,16 @@ if __name__ == "__main__":
      elif len(sys.argv) == 4:
        arg.address = sys.argv[3]
      client = DStructs().find("Client").newObject(arg)
-     registry = client.findObject()
+     serverLoader = client.generate("Import")
+     if serverLoader.file("../modules/libdestruct_registry.so") == 0:
+       serverLoader.file("destruct_registry.dll")
+     registry = client.generate("Registry")
    else:
       usage()
    print registry
    regf = registry.open(sys.argv[2])
-   print 'showKeys'
    key = regf.key
    showKeys(key)
-   print 'end'
    ##subkeys =regf.key.subkeys.list
    ##for key in subkeys:
         ##print key.keyName.keyName

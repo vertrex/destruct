@@ -200,8 +200,10 @@ void    Server::serve(void)
 
     if (msg == "show") 
       this->showRoot();
-    else if (msg == "findDStruct")
-      serverObject.findDStruct();
+    else if (msg == "find")
+      serverObject.find();
+    else if (msg == "generate")
+      serverObject.generate();
     else if(msg == "setValue")
       serverObject.setValue();
     else if(msg == "getValue")

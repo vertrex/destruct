@@ -29,6 +29,7 @@ add_subdirectory(rpc)
 add_subdirectory(rpczmq)
 add_subdirectory(registry)
 add_subdirectory(device)
+add_subdirectory(performance)
 
 set (test_files
 test.cpp

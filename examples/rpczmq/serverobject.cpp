@@ -50,7 +50,7 @@ void    ServerObject::generate(void)
   RealValue<DUInt64> objectId = this->__objectManager->call("registerObject", RealValue<DObject*>(object));
 
   this->__networkStream->reply();
-  this->__serializer->sDUInt64(RealValue<DUInt64>(objectId));
+  this->__serializer->sDUInt64(objectId);
   this->__networkStream->flushWrite();
 }
 

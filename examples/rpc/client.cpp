@@ -154,33 +154,25 @@ DObject*   Client::start(void)
   throw DException("Client::start Not implemented.");
 }
 
-DValue     Client::findObject(void) //getRoot XXX ?
+Destruct::DObject* Client::generate(DValue const& args)
 {
   Destruct::DStructs& destruct = Destruct::DStructs::instance();
+  this->__serialize->call("DUnicodeString", RealValue<DUnicodeString>("generate"));
+  this->__serialize->call("DUnicodeString", args);
+  this->__networkStream->call("flush");
 
-  DStruct* registryS = destruct.find("Registry"); //replaced bu create root !
+  DUInt64 objectId = this->__deserialize->call("DUInt64");
+  DStruct* registryS = destruct.find(args.get<DUnicodeString>());
 
-  ClientObject* root = new ClientObject(RealValue<DObject*>(this->__networkStream), RealValue<DObject*>(this->__serialize), RealValue<DObject*>(this->__deserialize), 0, registryS); 
+  ClientObject* root = new ClientObject(RealValue<DObject*>(this->__networkStream), RealValue<DObject*>(this->__serialize), RealValue<DObject*>(this->__deserialize), objectId, registryS); 
 
   return (RealValue<DObject*>(root));
 }
 
-DValue  Client::createRoot(DUnicodeString objectName)
+Destruct::DStruct* Client::find(DValue const& name)
 {
-  Destruct::DStructs& destruct = Destruct::DStructs::instance();
-
-  DStruct* registryS = destruct.find(objectName);
-
-  ClientObject* root = new ClientObject(RealValue<DObject*>(this->__networkStream), RealValue<DObject*>(this->__serialize), RealValue<DObject*>(this->__deserialize), 0, registryS); 
-
-  return (RealValue<DObject*>(root));
-
-}
-
-Destruct::DStruct* Client::remoteFind(const DUnicodeString name)
-{
-  this->__serialize->call("DUnicodeString", RealValue<DUnicodeString>("findDStruct"));
-  this->__serialize->call("DUnicodeString", RealValue<DUnicodeString>(name));
+  this->__serialize->call("DUnicodeString", RealValue<DUnicodeString>("find"));
+  this->__serialize->call("DUnicodeString", name);
   this->__networkStream->call("flush");
  
   DStruct* dstruct = this->__deserialize->call("DStruct");
@@ -194,7 +186,7 @@ Destruct::DStruct* Client::remoteFind(const DUnicodeString name)
     //this->print(dstruct); 
   } 
   else
-    std::cout << "Struct " << name << " is NULL can't show content " << std::endl;
+    std::cout << "Struct " << name.asUnicodeString() << " is NULL can't show content " << std::endl;
   return (dstruct);
 }
 
