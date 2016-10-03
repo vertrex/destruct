@@ -18,17 +18,8 @@ RPC::~RPC()
 
 void RPC::serve(uint32_t port)
 {
-  //import rpc // generate ...
   Server server(port);
-  server.daemonize();
-}
-
-void RPC::connect(std::string const& addr, uint32_t port)
-{
-  Client client(addr, port);
-  //DObject* root = client.start();
-  //root->destroy();
-//  client.generate("DVectorString");
+  server.daemonize(); //same as serv because of connection zmq loop 
 }
 
 int main(int argc, char** argv)
@@ -46,13 +37,8 @@ int main(int argc, char** argv)
       else
         rpc.serve(atoi(argv[2]));
     }
-    else if (std::string(argv[1]) == std::string("-c"))
-      rpc.connect(std::string(argv[2]), 0xdff);
     else
-    {
-      std::cout << "Launch server : -d" << std::endl
-                << "Launch client : -c" << std::endl;       
-    }
+      std::cout << "Launch server : (port) " << std::endl;
   }
   catch (Destruct::DException const& exception)
   {

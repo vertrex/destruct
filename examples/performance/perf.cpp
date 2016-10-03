@@ -85,7 +85,7 @@ void    Perf::stats(DObject* perf)
   clock_t end = std::clock();
   double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
   std::cout << "Call DUnicodestring callStr('test') " << ncall << " times in " << elapsed_secs << std::endl;
-  std::cout << ncall / elapsed_secs << " call by seconds" << std::endl;
+  std::cout << std::fixed << ncall / elapsed_secs << " call by seconds" << std::endl;
 }
 
 int main(int argc, char** argv)

@@ -16,7 +16,6 @@ public:
   ~RPC();
 
   void  serve(uint32_t port);
-  void  connect(std::string const& addr, uint32_t port);
 };
 
 #endif

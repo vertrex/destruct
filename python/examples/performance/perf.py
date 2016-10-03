@@ -7,17 +7,28 @@ sys.path.append('../')
 
 from _destruct import *
 
-def stats(performance):
-  start = time.time() 
-  ncall = 100000
-  i = 0 
-  while i < ncall:
+def callStr(count, performance):
+  i = 0
+  while i < count:
     res = performance.callStr("test")
     i += 1
-  end = time.time()
-  timesec = end - start
-  print "Call DUnicodeString callStr('test') ", ncall, "times in", timesec
-  print ncall/timesec, " call per seconds"
+
+def funcCallStr(count, performance):
+   i = 0
+   callStr = performance.callStr
+   while i < count:
+      res = callStr("test")
+      i += 1
+
+def stats(performance):
+  for f in [callStr, funcCallStr]:
+    start = time.time() 
+    ncall = 10000
+    f(ncall, performance)
+    end = time.time()
+    timesec = end - start
+    print "Called " + str(f), ncall, "times in", timesec
+    print ncall/timesec, " call per seconds"
 
 
 def usage():

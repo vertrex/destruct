@@ -13,21 +13,24 @@ using namespace Destruct;
 class ObjectManager : public DCppObjectSingleton<ObjectManager>
 {
 public:
-  typedef std::map<uint64_t, DObject* > mapType;
-  typedef std::map<uint64_t, DObject* >::const_iterator mapIterator;
+  //typedef std::map<uint64_t, DObject* > mapType;
+  //typedef std::map<uint64_t, DObject* >::const_iterator mapIterator;
+
 
   ObjectManager(DStruct* dstruct, DValue const& args);
   ObjectManager(ObjectManager const& copy);
 
-  DUInt64       __currentID;
   RealValue     <DFunctionObject*>      _registerObject, _object, _clear;
 
-
   DUInt64       registerObject(DValue const& arg);
+  DUInt64       registerFunctionObject(DType type, DFunctionObject* func);
   DObject*      object(DValue const& arg);
+
   void          clear(void);
 private:
-  mapType        __objectsID;
+  std::vector<DObject*>              __objects;
+  std::map<DObject*, DInt64>         __ids;
+  std::map<DFunctionObject*, DInt64> __fids;
 protected:
   ~ObjectManager();
 public:

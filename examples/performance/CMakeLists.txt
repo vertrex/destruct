@@ -26,4 +26,4 @@ set(performance_files
 perf.cpp)
 
 add_executable(perf ${performance_files})
-target_link_libraries(perf destruct destruct_performance)
+target_link_libraries(perf destruct destruct_performance )

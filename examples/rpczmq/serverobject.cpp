@@ -77,16 +77,11 @@ void    ServerObject::getValue(void)
   DType type = object->instanceOf()->attribute(name).type();
   if (type.getType() == DType::DMethodType)
   {
-    ServerFunctionObject* serverFunctionObject = static_cast<ServerFunctionObject*>(DStructs::instance().find("ServerFunctionObject")->newObject()); //DStruct get ?
-    serverFunctionObject->argumentType = type.getArgumentType();
-    serverFunctionObject->returnType = type.getReturnType();
-    serverFunctionObject->functionObject = value.get<DFunctionObject*>();
+    DUInt64 id = this->__objectManager->registerFunctionObject(type, value);
 
-    DValue id = this->__objectManager->call("registerObject", RealValue<DObject*>(serverFunctionObject));
     this->__networkStream->reply();
-    this->__serializer->sDUInt64(id);
+    this->__serializer->sDUInt64(RealValue<DUInt64>(id));
     this->__networkStream->flushWrite();
-    serverFunctionObject->destroy();
   }
   else
   {

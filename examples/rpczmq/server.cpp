@@ -74,14 +74,59 @@ void    Server::daemonize(void)
     }
   }
 }
+       #include <assert.h>
+int           get_monitor_event (void *monitor, int *value, char **address)
+{
+   //  First frame in message contains event number and value
+   zmq_msg_t msg;
+   zmq_msg_init (&msg);
+   if (zmq_msg_recv (&msg, monitor, ZMQ_DONTWAIT) == -1)
+     return -1;              //  Interruped, presumably
+   assert (zmq_msg_more (&msg));
+
+    uint8_t *data = (uint8_t *) zmq_msg_data (&msg);
+    uint16_t event = *(uint16_t *) (data);
+    if (value)
+      *value = *(uint32_t *) (data + 2);
+
+     //  Second frame in message contains event address
+    zmq_msg_init (&msg);
+    if (zmq_msg_recv (&msg, monitor, 0) == -1)
+      return -1;              //  Interruped, presumably
+   assert (!zmq_msg_more (&msg));
+
+    if (address) 
+    {
+      uint8_t *data = (uint8_t *) zmq_msg_data (&msg);
+      size_t size = zmq_msg_size (&msg);
+      *address = (char *) malloc (size + 1);
+      memcpy (*address, data, size);
+      *address [size] = 0;
+    }
+   return event;
+}
+
 
 void    Server::serve(void)
 {
-  ServerObject serverObject(this->__socket, this->__context);
+  ServerObject serverObject(this->__socket, this->__context); //one for zmq connection ?
   std::cout << "Destruct server started" << std::endl;
-  
+  //zmq_socket_monitor (this->__socket, "inproc://monitor.rep", ZMQ_EVENT_ALL);
+  //void *serv_mon= zmq_socket (this->__context, ZMQ_PAIR);
+  //zmq_connect (serv_mon, "inproc://monitor.rep");
   while (true)
   {
+    //int event = get_monitor_event(serv_mon, NULL, NULL);
+    //if (event == ZMQ_EVENT_CONNECTED)
+      //std::cout << "Connection from " << std::endl;
+    //else if (event == ZMQ_EVENT_CLOSED)
+     //std::cout << "Connection closed from " << std::endl;
+    //else if (event == ZMQ_EVENT_DISCONNECTED)
+    //{
+     //std::cout << "Disconnection from " << std::endl;
+     //exit(0);
+    //}
+
     serverObject.dispatch();
   }
 }
