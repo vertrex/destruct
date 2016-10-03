@@ -1,7 +1,7 @@
 #ifndef _DESTRUCT_RECURSIVETHREADSAFEOBJECT_HPP_
 #define _DESTRUCT_RECURSIVETHREADSAFEOBJECT_HPP_
 
-#include "threadsafeobject.hpp"
+#include "threading.hpp"
 #include "dobject.hpp"
 
 namespace Destruct
