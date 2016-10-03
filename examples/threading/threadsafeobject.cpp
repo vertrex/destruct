@@ -79,9 +79,9 @@ DValue           ThreadSafeObject::getValue(DUnicodeString const& name) const//.
 
 void             ThreadSafeObject::setValue(DUnicodeString const& name, DValue const& args)
 {
-  pthread_mutex_lock(&this->__mutex);
+  mutex_lock(&this->__mutex);
   this->__dobject->setValue(name, args);
-  pthread_mutex_unlock(&this->__mutex);
+  mutex_unlock(&this->__mutex);
 }
 
 

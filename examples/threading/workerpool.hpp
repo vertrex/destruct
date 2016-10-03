@@ -153,7 +153,7 @@ public:
 class WorkerPool : public DCppObject<WorkerPool> 
 {
 public:
-  static void Declare(void);
+  EXPORT static void Declare(void);
 
   EXPORT WorkerPool(DStruct* dstruct, DValue const& args);
 
