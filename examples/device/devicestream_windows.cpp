@@ -24,20 +24,59 @@
 
 using namespace Destruct;
 
+void*   CacheWorker(void* rq) //pass this Cache(this) end inherit cache
+{
+  WorkQueue<ReadWork*>* queue = static_cast<WorkQueue<ReadWork*>* >(rq);
+  BufferCache& cache = BufferCache::instance();
+  uint64_t   pageSize = cache.bufferSize();
+
+  uint64_t  lastSeek = 0;
+  while (1)
+  {
+    ReadWork* work = queue->remove();
+    for (DUInt64 i = 0; i < 4; ++i)
+    {
+      if (cache.find(work->page + i) == NULL) 
+      {
+        try
+        {
+          uint64_t toSeek = (work->page + i) * pageSize;
+          if (toSeek != lastSeek)
+          {
+            work->stream->call("seek", RealValue<DUInt64>(toSeek));
+            lastSeek = toSeek;
+          }
+          DBuffer dbuffer = work->stream->call("read", RealValue<DInt64>(pageSize));
+          lastSeek += pageSize;
+          cache.insert(dbuffer.data(), (work->page + i));
+        }
+        catch (Destruct::DException const& e)
+        {
+          std::cout << "error reading " << e.error() << std::endl;
+        }
+      }
+    }
+    delete work;
+  }
+}
+
 
 /**
  *  DeviceStream Windows 
  */
-DeviceStream::DeviceStream(DStruct* dstruct, DValue const& args) : DCppObject<DeviceStream>(dstruct, args), __offset(0), __lastOffset(0)
+DeviceStream::DeviceStream(DStruct* dstruct, DValue const& args) : DCppObject<DeviceStream>(dstruct, args), __offset(0), __lastOffset(0), __cache(BufferCache::instance()), __cacheBufferSize(BufferCache::instance().bufferSize()) //XXX un cache pour tous les devices 
 {
   this->init();
   this->__size = ((DObject*)args)->getValue("size");
   this->__path = ((DObject*)args)->getValue("path").get<DUnicodeString>();
 
- this->__handle = CreateFile(this->__path.c_str(), GENERIC_READ, FILE_SHARE_READ|FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL);
- if (this->__handle == INVALID_HANDLE_VALUE)
+  this->__handle = CreateFile(this->__path.c_str(), GENERIC_READ, FILE_SHARE_READ|FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL);
+  if (this->__handle == INVALID_HANDLE_VALUE)
     throw DException("Can't open device");
 
+  this->__readQueue = new WorkQueue<ReadWork*>();
+  pthread_attr_init(&this->__workerThreadAttr);
+  pthread_create(&this->__workerThread, &this->__workerThreadAttr, CacheWorker, (void*)this->__readQueue);
 }
 
 DeviceStream::~DeviceStream()

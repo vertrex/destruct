@@ -14,10 +14,13 @@
  *  Solal Jacob <sja@digital-forensic.org>
  */
 
-#ifndef __DEVICESTREAM_UNIX_HPP__
-#define __DEVICESTREAM_UNIX_HPP__
+#ifndef __DEVICESTREAM_WINDOWS_HPP__
+#define __DEVICESTREAM_WINDOWS_HPP__
 
 #include "device_common.hpp"
+#include "devicestream_cache.hpp"
+
+#include "examples/threading.hpp"
 
 using namespace Destruct;
 
@@ -25,6 +28,16 @@ using namespace Destruct;
 #include <windows.h>
 #include <stdio.h>
 #include <aclapi.h>
+
+class ReadWork 
+{
+public:
+  ReadWork(Destruct::DObject* astream,  uint64_t apage);
+  Destruct::DObject*      stream;
+  uint64_t                page;
+};
+
+void*   CacheWorker(void* rq);
 
 class DeviceStream : public DCppObject<DeviceStream>
 {
@@ -61,9 +74,16 @@ private:
   RealValue<DFunctionObject*>   _read, _size, _seek, _tell, _close;
   DUnicodeString                __path;
   DUInt64                       __size;
-  DUInt64						__offset;
-  DUInt64						__lastOffset;
-  HANDLE						__handle;
+  DUInt64		        __offset;
+  DUInt64		        __lastOffset;
+  HANDLE		        __handle;
+
+  BufferCache&                  __cache;
+  const uint64_t                __cacheBufferSize;
+  uint64_t                      __lastOffset;
+  WorkQueue<ReadWork*>*         __readQueue;
+  pthread_t                     __workerThread; //XXX WINDOWS THREADING PLEASE 
+  pthread_attr_t                __workerThreadAttr; //XXX WINDOWS THREADING 
 };
 
 #endif
