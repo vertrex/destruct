@@ -1,5 +1,6 @@
 #ifndef __DESTRUCT_THREADING__
 #define __DESTRUCT_THREADING__
+
 #ifdef WIN32
 #include <Windows.h>
 
@@ -50,4 +51,5 @@
   #define cond_wait(cond, mut)  pthread_cond_wait(cond, mut)
   #define cond_broadcast(var)	pthread_cond_broadcast(var)
 #endif
+
 #endif

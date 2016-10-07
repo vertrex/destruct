@@ -14,7 +14,6 @@ namespace Destruct
 
 RecursiveThreadSafeObject::RecursiveThreadSafeObject(DStruct* dstruct, DValue const& args) : DObject(args.get<DObject*>()->instanceOf(), args), __dobject(args.get<DObject*>())
 {
-  //std::cout << "create mutex object" << std::endl;
   mutex_init(&this->__mutex);
 
 //pthread_mutexattr_t Attr;
@@ -46,12 +45,12 @@ DObject*         RecursiveThreadSafeObject::newObject(DStruct* dstruct, DValue c
   return (new RecursiveThreadSafeObject(dstruct, args));
 }
 
-DObject*         RecursiveThreadSafeObject::clone() const //no lock on const
+DObject*         RecursiveThreadSafeObject::clone() const
 {
   return (this->__dobject->clone());
 }
 
-DValue           RecursiveThreadSafeObject::getValue(size_t index) const //no lock on const
+DValue           RecursiveThreadSafeObject::getValue(size_t index) const
 {
   mutex_lock((mutex*)&this->__mutex);
   DType::Type_t  attributeType = this->object()->instanceOf()->attribute(index).type().getType();
@@ -121,7 +120,6 @@ DValue           RecursiveThreadSafeObject::call(size_t index, DValue const& arg
 DValue           RecursiveThreadSafeObject::call(DUnicodeString const& name, DValue const& args)
 {
   mutex_lock(&this->__mutex);
-
   if (this->object()->instanceOf()->attribute(name).type().getReturnType() == DType::DObjectType)
   {
     DValue result = this->__dobject->call(name, args);
@@ -138,7 +136,6 @@ DValue           RecursiveThreadSafeObject::call(DUnicodeString const& name, DVa
 DValue           RecursiveThreadSafeObject::call(DUnicodeString const& name)
 {
   mutex_lock(&this->__mutex);
-
   if (this->object()->instanceOf()->attribute(name).type().getReturnType() == DType::DObjectType)
   {
     DValue result = this->__dobject->call(name);
