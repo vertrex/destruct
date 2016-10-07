@@ -84,20 +84,21 @@ DValue ClientObject::call(DUnicodeString const& name, DValue const &args)
   /* Send argument (object is not compatible)  XXX implement it */
   ((DObject*)this->__serializer)->call(dtype.argumentName(), args);
   this->__networkStream->request();
-
   DValue value = (((DObject*)this->__deserializer)->call(dtype.returnName()));
   this->__networkStream->flushRead();
+
   return (value);
 }
 
 DValue ClientObject::call(DUnicodeString const& name)
 {
+  DType  dtype = this->instanceOf()->attribute(name).type();
+
   this->__serializer->sDUInt8(RealValue<DUInt8>(CMD_CALL0)); 
   this->__serializer->sDUInt64(RealValue<DUInt64>(this->__id));
   this->__serializer->sDUnicodeString(RealValue<DUnicodeString>(name));
 
   this->__networkStream->request();
-  DType  dtype = this->instanceOf()->attribute(name).type();
   DValue value = (((DObject*)this->__deserializer)->call(dtype.returnName()));
   this->__networkStream->flushRead();
 

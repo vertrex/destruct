@@ -33,7 +33,8 @@ void    ServerObject::find(void)
   Destruct::DStructs& destruct = Destruct::DStructs::instance();
   DStruct* dstruct = destruct.find(name);
   if (!dstruct) //XXX must send exception to client !
-    throw DException("Server::generate DStruct " + name + " not found"); 
+    throw DException("Server::generate DStruct " + name + " not found");
+ 
   this->__networkStream->reply();
   this->__serializer->sDStruct(RealValue<DStruct*>(dstruct));
   this->__networkStream->flushWrite();
@@ -91,15 +92,14 @@ void    ServerObject::getValue(void)
   }
 }
 
-//XXX not tested because there is no function in python !
 void    ServerObject::call(void)
 {
   DUInt64 id = this->__deserializer->dDUInt64();
   DObject* object = this->__objectManager->object(RealValue<DUInt64>(id));
   DUnicodeString name = this->__deserializer->dDUnicodeString();
   DType type = object->instanceOf()->attribute(name).type();
-
   DValue args = this->__deserializer->call(type.argumentName());
+
   DValue value = object->call(name, args);
 
   this->__networkStream->reply();
@@ -107,16 +107,15 @@ void    ServerObject::call(void)
   this->__networkStream->flushWrite();
 }
 
-//XXX not tested because tehre is no function in python
 void    ServerObject::call0(void)
 {
   DUInt64 id = this->__deserializer->dDUInt64();
   DObject* object = this->__objectManager->object(RealValue<DUInt64>(id));
   DUnicodeString name = this->__deserializer->dDUnicodeString();
+  DType type = object->instanceOf()->attribute(name).type();
 
   DValue value = object->call(name); 
   
-  DType type = object->instanceOf()->attribute(name).type();
   this->__networkStream->reply(); 
   this->__serializer->call(type.returnName(), value);
   this->__networkStream->flushWrite();
@@ -125,10 +124,9 @@ void    ServerObject::call0(void)
 void    ServerObject::functionCall(void)
 {
   DUInt64 id = this->__deserializer->dDUInt64();
-
   ServerFunctionObject* object = static_cast<ServerFunctionObject*>(this->__objectManager->object(RealValue<DUInt64>(id)));
-
   DValue args = this->__deserializer->call(DType((DType::Type_t)(DUInt64)object->argumentType).name()); //XXX get name directly ? 
+
   DValue value = ((DFunctionObject*)object->functionObject)->call(args);
 
   this->__networkStream->reply();
@@ -139,7 +137,6 @@ void    ServerObject::functionCall(void)
 void    ServerObject::functionCall0(void)
 {
   DUInt64 id = this->__deserializer->dDUInt64();
-
   ServerFunctionObject* object = static_cast<ServerFunctionObject*>(this->__objectManager->object(RealValue<DUInt64>(id)));
 
   DValue value = ((DFunctionObject*)object->functionObject)->call();
@@ -171,6 +168,8 @@ void    ServerObject::dispatch(void)
       this->functionCall();
     else if(msg == CMD_FUNCTIONCALL0)
       this->functionCall0();
+    else
+      std::cout << "Unknown msg received " << msg << std::endl;
   }
   catch (DException const& exception)
   {

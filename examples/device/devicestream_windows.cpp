@@ -52,7 +52,7 @@ void*   CacheWorker(void* rq) //pass this Cache(this) end inherit cache
         }
         catch (Destruct::DException const& e)
         {
-          std::cout << "error reading " << e.error() << std::endl;
+          std::cout << "error reading " << e.error() << std::endl; //how to put error ? cache insert workpage, error ?
         }
       }
     }

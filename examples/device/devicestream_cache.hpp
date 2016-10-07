@@ -76,49 +76,41 @@ template <typename T>
 class WorkQueue
 { 
 public:
-  WorkQueue() 
+  EXPORT WorkQueue() 
   {
-     pthread_mutex_init(&this->__mutex, NULL);
-     pthread_cond_init(&this->__condv, NULL);
+     mutex_init(&this->__mutex);
+     cond_init(&this->__condv);
   }
 
-  ~WorkQueue() 
+  EXPORT ~WorkQueue() 
   {
-    pthread_mutex_destroy(&this->__mutex);
-    pthread_cond_destroy(&this->__condv);
+    mutex_destroy(&this->__mutex);
+    cond_destroy(&this->__condv);
   }
 
-  void add(T item) 
+  EXPORT void add(T item) 
   {
-    pthread_mutex_lock(&this->__mutex);
+    mutex_lock(&this->__mutex);
     this->__queue.push(item);
-    pthread_cond_signal(&this->__condv);
-    pthread_mutex_unlock(&this->__mutex);
+    cond_signal(&this->__condv);
+    mutex_unlock(&this->__mutex);
   }
 
-  T remove() 
+  EXPORT T remove() 
   {
-    pthread_mutex_lock(&this->__mutex);
+    mutex_lock(&this->__mutex);
     while (this->__queue.empty()) 
-      pthread_cond_wait(&this->__condv, &this->__mutex);
+      cond_wait(&this->__condv, &this->__mutex);
     
     T item = this->__queue.front();
     this->__queue.pop();
-    pthread_mutex_unlock(&this->__mutex);
+    mutex_unlock(&this->__mutex);
     return item;
   }
-
-  //int size() 
-  //{
-  //pthread_mutex_lock(&this->__mutex);
-  //int size = this->__queue.size();
-  //pthread_mutex_unlock(&this->__mutex);
-  //return size;
-  //}
 private:
   std::queue<T>         __queue;
-  pthread_mutex_t      __mutex;
-  pthread_cond_t       __condv;
+  mutex_def(__mutex);
+  cond_def(__condv);
 };
 
 #endif
