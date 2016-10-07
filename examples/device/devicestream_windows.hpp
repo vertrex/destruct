@@ -20,13 +20,14 @@
 #include "device_common.hpp"
 #include "devicestream_cache.hpp"
 
-
-using namespace Destruct;
-
 #pragma comment(lib, "advapi32.lib")
 #include <windows.h>
 #include <stdio.h>
 #include <aclapi.h>
+
+using namespace Destruct;
+
+
 /*
 class ReadWork 
 {

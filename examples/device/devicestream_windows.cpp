@@ -60,7 +60,16 @@ ThreadResult   CacheWorker(ThreadData rq)
 		  if (readed != pageSize)
 		    std::cout << "Can't read all page " << std::endl;
           lastSeek += pageSize;
+<<<<<<< HEAD
           cache.insert(buffer, (work->page + i));
+=======
+          cache.insert(dbuffer.data(), (work->page + i));
+        }
+        catch (Destruct::DException const& e)
+        {
+          std::cout << "error reading " << e.error() << std::endl; //how to put error ? cache insert workpage, error ?
+        }
+>>>>>>> 539338eb11ad9b1064807922329f7e582c13752e
       }
     }
     delete work;
