@@ -23,71 +23,80 @@
 #include "devicestream_windows.hpp"
 
 using namespace Destruct;
+/*
+ReadWork::ReadWork(HANDLE ahandle,  uint64_t apage) : handle(ahandle), page(apage)
+{
+}
 
-void*   CacheWorker(void* rq) //pass this Cache(this) end inherit cache
+ThreadResult   CacheWorker(ThreadData rq)
 {
   WorkQueue<ReadWork*>* queue = static_cast<WorkQueue<ReadWork*>* >(rq);
   BufferCache& cache = BufferCache::instance();
   uint64_t   pageSize = cache.bufferSize();
+  uint8_t*	 buffer = new uint8_t[pageSize];
 
   uint64_t  lastSeek = 0;
   while (1)
   {
     ReadWork* work = queue->remove();
-    for (DUInt64 i = 0; i < 4; ++i)
+    for (uint64_t i = 0; i < 4; ++i)
     {
       if (cache.find(work->page + i) == NULL) 
       {
-        try
-        {
           uint64_t toSeek = (work->page + i) * pageSize;
+		  
           if (toSeek != lastSeek)
           {
-            work->stream->call("seek", RealValue<DUInt64>(toSeek));
-            lastSeek = toSeek;
+			LARGE_INTEGER newOffset;
+			newOffset.QuadPart = toSeek;
+			LARGE_INTEGER newOffsetRes;
+			SetFilePointerEx(work->handle, newOffset, &newOffsetRes, 0);
+			if (newOffsetRes.QuadPart != newOffset.QuadPart)
+			  std::cout << "Worker can't seek to block " << std::endl;//comment on previens leclient ????????
+            lastSeek = newOffsetRes.QuadPart;
           }
-          DBuffer dbuffer = work->stream->call("read", RealValue<DInt64>(pageSize));
+		  DWORD readed;
+		  ReadFile(work->handle, (void*)(buffer), (DWORD)pageSize,  &readed ,0);
+		  if (readed != pageSize)
+		    std::cout << "Can't read all page " << std::endl;
           lastSeek += pageSize;
-          cache.insert(dbuffer.data(), (work->page + i));
-        }
-        catch (Destruct::DException const& e)
-        {
-          std::cout << "error reading " << e.error() << std::endl;
-        }
+          cache.insert(buffer, (work->page + i));
       }
     }
     delete work;
   }
 }
 
-
+*/
 /**
  *  DeviceStream Windows 
  */
 DeviceStream::DeviceStream(DStruct* dstruct, DValue const& args) : DCppObject<DeviceStream>(dstruct, args), __offset(0), __lastOffset(0), __cache(BufferCache::instance()), __cacheBufferSize(BufferCache::instance().bufferSize()) //XXX un cache pour tous les devices 
 {
   this->init();
+//  std::cout << "Device stream open" << std::endl;
   this->__size = ((DObject*)args)->getValue("size");
   this->__path = ((DObject*)args)->getValue("path").get<DUnicodeString>();
 
   this->__handle = CreateFile(this->__path.c_str(), GENERIC_READ, FILE_SHARE_READ|FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL);
   if (this->__handle == INVALID_HANDLE_VALUE)
-    throw DException("Can't open device");
+    throw DException("DeviceStream can't open device " + this->__path);
 
-  this->__readQueue = new WorkQueue<ReadWork*>();
-  pthread_attr_init(&this->__workerThreadAttr);
-  pthread_create(&this->__workerThread, &this->__workerThreadAttr, CacheWorker, (void*)this->__readQueue);
+ // this->__readQueue = new WorkQueue<ReadWork*>();
+ // createThread(CacheWorker, (void*)this->__readQueue, this->__workerThread);
 }
 
 DeviceStream::~DeviceStream()
 {
 }
 
-DBuffer DeviceStream::read(DValue const& args)
+DBuffer DeviceStream::oldRead(DValue const& args)
 {
-  DInt64	size = args;
+	
+
+ DInt64        size = args;
   uint64_t  newSize;
-  LARGE_INTEGER newOffset;	
+  LARGE_INTEGER newOffset;      
   LARGE_INTEGER newOffsetRes;
 
   if (size % 4096)
@@ -106,14 +115,14 @@ DBuffer DeviceStream::read(DValue const& args)
     this->__currentSize = 0;
     return;
   }*/
-  if (this->__lastOffset != this->__offset)
-  {
+//  if (this->__lastOffset != this->__offset)
+ // {
     SetFilePointerEx(this->__handle, newOffset, &newOffsetRes, 0);
     if (newOffsetRes.QuadPart != newOffset.QuadPart)
      std::cout << "Can't seek to " << newOffset.QuadPart << " seek to " << newOffsetRes.QuadPart << std::endl;
-	this->__lastOffset = newOffsetRes.QuadPart;
-	this->__offset = newOffsetRes.QuadPart;
-  }
+        this->__lastOffset = newOffsetRes.QuadPart;
+        this->__offset = newOffsetRes.QuadPart;
+  //}
   DWORD readed;
 
   uint8_t* newBuffer = new uint8_t[newSize];
@@ -121,12 +130,51 @@ DBuffer DeviceStream::read(DValue const& args)
   if (readed != newSize)
     std::cout << "Can't read " << newSize << " read only " << readed << std::endl;
   this->__offset += readed;
-  this->__lastOffset += readed; //mouais ca devrait pas etre relative a size plutot ???
+//  this->__lastOffset += readed; //mouais ca devrait pas etre relative a size plutot ???
 
   DBuffer dbuffer(((uint8_t*)newBuffer+ leak) , (int32_t)size);
   delete[] newBuffer;
 
   return (dbuffer);
+
+}
+
+DBuffer DeviceStream::read(DValue const& args)
+{
+	return (this->oldRead(args));
+	
+	//return this->oldRead(args);
+	/*
+  DInt64	size = args;
+  DBuffer dbuffer((int32_t)size);
+
+  uint64_t readed = 0;
+
+  if (size > this->__cacheBufferSize)
+	return (this->oldRead(args));
+
+  while (readed < (uint64_t) size)
+  {
+	  uint64_t page = this->__offset / this->__cacheBufferSize;
+	  uint64_t pageStartOffset = this->__offset % this->__cacheBufferSize;
+	 
+	  uint8_t* pageBuff = this->__cache.find(page);
+	  if (pageBuff == NULL)
+	  {
+		 this->__readQueue->add(new ReadWork(this->__handle, page));
+		 while (pageBuff == NULL)
+		   pageBuff = this->__cache.find(page);
+	  }
+	  uint64_t sizeToRead = this->__cacheBufferSize - pageStartOffset;
+	  if (sizeToRead > (size - readed))
+		sizeToRead = size - readed;
+	  memcpy((void*)(dbuffer.data() + readed), (void*)(pageBuff + pageStartOffset), sizeToRead);
+	  readed += sizeToRead;
+	  //this->__offset += sizeToRead;
+  }
+  this->__offset += size;
+  
+  return (dbuffer);*/
 }
 
 DUInt64 DeviceStream::size(void)
@@ -136,8 +184,11 @@ DUInt64 DeviceStream::size(void)
 
 void    DeviceStream::seek(DValue const& args)
 {
-  if (this->__offset + args.get<DUInt64>() < this->__size)
-    this->__offset = args.get<DUInt64>();
+  DUInt64 newOffset = args;
+  if (newOffset < this->__size)
+    this->__offset = newOffset;
+  else
+	 throw DException("DeviceStream::seek can't seek"); //to  this->__offset);
  return ;// (n);
 }
 

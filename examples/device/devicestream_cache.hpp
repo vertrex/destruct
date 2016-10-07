@@ -22,8 +22,7 @@
 #include <queue>
 #include <stdint.h>
 
-#include "threading.hpp"
-#include "export.hpp"
+#include "examples/threading/threading.hpp"
 #include "drealvalue.hpp"
 
 namespace Destruct
@@ -31,15 +30,23 @@ namespace Destruct
 class DObject;
 }
 
+#ifdef WIN32
+#include "Windows.h"
+#else
 bool operator <(const timespec& lhs, const timespec& rhs);
+#endif
 
 class CacheSlot
 {
 public:
-  CacheSlot();
-  ~CacheSlot();
+  EXPORT CacheSlot();
+  EXPORT ~CacheSlot();
   uint8_t*      buffer;
+#ifdef WIN32
+  uint64_t		cacheHits;
+#else
   timespec      cacheHits;
+#endif
 };
 
 class BufferCache //XXX et si y a 2 device on fait quoi ?????? il faut un cache par device ou un cache qui peut contenir les pages de plusieur de vices ...  
@@ -50,10 +57,10 @@ public:
   //            read(offset, size, buff);
   //            read et pre-cache ds une thread ....
 
-  uint8_t*      find(uint64_t page);
-  uint8_t*      insert(uint8_t* buffer, uint64_t page); //USE dbuffer directly ? buff + size so different size can be cached !
-  uint32_t      slotCount() const;
-  uint32_t      bufferSize() const;
+  EXPORT uint8_t*      find(uint64_t page);
+  EXPORT uint8_t*      insert(uint8_t* buffer, uint64_t page); //USE dbuffer directly ? buff + size so different size can be cached !
+  EXPORT uint32_t      slotCount() const;
+  EXPORT uint32_t      bufferSize() const;
 private:
   BufferCache(uint32_t slotCount, uint32_t bufferSize);
   BufferCache(BufferCache const&);
@@ -63,9 +70,13 @@ private:
   uint32_t      __bufferSize;
 
   std::map<uint64_t, CacheSlot*>  __cacheSlots;
+#ifdef WIN32
+  std::map<uint64_t, uint64_t>	  __oldest;
+#else 
   std::map<timespec, uint64_t>    __oldest;
+#endif
 
-  mutex_def(__mutex); 
+ mutex __mutex; 
 };
 
 
@@ -78,33 +89,33 @@ class WorkQueue
 public:
   WorkQueue() 
   {
-     pthread_mutex_init(&this->__mutex, NULL);
-     pthread_cond_init(&this->__condv, NULL);
+     mutex_init(&this->__mutex);
+     cond_init(&this->__condv);
   }
 
   ~WorkQueue() 
   {
-    pthread_mutex_destroy(&this->__mutex);
-    pthread_cond_destroy(&this->__condv);
+    mutex_destroy(&this->__mutex);
+    cond_destroy(&this->__condv);
   }
 
   void add(T item) 
   {
-    pthread_mutex_lock(&this->__mutex);
+    mutex_lock(&this->__mutex);
     this->__queue.push(item);
-    pthread_cond_signal(&this->__condv);
-    pthread_mutex_unlock(&this->__mutex);
+    cond_signal(&this->__condv);
+    mutex_unlock(&this->__mutex);
   }
 
   T remove() 
   {
-    pthread_mutex_lock(&this->__mutex);
+    mutex_lock(&this->__mutex);
     while (this->__queue.empty()) 
-      pthread_cond_wait(&this->__condv, &this->__mutex);
+      cond_wait(&this->__condv, &this->__mutex);
     
     T item = this->__queue.front();
     this->__queue.pop();
-    pthread_mutex_unlock(&this->__mutex);
+    mutex_unlock(&this->__mutex);
     return item;
   }
 
@@ -117,8 +128,8 @@ public:
   //}
 private:
   std::queue<T>         __queue;
-  pthread_mutex_t      __mutex;
-  pthread_cond_t       __condv;
+  mutex			       __mutex;
+  cond_def(__condv);
 };
 
 #endif

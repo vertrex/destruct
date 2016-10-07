@@ -30,6 +30,7 @@ else (UNIX)
   set (device_libfiles ${device_libfiles}
   devicelist_windows.cpp
   devicestream_windows.cpp
+  devicestream_cache.cpp
   )
 endif (UNIX)
 

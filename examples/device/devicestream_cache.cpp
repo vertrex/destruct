@@ -15,10 +15,16 @@
  */
 
 #include "dexception.hpp"
-#include "agentcache.hpp"
+#include "devicestream_cache.hpp"
 
 using namespace Destruct;
-using namespace DFF;
+
+__int64 GetQPCTime()
+{
+    LARGE_INTEGER qpcTime;
+    QueryPerformanceCounter(&qpcTime);
+    return qpcTime.QuadPart;
+}
 
 CacheSlot::CacheSlot() : buffer(NULL)
 {
@@ -29,10 +35,9 @@ CacheSlot::~CacheSlot()
   delete[] buffer;
 }
 
-ReadWork::ReadWork(Destruct::DObject* astream,  uint64_t apage) : stream(astream), page(apage)
-{
-}
 
+
+#ifndef WIN32
 bool operator <(const timespec& lhs, const timespec& rhs)
 {
   if (lhs.tv_sec == rhs.tv_sec)
@@ -40,10 +45,11 @@ bool operator <(const timespec& lhs, const timespec& rhs)
   else
     return (lhs.tv_sec < rhs.tv_sec);
 }
+#endif
 
 BufferCache&    BufferCache::instance()
 {
-  static BufferCache    bufferCache(10000, 4096 * 2);
+  static BufferCache    bufferCache(1000 * 2, 4096 * 10);
   return bufferCache;
 }
 
@@ -78,10 +84,23 @@ uint8_t*        BufferCache::find(uint64_t page)
   { 
      CacheSlot* cacheSlot = it->second;
 
-     std::map<timespec, uint64_t>::iterator oldestit = this->__oldest.find(cacheSlot->cacheHits);
-     this->__oldest.erase(oldestit);
+#ifdef WIN32
+  std::map<uint64_t, uint64_t>::iterator oldestit = this->__oldest.find(cacheSlot->cacheHits); 
+#else
+  std::map<timespec, uint64_t>::iterator oldestit = this->__oldest.find(cacheSlot->cacheHits); 
+#endif
+     //std::map<timespec, uint64_t>::iterator oldestit = this->__oldest.find(cacheSlot->cacheHits);
+	 if (oldestit != this->__oldest.end())
+       this->__oldest.erase(oldestit);
+	 else //time is not precise enough
+		 std::cout << "Error cache find can't destroy page " << page << " found int oldest list " << cacheSlot->cacheHits << std::endl;
 
-     clock_gettime(CLOCK_MONOTONIC_RAW, &(cacheSlot->cacheHits));
+#ifdef WIN32
+    // cacheSlot->cacheHits = GetTickCount64();
+	 cacheSlot->cacheHits = GetQPCTime();
+#else
+	 clock_gettime(CLOCK_MONOTONIC_RAW, &(cacheSlot->cacheHits));
+#endif
      this->__oldest[cacheSlot->cacheHits] = page;
      mutex_unlock(&__mutex);
      return (cacheSlot->buffer);
@@ -98,7 +117,13 @@ uint8_t*        BufferCache::insert(uint8_t* buffer, uint64_t pageNumber)
     CacheSlot* newSlot = new CacheSlot;
     newSlot->buffer = new uint8_t[this->__bufferSize];
     memcpy(newSlot->buffer, buffer, this->__bufferSize);
-    clock_gettime(CLOCK_MONOTONIC_RAW, &(newSlot->cacheHits));
+
+	#ifdef WIN32
+     //newSlot->cacheHits = GetTickCount64();
+	 	newSlot->cacheHits = GetQPCTime();
+	#else
+	 clock_gettime(CLOCK_MONOTONIC_RAW, &(newSlot->cacheHits));
+	#endif
 
     this->__cacheSlots[pageNumber] = newSlot;
     this->__oldest[newSlot->cacheHits] = pageNumber;
@@ -107,7 +132,11 @@ uint8_t*        BufferCache::insert(uint8_t* buffer, uint64_t pageNumber)
     return (newSlot->buffer);
   } 
 
+#ifdef WIN32
+  std::map<uint64_t, uint64_t>::iterator oldestit = this->__oldest.begin(); 
+#else
   std::map<timespec, uint64_t>::iterator oldestit = this->__oldest.begin(); 
+#endif
   std::map<uint64_t, CacheSlot*>::iterator slotit = this->__cacheSlots.find(oldestit->second);
 
   if (slotit == this->__cacheSlots.end())
@@ -124,7 +153,12 @@ uint8_t*        BufferCache::insert(uint8_t* buffer, uint64_t pageNumber)
   CacheSlot* newSlot = new CacheSlot;
   newSlot->buffer = new uint8_t[this->__bufferSize];
   memcpy(newSlot->buffer, buffer, this->__bufferSize);
-  clock_gettime(CLOCK_MONOTONIC_RAW, &(newSlot->cacheHits));
+   #ifdef WIN32
+    // newSlot->cacheHits = GetTickCount64();
+     newSlot->cacheHits = GetQPCTime();
+   #else
+	 clock_gettime(CLOCK_MONOTONIC_RAW, &(newSlot->cacheHits));
+   #endif
 
   this->__cacheSlots[pageNumber] = newSlot;
   this->__oldest[newSlot->cacheHits] = pageNumber;

@@ -20,7 +20,6 @@
 #include "device_common.hpp"
 #include "devicestream_cache.hpp"
 
-#include "examples/threading.hpp"
 
 using namespace Destruct;
 
@@ -28,23 +27,25 @@ using namespace Destruct;
 #include <windows.h>
 #include <stdio.h>
 #include <aclapi.h>
-
+/*
 class ReadWork 
 {
 public:
-  ReadWork(Destruct::DObject* astream,  uint64_t apage);
-  Destruct::DObject*      stream;
+  //ReadWork(Destruct::DObject* astream,  uint64_t apage);
+  ReadWork(HANDLE ahandle,  uint64_t apage);
+  HANDLE				  handle;
   uint64_t                page;
 };
 
-void*   CacheWorker(void* rq);
-
+EXPORT ThreadResult   CacheWorker(ThreadData rq);
+*/
 class DeviceStream : public DCppObject<DeviceStream>
 {
 public:
   DeviceStream(DStruct* dstruct, DValue const& args);
 
-  DBuffer       read(DValue const& args);
+  DBuffer       read(DValue const& args); 
+  DBuffer       oldRead(DValue const& args);
   DUInt64       size(void);
   void          seek(DValue const& args);
   DUInt64       tell(void);
@@ -80,10 +81,9 @@ private:
 
   BufferCache&                  __cache;
   const uint64_t                __cacheBufferSize;
-  uint64_t                      __lastOffset;
-  WorkQueue<ReadWork*>*         __readQueue;
-  pthread_t                     __workerThread; //XXX WINDOWS THREADING PLEASE 
-  pthread_attr_t                __workerThreadAttr; //XXX WINDOWS THREADING 
+//  uint64_t                      __lastOffset;
+//  WorkQueue<ReadWork*>*         __readQueue;
+ // ThreadStruct                  __workerThread;
 };
 
 #endif
