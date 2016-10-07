@@ -44,3 +44,9 @@ DUnicodeString        Performance::callStr(DValue const& args)
 {
   return (args);
 }
+
+DBuffer               Performance::getBuffer(DValue const& args)
+{
+  DInt32 size = args;
+  return DBuffer(size);
+}

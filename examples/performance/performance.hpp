@@ -29,18 +29,22 @@ public:
   ~Performance();
 
   DUnicodeString              callStr(DValue const& args);
+  DBuffer                     getBuffer(DValue const& args);
 
-  attributeCount(Performance, 1)
+  attributeCount(Performance, 2)
 
   attributeList(
                 function(DUnicodeString, callStr, DUnicodeString)
+                function(DBuffer, getBuffer, DInt32)
                )
 
   memberList(Performance, 
              method(Performance, callStr)
+             method(Performance, getBuffer)
             )
 private:
   RealValue<DFunctionObject*>   _callStr;
+  RealValue<DFunctionObject*>   _getBuffer;
 };
 
 #endif

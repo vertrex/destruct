@@ -75,12 +75,24 @@ const std::string Perf::usage(void) const
 
 void    Perf::stats(DObject* perf)
 {
+  //clock_t begin = std::clock();
+
+  //DUInt64 ncall = 100000;
+  //for (DUInt64 i = 0; i < ncall; ++i)
+  //{
+    //DUnicodeString result = perf->call("callStr", RealValue<DUnicodeString>("Test"));
+  //}
+  //clock_t end = std::clock();
+  //double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+  //std::cout << "Call DUnicodestring callStr('test') " << ncall << " times in " << elapsed_secs << std::endl;
+  //std::cout << std::fixed << ncall / elapsed_secs << " call by seconds" << std::endl;
+
   clock_t begin = std::clock();
 
   DUInt64 ncall = 100000;
   for (DUInt64 i = 0; i < ncall; ++i)
   {
-    DUnicodeString result = perf->call("callStr", RealValue<DUnicodeString>("Test"));
+    DBuffer result = perf->call("getBuffer", RealValue<DInt32>(8192));
   }
   clock_t end = std::clock();
   double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
