@@ -6,6 +6,7 @@
 #include "clientobject.hpp"
 #include "clientfunctionobject.hpp"
 #include "serverobject.hpp"
+#include "clientstruct.hpp"
 
 namespace Destruct {
 
@@ -31,9 +32,33 @@ ClientObject::~ClientObject()
 {
 }
 
-DObject* ClientObject::newObject(DStruct* dstruct, DValue const& args)
+DObject* ClientObject::newObject(ClientStruct* dstruct, DValue const& args, NetworkStream* networkStream)
 {
-  return (new ClientObject(dstruct, args)); //XXX copy network stream, handle connection & struct etc...
+
+   SerializeRPC* serialize = static_cast<SerializeRPC*>(DStructs::instance().find("SerializeRPC")->newObject(RealValue<DObject*>(networkStream)));
+  DeserializeRPC* deserialize = static_cast<DeserializeRPC*>(DStructs::instance().find("DeserializeRPC")->newObject(RealValue<DObject*>(networkStream)));
+
+ //XXX if none ...
+
+  serialize->sDUInt8(RealValue<DUInt8>(CMD_GENERATE_ARG));
+  serialize->sDUnicodeString(RealValue<DUnicodeString>(dstruct->name()));
+
+  //DUInt64 argId = static_cast<ClientObject*>(args.get<DObject*>())->id();
+  //serialize->sDUInt64(RealValue<DUInt64>(argId));
+
+  //serialize->sDObject(args); ///XXX must find type 
+  //this->dstruct.find("constructor")
+  // serialize constructor type 
+
+  networkStream->request();
+  DUInt64 objectId = deserialize->dDUInt64();
+  networkStream->flushRead();
+
+  ClientObject* root = new ClientObject(RealValue<DObject*>(networkStream), RealValue<DObject*>(serialize), RealValue<DObject*>(deserialize), objectId, dstruct); //ARGS ARGS XXX  
+
+  return (RealValue<DObject*>(root));
+
+  //return (new ClientObject(dstruct, args)); 
 }
 
 DValue ClientObject::getValue(DUnicodeString const& name) const
@@ -136,6 +161,11 @@ BaseValue* ClientObject::getBaseValue(size_t index)
 BaseValue const* ClientObject::getBaseValue(size_t index) const
 {
   return (NULL);
+}
+
+uint64_t        ClientObject::id(void) const
+{
+  return (this->__id);
 }
 
 }

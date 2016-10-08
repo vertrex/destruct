@@ -9,6 +9,8 @@
 
 namespace Destruct {
 
+class ClientStruct;
+
 /**
  * Client Object proxy 
  */
@@ -19,7 +21,7 @@ public:
   EXPORT ClientObject(DStruct* dstruct, DValue const& args);
   EXPORT ClientObject(ClientObject const & rhs);
 
-  EXPORT static DObject*       newObject(DStruct* dstruct, DValue const& args);
+  EXPORT static DObject*       newObject(ClientStruct* dstruct, DValue const& args, NetworkStream* networkStream);
   EXPORT DObject*              clone() const;
 
   EXPORT DValue                getValue(DUnicodeString const& name) const;
@@ -36,6 +38,8 @@ public:
   EXPORT BaseValue const*      getBaseValue(size_t index) const;
 
   RealValue<DObject*>           __networkStreamObject, __serializerObject, __deserializerObject;
+
+  EXPORT uint64_t               id(void) const;
 protected:
   ~ClientObject();
 private:

@@ -31,18 +31,28 @@ def testObjectSerialization(dobject, fileName):
   ## Deserialize to Text
   serializer = generateSerializer("SerializeText", 0, fileName + ".text")
   serializer.DObject(dobject)
+  serializer.stream.flush()
+  #serializer = None
 
   serializer = generateCoutSerializer("SerializeText")
   serializer.DObject(dobject)
+  #serializer.stream.flush()
+  #serializer = None
 
   serializer = generateSerializer("SerializeXML", 0, fileName + ".xml")
   serializer.DObject(dobject)
+  serializer.stream.flush()
+  #serializer = None
 
   serializer = generateCoutSerializer("SerializeXML")
   serializer.DObject(dobject)
+  #serializer.stream.flush()
+  #serializer = None
 
   serializer = generateSerializer("SerializeBinary", 0, fileName + ".bin")
   serializer.DObject(dobject)
+  serializer.stream.flush()
+  serializer = None
 
   serializer = generateSerializer("DeserializeBinary", 1, fileName + ".bin")
   return serializer.DObject()
@@ -50,12 +60,15 @@ def testObjectSerialization(dobject, fileName):
 def testDStructSerialization(dstruct, fileName):
   serializer = generateSerializer("SerializeText", 0, fileName + "Struct.text")
   serializer.DStruct(dstruct)
+  serializer.stream.flush()
 
   serializer = generateSerializer("SerializeXML", 0, fileName + "Struct.xml")
   serializer.DStruct(dstruct)
+  serializer.stream.flush()
 
   serializer = generateSerializer("SerializeBinary", 0, fileName + "Struct.bin")
   serializer.DStruct(dstruct)
+  serializer.stream.flush()
 
   serializer = generateSerializer("DeserializeBinary", 1, fileName + "Struct.bin")
   return serializer.DStruct()
