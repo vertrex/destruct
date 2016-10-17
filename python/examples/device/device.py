@@ -13,13 +13,15 @@ loader.file("../../../examples/modules/libdestruct_rpczmq.so")
 loader.file("../../../examples/modules/libdestruct_device.so")
 print 'ok loaded'
 arg = DStructs().find("ClientArgument").newObject()
-#arg.address = "127.0.0.1"
+arg.address = "127.0.0.1"
 #arg.address = "127.0.0.1"
 #arg.address = "10.42.1.197"
-arg.address = "10.42.1.195"
+#arg.address = "10.42.1.195"
 #arg.address = "10.42.1.1"
 #arg.address = "10.42.1.2"
 arg.port = 0xdff
+arg.publicKeyPath = "cert/destruct_cert.txt"
+print "connecting" 
 client = DStructs().find("Client").newObject(arg)
 print "generate devicelist" 
 serverLoader = client.generate("Import")
@@ -38,8 +40,8 @@ MO = 1024*1024
 GO = 1024 * MO
 #sizeToRead = GO * 5
 sizeToRead = 1000*MO
-buffSize = 100000 #4096*25 #0#1*MO
-print "Reading ", sizeToRead, " with buff of size ", 10*MO
+buffSize = 8192 #100000 #4096*25 #0#1*MO
+print "Reading ", sizeToRead, " with buff of size ", buffSize 
 timeStart = time.time()
 
 read = s.read

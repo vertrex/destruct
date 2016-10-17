@@ -161,6 +161,7 @@ class MainWindow(QMainWindow):
     arg = DStructs().find("ClientArgument").newObject()
     arg.port = connectionDialog.port.value() 
     arg.address = str(connectionDialog.ipAddress.text())
+    arg.publicKeyPath = "cert/destruct_cert.txt"
     self.client = DStructs().find("Client").newObject(arg)
     serverLoader = self.client.generate("Import")
     if serverLoader.file("../modules/libdestruct_registry.so") == 0:

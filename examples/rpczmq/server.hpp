@@ -78,6 +78,7 @@ private:
   void*                                 __context;
 
   void                                  __bind(int32_t port);
+  void                                  __setAuth(DUnicodeString const& serverCert, DUnicodeString const& pubCertDir);
   //void                                  __listen(void);
   DObject*                              __objectManager;
 };

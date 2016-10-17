@@ -14,7 +14,9 @@
 
 #include "server.hpp"
 #include "serverobject.hpp"
-#include "zmq.h"
+
+#include <zmq.h>
+#include <czmq.h>
 
 using namespace Destruct;
 
@@ -35,6 +37,7 @@ Server::~Server()
 {
   zmq_close(this->__socket);
   zmq_ctx_destroy(this->__context);
+  //zcert_destroy;
 
   this->__objectManager->call("clear"); //called in destroy 
   this->__objectManager->destroy();
@@ -44,11 +47,26 @@ void    Server::setRoot(RealValue<DObject*> root)
 {
   this->__objectManager->call("registerObject", root);
 }
+/**
+ *   Use public key if server is corrupted no problem
+ */
+void    Server::__setAuth(DUnicodeString const& certificate, DUnicodeString const& pubCertDir)
+{
+  zcert_t* client_cert = zcert_load(certificate.c_str());
+   if (client_cert == NULL)
+     throw DException("Can't load client certificate");
+  char* pub_key = zcert_public_txt(client_cert);
+  zsocket_set_curve_publickey(this->__socket, pub_key);
+  zcert_apply(client_cert, this->__socket);
+}
 
 void    Server::__bind(int32_t port)
 {
-  this->__context = zmq_ctx_new();
-  this->__socket = zmq_socket(this->__context, ZMQ_REP);
+  this->__context = zctx_new();
+  this->__socket = zsocket_new((zctx_t*)this->__context, ZMQ_REP);
+
+  //this->__setAuth("cert/destruct_cert.txt_secret", "cert/");
+  this->__setAuth("cert/destruct_cert.txt", "cert/");
 
   std::stringstream address;
   address << "tcp://*:" << port;

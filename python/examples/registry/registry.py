@@ -64,6 +64,7 @@ if __name__ == "__main__":
      arg = DStructs().find("ClientArgument").newObject()
      arg.address = "127.0.0.1"
      arg.port = 0xdff
+     arg.publicKeyPath = "cert/destruct_cert.txt"
      if len(sys.argv) == 5:
        arg.address = sys.argv[3]
        arg.port = int(sys.argv[4])

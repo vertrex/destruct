@@ -69,6 +69,7 @@ def connect():
   arg = DStructs().find("ClientArgument").newObject()
   arg.port = 3583
   arg.address = "127.0.0.1"
+  arg.publicKeyPath = "cert/destruct_cert.txt"
   client = DStructs().find("Client").newObject(arg)
   print client
 

@@ -12,7 +12,8 @@
 #include "serverfunctionobject.hpp"
 
 
-#include "zmq.h"
+#include <zmq.h>
+#include <czmq.h>
 /**
  *  Client & Server Destruct Declaration
  */
@@ -44,33 +45,18 @@ void    Client::declare(void)
   dstruct = new DStruct(NULL, "ClientArgument", DSimpleObject::newObject);
   dstruct->addAttribute(DAttribute(DType::DUInt32Type, "port"));
   dstruct->addAttribute(DAttribute(DType::DUnicodeStringType, "address"));
+  dstruct->addAttribute(DAttribute(DType::DUnicodeStringType, "publicKeyPath"));
   destruct.registerDStruct(dstruct); 
 }
 
 /**
  *  Client
  */
-Client::Client(DUnicodeString const& addr, uint32_t port) : DCppObject<Client>(NULL, RealValue<DObject*>(DNone)), __networkStream(NULL), __serialize(NULL), __deserialize(NULL)
+Client::Client(DStruct* dstruct, DValue const& args) : DCppObject<Client>(dstruct, args), __networkStream(NULL), __serialize(NULL), __deserialize(NULL)
 {
   this->init();
-  this->__connect(addr, port);
-  this->__networkStream = static_cast<NetworkStream*>(DStructs::instance().find("NetworkStream")->newObject());
 
-  this->__networkStream->__context = this->__context;
-  this->__networkStream->__socket = this->__socket;
-
-  this->__serialize = static_cast<SerializeRPC*>(DStructs::instance().find("SerializeRPC")->newObject(RealValue<DObject*>(this->__networkStream)));
-  this->__deserialize = static_cast<DeserializeRPC*>(DStructs::instance().find("DeserializeRPC")->newObject(RealValue<DObject*>(this->__networkStream)));
-}
-
-Client::Client(DStruct* dstruct, DValue const& value) : DCppObject<Client>(dstruct, value), __networkStream(NULL), __serialize(NULL), __deserialize(NULL)
-{
-  this->init();
-  DObject* args = value;
-
-  DUnicodeString addr = args->getValue("address");
-  uint32_t port = args->getValue("port").get<DUInt32>();
-  this->__connect(addr, port);
+  this->__connect(args); //args 
   this->__networkStream = static_cast<NetworkStream*>(DStructs::instance().find("NetworkStream")->newObject());
 
   this->__networkStream->__context = this->__context;
@@ -87,15 +73,37 @@ Client::~Client()
   this->__serialize->destroy();
   this->__deserialize->destroy();
   this->__close();
+  //zcert_destroy
 }
 
-void    Client::__connect(DUnicodeString const& addr, uint32_t port)
+/**
+ *  Use private key to connect to server
+ */
+void    Client::__setAuth(DUnicodeString const& certificate)
 {
-  this->__context = zmq_ctx_new();
-  this->__socket = zmq_socket(this->__context, ZMQ_REQ);
+  zauth_t* auth = zauth_new((zctx_t*)this->__context);
+  if (auth == NULL)
+    throw DException("Can't init authentication");
+  zauth_set_verbose(auth, true);
+  zauth_configure_curve(auth, "*", "cert/"); //pubCertDir.c_str());//allow any domain, use directory . to get authorize public key 
+  zcert_t* server_cert = zcert_load(certificate.c_str());
+  if (server_cert == NULL)
+    throw DException("Can't load server certificate");
+  zsocket_set_curve_server(this->__socket, 1);
+  zcert_apply(server_cert, this->__socket);
+}
+
+void    Client::__connect(DObject* args)
+{
+  this->__context = zctx_new();
+  //this->__context = zmq_ctx_new();
+  //this->__socket = zmq_socket(this->__context, ZMQ_REQ);
+  this->__socket = zsocket_new((zctx_t*)this->__context, ZMQ_REQ);
+
+  this->__setAuth(args->getValue("publicKeyPath"));
 
   std::stringstream address;
-  address << "tcp://" + std::string(addr) << ":" << port;
+  address << "tcp://" + std::string(args->getValue("address").get<DUnicodeString>()) << ":" << args->getValue("port").get<DUInt32>();
   zmq_connect(this->__socket, address.str().c_str()); 
 }
 

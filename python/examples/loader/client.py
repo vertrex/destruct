@@ -55,10 +55,9 @@ def connect():
   arg = DStructs().find("ClientArgument").newObject()
   arg.port = 3583
   arg.address = "127.0.0.1"
+  arg.publicKeyPath = "cert/destruct_cert.txt"
   client = DStructs().find("Client").newObject(arg)
-
   registry = client.findObject() #registry ? #root 0
-
   print dir(registry)
   print "opening registry"
   regf = registry.open("/home/vertrex/dump/registry/system")
@@ -71,7 +70,7 @@ def load():
   paths = ["/home/vertrex/destruct/examples/modules/libdestruct_test.so",
            "/home/vertrex/destruct/examples/modules/libdestruct_registry.so",
            "/home/vertrex/destruct/examples/modules/libdestruct_threading.so",
-           "/home/vertrex/destruct/examples/modules/libdestruct_rpc.so",
+           "/home/vertrex/destruct/examples/modules/libdestruct_rpczmq.so",
            "/home/vertrex/destruct/examples/modules/libdestruct_inherit.so"]
 
   for path in paths:

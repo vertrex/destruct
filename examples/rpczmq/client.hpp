@@ -17,7 +17,6 @@ class ServerFunctionObject;
 class Client : public DCppObject<Client>
 {
 public:
-  EXPORT Client(DUnicodeString const& addr, uint32_t port);
   EXPORT Client(DStruct* dstruct, DValue const& args);
   EXPORT ~Client();
 
@@ -31,7 +30,8 @@ public:
   EXPORT DObject*               serializeRPC(void) const;
   EXPORT DObject*               deserializeRPC(void) const;
 private:
-  void                          __connect(DUnicodeString const& addr, uint32_t port);
+  void                          __connect(DObject* args);
+  void                          __setAuth(DUnicodeString const& clientCert);
   void                          __close(void);
 
   void*                         __context;
