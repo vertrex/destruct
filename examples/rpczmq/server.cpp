@@ -55,7 +55,7 @@ void    Server::__setAuth(DUnicodeString const& certificate)
   zcert_t* client_cert = zcert_load(certificate.c_str());
    if (client_cert == NULL)
      throw DException("Can't load client certificate");
-  char* pub_key = zcert_public_txt(client_cert);
+  const char* pub_key = zcert_public_txt(client_cert);
   zsocket_set_curve_publickey(this->__socket, pub_key);
   zcert_apply(client_cert, this->__socket);
 }
