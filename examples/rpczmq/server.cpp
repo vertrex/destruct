@@ -50,7 +50,7 @@ void    Server::setRoot(RealValue<DObject*> root)
 /**
  *   Use public key if server is corrupted no problem
  */
-void    Server::__setAuth(DUnicodeString const& certificate, DUnicodeString const& pubCertDir)
+void    Server::__setAuth(DUnicodeString const& certificate)
 {
   zcert_t* client_cert = zcert_load(certificate.c_str());
    if (client_cert == NULL)
@@ -65,8 +65,7 @@ void    Server::__bind(int32_t port)
   this->__context = zctx_new();
   this->__socket = zsocket_new((zctx_t*)this->__context, ZMQ_REP);
 
-  //this->__setAuth("cert/destruct_cert.txt_secret", "cert/");
-  this->__setAuth("cert/destruct_cert.txt", "cert/");
+  this->__setAuth("cert/destruct_cert.txt");
 
   std::stringstream address;
   address << "tcp://*:" << port;

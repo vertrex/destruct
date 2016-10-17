@@ -79,13 +79,13 @@ Client::~Client()
 /**
  *  Use private key to connect to server
  */
-void    Client::__setAuth(DUnicodeString const& certificate)
+void    Client::__setAuth(DUnicodeString const& certificate, DUnicodeString const& certDir)
 {
   zauth_t* auth = zauth_new((zctx_t*)this->__context);
   if (auth == NULL)
     throw DException("Can't init authentication");
   zauth_set_verbose(auth, true);
-  zauth_configure_curve(auth, "*", "cert/"); //pubCertDir.c_str());//allow any domain, use directory . to get authorize public key 
+  zauth_configure_curve(auth, "*", certDir.c_str());//pubCertDir.c_str());//allow any domain, use directory . to get authorize public key 
   zcert_t* server_cert = zcert_load(certificate.c_str());
   if (server_cert == NULL)
     throw DException("Can't load server certificate");
@@ -96,11 +96,9 @@ void    Client::__setAuth(DUnicodeString const& certificate)
 void    Client::__connect(DObject* args)
 {
   this->__context = zctx_new();
-  //this->__context = zmq_ctx_new();
-  //this->__socket = zmq_socket(this->__context, ZMQ_REQ);
   this->__socket = zsocket_new((zctx_t*)this->__context, ZMQ_REQ);
 
-  this->__setAuth(args->getValue("publicKeyPath"));
+  this->__setAuth(args->getValue("publicKeyPath"), "cert/");
 
   std::stringstream address;
   address << "tcp://" + std::string(args->getValue("address").get<DUnicodeString>()) << ":" << args->getValue("port").get<DUInt32>();

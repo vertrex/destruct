@@ -29,9 +29,9 @@ clientstruct.cpp
 
 add_library(destruct_rpczmq SHARED ${rpczmq_libfiles})
 if (MSVC)
-  target_link_libraries(destruct_rpczmq destruct Ws2_32.lib ${LIBZMQ_LIBRARY}) 
+  target_link_libraries(destruct_rpczmq destruct ${LIBZMQ_LIBRARY} ${CMZQ_LIBRARY}) 
 else (MSVC)
-  target_link_libraries(destruct_rpczmq destruct zmq czmq)
+  target_link_libraries(destruct_rpczmq destruct ${LIBZMQ_LIBRARY} ${CZMQ_LIBRARY})
 endif (MSVC)
 
 set (rpc_files
