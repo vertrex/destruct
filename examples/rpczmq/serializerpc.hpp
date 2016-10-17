@@ -135,7 +135,7 @@ public:
 
   DUnicodeString     dDUnicodeString(void);
 
-  DObject*           dDObject(DValue const& args);
+  DObject*           dDObject(void);
   DFunctionObject*   dDMethod(void);
   DObject*           dDNone(void);
   DStruct*           dDStruct(void);
@@ -175,7 +175,7 @@ public:
        
        DAttribute(DType::DUnicodeStringType, "DUnicodeString", DType::DNoneType),
 
-       DAttribute(DType::DObjectType, "DObject", DType::DObjectType), 
+       DAttribute(DType::DObjectType, "DObject", DType::DNoneType), 
        DAttribute(DType::DMethodType, "DMethod", DType::DNoneType),
        DAttribute(DType::DNoneType,   "DNone", DType::DNoneType),
        DAttribute(DType::DStructType, "DStruct", DType::DNoneType), 

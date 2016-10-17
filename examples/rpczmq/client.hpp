@@ -59,7 +59,7 @@ public:
   {
     static DAttribute attributes[] = 
     {
-      DAttribute(DType::DStructType, "find", DType::DUnicodeStringType),
+      DAttribute(DType::DStructType, "find", DType::DUnicodeStringType), //return a local struct ...
       DAttribute(DType::DObjectType, "generate", DType::DUnicodeStringType), //can't pass argument ... 
     };
 

@@ -136,22 +136,13 @@ Destruct::DObject* Client::generate(DValue const& args)
 
 Destruct::DStruct* Client::find(DValue const& name)
 {
-  this->__serialize->sDUInt8(RealValue<DUInt8>(CMD_GENERATE));
+  //if not in dstruct or use namespace XXX  
+  this->__serialize->sDUInt8(RealValue<DUInt8>(CMD_FIND));
   this->__serialize->sDUnicodeString(name);
   this->__networkStream->request();
 
-  DStruct* dstruct = this->__deserialize->call("DStruct");
+  DStruct* dstruct = this->__deserialize->call("DStruct"); //XXX pass client everywhere to avoir creating  serialize / serializer / deserialzier everytime all is in client so ...
   this->__networkStream->flushRead();
-  if (dstruct)
-  {
-    Destruct::DStructs& destruct = Destruct::DStructs::instance();
-    if (destruct.find(dstruct->name()) == NULL) //XXX don't need to find again
-      destruct.registerDStruct(dstruct);
-    else
-      std::cout << dstruct->name() << " already registered" << std::endl;
-  } 
-  else
-    std::cout << "Struct " << name.get<DUnicodeString>() << " is NULL can't show content " << std::endl;
   return (dstruct);
 }
 

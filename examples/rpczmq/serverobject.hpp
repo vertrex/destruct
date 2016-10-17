@@ -20,6 +20,7 @@ class DeserializeRPC;
 #define CMD_CALL0               5
 #define CMD_FUNCTIONCALL        6
 #define CMD_FUNCTIONCALL0       7
+#define CMD_GENERATE_ARG        8
 
 using namespace Destruct;
 
@@ -31,6 +32,7 @@ public:
 
   void                                  find(void);
   void                                  generate(void);
+  void                                  generateArg(void);
 
   void                                  getValue(void);
   void                                  setValue(void);

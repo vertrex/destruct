@@ -3,8 +3,10 @@
 #include "clientobject.hpp"
 #include "serverobject.hpp"
 #include "clientfunctionobject.hpp"
+#include "clientobject.hpp"
+#include "clientstruct.hpp"
 
-#include "dsimpleobject.hpp"
+//#include "dsimpleobject.hpp"
 /*
  *   DSerializeRPC 
  */
@@ -142,7 +144,7 @@ DeserializeRPC::~DeserializeRPC()
 {
 }
 
-DObject*        DeserializeRPC::dDObject(DValue const& value)
+DObject*        DeserializeRPC::dDObject(void)
 {
   DUnicodeString objectName = this->dDUnicodeString();
   DUInt64 id = this->dDUInt64();
@@ -169,13 +171,14 @@ DStruct*        DeserializeRPC::dDStruct(void)
   DUnicodeString structName = this->dDUnicodeString();
   DUInt32 attributeCount = this->dDUInt32();
 
-  if ((dstruct = new DStruct(0, structName, DSimpleObject::newObject)) == NULL)//inheritance ? 
+                                  
+  if ((dstruct = new ClientStruct(0, structName, ClientObject::newObject, this->__networkStream)) == NULL)//inheritance ? 
     return (NULL);
   for (size_t i = 0; i < attributeCount; i++) 
   {
      DUnicodeString name = this->dDUnicodeString();
      
-     DType::Type_t type = (DType::Type_t)this->dDUInt8(); //XXX type serialization ?
+     DType::Type_t type = (DType::Type_t)this->dDUInt8(); 
      if (type == DType::DMethodType)
      {
        DType::Type_t argumentType = (DType::Type_t)this->dDUInt8();
@@ -185,7 +188,7 @@ DStruct*        DeserializeRPC::dDStruct(void)
      else
        dstruct->addAttribute(DAttribute(type, name));
   }
-  DStructs::instance().registerDStruct(dstruct); //needed for complex object that register struct and need it later to deserialize rest of file 
+  DStructs::instance().registerDStruct(dstruct); //register here ? 
   return (dstruct); 
 }
 

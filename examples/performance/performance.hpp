@@ -30,6 +30,7 @@ public:
 
   DUnicodeString              callStr(DValue const& args);
   DBuffer                     getBuffer(DValue const& args);
+  void                        showDobject(DValue const& args);
 
   attributeCount(Performance, 2)
 

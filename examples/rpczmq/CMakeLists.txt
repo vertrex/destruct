@@ -24,6 +24,7 @@ objectmanager.cpp
 client.cpp
 clientobject.cpp
 clientfunctionobject.cpp
+clientstruct.cpp
 )
 
 add_library(destruct_rpczmq SHARED ${rpczmq_libfiles})

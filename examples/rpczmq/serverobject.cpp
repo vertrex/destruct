@@ -55,6 +55,29 @@ void    ServerObject::generate(void)
   this->__networkStream->flushWrite();
 }
 
+void    ServerObject::generateArg(void)
+{
+  DUnicodeString name = this->__deserializer->dDUnicodeString(); 
+  //get type before XXX 
+  //DObject*      arg = this->__deserializer->dDObject(); 
+  //DUInt64 argObjectId = this->__deserializer->dDUInt64();
+  //
+  //DObject* arg = this->__objectManager->object(RealValue<DUInt64>(argObjectId));
+
+  Destruct::DStructs& destruct = Destruct::DStructs::instance();
+  DStruct* dstruct = destruct.find(name);
+  if (!dstruct) ///XXX must send exception to client !
+    throw DException("Server::generate DStruct " + name + " not found"); 
+  //DObject* object = dstruct->newObject(RealValue<DObject*>(arg)); 
+  DObject* object = dstruct->newObject(RealValue<DObject*>()); 
+  RealValue<DUInt64> objectId = this->__objectManager->call("registerObject", RealValue<DObject*>(object));
+
+  this->__networkStream->reply();
+  this->__serializer->sDUInt64(objectId);
+  this->__networkStream->flushWrite();
+}
+
+
 void    ServerObject::setValue(void)
 {
   DUInt64 id = this->__deserializer->dDUInt64();
@@ -156,6 +179,8 @@ void    ServerObject::dispatch(void)
       this->find();
     else if (msg == CMD_GENERATE)
       this->generate();
+    else if (msg == CMD_GENERATE_ARG)
+      this->generateArg();
     else if(msg == CMD_SETVALUE)
       this->setValue();
     else if(msg == CMD_GETVALUE)
