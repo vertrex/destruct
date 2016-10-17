@@ -14,7 +14,7 @@
 add_custom_target(pydevice)
 add_dependencies(examples pydevice)
 add_dependencies(_destruct pydevice)
-configure_file(device.py device.py COPYONLY)
+configure_file(device.py ../bin/device.py COPYONLY)
 
 set (pydestruct_examples_device_files
 device.py

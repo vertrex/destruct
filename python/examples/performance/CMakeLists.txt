@@ -14,7 +14,7 @@
 add_custom_target(pyperf)
 add_dependencies(examples pyperf)
 add_dependencies(_destruct pyperf)
-configure_file(perf.py perf.py COPYONLY)
+configure_file(perf.py ../bin/perf.py COPYONLY)
 
 set (pydestruct_examples_perf_files
 perf.py

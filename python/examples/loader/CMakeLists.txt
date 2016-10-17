@@ -12,6 +12,6 @@
 # Author(s):
 #  Solal Jacob <sja@digital-forensic.org>
 
-configure_file(loader.py loader.py COPYONLY)
-configure_file(client.py client.py COPYONLY)
-configure_file(server.py server.py COPYONLY)
+configure_file(loader.py ../bin/loader.py COPYONLY)
+configure_file(client.py ../bin/client.py COPYONLY)
+configure_file(server.py ../bin/server.py COPYONLY)

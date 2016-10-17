@@ -15,7 +15,7 @@
 add_custom_target(pyworkerpool)
 add_dependencies(examples pyworkerpool)
 add_dependencies(_destruct pyworkerpool)
-configure_file(workerpool.py workerpool.py COPYONLY)
+configure_file(workerpool.py ../bin/workerpool.py COPYONLY)
 
 set (pydestruct_examples_workerpool_files
 workerpool.py

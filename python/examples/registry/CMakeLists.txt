@@ -14,8 +14,8 @@
 add_custom_target(pyregistry)
 add_dependencies(examples pyregistry)
 add_dependencies(_destruct pyregistry)
-configure_file(registry.py registry.py COPYONLY)
-configure_file(qregistry.py qregistry.py COPYONLY)
+configure_file(registry.py ../bin/registry.py COPYONLY)
+configure_file(qregistry.py ../bin/qregistry.py COPYONLY)
 
 set (pydestruct_examples_registry_files
 registry.py

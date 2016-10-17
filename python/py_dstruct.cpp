@@ -129,6 +129,11 @@ PyObject* PyDStruct::newObject(PyDStruct::DPyObject* self, PyObject* args, PyObj
     PyErr_SetString(PyExc_TypeError, error.c_str()); 
     return (0);
   }
+  catch (Destruct::DException const& exception)
+  {
+    PyErr_SetString(PyExc_RuntimeError, exception.error().c_str());
+    return (0);
+  }
 
   CHECK_ALLOC(dobject)
 
