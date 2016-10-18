@@ -57,7 +57,7 @@ void    Server::__setAuth(DUnicodeString const& certificate)
      throw DException("Can't load client certificate");
   zcert_apply(client_cert, this->__socket);
   zcert_t* server_pub_cert = zcert_load("cert/rpczmq_client_cert.txt");
-  char* server_pub_key = zcert_public_txt(server_pub_cert);
+  const char* server_pub_key = zcert_public_txt(server_pub_cert);
   zsocket_set_curve_serverkey(this->__socket, server_pub_key);
 }
 
