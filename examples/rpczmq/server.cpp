@@ -52,12 +52,13 @@ void    Server::setRoot(RealValue<DObject*> root)
  */
 void    Server::__setAuth(DUnicodeString const& certificate)
 {
-  zcert_t* client_cert = zcert_load(certificate.c_str());
+   zcert_t* client_cert = zcert_load("cert/rpczmq_cert.txt");
    if (client_cert == NULL)
      throw DException("Can't load client certificate");
-  char* pub_key = zcert_public_txt(client_cert);
-  zsocket_set_curve_publickey(this->__socket, pub_key);
   zcert_apply(client_cert, this->__socket);
+  zcert_t* server_pub_cert = zcert_load("cert/rpczmq_client_cert.txt");
+  char* server_pub_key = zcert_public_txt(server_pub_cert);
+  zsocket_set_curve_serverkey(this->__socket, server_pub_key);
 }
 
 void    Server::__bind(int32_t port)

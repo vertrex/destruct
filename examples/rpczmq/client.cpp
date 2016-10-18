@@ -84,13 +84,14 @@ void    Client::__setAuth(DUnicodeString const& certificate, DUnicodeString cons
   zauth_t* auth = zauth_new((zctx_t*)this->__context);
   if (auth == NULL)
     throw DException("Can't init authentication");
-  zauth_set_verbose(auth, true);
-  zauth_configure_curve(auth, "*", certDir.c_str());//pubCertDir.c_str());//allow any domain, use directory . to get authorize public key 
-  zcert_t* server_cert = zcert_load(certificate.c_str());
+  zauth_set_verbose(auth, true); //XXX ?
+  zauth_configure_curve(auth, "*", "cert/");//allow any domain, use directory . to get authorize public key 
+
+  zcert_t* server_cert = zcert_load("cert/rpczmq_client_cert.txt"); //certificate.c_str());
   if (server_cert == NULL)
     throw DException("Can't load server certificate");
-  zsocket_set_curve_server(this->__socket, 1);
   zcert_apply(server_cert, this->__socket);
+  zsocket_set_curve_server(this->__socket, 1);
 }
 
 void    Client::__connect(DObject* args)
