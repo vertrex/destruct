@@ -197,7 +197,7 @@ DBuffer    RegistryData::read(DValue const& _parent)
       sizeReaded += sizeToRead;
     }
     DBuffer dbuffer((uint8_t*)buffer, parent->realDataSize);
-    delete buffer;
+    delete[] buffer;
     return (dbuffer);
   }
   //deserializer->destroy();

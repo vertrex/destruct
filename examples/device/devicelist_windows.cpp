@@ -21,7 +21,8 @@
 #include "devicelist.hpp"
 
 #define _WIN32_DCOM
-
+#include <windows.h>
+#include <Shlwapi.h>
 #include <comdef.h>
 #include <Wbemidl.h>
 # pragma comment(lib, "wbemuuid.lib")
@@ -79,10 +80,9 @@ DObject* DeviceList::list(void)
   if (FAILED(hres))
 	return DNone;//throw
 
+  DObject* deviceList = Destruct::DStructs::instance().generate("DVectorObject");
   IWbemClassObject *pclsObj;
   ULONG uReturn = 0;
-   
-  DObject* deviceList = Destruct::DStructs::instance().generate("DVectorObject");
   while (pEnumerator)
   {
     HRESULT hr = pEnumerator->Next(WBEM_INFINITE, 1, &pclsObj, &uReturn);
@@ -173,6 +173,30 @@ DObject* DeviceList::list(void)
     pSvc->Release();
   if (pLoc)
     pLoc->Release();
+
+  //WinPmem support
+  HANDLE handle = CreateFile("\\\\.\\pmem", GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+  if (handle != INVALID_HANDLE_VALUE)
+  {
+	  DWORD ioctlSize;
+	  uint64_t memorySize;
+	  struct PmemMemoryInfo info;	  
+	  ZeroMemory(&info, sizeof(info));
+
+	  if (DeviceIoControl(handle, PMEM_INFO_IOCTRL, NULL, 0, (char *)&info, sizeof(info), &ioctlSize, NULL) == TRUE)
+	  {
+		  for (__int64 i = 0; i < info.NumberOfRuns.QuadPart; i++) 
+			memorySize = info.Run[i].start + info.Run[i].length;
+
+		  Device* ramDevice = static_cast<Device*>(Destruct::DStructs::instance().generate("Device"));
+		  ramDevice->model = DUnicodeString("RAM");
+		  ramDevice->blockDevice = DUnicodeString("\\\\.\\pmem");
+		  ramDevice->serialNumber = DUnicodeString("Unknown");
+		  ramDevice->size = RealValue<DUInt64>(memorySize);
+		  deviceList->call("push", RealValue<DObject*>(ramDevice));
+	  }
+	  CloseHandle(handle);
+  }
 
   return (deviceList);
 }

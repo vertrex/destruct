@@ -87,7 +87,7 @@ DeviceStream::DeviceStream(DStruct* dstruct, DValue const& args) : DCppObject<De
   this->__size = ((DObject*)args)->getValue("size");
   this->__path = ((DObject*)args)->getValue("path").get<DUnicodeString>();
 
-  this->__handle = CreateFile(this->__path.c_str(), GENERIC_READ, FILE_SHARE_READ|FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL);
+  this->__handle = CreateFile(this->__path.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
   if (this->__handle == INVALID_HANDLE_VALUE)
     throw DException("DeviceStream can't open device " + this->__path);
 
@@ -103,22 +103,23 @@ DBuffer DeviceStream::oldRead(DValue const& args)
 {
 	
 
- DInt64        size = args;
+ DInt64        dsize = args;
   uint64_t  newSize;
   LARGE_INTEGER newOffset;      
   LARGE_INTEGER newOffsetRes;
 
-  if (size % 4096)
-    newSize = ((size/4096)+1) * 4096;
+  if (dsize % 4096)
+    newSize = ((dsize/4096)+1) * 4096;
   else
-    newSize = size;
+    newSize = dsize;
 
   if (this->__offset % 4096)
     newOffset.QuadPart = (this->__offset/4096) * 4096;
   else
     newOffset.QuadPart = this->__offset;
   uint64_t leak = this->__offset - newOffset.QuadPart;
-
+  if (leak)
+	  newSize += 4096; //fix temporaire car c debeux ex : on lit de 10485760 mais on a seek donc le newSize va pas rajouter un block mais comme y a un leak fo en rajouter 1 donc la y a des cas ou ca v en rajouter 2
  /* if (this->__offset > this->__devSize)
   {
     this->__currentSize = 0;
@@ -134,14 +135,17 @@ DBuffer DeviceStream::oldRead(DValue const& args)
   //}
   DWORD readed;
 
-  uint8_t* newBuffer = new uint8_t[newSize];
+  uint8_t* newBuffer = new uint8_t[newSize]; //find a copy on write possibility with dbuffer would avoid copy 10mo buffer !
   ReadFile(this->__handle, (void*)(newBuffer), (DWORD)newSize,  &readed ,0);
   if (readed != newSize)
     std::cout << "Can't read " << newSize << " read only " << readed << std::endl;
+  if ((DWORD)dsize < readed)
+	  std::cout << "Must return " << dsize << " read only " << readed << std::endl;
   this->__offset += readed;
 //  this->__lastOffset += readed; //mouais ca devrait pas etre relative a size plutot ???
 
-  DBuffer dbuffer(((uint8_t*)newBuffer+ leak) , (int32_t)size);
+  //std::cout << "new size" << newSize << "leak " << leak  << " copy size " << dsize << std::endl;
+  DBuffer dbuffer(((uint8_t*)newBuffer+ leak) , (int32_t)dsize);
   delete[] newBuffer;
 
   return (dbuffer);

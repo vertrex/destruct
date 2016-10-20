@@ -52,11 +52,15 @@ void    Server::setRoot(RealValue<DObject*> root)
  */
 void    Server::__setAuth(DUnicodeString const& certificate)
 {
-   zcert_t* client_cert = zcert_load("cert/rpczmq_cert.txt");
+   if (zsys_has_curve() == false)
+	 throw DException("Curve encryption not supported");
+   zcert_t* client_cert = zcert_load("cert\\rpczmq_cert.txt");
    if (client_cert == NULL)
-     throw DException("Can't load client certificate");
+     throw DException("Can't load our certificate");
   zcert_apply(client_cert, this->__socket);
-  zcert_t* server_pub_cert = zcert_load("cert/rpczmq_client_cert.txt");
+  zcert_t* server_pub_cert = zcert_load("cert\\rpczmq_client_cert.txt");
+  if (server_pub_cert == NULL)
+	throw DException("Can't load client certificate");
   const char* server_pub_key = zcert_public_txt(server_pub_cert);
   zsocket_set_curve_serverkey(this->__socket, server_pub_key);
 }

@@ -19,6 +19,55 @@
 
 #include "device_common.hpp"
 
+#ifdef WIN32
+#include <windows.h>
+#include <Shlwapi.h>
+
+
+#include <initguid.h>
+
+#define PMEM_CTRL_IOCTRL CTL_CODE(0x22, 0x101, 0, 3)
+#define PMEM_WRITE_ENABLE CTL_CODE(0x22, 0x102, 0, 3)
+#define PMEM_INFO_IOCTRL CTL_CODE(0x22, 0x103, 0, 3)
+
+
+#pragma pack(push, 2)
+typedef struct pmem_info_runs {
+	__int64 start;
+	__int64 length;
+} PHYSICAL_MEMORY_RANGE;
+
+struct PmemMemoryInfo {
+	LARGE_INTEGER CR3;
+	LARGE_INTEGER NtBuildNumber; // Version of this kernel.
+	LARGE_INTEGER KernBase;  // The base of the kernel image.
+	LARGE_INTEGER KDBG;  // The address of KDBG
+
+	// Support up to 32 processors for KPCR.
+	LARGE_INTEGER KPCR[32];
+
+	LARGE_INTEGER PfnDataBase;
+	LARGE_INTEGER PsLoadedModuleList;
+	LARGE_INTEGER PsActiveProcessHead;
+
+	// The address of the NtBuildNumber integer - this is used to find the kernel
+	// base quickly.
+	LARGE_INTEGER NtBuildNumberAddr;
+
+	// As the driver is extended we can add fields here maintaining
+	// driver alignment..
+	LARGE_INTEGER Padding[0xfe];
+
+	LARGE_INTEGER NumberOfRuns;
+
+	// A Null terminated array of ranges.
+	PHYSICAL_MEMORY_RANGE Run[100];
+};
+
+#pragma pack(pop)
+
+#endif
+
 using namespace Destruct;
 
 class Device : public DCppObject<Device>

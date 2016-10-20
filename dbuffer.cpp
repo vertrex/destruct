@@ -20,7 +20,7 @@ RealBuffer::RealBuffer(int32_t size_) : data(new uint8_t[size_]), size(size_)
 
 RealBuffer::RealBuffer(uint8_t* data_, int32_t size_) : data(new uint8_t[size_]), size(size_)
 {
-  memcpy(data, data_, size);
+  memcpy(data, data_, size_);
 }
 
 RealBuffer::RealBuffer(RealBuffer const& copy) : data(copy.data), size(copy.size)
