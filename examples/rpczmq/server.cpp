@@ -70,7 +70,7 @@ void    Server::__bind(int32_t port)
   this->__context = zctx_new();
   this->__socket = zsocket_new((zctx_t*)this->__context, ZMQ_REP);
 
-  this->__setAuth("cert/destruct_cert.txt");
+  this->__setAuth("cert/rpczmq_cert.txt");
 
   std::stringstream address;
   address << "tcp://*:" << port;

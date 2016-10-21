@@ -17,8 +17,7 @@
 #ifndef __DEVICESTREAM_WINDOWS_HPP__
 #define __DEVICESTREAM_WINDOWS_HPP__
 
-#include "device_common.hpp"
-#include "devicestream_cache.hpp"
+#include "memdevice_common.hpp"
 
 #pragma comment(lib, "advapi32.lib")
 #include <windows.h>
@@ -27,10 +26,10 @@
 
 using namespace Destruct;
 
-class DeviceStream : public DCppObject<DeviceStream>
+class MemoryDeviceStream : public DCppObject<MemoryDeviceStream>
 {
 public:
-  DeviceStream(DStruct* dstruct, DValue const& args);
+  MemoryDeviceStream(DStruct* dstruct, DValue const& args);
 
   DBuffer       read(DValue const& args); 
   DUInt64       size(void);
@@ -38,7 +37,7 @@ public:
   DUInt64       tell(void);
   void          close(void);
 
-  attributeCount(DeviceStream, 5)
+  attributeCount(MemoryDeviceStream, 5)
 
   attributeList(
                 function(DBuffer, read, DInt64)
@@ -48,17 +47,18 @@ public:
                 function(DNone, close, DNone)
                )
 
-  memberList(DeviceStream, 
-              method(DeviceStream, read)
-              method(DeviceStream, size)
-              method(DeviceStream, seek)
-              method(DeviceStream, tell)
-              method(DeviceStream, close)
+  memberList(MemoryDeviceStream, 
+              method(MemoryDeviceStream, read)
+              method(MemoryDeviceStream, size)
+              method(MemoryDeviceStream, seek)
+              method(MemoryDeviceStream, tell)
+              method(MemoryDeviceStream, close)
             )
 
 protected:
-  ~DeviceStream();
+  ~MemoryDeviceStream();
 private:
+  HANDLE                        __handle;
   uint64_t                      __size;
   RealValue<DFunctionObject*>   _read, _size, _seek, _tell, _close;
 };

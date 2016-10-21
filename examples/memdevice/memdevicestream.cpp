@@ -20,19 +20,20 @@
 
 
 #include "dstructs.hpp"
-#include "devicestream_windows.hpp"
+#include "memdevicedriver.hpp"
+#include "memdevicestream.hpp"
 
 using namespace Destruct;
 
 /**
  *  DeviceStream Windows 
  */
-DeviceStream::DeviceStream(DStruct* dstruct, DValue const& args) : DCppObject<DeviceStream>(dstruct, args)
+MemoryDeviceStream::MemoryDeviceStream(DStruct* dstruct, DValue const& args) : DCppObject<MemoryDeviceStream>(dstruct, args)
 {
   this->init();
   this->__size = 0;
 
-  HANDLE handle = CreateFile("\\\\.\\MemoryDevice", GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+  HANDLE handle = CreateFile("\\\\.\\pmem", GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
   if (handle != INVALID_HANDLE_VALUE)
   {
      DWORD ioctlSize;
@@ -46,38 +47,40 @@ DeviceStream::DeviceStream(DStruct* dstruct, DValue const& args) : DCppObject<De
          memorySize = info.Run[i].start + info.Run[i].length;
        this->__size = memorySize;
      }
-     throw ("Can't determine memory device size");
+	 else
+       throw DException("Can't determine memory device size");
   }
   else 
     throw DException("Can't open memory device");
 }
 
-DeviceStream::~DeviceStream()
+MemoryDeviceStream::~MemoryDeviceStream()
 {
 }
 
-DBuffer DeviceStream::read(DValue const& args)
+DBuffer MemoryDeviceStream::read(DValue const& args)
 {
   DInt64 size = args;
   DWORD readed;
 
-  DBuffer dbuffer(size);
+  DBuffer dbuffer((int32_t)size);
  
   ReadFile(this->__handle, (void*)(dbuffer.data()), (DWORD)size,  &readed ,0);
   return (dbuffer);
 }
 
-DUInt64 DeviceStream::size(void)
+DUInt64 MemoryDeviceStream::size(void)
 {
   return (this->__size);
 }
 
-void    DeviceStream::seek(DValue const& args)
+void    MemoryDeviceStream::seek(DValue const& args)
 {
   DUInt64 offset = args;
   if (offset < this->__size)
   {
-    LARGE_INTEGER newOffset.QuadPart = offset;
+	LARGE_INTEGER newOffset;
+	newOffset.QuadPart = offset;
     LARGE_INTEGER newOffsetRes;
     SetFilePointerEx(this->__handle, newOffset, &newOffsetRes, 0);
   }
@@ -85,13 +88,13 @@ void    DeviceStream::seek(DValue const& args)
    throw DException("DeviceStream::seek can't seek");
 }
 
-DUInt64 DeviceStream::tell(void)
+DUInt64 MemoryDeviceStream::tell(void)
 {
  // return (this->__offset);
   return (0); //XXX 
 }
 
-void    DeviceStream::close(void)
+void    MemoryDeviceStream::close(void)
 {
-  //XXX
+	CloseHandle(this->__handle);
 }

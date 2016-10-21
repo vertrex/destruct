@@ -52,6 +52,7 @@ DObject*  Perf::connect(std::string const& addr, uint32_t port)
 
   argument->setValue("address", RealValue<DUnicodeString>(addr));
   argument->setValue("port", RealValue<DUInt32>(port));
+  argument->setValue("publicKeyPath", RealValue<DUnicodeString>("clicert/destruct_cert.txt"));
 
   std::cout << "Connecting to " << addr << ":" << port << std::endl;
   DObject*  client = DStructs::instance().generate("Client", RealValue<DObject*>(argument));

@@ -14,11 +14,10 @@
  *  Solal Jacob <sja@digital-forensic.org>
  */
 
-#include "device.hpp"
-#include "dstructs.hpp"
-#include "devicelist.hpp"
-
 #include "memdevicedriver.hpp"
+#include "memdevicestream.hpp"
+#include "dstructs.hpp"
+
 #include "windows.h"
 
 extern "C"
@@ -37,30 +36,29 @@ using namespace Destruct;
 /**
  *  MemoryDeviceDriver 
  */
-MemoryMemoryDeviceDriverDriver::MemoryMemoryDeviceDriverDriver(DStruct* dstruct, DValue const& args) : DCppObject<MemoryMemoryDeviceDriverDriver>(dstruct, args)
+MemoryDeviceDriver::MemoryDeviceDriver(DStruct* dstruct, DValue const& args) : DCppObject<MemoryDeviceDriver>(dstruct, args)
 {
   this->init();
 }
 
 MemoryDeviceDriver::~MemoryDeviceDriver()
 {
+	this->unload();
 }
 
 void MemoryDeviceDriver::load(void)
 {
-  std::string driver_path;
-
-  this->unload();// First ensure the driver is not already installed.
+  std::string driver_path = "C:\\users\\solal\\destruct\\examples\\bin\\RelWithDebInfo\\winpmem_x64.sys";
+ // this->unload(); we must mark for deletion if we want the driver to be deleted at end
 
   SC_HANDLE scm = OpenSCManager(NULL, NULL, SC_MANAGER_CREATE_SERVICE);
   if (!scm)
-    throw Destruct::DException("Can not open SCM. Are you administrator?");
+    throw Destruct::DException("Can't open SCM. Are you administrator?");
 
-  // First try to create the service.
   SC_HANDLE service = CreateService(
       scm,
-      service_name.c_str(),
-      service_name.c_str(),
+      "pmem",
+      "pmem",
       SERVICE_ALL_ACCESS,
       SERVICE_KERNEL_DRIVER,
       SERVICE_DEMAND_START,
@@ -75,12 +73,13 @@ void MemoryDeviceDriver::load(void)
   // Maybe the service is already there - try to open it instead.
   if (GetLastError() == ERROR_SERVICE_EXISTS)
   {
-    service = OpenService(scm, service_name.c_str(), SERVICE_ALL_ACCESS);
+    service = OpenService(scm, "pmem", SERVICE_ALL_ACCESS);
+	//ERROR_SERVICE_MARKED_FOR_DELETE
   }
 
   if (!service) 
   {
-    CloseServiceHandle(scm);
+	CloseServiceHandle(scm);
     throw Destruct::DException("Service not found");
   }
 
@@ -90,30 +89,10 @@ void MemoryDeviceDriver::load(void)
     {
       CloseServiceHandle(service);
       CloseServiceHandle(scm);
-      throw Destruct::DException("Error: StartService(), Cannot start the driver:");
+      throw Destruct::DException("MemoryDeviceDriver cannot start the service");
     }
   }
-/*
-  // Remember this so we can safely unload it.
-  driver_installed_ = true;
 
-  LOG(INFO) << "Loaded Driver " << driver_path;
-  device_urn = URN::NewURNFromFilename("\\\\.\\" + device_name);
-
-  // We need write mode for issuing IO controls. Note the driver will refuse
-  // write unless it is also switched to write mode.
-  resolver.Set(device_urn, AFF4_STREAM_WRITE_MODE, new XSDString("append"));
-
-  AFF4ScopedPtr<FileBackedObject> device_stream = resolver.AFF4FactoryOpen
-      <FileBackedObject>(device_urn);
-
-  if (!device_stream) {
-    LOG(ERROR) << "Unable to open device: " << GetLastErrorMessage();
-    CloseServiceHandle(service);
-    CloseServiceHandle(scm);
-    return IO_ERROR;
-  }
-*/
   CloseServiceHandle(service);
   CloseServiceHandle(scm);
 }
@@ -126,14 +105,11 @@ void MemoryDeviceDriver::unload(void)
   scm = OpenSCManager(NULL, NULL, SC_MANAGER_CREATE_SERVICE);
 
   if (!scm)
-    throw Destruct::DException("Can't load driver");
+    throw Destruct::DException("Can't open SCM");
 
-  service = OpenService(scm, service_name.c_str(), SERVICE_ALL_ACCESS);
-
+  service = OpenService(scm, "pmem", SERVICE_ALL_ACCESS);
   if (service) 
-  {
     ControlService(service, SERVICE_CONTROL_STOP, &ServiceStatus);
-  }
 
   DeleteService(service);
   CloseServiceHandle(service);

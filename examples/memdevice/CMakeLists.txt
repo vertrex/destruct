@@ -22,5 +22,5 @@ set(device_libfiles
   memdevicestream.cpp
   )
 
-add_library(destruct_device SHARED ${device_libfiles})
-target_link_libraries(destruct_device destruct)
+add_library(destruct_memdevice SHARED ${device_libfiles})
+target_link_libraries(destruct_memdevice destruct)

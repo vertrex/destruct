@@ -17,7 +17,7 @@
 #ifndef __MEMORYDEVICE_HPP__
 #define __MEMORYDEVICE_HPP__
 
-#include "memorydevice_common.hpp"
+#include "memdevice_common.hpp"
 
 #include <windows.h>
 #include <Shlwapi.h>
@@ -63,7 +63,6 @@ struct PmemMemoryInfo {
 
 #pragma pack(pop)
 
-#endif
 
 using namespace Destruct;
 
@@ -72,7 +71,7 @@ class MemoryDeviceDriver : public DCppObject<MemoryDeviceDriver>
 public:
   MemoryDeviceDriver(DStruct* dstruct, DValue const& args);
 
-  void      load(DUnicodeString);
+  void      load(void);
   void      unload(void);
 
   attributeCount(MemoryDeviceDriver, 2)
@@ -83,8 +82,8 @@ public:
                )
 
   memberList(MemoryDeviceDriver, 
-             member(MemoryDeviceDriver, load)
-             member(MemoryDeviceDriver, unload)
+             method(MemoryDeviceDriver, load)
+             method(MemoryDeviceDriver, unload)
             )
 
 protected:
