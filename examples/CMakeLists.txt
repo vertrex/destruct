@@ -31,6 +31,10 @@ add_subdirectory(registry)
 add_subdirectory(device)
 add_subdirectory(performance)
 
+if (WIN32)
+add_subdirectory(memdevice)
+endif(WIN32)
+
 set (test_files
 test.cpp
 )
