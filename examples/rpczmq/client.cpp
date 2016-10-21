@@ -81,14 +81,13 @@ Client::~Client()
  */
 void    Client::__setAuth(DUnicodeString const& certificate, DUnicodeString const& certDir)
 {
-  std::cout << "setting auth " << std::endl;
   zauth_t* auth = zauth_new((zctx_t*)this->__context);
   if (auth == NULL)
     throw DException("Can't init authentication");
   zauth_set_verbose(auth, true); //XXX ?
   zauth_configure_curve(auth, "*", "cert/");//allow any domain, use directory . to get authorize public key 
 
-  zcert_t* server_cert = zcert_load("cert/rpczmq_client_cert.txt"); //certificate.c_str());
+  zcert_t* server_cert = zcert_load("clicert/rpczmq_client_cert.txt"); //certificate.c_str());
   if (server_cert == NULL)
     throw DException("Can't load server certificate");
   zcert_apply(server_cert, this->__socket);

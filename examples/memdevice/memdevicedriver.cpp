@@ -48,17 +48,19 @@ MemoryDeviceDriver::~MemoryDeviceDriver()
 
 void MemoryDeviceDriver::load(void)
 {
-  std::string driver_path = "C:\\users\\solal\\destruct\\examples\\bin\\RelWithDebInfo\\winpmem_x64.sys";
- // this->unload(); we must mark for deletion if we want the driver to be deleted at end
+ HMODULE hModule = GetModuleHandleW(NULL);
+ CHAR cpath[MAX_PATH];
+ GetModuleFileNameA(hModule, cpath, MAX_PATH);
 
+ std::string driver_path = std::string(cpath).substr(0, std::string(cpath).rfind("\\") + 1);
+ driver_path += "winpmem_x64.sys";
+  
   SC_HANDLE scm = OpenSCManager(NULL, NULL, SC_MANAGER_CREATE_SERVICE);
   if (!scm)
     throw Destruct::DException("Can't open SCM. Are you administrator?");
 
   SC_HANDLE service = CreateService(
-      scm,
-      "pmem",
-      "pmem",
+      scm, "pmem", "pmem",
       SERVICE_ALL_ACCESS,
       SERVICE_KERNEL_DRIVER,
       SERVICE_DEMAND_START,

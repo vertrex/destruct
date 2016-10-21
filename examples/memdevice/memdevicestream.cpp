@@ -90,8 +90,13 @@ void    MemoryDeviceStream::seek(DValue const& args)
 
 DUInt64 MemoryDeviceStream::tell(void)
 {
- // return (this->__offset);
-  return (0); //XXX 
+  LARGE_INTEGER ret;
+  LARGE_INTEGER pos;
+  
+  pos.QuadPart = 0;
+  SetFilePointerEx(this->__handle, pos, &ret, FILE_CURRENT);
+
+  return (ret.QuadPart);
 }
 
 void    MemoryDeviceStream::close(void)
