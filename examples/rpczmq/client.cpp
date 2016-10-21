@@ -81,6 +81,7 @@ Client::~Client()
  */
 void    Client::__setAuth(DUnicodeString const& certificate, DUnicodeString const& certDir)
 {
+  std::cout << "setting auth " << std::endl;
   zauth_t* auth = zauth_new((zctx_t*)this->__context);
   if (auth == NULL)
     throw DException("Can't init authentication");
@@ -140,7 +141,7 @@ Destruct::DStruct* Client::find(DValue const& name)
   this->__serialize->sDUnicodeString(name);
   this->__networkStream->request();
 
-  DStruct* dstruct = this->__deserialize->call("DStruct"); //XXX pass client everywhere to avoir creating  serialize / serializer / deserialzier everytime all is in client so ...
+  DStruct* dstruct = this->__deserialize->dDStruct(); //XXX pass client everywhere to avoir creating  serialize / serializer / deserialzier everytime all is in client so ...
   this->__networkStream->flushRead();
   return (dstruct);
 }
