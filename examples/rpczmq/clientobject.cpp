@@ -68,7 +68,6 @@ DValue ClientObject::getValue(DUnicodeString const& name) const
   this->__serializer->sDUnicodeString(RealValue<DUnicodeString>(name));
 
   DType  dtype = this->instanceOf()->attribute(name).type();
- 
   if (dtype.getType() == DType::DMethodType)
   {
     this->__networkStream->request();
@@ -83,7 +82,7 @@ DValue ClientObject::getValue(DUnicodeString const& name) const
   } 
 
   this->__networkStream->request();
-  DValue value = (((DObject*)this->__deserializer)->call(dtype.name()));
+  DValue value = (((DObject*)this->__deserializer)->call(dtype.name()));//deserialize return XXX Dobject not in base
   this->__networkStream->flushRead();
   return (value);
 }
@@ -94,7 +93,7 @@ void ClientObject::setValue(DUnicodeString const& name, DValue const &v)
   this->__serializer->sDUInt64(RealValue<DUInt64>(this->__id));
   this->__serializer->sDUnicodeString(RealValue<DUnicodeString>(name));
  
-  this->__serializer->call(this->instanceOf()->attribute(name).type().name(), v);
+  this->__serializer->call(this->instanceOf()->attribute(name).type().name(), v); //erialize arg
   this->__networkStream->request();
 }
                                         
@@ -107,9 +106,9 @@ DValue ClientObject::call(DUnicodeString const& name, DValue const &args)
   this->__serializer->sDUnicodeString(RealValue<DUnicodeString>(name));
 
   /* Send argument (object is not compatible)  XXX implement it */
-  ((DObject*)this->__serializer)->call(dtype.argumentName(), args);
+  ((DObject*)this->__serializer)->call(dtype.argumentName(), args); //serialize arg
   this->__networkStream->request();
-  DValue value = (((DObject*)this->__deserializer)->call(dtype.returnName()));
+  DValue value = (((DObject*)this->__deserializer)->call(dtype.returnName())); //deserialize return XXX dobject not in arg
   this->__networkStream->flushRead();
 
   return (value);
@@ -124,7 +123,7 @@ DValue ClientObject::call(DUnicodeString const& name)
   this->__serializer->sDUnicodeString(RealValue<DUnicodeString>(name));
 
   this->__networkStream->request();
-  DValue value = (((DObject*)this->__deserializer)->call(dtype.returnName()));
+  DValue value = (((DObject*)this->__deserializer)->call(dtype.returnName())); //deserialize return XXX dobject not in arg
   this->__networkStream->flushRead();
 
   return (value);

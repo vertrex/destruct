@@ -32,8 +32,6 @@ void    ServerObject::find(void)
   DUnicodeString name = this->__deserializer->dDUnicodeString(); 
   Destruct::DStructs& destruct = Destruct::DStructs::instance();
   DStruct* dstruct = destruct.find(name);
-  if (!dstruct) //XXX must send exception to client !
-    throw DException("Server::generate DStruct " + name + " not found");
  
   this->__networkStream->reply();
   this->__serializer->sDStruct(RealValue<DStruct*>(dstruct));
@@ -45,8 +43,7 @@ void    ServerObject::generate(void)
   DUnicodeString name = this->__deserializer->dDUnicodeString(); 
   Destruct::DStructs& destruct = Destruct::DStructs::instance();
   DStruct* dstruct = destruct.find(name);
-  if (!dstruct) ///XXX must send exception to client !
-    throw DException("Server::generate DStruct " + name + " not found"); 
+
   DObject* object = dstruct->newObject(); 
   RealValue<DUInt64> objectId = this->__objectManager->call("registerObject", RealValue<DObject*>(object));
 

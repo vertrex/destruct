@@ -35,17 +35,14 @@ void    SerializeRPC::sDObject(DValue const& args)
 
   RealValue<DUInt64> id = this->__objectManager->call("registerObject", args);  
  
-  this->sDUnicodeString(RealValue<DUnicodeString>(dobject->instanceOf()->name()));
   this->sDUInt64(id);
+  this->sDUnicodeString(RealValue<DUnicodeString>(dobject->instanceOf()->name()));
 }
 
 
 void    SerializeRPC::sDStruct(DValue const& args)
 {
-  DStruct* dstruct = args;
-//  if (dstruct == NULL)
-//     throw DException
-
+  DStruct* dstruct = args; //server check for NULL in find & generate but not for direct call XXX
   this->sDUnicodeString(RealValue<DUnicodeString>(dstruct->name())); 
 
   size_t attributeCount = dstruct->attributeCount();
@@ -146,18 +143,25 @@ DeserializeRPC::~DeserializeRPC()
 
 DObject*        DeserializeRPC::dDObject(void)
 {
-  DUnicodeString objectName = this->dDUnicodeString();
   DUInt64 id = this->dDUInt64();
-
-  DStruct* dstruct = Destruct::DStructs::instance().find(objectName);
-  if (dstruct == NULL)
+  DUnicodeString objectName = this->dDUnicodeString();
+  DStruct* dstruct = NULL; 
+  SerializeRPC* serializer = static_cast<SerializeRPC*>(DStructs::instance().find("SerializeRPC")->newObject(RealValue<DObject*>(this->__stream))); //XXX new object each time  -> slow reuse parent one client or server 
+  try
   {
-    if (objectName != "None")
-      std::cout << "DSerializeRPC Can't deserialize object not find in base must get struct named :  " << objectName << std::endl;
-    return (DNone);
+     dstruct = Destruct::DStructs::instance().find(objectName);
+  }
+  catch (DException const& exception)
+  {
+    this->__networkStream->flushRead();
+    serializer->sDUInt8(RealValue<DUInt8>(CMD_FIND));
+    std::cout << "getting struct " << objectName << "  from server " << std::endl;
+    serializer->sDUnicodeString(RealValue<DUnicodeString>(objectName));
+    this->__networkStream->request();
+
+    dstruct = this->dDStruct();
   }
   
-  DObject* serializer = DStructs::instance().find("SerializeRPC")->newObject(RealValue<DObject*>(this->__stream)); //XXX new object each time  -> slow 
   DObject* clientObject = new ClientObject(RealValue<DObject*>(this->__stream), RealValue<DObject*>(serializer), RealValue<DObject*>(this), id, dstruct);
   serializer->destroy(); 
 

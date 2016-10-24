@@ -74,12 +74,11 @@ DStruct*        DStructs::find(const size_t index)
 
 DStruct*       DStructs::find(DUnicodeString const & dstructPath) 
 {
-  return (this->__nameSpace->findDStruct(dstructPath));//null throw ?
-/*
   DStruct* dstruct = this->__nameSpace->findDStruct(dstructPath);
   if (dstruct == NULL)
     throw DException("Can't find DStruct : " + dstructPath);
-*/
+
+  return (dstruct);
 }
                         //rename newObject(name)
 DObject*       DStructs::generate(DUnicodeString const& name)
@@ -90,7 +89,11 @@ DObject*       DStructs::generate(DUnicodeString const& name)
                         //rename newObject(name)
 DObject*       DStructs::generate(DUnicodeString const& name, DValue const& args)
 {
-  return (this->find(name)->newObject(args));
+  DStruct* dstruct = this->find(name);
+  if (dstruct == NULL)
+    throw DException("Can't find DStruct : " + name);
+
+  return (dstruct->newObject(args));
 } 
 
 /**

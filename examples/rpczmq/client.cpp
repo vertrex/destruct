@@ -85,7 +85,7 @@ void    Client::__setAuth(DUnicodeString const& certificate, DUnicodeString cons
   if (auth == NULL)
     throw DException("Can't init authentication");
   zauth_set_verbose(auth, true); //XXX ?
-  zauth_configure_curve(auth, "*", "cert/");//allow any domain, use directory . to get authorize public key 
+  zauth_configure_curve(auth, "*", "clicert/");//allow any domain, use directory . to get authorize public key 
 
   zcert_t* server_cert = zcert_load("clicert/rpczmq_client_cert.txt"); //certificate.c_str());
   if (server_cert == NULL)
@@ -112,10 +112,20 @@ void    Client::__close(void)
   zmq_ctx_destroy(this->__context); 
 }
 
-                                    //(DUnicodeString const& name ? work au lieu de dvalue ?
 Destruct::DObject* Client::generate(DValue const& args)
-{
+{ 
   Destruct::DStructs& destruct = Destruct::DStructs::instance();
+  DStruct* objectStruct = NULL;
+  DUnicodeString structName = args;
+  try 
+  {
+    objectStruct = destruct.find(structName);
+  }
+  catch (DException const& exception)
+  {
+    objectStruct = this->find(args);
+  }
+ 
   this->__serialize->sDUInt8(RealValue<DUInt8>(CMD_GENERATE));
   this->__serialize->sDUnicodeString(args);
 
@@ -124,9 +134,6 @@ Destruct::DObject* Client::generate(DValue const& args)
   this->__networkStream->flushRead();
 
   //hanle argument name + value ... XXX
-  //if struct not found in local deserialize it !
-  DStruct* objectStruct = destruct.find(args.get<DUnicodeString>());
-
   ClientObject* root = new ClientObject(RealValue<DObject*>(this->__networkStream), RealValue<DObject*>(this->__serialize), RealValue<DObject*>(this->__deserialize), objectId, objectStruct); 
 
   return (RealValue<DObject*>(root));
