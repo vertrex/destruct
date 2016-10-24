@@ -31,7 +31,7 @@ public:
   EXPORT DObject*               deserializeRPC(void) const;
 private:
   void                          __connect(DObject* args);
-  void                          __setAuth(DUnicodeString const& clientCert, DUnicodeString const& clientDir);
+  void                          __setAuth(DObject* rpcAuth);
   void                          __close(void);
 
   void*                         __context;

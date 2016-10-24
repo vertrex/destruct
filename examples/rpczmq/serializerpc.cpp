@@ -155,11 +155,10 @@ DObject*        DeserializeRPC::dDObject(void)
   {
     this->__networkStream->flushRead();
     serializer->sDUInt8(RealValue<DUInt8>(CMD_FIND));
-    std::cout << "getting struct " << objectName << "  from server " << std::endl;
     serializer->sDUnicodeString(RealValue<DUnicodeString>(objectName));
     this->__networkStream->request();
 
-    dstruct = this->dDStruct();
+    dstruct = this->dDStruct(); //register done in dDStruct 
   }
   
   DObject* clientObject = new ClientObject(RealValue<DObject*>(this->__stream), RealValue<DObject*>(serializer), RealValue<DObject*>(this), id, dstruct);

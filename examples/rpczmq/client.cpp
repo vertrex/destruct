@@ -45,7 +45,13 @@ void    Client::declare(void)
   dstruct = new DStruct(NULL, "ClientArgument", DSimpleObject::newObject);
   dstruct->addAttribute(DAttribute(DType::DUInt32Type, "port"));
   dstruct->addAttribute(DAttribute(DType::DUnicodeStringType, "address"));
-  dstruct->addAttribute(DAttribute(DType::DUnicodeStringType, "publicKeyPath"));
+  dstruct->addAttribute(DAttribute(DType::DObjectType, "auth"));
+  destruct.registerDStruct(dstruct); 
+
+  dstruct = new DStruct(NULL, "RPCAuth", DSimpleObject::newObject);
+  dstruct->addAttribute(DAttribute(DType::DUnicodeStringType, "cert")); //public and private key for client/server
+  dstruct->addAttribute(DAttribute(DType::DUnicodeStringType, "certStore"));//path of accepted public key store for auth server
+  dstruct->addAttribute(DAttribute(DType::DUnicodeStringType, "clientCert"));//accepted client cert 
   destruct.registerDStruct(dstruct); 
 }
 
@@ -56,7 +62,7 @@ Client::Client(DStruct* dstruct, DValue const& args) : DCppObject<Client>(dstruc
 {
   this->init();
 
-  this->__connect(args); //args 
+  this->__connect(args);
   this->__networkStream = static_cast<NetworkStream*>(DStructs::instance().find("NetworkStream")->newObject());
 
   this->__networkStream->__context = this->__context;
@@ -68,7 +74,6 @@ Client::Client(DStruct* dstruct, DValue const& args) : DCppObject<Client>(dstruc
 
 Client::~Client()
 {
-  std::cout << "~Client" << std::endl;
   this->__networkStream->destroy();
   this->__serialize->destroy();
   this->__deserialize->destroy();
@@ -79,15 +84,15 @@ Client::~Client()
 /**
  *  Use private key to connect to server
  */
-void    Client::__setAuth(DUnicodeString const& certificate, DUnicodeString const& certDir)
+void    Client::__setAuth(DObject* rpcAuth)
 {
   zauth_t* auth = zauth_new((zctx_t*)this->__context);
   if (auth == NULL)
     throw DException("Can't init authentication");
-  zauth_set_verbose(auth, true); //XXX ?
-  zauth_configure_curve(auth, "*", "clicert/");//allow any domain, use directory . to get authorize public key 
+  zauth_set_verbose(auth, true); //XXX 
+  zauth_configure_curve(auth, "*", rpcAuth->getValue("certStore").get<DUnicodeString>().c_str());
 
-  zcert_t* server_cert = zcert_load("clicert/rpczmq_client_cert.txt"); //certificate.c_str());
+  zcert_t* server_cert = zcert_load(rpcAuth->getValue("cert").get<DUnicodeString>().c_str());
   if (server_cert == NULL)
     throw DException("Can't load server certificate");
   zcert_apply(server_cert, this->__socket);
@@ -99,7 +104,8 @@ void    Client::__connect(DObject* args)
   this->__context = zctx_new();
   this->__socket = zsocket_new((zctx_t*)this->__context, ZMQ_REQ);
 
-  this->__setAuth(args->getValue("publicKeyPath"), "cert/");
+  if (args != DNone)
+    this->__setAuth(args->getValue("auth"));
 
   std::stringstream address;
   address << "tcp://" + std::string(args->getValue("address").get<DUnicodeString>()) << ":" << args->getValue("port").get<DUInt32>();

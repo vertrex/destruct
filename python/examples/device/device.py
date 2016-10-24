@@ -7,16 +7,14 @@ sys.path.append('../')
 
 from _destruct import *
 
-#if __name__ == "__main__":
 loader = DStructs().find("Import").newObject()
 loader.file("../../../examples/modules/libdestruct_rpczmq.so")
-loader.file("../../../examples/modules/libdestruct_device.so")
-print 'ok loaded'
+#print 'ok loaded'
 arg = DStructs().find("ClientArgument").newObject()
-arg.address = "127.0.0.1"
+#arg.address = "127.0.0.1"
 #arg.address = "127.0.0.1"
 #arg.address = "10.42.1.197"
-#arg.address = "10.42.1.195"
+arg.address = "10.42.1.195"
 #arg.address = "10.42.1.1"
 #arg.address = "10.42.1.2"
 arg.port = 0xdff
@@ -25,7 +23,6 @@ print "connecting"
 client = DStructs().find("Client").newObject(arg)
 print "generate devicelist" 
 serverLoader = client.generate("Import")
-print "call server load"
 if serverLoader.file("../modules/libdestruct_device.so") == 0:
   serverLoader.file("destruct_device.dll")
 deviceList = client.generate("DeviceList")

@@ -20,16 +20,16 @@
 
 using namespace Destruct;
 
-Server::Server(uint32_t port) : DCppObject<Server>(NULL, RealValue<DUInt32>(port)), __objectManager(NULL)
+Server::Server(DValue const& args) : DCppObject<Server>(NULL, args), __objectManager(NULL)
 {
-  this->__bind(port);
+  this->__bind(args);
   this->__objectManager = DStructs::instance().generate("ObjectManager");
 }
 
 Server::Server(DStruct* dstruct, DValue const& args) : DCppObject<Server>(dstruct, args), __objectManager(NULL) 
 {
   this->init();
-  this->__bind(args.get<DUInt32>());
+  this->__bind(args);
   this->__objectManager = DStructs::instance().generate("ObjectManager");
 }
 
@@ -50,28 +50,31 @@ void    Server::setRoot(RealValue<DObject*> root)
 /**
  *   Use public key if server is corrupted no problem
  */
-void    Server::__setAuth(DUnicodeString const& certificate)
+void    Server::__setAuth(DObject* rpcAuth)
 {
    if (zsys_has_curve() == false)
 	 throw DException("Curve encryption not supported");
-   zcert_t* client_cert = zcert_load("cert\\rpczmq_cert.txt");
+   //zcert_t* client_cert = zcert_load("cert\\rpczmq_cert.txt");
+   zcert_t* client_cert = zcert_load(rpcAuth->getValue("cert"));
    if (client_cert == NULL)
      throw DException("Can't load our certificate");
   zcert_apply(client_cert, this->__socket);
-  zcert_t* server_pub_cert = zcert_load("cert\\rpczmq_client_cert.txt");
+  //zcert_t* server_pub_cert = zcert_load("cert\\rpczmq_client_cert.txt");
+  zcert_t* server_pub_cert = zcert_load(rpcAuth->getValue("clientCert"));
   if (server_pub_cert == NULL)
 	throw DException("Can't load client certificate");
   const char* server_pub_key = zcert_public_txt(server_pub_cert);
   zsocket_set_curve_serverkey(this->__socket, server_pub_key);
 }
 
-void    Server::__bind(int32_t port)
+void    Server::__bind(DObject* args) //int32_t port)
 {
   this->__context = zctx_new();
   this->__socket = zsocket_new((zctx_t*)this->__context, ZMQ_REP);
 
-  this->__setAuth("cert/rpczmq_cert.txt");
+  this->__setAuth(args->getValue("auth").get<DObject*>());
 
+  DUInt32 port = args->getValue("port").get<DUInt32>();
   std::stringstream address;
   address << "tcp://*:" << port;
 

@@ -21,13 +21,8 @@ arg.port = 0xdff
 arg.publicKeyPath = "cert/destruct_cert.txt"
 print "connecting" 
 client = DStructs().find("Client").newObject(arg)
-print "import"
 serverLoader = client.generate("Import")
-print "call server load"
 serverLoader.file("destruct_memdevice.dll")
-print "device driver"
-client.find("MemoryDeviceDriver")
-print client.find("MemoryDeviceStream")
 memDriver = client.generate("MemoryDeviceDriver")
 
 print "loading driver"

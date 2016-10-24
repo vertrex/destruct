@@ -1,0 +1,14 @@
+#   ****  Generated on 2016-10-18 18:25:24 by CZMQ  ****
+#   ZeroMQ CURVE Public Certificate
+#   Exchange securely, or use a secure mechanism to verify the contents
+#   of this file after exchange. Store public certificates in your home
+#   directory, in the .curve subdirectory.
+
+metadata
+    name = "Destruct rpc client"
+    date-created = "2016-10-18 18:25:24"
+    created-by = "CZMQ makecert"
+    email = "contact@arxsys.fr"
+    organization = "ArxSys"
+curve
+    public-key = "DjM%nl=/jv9Z03A+{wT>XQ#%mG{I0twSGpvC0PIW"
