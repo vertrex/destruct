@@ -15,7 +15,9 @@ public:
   RPC();
   ~RPC();
 
+  int  usage(void);
   void  serve(uint32_t port);
+  void  serve(uint32_t port, std::string cert, std::string clientCert);
 };
 
 #endif

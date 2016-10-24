@@ -21,7 +21,7 @@ Import::~Import(void)
 {
 }
 
-DUInt8  Import::file(DValue const& args)
+void  Import::file(DValue const& args)
 {
   DUnicodeString filePath = args;
 
@@ -29,19 +29,12 @@ DUInt8  Import::file(DValue const& args)
   void* library = dlopen(filePath.c_str(), RTLD_LAZY);
   dlerror();
   if (!library)
-  {
-    std::cout << "Can't load libray " << filePath << std::endl;
-    return (false);
-  }
+	throw DException("Can't load libray " + filePath);
   this->__libraries.push_back(library);
 #else
   HMODULE library = LoadLibrary(filePath.c_str());
   if (library == NULL) 
-  {
-    std::cout << "Can't load libray " << filePath << std::endl;
-    //throw ?
-    return (false);
-  }
+	throw DException("Can't load libray " + filePath);
   this->__libraries.push_back(library);
 #endif
 
@@ -50,17 +43,13 @@ DUInt8  Import::file(DValue const& args)
   dlerror();
   if (!symbol)
   {
-    //std::cout << "No method DestructExport found in " << filePath << std::endl;
     //dlclose(library); if close remove from __libraries
-    return (false);
+	throw DException("No method DestructExport found in " + filePath);
   }
 #else
   FARPROC symbol = GetProcAddress(library, "DestructExport");
   if (symbol == NULL) 
-  {
-    std::cout << "No method DestructExport found in " << filePath << std::endl;
-    return (false);
-  }
+   throw DException("No method DestructExport found in " + filePath);
 #endif
   //typedef std::vector<Destruct::DStruct*> (*symbolFunc)(void);
   typedef void (*symbolFunc)(void);
@@ -75,12 +64,11 @@ DUInt8  Import::file(DValue const& args)
 //return list of dstruct to delete before closing library // but if a dobject is created it will crash if not refcount
 //  dlclose(library);
 //FreeLibrary(library); 
-  return (true);
 }
 
-DUInt8  Import::directory(DValue const& directoryPath)
+void  Import::directory(DValue const& directoryPath)
 {
-  return (0);
+  return ;
 }
 
 void    Import::unload(void) //Must take the name or path of the lib to unload

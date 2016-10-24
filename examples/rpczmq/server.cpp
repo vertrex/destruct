@@ -69,11 +69,11 @@ void    Server::__bind(DObject* args)
   this->__context = zctx_new();
   this->__socket = zsocket_new((zctx_t*)this->__context, ZMQ_REP);
 
-  DObject* auth = args->getValue("auth").get<DObject*>();
-  if (auth)
+  DObject* auth = args->getValue("auth");
+  if (auth != DNone)
     this->__setAuth(auth);
 
-  DUInt32 port = args->getValue("port").get<DUInt32>();
+  DUInt32 port = args->getValue("port");
   std::stringstream address;
   address << "tcp://*:" << port;
 

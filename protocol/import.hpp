@@ -27,8 +27,8 @@ public:
 
   ~Import();
 
-  DUInt8                file(DValue const& filePath);
-  DUInt8                directory(DValue const& directoryPath);
+  void                  file(DValue const& filePath);
+  void                  directory(DValue const& directoryPath);
   void                  unload(void);
 private:
   void                  __registerDStructs(std::vector<Destruct::DStruct*>&);
