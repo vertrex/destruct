@@ -52,7 +52,7 @@ void    Client::declare(void)
   dstruct->addAttribute(DAttribute(DType::DUnicodeStringType, "cert")); //public and private key for client/server
   dstruct->addAttribute(DAttribute(DType::DUnicodeStringType, "certStore"));//path of accepted public key store for auth server
   dstruct->addAttribute(DAttribute(DType::DUnicodeStringType, "clientCert"));//accepted client cert 
-  destruct.registerDStruct(dstruct); 
+  destruct.registerDStruct(dstruct); ;
 }
 
 /**
