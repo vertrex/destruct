@@ -47,8 +47,8 @@ public:
   {
     static DAttribute  attributes[] = 
     {
-       DAttribute(DType::DUInt8Type, "file",  DType::DUnicodeStringType), 
-       DAttribute(DType::DUInt8Type, "directory", DType::DUnicodeStringType),
+       DAttribute(DType::DNoneType, "file",  DType::DUnicodeStringType), 
+       DAttribute(DType::DNoneType, "directory", DType::DUnicodeStringType),
        DAttribute(DType::DNoneType,  "unload", DType::DNoneType), //Must unload only a lib with provided name allowing to reload it
        //Must provide a way to access list of currently loaded library
     };

@@ -64,7 +64,10 @@ if __name__ == "__main__":
      arg = DStructs().find("ClientArgument").newObject()
      arg.address = "127.0.0.1"
      arg.port = 0xdff
-     arg.publicKeyPath = "cert/destruct_cert.txt"
+     auth  = DStructs().find("RPCAuth").newObject()
+     auth.cert = "clicert/rpczmq_client_cert.txt" 
+     auth.certStore = "clicert/"
+     arg.auth = auth
      if len(sys.argv) == 5:
        arg.address = sys.argv[3]
        arg.port = int(sys.argv[4])

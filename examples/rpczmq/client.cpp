@@ -104,8 +104,9 @@ void    Client::__connect(DObject* args)
   this->__context = zctx_new();
   this->__socket = zsocket_new((zctx_t*)this->__context, ZMQ_REQ);
 
-  if (args != DNone)
-    this->__setAuth(args->getValue("auth"));
+  DObject* auth = args->getValue("auth");
+  if (auth != DNone)
+    this->__setAuth(auth);
 
   std::stringstream address;
   address << "tcp://" + std::string(args->getValue("address").get<DUnicodeString>()) << ":" << args->getValue("port").get<DUInt32>();

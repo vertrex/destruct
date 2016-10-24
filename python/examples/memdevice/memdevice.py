@@ -13,12 +13,15 @@ loader.file("../../../examples/modules/libdestruct_rpczmq.so")
 #loader.file("../../../examples/modules/libdestruct_memdevice.so")
 print 'ok loaded'
 arg = DStructs().find("ClientArgument").newObject()
+auth  = DStructs().find("RPCAuth").newObject()
+auth.cert = "clicert/rpczmq_client_cert.txt" 
+auth.certStore = "clicert/"
 #arg.address = "127.0.0.1"
 arg.address = "10.42.1.195"
 #arg.address = "10.42.1.1"
 #arg.address = "10.42.1.2"
 arg.port = 0xdff
-arg.publicKeyPath = "cert/destruct_cert.txt"
+arg.auth = auth
 print "connecting" 
 client = DStructs().find("Client").newObject(arg)
 serverLoader = client.generate("Import")

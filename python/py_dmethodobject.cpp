@@ -123,8 +123,9 @@ PyObject* PyDMethodObject::call(PyObject* _self, PyObject* args)
     }
 
     result = self->pimpl->call(DValueDispatchTable[argumentTypeId]->toDValue(argumentObject));
-    PyEval_RestoreThread(_save); 
-    return (DValueDispatchTable[returnTypeId]->asDValue(result));
+    PyObject* val = DValueDispatchTable[returnTypeId]->asDValue(result);
+    PyEval_RestoreThread(_save); //restore here and ret because DValueDIspatch can't throw bad cast and retore is done in std::bad_cast exception 
+    return (val);
   } 
   catch (Destruct::DException const& exception)
   {  

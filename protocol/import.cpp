@@ -29,7 +29,7 @@ void  Import::file(DValue const& args)
   void* library = dlopen(filePath.c_str(), RTLD_LAZY);
   dlerror();
   if (!library)
-	throw DException("Can't load libray " + filePath);
+     throw DException("Can't load libray " + filePath);
   this->__libraries.push_back(library);
 #else
   HMODULE library = LoadLibrary(filePath.c_str());
@@ -44,7 +44,8 @@ void  Import::file(DValue const& args)
   if (!symbol)
   {
     //dlclose(library); if close remove from __libraries
-	throw DException("No method DestructExport found in " + filePath);
+    std::cout << "error " << std::endl;
+    throw DException("No method DestructExport found in " + filePath);
   }
 #else
   FARPROC symbol = GetProcAddress(library, "DestructExport");
