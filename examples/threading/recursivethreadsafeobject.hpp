@@ -14,7 +14,7 @@ class RecursiveThreadSafeObject : public DObject
 public:
   RecursiveThreadSafeObject(DStruct* dstruct, DValue const& args);
   RecursiveThreadSafeObject(RecursiveThreadSafeObject const&);
-  RecursiveThreadSafeObject(DObject* dobject, mutex mtx); 
+  RecursiveThreadSafeObject(DObject* dobject, mutex* mtx); 
 
   EXPORT static DObject*   newObject(DStruct *, DValue const& args);
 
@@ -37,7 +37,7 @@ protected:
 
 private:
   DObject*          __dobject; //RealValue (refcount)
-  mutex             __mutex;
+  mutex*             __mutex;
 };
 
 }
