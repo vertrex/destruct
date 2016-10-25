@@ -1,7 +1,7 @@
 #include "dstructs.hpp"
 
 #include "client.hpp"
-#include "clientobject.hpp"
+#include "stubobject.hpp"
 #include "serializerpc.hpp"
 #include "networkstream.hpp"
 
@@ -141,7 +141,7 @@ Destruct::DObject* Client::generate(DValue const& args)
   this->__networkStream->flushRead();
 
   //hanle argument name + value ... XXX
-  ClientObject* root = new ClientObject(RealValue<DObject*>(this->__networkStream), RealValue<DObject*>(this->__serialize), RealValue<DObject*>(this->__deserialize), objectId, objectStruct); 
+  StubObject* root = new StubObject(RealValue<DObject*>(this->__networkStream), RealValue<DObject*>(this->__serialize), RealValue<DObject*>(this->__deserialize), objectId, objectStruct); 
 
   return (RealValue<DObject*>(root));
 

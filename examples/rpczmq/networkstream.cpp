@@ -1,20 +1,10 @@
-//#ifdef WIN32
-//#include <winsock2.h>
-//#include <ws2tcpip.h>
-//#else
-//#include <arpa/inet.h>
-//#endif
 #include <iostream>
 #include <sstream>
 #include <string.h>
-#include <signal.h>
-
-#include "networkstream.hpp"
 
 #include "zmq.h"
 
-namespace Destruct 
-{
+#include "networkstream.hpp"
 
 NetworkStream::NetworkStream(DStruct* dstruct, DValue const& args) : DCppObject<NetworkStream>(dstruct, args), __socket(NULL), __context(NULL)
 {
@@ -134,6 +124,4 @@ void    NetworkStream::flushRead(void)
   if (zmq_msg_recv(&end, this->__socket, 0) == -1)
      throw DException("NetworkStream::flushReadzmq_msg_recv " + std::string(zmq_strerror(errno)));
   zmq_msg_close(&end);
-}
-
 }

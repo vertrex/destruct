@@ -1,18 +1,15 @@
 #include "serializerpc.hpp"
 #include "networkstream.hpp"
-#include "clientobject.hpp"
+#include "stubobject.hpp"
 #include "serverobject.hpp"
-#include "clientfunctionobject.hpp"
-#include "clientobject.hpp"
-#include "clientstruct.hpp"
+#include "stubfunctionobject.hpp"
+#include "stubobject.hpp"
+#include "stubstruct.hpp"
 
 //#include "dsimpleobject.hpp"
 /*
  *   DSerializeRPC 
  */
-namespace Destruct
-{
-
 SerializeRPC::SerializeRPC(DStruct* dstruct, DValue const& args) : DCppObject<SerializeRPC>(dstruct, args), __stream(args), __networkStream(static_cast<NetworkStream*>((DObject*)args))
 {
   this->init(); 
@@ -161,7 +158,7 @@ DObject*        DeserializeRPC::dDObject(void)
     dstruct = this->dDStruct(); //register done in dDStruct 
   }
   
-  DObject* clientObject = new ClientObject(RealValue<DObject*>(this->__stream), RealValue<DObject*>(serializer), RealValue<DObject*>(this), id, dstruct);
+  DObject* clientObject = new StubObject(RealValue<DObject*>(this->__stream), RealValue<DObject*>(serializer), RealValue<DObject*>(this), id, dstruct);
   serializer->destroy(); 
 
   return (clientObject);
@@ -175,7 +172,7 @@ DStruct*        DeserializeRPC::dDStruct(void)
   DUInt32 attributeCount = this->dDUInt32();
 
                                   
-  if ((dstruct = new ClientStruct(0, structName, ClientObject::newObject, this->__networkStream)) == NULL)//inheritance ? 
+  if ((dstruct = new StubStruct(0, structName, StubObject::newObject, this->__networkStream)) == NULL)//inheritance ? 
     return (NULL);
   for (size_t i = 0; i < attributeCount; i++) 
   {
@@ -203,7 +200,7 @@ DObject*        DeserializeRPC::dDNone(void)
 
 DFunctionObject* DeserializeRPC::dDMethod(void)
 {
-  //Implemented in ClientObject
+  //Implemented in StubObject
   return (NULL);
 }
 
@@ -264,6 +261,4 @@ DUInt64         DeserializeRPC::dDUInt64(void)
 {
   DBuffer buffer = this->__networkStream->read();
   return (*((DUInt64*)buffer.data()));
-}
-
 }

@@ -1,5 +1,5 @@
-#ifndef __RPC__
-#define __RPC__
+#ifndef __RPC_HPP__
+#define __RPC_HPP__
 
 #include <stdint.h>
 
@@ -7,7 +7,7 @@
 
 #include "client.hpp"
 #include "server.hpp"
-#include "clientobject.hpp"
+#include "stubobject.hpp"
 
 class RPC
 {

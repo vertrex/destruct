@@ -1,14 +1,13 @@
-#ifndef __DSERIALIZERPC__
-#define __DSERIALIZERPC__
+#ifndef __DSERIALIZERPC_HPP__
+#define __DSERIALIZERPC_HPP__
+
+#include "protocol/dcppobject.hpp"
 
 #include "networkstream.hpp"
 #include "objectmanager.hpp"
 #include "serverfunctionobject.hpp"
 
-#include "protocol/dcppobject.hpp"
-
-namespace Destruct
-{
+using namespace Destruct;
 
 class SerializeRPC : public DCppObject<SerializeRPC> 
 {
@@ -221,7 +220,5 @@ public:
     return (memberBegin() + ownAttributeCount());
   } 
 };
-
-}
 
 #endif

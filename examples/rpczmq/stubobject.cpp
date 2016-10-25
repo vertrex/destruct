@@ -3,36 +3,34 @@
 
 #include "networkstream.hpp"
 #include "serializerpc.hpp"
-#include "clientobject.hpp"
-#include "clientfunctionobject.hpp"
 #include "serverobject.hpp"
-#include "clientstruct.hpp"
-
-namespace Destruct {
+#include "stubobject.hpp"
+#include "stubfunctionobject.hpp"
+#include "stubstruct.hpp"
 
 /**
- *  ClientObject Proxy object that handle transparent remote communication and let you use your object as a local object
+ *  StubObject Proxy object that handle transparent remote communication and let you use your object as a local object
  */
-ClientObject::ClientObject(DValue const& stream, DValue const& serializer, DValue const& deserializer, uint64_t id, DStruct* dstruct) : DObject(dstruct, RealValue<DObject*>(DNone)), __networkStreamObject(stream), __serializerObject(serializer), __deserializerObject(deserializer), __id(id), __serializer(static_cast<SerializeRPC*>((DObject*)serializer)), __deserializer(static_cast<DeserializeRPC*>((DObject*)deserializer)), __networkStream(static_cast<NetworkStream*>((DObject*)stream))
+StubObject::StubObject(DValue const& stream, DValue const& serializer, DValue const& deserializer, uint64_t id, DStruct* dstruct) : DObject(dstruct, RealValue<DObject*>(DNone)), __networkStreamObject(stream), __serializerObject(serializer), __deserializerObject(deserializer), __id(id), __serializer(static_cast<SerializeRPC*>((DObject*)serializer)), __deserializer(static_cast<DeserializeRPC*>((DObject*)deserializer)), __networkStream(static_cast<NetworkStream*>((DObject*)stream))
 {
   //this->init(this);
 }
 
-ClientObject::ClientObject(DStruct* dstruct, DValue const& args) : DObject(dstruct, args),  __networkStreamObject(DNone), __serializerObject(DNone), __deserializerObject(DNone), __id(-1), __serializer(NULL), __deserializer(NULL), __networkStream(NULL)
+StubObject::StubObject(DStruct* dstruct, DValue const& args) : DObject(dstruct, args),  __networkStreamObject(DNone), __serializerObject(DNone), __deserializerObject(DNone), __id(-1), __serializer(NULL), __deserializer(NULL), __networkStream(NULL)
 {
   //this->init(this);
 }
 
-ClientObject::ClientObject(ClientObject const & rhs) : DObject(rhs),  __networkStreamObject(rhs.__networkStream), __serializerObject(rhs.__serializer), __deserializerObject(rhs.__serializer), __id(rhs.__id), __serializer(static_cast<SerializeRPC*>((DObject*)rhs.__serializerObject)), __deserializer(static_cast<DeserializeRPC*>((DObject*)rhs.__deserializerObject)), __networkStream(static_cast<NetworkStream*>((DObject*)rhs.__networkStreamObject))
+StubObject::StubObject(StubObject const & rhs) : DObject(rhs),  __networkStreamObject(rhs.__networkStream), __serializerObject(rhs.__serializer), __deserializerObject(rhs.__serializer), __id(rhs.__id), __serializer(static_cast<SerializeRPC*>((DObject*)rhs.__serializerObject)), __deserializer(static_cast<DeserializeRPC*>((DObject*)rhs.__deserializerObject)), __networkStream(static_cast<NetworkStream*>((DObject*)rhs.__networkStreamObject))
 {
   //this->copy(this, rhs);
 }
 
-ClientObject::~ClientObject()
+StubObject::~StubObject()
 {
 }
 
-DObject* ClientObject::newObject(ClientStruct* dstruct, DValue const& args, NetworkStream* networkStream)
+DObject* StubObject::newObject(StubStruct* dstruct, DValue const& args, NetworkStream* networkStream)
 {
 
    SerializeRPC* serialize = static_cast<SerializeRPC*>(DStructs::instance().find("SerializeRPC")->newObject(RealValue<DObject*>(networkStream)));
@@ -43,7 +41,7 @@ DObject* ClientObject::newObject(ClientStruct* dstruct, DValue const& args, Netw
   serialize->sDUInt8(RealValue<DUInt8>(CMD_GENERATE_ARG));
   serialize->sDUnicodeString(RealValue<DUnicodeString>(dstruct->name()));
 
-  //DUInt64 argId = static_cast<ClientObject*>(args.get<DObject*>())->id();
+  //DUInt64 argId = static_cast<StubObject*>(args.get<DObject*>())->id();
   //serialize->sDUInt64(RealValue<DUInt64>(argId));
 
   //serialize->sDObject(args); ///XXX must find type 
@@ -54,14 +52,14 @@ DObject* ClientObject::newObject(ClientStruct* dstruct, DValue const& args, Netw
   DUInt64 objectId = deserialize->dDUInt64();
   networkStream->flushRead();
 
-  ClientObject* root = new ClientObject(RealValue<DObject*>(networkStream), RealValue<DObject*>(serialize), RealValue<DObject*>(deserialize), objectId, dstruct); //ARGS ARGS XXX  
+  StubObject* root = new StubObject(RealValue<DObject*>(networkStream), RealValue<DObject*>(serialize), RealValue<DObject*>(deserialize), objectId, dstruct); //ARGS ARGS XXX  
 
   return (RealValue<DObject*>(root));
 
-  //return (new ClientObject(dstruct, args)); 
+  //return (new StubObject(dstruct, args)); 
 }
 
-DValue ClientObject::getValue(DUnicodeString const& name) const
+DValue StubObject::getValue(DUnicodeString const& name) const
 {
   this->__serializer->sDUInt8(RealValue<DUInt8>(CMD_GETVALUE)); 
   this->__serializer->sDUInt64(RealValue<DUInt64>(this->__id)); 
@@ -75,7 +73,7 @@ DValue ClientObject::getValue(DUnicodeString const& name) const
     this->__networkStream->flushRead();
     
     //Not directly returned as dvalue and DRef by a DFunction* () function so must deref ourself or memory will leak
-    DFunctionObject* clientFunctionObject = new ClientFunctionObject(((DObject*)this->__networkStream), ((DObject*)this->__serializer), ((DObject*)this->__deserializer), id, dtype.getArgumentType(), dtype.getReturnType()); 
+    DFunctionObject* clientFunctionObject = new StubFunctionObject(((DObject*)this->__networkStream), ((DObject*)this->__serializer), ((DObject*)this->__deserializer), id, dtype.getArgumentType(), dtype.getReturnType()); 
     DValue functionObject = RealValue<DFunctionObject*>(clientFunctionObject);
     //clientFunctionObject->destroy(); //python get a 0 ref object
     return (functionObject);
@@ -87,7 +85,7 @@ DValue ClientObject::getValue(DUnicodeString const& name) const
   return (value);
 }
 
-void ClientObject::setValue(DUnicodeString const& name, DValue const &v)
+void StubObject::setValue(DUnicodeString const& name, DValue const &v)
 {
   this->__serializer->sDUInt8(RealValue<DUInt8>(CMD_SETVALUE)); 
   this->__serializer->sDUInt64(RealValue<DUInt64>(this->__id));
@@ -97,7 +95,7 @@ void ClientObject::setValue(DUnicodeString const& name, DValue const &v)
   this->__networkStream->request();
 }
                                         
-DValue ClientObject::call(DUnicodeString const& name, DValue const &args)
+DValue StubObject::call(DUnicodeString const& name, DValue const &args)
 {
   DType  dtype = this->instanceOf()->attribute(name).type();
 
@@ -114,7 +112,7 @@ DValue ClientObject::call(DUnicodeString const& name, DValue const &args)
   return (value);
 }
 
-DValue ClientObject::call(DUnicodeString const& name)
+DValue StubObject::call(DUnicodeString const& name)
 {
   DType  dtype = this->instanceOf()->attribute(name).type();
 
@@ -129,42 +127,40 @@ DValue ClientObject::call(DUnicodeString const& name)
   return (value);
 }
 
-DValue ClientObject::getValue(size_t index) const
+DValue StubObject::getValue(size_t index) const
 {
   DAttribute attribute = this->instanceOf()->attribute(index);
   return (this->getValue(attribute.name()));
 }
 
-void ClientObject::setValue(size_t index, DValue const &value)
+void StubObject::setValue(size_t index, DValue const &value)
 {
   DUnicodeString name = this->instanceOf()->attribute(index).name();
   this->setValue(name, value); 
 }
 
-DValue ClientObject::call(size_t index, DValue const &value)
+DValue StubObject::call(size_t index, DValue const &value)
 {
   DUnicodeString name = this->instanceOf()->attribute(index).name();
   return (this->call(name, value));
 }
 
-DObject* ClientObject::clone() const
+DObject* StubObject::clone() const
 {
-  return (new ClientObject(*this));
+  return (new StubObject(*this));
 }  
 
-BaseValue* ClientObject::getBaseValue(size_t index)
+BaseValue* StubObject::getBaseValue(size_t index)
 {
   return (NULL); 
 }
 
-BaseValue const* ClientObject::getBaseValue(size_t index) const
+BaseValue const* StubObject::getBaseValue(size_t index) const
 {
   return (NULL);
 }
 
-uint64_t        ClientObject::id(void) const
+uint64_t        StubObject::id(void) const
 {
   return (this->__id);
-}
-
 }

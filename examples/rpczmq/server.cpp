@@ -2,16 +2,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#ifdef WIN32
-#include <winsock2.h>
-#include <ws2tcpip.h>
-#else
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <netinet/tcp.h>
-#include <unistd.h>
-#endif
-
 #include "server.hpp"
 #include "serverobject.hpp"
 
@@ -42,12 +32,6 @@ Server::~Server()
   this->__objectManager->call("clear"); //called in destroy 
   this->__objectManager->destroy();
 }
-
-void    Server::setRoot(RealValue<DObject*> root)
-{
-  this->__objectManager->call("registerObject", root);
-}
-
 
 void    Server::__setAuth(DObject* rpcAuth)
 {

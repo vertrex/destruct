@@ -1,12 +1,13 @@
-#ifndef __OBJECT_MANAGER_HPP__
-#define __OBJECT_MANAGER_HPP__ 
+#ifndef __OBJECTMANAGER_HPP__
+#define __OBJECTMANAGER_HPP__ 
+
+#include <map>
 
 #include "drealvalue.hpp"
 #include "dobject.hpp"
 #include "dattribute.hpp"
 #include "dtype.hpp"
 #include "protocol/dcppobject.hpp"
-#include <map>
 
 using namespace Destruct;
 

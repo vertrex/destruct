@@ -1,16 +1,12 @@
-#ifndef __SERVER_OBJECT__
-#define __SERVER_OBJECT__
+#ifndef __SERVEROBJECT_HPP__
+#define __SERVEROBJECT_HPP__
 
 #include "networkstream.hpp"
 #include "objectmanager.hpp"
 
 class ServerFunctionObject;
-
-namespace Destruct
-{
 class SerializeRPC;
 class DeserializeRPC;
-}
 
 #define CMD_FIND                0
 #define CMD_GENERATE            1

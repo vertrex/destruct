@@ -1,5 +1,5 @@
-#ifndef __NETWORKSTREAM__
-#define __NETWORKSTREAM__
+#ifndef __NETWORKSTREAM_HPP__
+#define __NETWORKSTREAM_HPP__
 
 #include <sstream>
 #include <iostream>
@@ -7,8 +7,7 @@
 
 #include "protocol/dcppobject.hpp"
 
-namespace Destruct
-{
+using namespace Destruct;
 
 class NetworkStream : public DCppObject<NetworkStream>
 {
@@ -79,7 +78,5 @@ public:
     return (memberBegin() + ownAttributeCount());
   } 
 };
-
-}
 
 #endif

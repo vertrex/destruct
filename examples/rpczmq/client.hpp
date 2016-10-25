@@ -1,10 +1,11 @@
-#ifndef __CLIENT__
-#define __CLIENT__
+#ifndef __CLIENT_HPP__
+#define __CLIENT_HPP__
 
 #include <iostream>
 #include <stdint.h>
 
 #include "destruct.hpp"
+
 #include "networkstream.hpp" 
 #include "objectmanager.hpp"
 #include "serializerpc.hpp"
@@ -13,7 +14,6 @@ using namespace Destruct;
 
 class ServerFunctionObject;
 
-//bind other function & use inheritance in other examples & python
 class Client : public DCppObject<Client>
 {
 public:

@@ -1,19 +1,19 @@
-#include "clientfunctionobject.hpp"
+#include "stubfunctionobject.hpp"
 #include "serverobject.hpp"
 #include "serializerpc.hpp"
 
 /**
- *  ClientFunctionObject
+ *  StubFunctionObject
  */
-ClientFunctionObject::ClientFunctionObject(DObject* stream, DObject* serialize, DObject* deserialize, uint64_t id, DType::Type_t argumentType, DType::Type_t returnType) : DFunctionObject(), __id(id), __networkStream(static_cast<NetworkStream*>(stream)), __serializer(static_cast<SerializeRPC*>(serialize)), __deserializer(static_cast<DeserializeRPC*>(deserialize)), __argumentType(argumentType), __returnType(returnType)
+StubFunctionObject::StubFunctionObject(DObject* stream, DObject* serialize, DObject* deserialize, uint64_t id, DType::Type_t argumentType, DType::Type_t returnType) : DFunctionObject(), __id(id), __networkStream(static_cast<NetworkStream*>(stream)), __serializer(static_cast<SerializeRPC*>(serialize)), __deserializer(static_cast<DeserializeRPC*>(deserialize)), __argumentType(argumentType), __returnType(returnType)
 {
 }
 
-ClientFunctionObject::~ClientFunctionObject()
+StubFunctionObject::~StubFunctionObject()
 {
 }
 
-DValue ClientFunctionObject::call(DValue const& args) const
+DValue StubFunctionObject::call(DValue const& args) const
 {
   if (args.asUnicodeString() == "None *") // XXX must be able to serialize None object 
     return (this->call());
@@ -33,7 +33,7 @@ DValue ClientFunctionObject::call(DValue const& args) const
   return (value);
 }
 
-DValue ClientFunctionObject::call(void) const
+DValue StubFunctionObject::call(void) const
 {
   this->__serializer->sDUInt8(RealValue<DUInt8>(CMD_FUNCTIONCALL0)); 
   this->__serializer->sDUInt64(RealValue<DUInt64>(this->__id));
