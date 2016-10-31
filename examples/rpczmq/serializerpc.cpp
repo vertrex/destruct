@@ -69,7 +69,7 @@ DOpaque    SerializeRPC::sDStruct(DValue const& args)
   return (msg);
 }
 
-DOpaque    SerializeRPC::sDNone(void)
+DOpaque    SerializeRPC::sDNone(DValue const& args)
 {
   //Do nothing //it's ok for none method return type but for object return none could be necesseray to inform the client
   //return (NULL);
@@ -88,7 +88,6 @@ DOpaque    SerializeRPC::sDUnicodeString(DValue const& args)
 {
   DUnicodeString str = args;
   zmsg_t* msg = zmsg_new();
-  std::cout << "send " << str << " of size " << str.size() << std::endl;
   zframe_t* frame = zframe_new(str.c_str(), str.size());
   zmsg_append(msg, &frame);
 
@@ -206,7 +205,7 @@ DeserializeRPC::~DeserializeRPC()
 DObject*        DeserializeRPC::dDObject(DOpaque msg)
 {
   DUInt64 id = this->dDUInt64(msg);
-  DUnicodeString objectName = this->dDUnicodeString(msg);
+  DUnicodeString objectName = this->dDUnicodeString(zmsg_popmsg((zmsg_t*)msg));
   DStruct* dstruct = NULL; 
   SerializeRPC* serializer = static_cast<SerializeRPC*>(DStructs::instance().find("SerializeRPC")->newObject(RealValue<DObject*>(this->__stream))); //XXX new object each time  -> slow reuse parent one client or server 
   try
@@ -220,7 +219,6 @@ DObject*        DeserializeRPC::dDObject(DOpaque msg)
     zmsg_t* rep2 = (zmsg_t*)serializer->sDUnicodeString(RealValue<DUnicodeString>(objectName));
     zmsg_addmsg(rep1, &rep2);
     this->__networkStream->send(RealValue<DOpaque>(rep1));
-    //this->__networkStream->request();
 
     zmsg_t* req = (zmsg_t*)this->__networkStream->recv();
     dstruct = this->dDStruct(req); //register done in dDStruct 
@@ -236,21 +234,21 @@ DStruct*        DeserializeRPC::dDStruct(DOpaque msg)
 {
   DStruct* dstruct = NULL; 
 
-  DUnicodeString structName = this->dDUnicodeString(msg);
-  DUInt32 attributeCount = this->dDUInt32(msg);
+  DUnicodeString structName = this->dDUnicodeString((zmsg_t*)msg);
+  DUInt32 attributeCount = this->dDUInt32(zmsg_popmsg((zmsg_t*)msg));
 
                                   
   if ((dstruct = new StubStruct(0, structName, StubObject::newObject, this->__networkStream)) == NULL)//inheritance ? 
     return (NULL);
   for (size_t i = 0; i < attributeCount; i++) 
   {
-     DUnicodeString name = this->dDUnicodeString(msg);
+     DUnicodeString name = this->dDUnicodeString(zmsg_popmsg((zmsg_t*)msg));
      
-     DType::Type_t type = (DType::Type_t)this->dDUInt8(msg); 
+     DType::Type_t type = (DType::Type_t)this->dDUInt8(zmsg_popmsg((zmsg_t*)msg)); 
      if (type == DType::DMethodType)
      {
-       DType::Type_t argumentType = (DType::Type_t)this->dDUInt8(msg);
-       DType::Type_t returnType = (DType::Type_t)this->dDUInt8(msg);
+       DType::Type_t argumentType = (DType::Type_t)this->dDUInt8(zmsg_popmsg((zmsg_t*)msg));
+       DType::Type_t returnType = (DType::Type_t)this->dDUInt8(zmsg_popmsg((zmsg_t*)msg));
        dstruct->addAttribute(DAttribute(returnType, name, argumentType, type));
      }
      else
@@ -283,7 +281,6 @@ DUnicodeString  DeserializeRPC::dDUnicodeString(DOpaque msg)
   size_t size = zframe_size(frame);
 
   std::string res = std::string(data, size);
-  std::cout << "got " << res << " of size " << size << std::endl;
   zframe_destroy(&frame);
 
   return (res);
@@ -305,7 +302,7 @@ DInt8           DeserializeRPC::dDInt8(DOpaque msg)
 {
   zframe_t* frame = zmsg_pop((zmsg_t*)msg);
   DInt8 res = *((DInt8*)zframe_data(frame));
- 
+
   zframe_destroy(&frame);
   return (res);
 }

@@ -31,11 +31,11 @@ public:
 
   DOpaque       sDObject(DValue const& args);
   DOpaque       sDMethod(DValue const& args);
-  DOpaque       sDNone(void);
+  DOpaque       sDNone(DValue const &args);
   DOpaque       sDStruct(DValue const& args);
   DOpaque       sDBuffer(DValue const& args);
 
-  DObject*   __objectManager; //RV
+  DObject*      __objectManager; //RV
 protected:
   ~SerializeRPC();
 

@@ -18,29 +18,30 @@ DValue StubFunctionObject::call(DValue const& args) const
   if (args.asUnicodeString() == "None *") // XXX must be able to serialize None object 
     return (this->call());
 
-  this->__serializer->sDUInt8(RealValue<DUInt8>(CMD_FUNCTIONCALL)); 
-  this->__serializer->sDUInt64(RealValue<DUInt64>(this->__id));
+  zmsg_t* msg = (zmsg_t*)this->__serializer->sDUInt8(RealValue<DUInt8>(CMD_FUNCTIONCALL)); 
+  zmsg_t* submsg = (zmsg_t*)this->__serializer->sDUInt64(RealValue<DUInt64>(this->__id));
+  zmsg_addmsg(msg, &submsg);
 
   ///* Send argument (object is not compatible) */
-  this->__serializer->call(DType(this->__argumentType).name(), args);
+  submsg = (zmsg_t*)this->__serializer->call(DType(this->__argumentType).name(), args).get<DOpaque>();
 ;
-  /* get return value */
-  //return (this->__deserializer->call(DType(this->__returnType).name()));
+  zmsg_addmsg(msg, &submsg); 
 
-  this->__networkStream->request();
-  DValue value = (this->__deserializer->call(DType(this->__returnType).name()));
-  this->__networkStream->flushRead();
+  this->__networkStream->send(RealValue<DOpaque>(msg));
+  zmsg_t* reply = (zmsg_t*)this->__networkStream->recv(); 
+  DValue value = (this->__deserializer->call(DType(this->__returnType).name(), RealValue<DOpaque>(reply)));
   return (value);
 }
 
 DValue StubFunctionObject::call(void) const
 {
-  this->__serializer->sDUInt8(RealValue<DUInt8>(CMD_FUNCTIONCALL0)); 
-  this->__serializer->sDUInt64(RealValue<DUInt64>(this->__id));
-  //this->__networkStream->call("flush");
-  this->__networkStream->request();
-  DValue value = this->__deserializer->call(DType(this->__returnType).name());
-  this->__networkStream->flushRead();
+  zmsg_t* msg = (zmsg_t*)this->__serializer->sDUInt8(RealValue<DUInt8>(CMD_FUNCTIONCALL0)); 
+  zmsg_t* submsg = (zmsg_t*)this->__serializer->sDUInt64(RealValue<DUInt64>(this->__id));
+  zmsg_addmsg(msg, &submsg);
+
+  this->__networkStream->send(RealValue<DOpaque>(msg));
+  zmsg_t* reply = (zmsg_t*)this->__networkStream->recv();
+  DValue value = this->__deserializer->call(DType(this->__returnType).name(), RealValue<DOpaque>(reply));
 
   return (value);
 }
