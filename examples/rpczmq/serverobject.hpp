@@ -3,6 +3,7 @@
 
 #include "networkstream.hpp"
 #include "objectmanager.hpp"
+#include "czmq.h"
 
 class ServerFunctionObject;
 class SerializeRPC;
@@ -26,17 +27,17 @@ public:
   ServerObject(void* context, void* socket);
   ~ServerObject();
 
-  void                                  find(void);
-  void                                  generate(void);
-  void                                  generateArg(void);
+  void                                  find(zmsg_t* msg);
+  void                                  generate(zmsg_t* msg);
+  void                                  generateArg(zmsg_t* msg);
 
-  void                                  getValue(void);
-  void                                  setValue(void);
-  void                                  call(void);
-  void                                  call0(void);
-  void                                  functionCall(void);
-  void                                  functionCall0(void);
-  void                                  dispatch(void);
+  void                                  getValue(zmsg_t* msg);
+  void                                  setValue(zmsg_t* msg);
+  void                                  call(zmsg_t* msg);
+  void                                  call0(zmsg_t* msg);
+  void                                  functionCall(zmsg_t* msg);
+  void                                  functionCall0(zmsg_t* msg);
+  void                                  dispatch();
 private:
   NetworkStream*                        __networkStream;
   SerializeRPC*                         __serializer;

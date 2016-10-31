@@ -66,8 +66,8 @@ void    Server::__bind(DObject* args)
 
 void    Server::daemonize(void)
 {
-  while (1)
-  {
+  //while (1)
+  //{
     try
     {
       this->serve();
@@ -80,7 +80,7 @@ void    Server::daemonize(void)
     {
       std::cout << "Server error : unknown " << std::endl << " Restarting server ... " << std::endl;
     }
-  }
+    //}
 }
        #include <assert.h>
 int           get_monitor_event (void *monitor, int *value, char **address)

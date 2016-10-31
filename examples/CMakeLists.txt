@@ -27,6 +27,7 @@ add_subdirectory(xmacro)
 
 add_subdirectory(rpc)
 add_subdirectory(rpczmq)
+add_subdirectory(birpczmq)
 add_subdirectory(registry)
 add_subdirectory(device)
 add_subdirectory(performance)

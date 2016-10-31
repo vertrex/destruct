@@ -35,6 +35,8 @@ const std::string DType::__typeName[] =
  "DStruct",
  "DBuffer",
 
+ "DOpaque",
+
  "DUnknown"
 };
 
@@ -112,6 +114,8 @@ void            DType::init(void)
 
   __prototypes[DStructType] = new RealValue<DStruct* >(NULL);
   __prototypes[DBufferType] = new RealValue<DBuffer>();
+  
+  __prototypes[DOpaqueType] = new RealValue<DOpaque>(NULL);
 //dunknown type ? 
 }
 

@@ -15,6 +15,7 @@ public:
   NetworkStream(DStruct* dstruct, DValue const& args);
   NetworkStream(NetworkStream const& copy);
 
+
   DBuffer       read(void); 
   DInt64        write(DValue const& args);
   void          request(void);
@@ -23,17 +24,21 @@ public:
   void          flushWrite(void);
   void          flushRead(void);
 
+  DOpaque       recv(void);
+  void          send(DValue const& args);
+  void          sendError(DValue const& args);
 
+  std::stringstream __stream;
   void*         __socket; //XXX should be private but need to copy by cast...
   void*         __context;
 protected: 
   ~NetworkStream();
 public:
-  RealValue<DFunctionObject* > _read, _write, _request, _reply, _replyError, _flushWrite, _flushRead;
+  RealValue<DFunctionObject* > _read, _write, _request, _reply, _replyError, _flushWrite, _flushRead, _recv, _send, _sendError;
 
   static size_t ownAttributeCount()
   {
-    return (7);
+    return (9);
   }
 
   static DAttribute* ownAttributeBegin()
@@ -49,6 +54,10 @@ public:
 
        DAttribute(DType::DNoneType, "flushWrite",  DType::DNoneType),
        DAttribute(DType::DNoneType, "flushRead",  DType::DNoneType),
+
+       DAttribute(DType::DOpaqueType, "recv", DType::DNoneType),
+       DAttribute(DType::DNoneType, "send", DType::DOpaqueType),
+       DAttribute(DType::DNoneType, "sendError", DType::DOpaqueType),
     };
     return (attributes);
   }
@@ -64,6 +73,9 @@ public:
        DPointer<NetworkStream>(&NetworkStream::_replyError, &NetworkStream::replyError),
        DPointer<NetworkStream>(&NetworkStream::_flushWrite, &NetworkStream::flushWrite),
        DPointer<NetworkStream>(&NetworkStream::_flushRead, &NetworkStream::flushRead),
+
+       DPointer<NetworkStream>(&NetworkStream::_recv, &NetworkStream::recv),
+       DPointer<NetworkStream>(&NetworkStream::_send, &NetworkStream::send),
     };
     return (memberPointer);
   }

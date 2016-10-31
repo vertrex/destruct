@@ -43,7 +43,11 @@ DObject*  Perf::connect(std::string const& addr, uint32_t port)
 {
   //use destruct import 
   DObject* loader = DStructs::instance().generate("Import");
-  if (loader->call("file", RealValue<DUnicodeString>("../modules/libdestruct_rpczmq.so")).get<DUInt8>() == 0)
+  try
+  {
+    loader->call("file", RealValue<DUnicodeString>("../modules/libdestruct_rpczmq.so"));
+  }
+  catch(DException const& exception)
   {
     loader->call("file", RealValue<DUnicodeString>("destruct_rpczmq.dll"));
   }
@@ -52,7 +56,7 @@ DObject*  Perf::connect(std::string const& addr, uint32_t port)
 
   argument->setValue("address", RealValue<DUnicodeString>(addr));
   argument->setValue("port", RealValue<DUInt32>(port));
-  argument->setValue("publicKeyPath", RealValue<DUnicodeString>("clicert/destruct_cert.txt"));
+  //argument->setValue("publicKeyPath", RealValue<DUnicodeString>("clicert/destruct_cert.txt"));
 
   std::cout << "Connecting to " << addr << ":" << port << std::endl;
   DObject*  client = DStructs::instance().generate("Client", RealValue<DObject*>(argument));
@@ -60,8 +64,14 @@ DObject*  Perf::connect(std::string const& addr, uint32_t port)
 
   DObject* serverLoader = client->call("generate", RealValue<DUnicodeString>("Import"));
   
-  if (serverLoader->call("file", RealValue<DUnicodeString>("../modules/libdestruct_performance.so")).get<DUInt8>() == 0)
+  try
+  {
+    serverLoader->call("file", RealValue<DUnicodeString>("../modules/libdestruct_performance.so"));
+  }
+  catch(DException const& exception)
+  {
     serverLoader->call("file", RealValue<DUnicodeString>("destruct_performance.dll"));
+  }
   DObject* performance = client->call("generate", RealValue<DUnicodeString>("Performance"));
 
   return (performance);
@@ -89,7 +99,6 @@ void    Perf::stats(DObject* perf)
   std::cout << std::fixed << ncall / elapsed_secs << " call by seconds" << std::endl;
 
   begin = std::clock();
-
   ncall = 100000;
   for (DUInt64 i = 0; i < ncall; ++i)
   {
@@ -97,8 +106,22 @@ void    Perf::stats(DObject* perf)
   }
   end = std::clock();
   elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-  std::cout << "Call DUnicodestring callStr('test') " << ncall << " times in " << elapsed_secs << std::endl;
+  std::cout << "Call DBuffer getBuffer('8192') " << ncall << " times in " << elapsed_secs << std::endl;
   std::cout << std::fixed << ncall / elapsed_secs << " call by seconds" << std::endl;
+
+
+  begin = std::clock();
+  ncall = 100000;
+  DFunctionObject* getBuffer = perf->getValue("getBuffer");
+  for (DUInt64 i = 0; i < ncall; ++i)
+  {
+    DBuffer result = getBuffer->call(RealValue<DInt32>(8192));
+  }
+  end = std::clock();
+  elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+  std::cout << "Call FUNC DBuffer getBuffer('8192') " << ncall << " times in " << elapsed_secs << std::endl;
+  std::cout << std::fixed << ncall / elapsed_secs << " call by seconds" << std::endl;
+
 }
 
 int main(int argc, char** argv)
@@ -116,8 +139,14 @@ int main(int argc, char** argv)
   try 
   {
     DObject* loader = DStructs::instance().generate("Import");
-    if (loader->call("file", RealValue<DUnicodeString>("../modules/libdestruct_performance.so")).get<DUInt8>() == 0)
+    try
+    {
+      loader->call("file", RealValue<DUnicodeString>("../modules/libdestruct_performance.so"));
+    }
+    catch (DException const& exception)
+    {
       loader->call("file", RealValue<DUnicodeString>("destruct_performance.dll"));
+    }
 
     if (std::string(argv[1]) == std::string("-l"))
       performance = perf.local();

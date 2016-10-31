@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "zmq.h"
+#include "czmq.h"
 
 #include "networkstream.hpp"
 
@@ -124,4 +125,53 @@ void    NetworkStream::flushRead(void)
   if (zmq_msg_recv(&end, this->__socket, 0) == -1)
      throw DException("NetworkStream::flushReadzmq_msg_recv " + std::string(zmq_strerror(errno)));
   zmq_msg_close(&end);
+}
+
+DOpaque  NetworkStream::recv(void)
+{
+  zmsg_t* msg = zmsg_recv(this->__socket);
+  if (msg == NULL)
+    throw DException("NetworkStream::recv can't receive message");
+
+  zframe_t* resultf = zmsg_pop(msg);
+  DInt8 result = *((DInt8*)zframe_data(resultf));
+  zframe_destroy(&resultf);
+  if (result == -1)
+  {
+    zframe_t* errorf = zmsg_pop(msg);
+    DUnicodeString error(std::string((char*)zframe_data(errorf), zframe_size(errorf)));
+    zframe_destroy(&errorf);
+    zmsg_destroy(&msg);
+    throw DException(error);
+  }
+
+  return (msg);
+}
+
+void    NetworkStream::send(DValue const& args) //DValue const& args ? 
+{
+  zmsg_t* msg = (zmsg_t*) args.get<DOpaque>();
+
+  DInt8 value = 1;
+  zframe_t* frame = zframe_new((DInt8*)&value, sizeof(value));
+  zmsg_prepend(msg, &frame);
+
+  zmsg_send(&msg, this->__socket);
+  zmsg_destroy(&msg);
+}
+
+void    NetworkStream::sendError(DValue const& args)
+{
+  zmsg_t* msg = zmsg_new();
+
+  DInt8 value = -1;
+  zframe_t* frame = zframe_new((DInt8*)&value, sizeof(value));
+  zmsg_append(msg, &frame);
+
+  DUnicodeString error = args;
+  zframe_t* errorf = zframe_new(error.c_str(), error.size());
+  zmsg_append(msg, &errorf); 
+
+  zmsg_send(&msg, this->__socket);
+  zmsg_destroy(&msg);
 }

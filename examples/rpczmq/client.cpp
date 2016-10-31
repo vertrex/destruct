@@ -133,12 +133,15 @@ Destruct::DObject* Client::generate(DValue const& args)
     objectStruct = this->find(args);
   }
  
-  this->__serialize->sDUInt8(RealValue<DUInt8>(CMD_GENERATE));
-  this->__serialize->sDUnicodeString(args);
+  zmsg_t* msg = (zmsg_t*)this->__serialize->sDUInt8(RealValue<DUInt8>(CMD_GENERATE));
+  zmsg_t* msg2 = (zmsg_t*)this->__serialize->sDUnicodeString(args);
+  zmsg_addmsg(msg, &msg2);
 
-  this->__networkStream->request();
-  DUInt64 objectId = this->__deserialize->dDUInt64();
-  this->__networkStream->flushRead();
+  this->__networkStream->send(RealValue<DOpaque>(msg));
+  //this->__networkStream->request();
+  zmsg_t* reply = (zmsg_t*)this->__networkStream->recv(); 
+  DUInt64 objectId = this->__deserialize->dDUInt64(reply);
+  //this->__networkStream->flushRead();
 
   //hanle argument name + value ... XXX
   StubObject* root = new StubObject(RealValue<DObject*>(this->__networkStream), RealValue<DObject*>(this->__serialize), RealValue<DObject*>(this->__deserialize), objectId, objectStruct); 
@@ -152,10 +155,11 @@ Destruct::DStruct* Client::find(DValue const& name)
   //if not in dstruct or use namespace XXX  
   this->__serialize->sDUInt8(RealValue<DUInt8>(CMD_FIND));
   this->__serialize->sDUnicodeString(name);
-  this->__networkStream->request();
+  //this->__networkStream->request();
 
-  DStruct* dstruct = this->__deserialize->dDStruct(); //XXX pass client everywhere to avoir creating  serialize / serializer / deserialzier everytime all is in client so ...
-  this->__networkStream->flushRead();
+  zmsg_t* reply = (zmsg_t*)this->__networkStream->recv();
+  DStruct* dstruct = this->__deserialize->dDStruct(reply); //XXX pass client everywhere to avoir creating  serialize / serializer / deserialzier everytime all is in client so ...
+  //this->__networkStream->flushRead();
   return (dstruct);
 }
 

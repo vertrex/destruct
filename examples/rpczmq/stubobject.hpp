@@ -1,6 +1,8 @@
 #ifndef __STUBOBJECT_HPP__
 #define __STUBOBJECT_HPP__
 
+#include "czmq.h"
+
 #include "destruct.hpp"
 #include "dvalue.hpp"
 
