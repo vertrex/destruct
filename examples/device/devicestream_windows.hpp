@@ -27,26 +27,12 @@
 
 using namespace Destruct;
 
-
-/*
-class ReadWork 
-{
-public:
-  //ReadWork(Destruct::DObject* astream,  uint64_t apage);
-  ReadWork(HANDLE ahandle,  uint64_t apage);
-  HANDLE				  handle;
-  uint64_t                page;
-};
-
-EXPORT ThreadResult   CacheWorker(ThreadData rq);
-*/
 class DeviceStream : public DCppObject<DeviceStream>
 {
 public:
   DeviceStream(DStruct* dstruct, DValue const& args);
 
   DBuffer       read(DValue const& args); 
-  DBuffer       oldRead(DValue const& args);
   DUInt64       size(void);
   void          seek(DValue const& args);
   DUInt64       tell(void);
@@ -83,8 +69,6 @@ private:
   BufferCache&                  __cache;
   const uint64_t                __cacheBufferSize;
 //  uint64_t                      __lastOffset;
-//  WorkQueue<ReadWork*>*         __readQueue;
- // ThreadStruct                  __workerThread;
 };
 
 #endif

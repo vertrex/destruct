@@ -28,20 +28,21 @@ using namespace Destruct;
 /**
  *  DeviceStream Windows 
  */
-MemoryDeviceStream::MemoryDeviceStream(DStruct* dstruct, DValue const& args) : DCppObject<MemoryDeviceStream>(dstruct, args)
+MemoryDeviceStream::MemoryDeviceStream(DStruct* dstruct, DValue const& args) : DCppObject<MemoryDeviceStream>(dstruct, args), __offset(0)
 {
   this->init();
   this->__size = 0;
+  std::cout << "Creating new memory device stream " << std::endl;
 
-  HANDLE handle = CreateFile("\\\\.\\pmem", GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-  if (handle != INVALID_HANDLE_VALUE)
+  this->__handle = CreateFileA("\\\\.\\pmem", GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+  if (this->__handle != INVALID_HANDLE_VALUE)
   {
      DWORD ioctlSize;
      uint64_t memorySize;
      struct PmemMemoryInfo info;          
      ZeroMemory(&info, sizeof(info));
 
-     if (DeviceIoControl(handle, PMEM_INFO_IOCTRL, NULL, 0, (char *)&info, sizeof(info), &ioctlSize, NULL) == TRUE)
+     if (DeviceIoControl(this->__handle, PMEM_INFO_IOCTRL, NULL, 0, (char *)&info, sizeof(info), &ioctlSize, NULL) == TRUE)
      {
        for (__int64 i = 0; i < info.NumberOfRuns.QuadPart; i++) 
          memorySize = info.Run[i].start + info.Run[i].length;
@@ -61,11 +62,21 @@ MemoryDeviceStream::~MemoryDeviceStream()
 DBuffer MemoryDeviceStream::read(DValue const& args)
 {
   DInt64 size = args;
-  DWORD readed;
+  DWORD readed = 0;
 
   DBuffer dbuffer((int32_t)size);
  
-  ReadFile(this->__handle, (void*)(dbuffer.data()), (DWORD)size,  &readed ,0);
+  LARGE_INTEGER newOffset;
+  newOffset.QuadPart = this->__offset;
+  LARGE_INTEGER newOffsetRes;
+  newOffsetRes.QuadPart = 0;
+  
+  //multi-threaded ?
+  SetFilePointerEx(this->__handle, newOffset, &newOffsetRes, 0);
+  ReadFile(this->__handle, (void*)(dbuffer.data()), (DWORD)size, &readed, 0);
+  //pmem don't do a setFileEx after reading we're still at the old offset so handle offset manually
+  this->__offset += readed;
+
   return (dbuffer);
 }
 
@@ -77,29 +88,18 @@ DUInt64 MemoryDeviceStream::size(void)
 void    MemoryDeviceStream::seek(DValue const& args)
 {
   DUInt64 offset = args;
-  if (offset < this->__size)
-  {
-	LARGE_INTEGER newOffset;
-	newOffset.QuadPart = offset;
-    LARGE_INTEGER newOffsetRes;
-    SetFilePointerEx(this->__handle, newOffset, &newOffsetRes, 0);
-  }
+  if (offset <= this->__size)
+	this->__offset = offset;
   else
-   throw DException("DeviceStream::seek can't seek");
+   throw DException("MemoryDeviceStream::seek can't seek");
 }
 
 DUInt64 MemoryDeviceStream::tell(void)
 {
-  LARGE_INTEGER ret;
-  LARGE_INTEGER pos;
-  
-  pos.QuadPart = 0;
-  SetFilePointerEx(this->__handle, pos, &ret, FILE_CURRENT);
-
-  return (ret.QuadPart);
+  return (this->__offset);
 }
 
 void    MemoryDeviceStream::close(void)
 {
-	CloseHandle(this->__handle);
+  CloseHandle(this->__handle);
 }
