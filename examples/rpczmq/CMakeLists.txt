@@ -22,9 +22,9 @@ serverobject.cpp
 serverfunctionobject.cpp
 objectmanager.cpp
 client.cpp
-clientobject.cpp
-clientfunctionobject.cpp
-clientstruct.cpp
+stubobject.cpp
+stubfunctionobject.cpp
+stubstruct.cpp
 )
 
 add_library(destruct_rpczmq SHARED ${rpczmq_libfiles})

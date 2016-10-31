@@ -1,5 +1,5 @@
-#ifndef __SERVER_FUNCTION_OBJECT_HPP__
-#define __SERVER_FUNCTION_OBJECT_HPP__
+#ifndef __SERVERFUNCTIONOBJECT_HPP__
+#define __SERVERFUNCTIONOBJECT_HPP__
 
 #include "dobject.hpp"
 #include "dfunction.hpp"

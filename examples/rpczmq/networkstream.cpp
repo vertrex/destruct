@@ -1,20 +1,11 @@
-//#ifdef WIN32
-//#include <winsock2.h>
-//#include <ws2tcpip.h>
-//#else
-//#include <arpa/inet.h>
-//#endif
 #include <iostream>
 #include <sstream>
 #include <string.h>
-#include <signal.h>
-
-#include "networkstream.hpp"
 
 #include "zmq.h"
+#include "czmq.h"
 
-namespace Destruct 
-{
+#include "networkstream.hpp"
 
 NetworkStream::NetworkStream(DStruct* dstruct, DValue const& args) : DCppObject<NetworkStream>(dstruct, args), __socket(NULL), __context(NULL)
 {
@@ -30,110 +21,51 @@ NetworkStream::~NetworkStream()
 {
 }
 
-DBuffer NetworkStream::read(void)
+DOpaque  NetworkStream::recv(void)
 {
-  zmq_msg_t msg;
-  zmq_msg_init(&msg);
-  if (zmq_msg_recv(&msg, this->__socket, 0) == -1)
-    throw DException("NetworkStream::read zmq_msg_recv " + std::string(zmq_strerror(errno)));
+  zmsg_t* msg = zmsg_recv(this->__socket);
+  if (msg == NULL)
+    throw DException("NetworkStream::recv can't receive message");
 
-  DBuffer buffer((uint8_t*)zmq_msg_data(&msg), (int32_t)zmq_msg_size(&msg));
-  zmq_msg_close(&msg);
-
-  return (buffer);
-}
-
-void deleteDBuffer(void *data, void *hint)
-{
-  DBuffer* buffer = static_cast<DBuffer*>(hint);
-  delete buffer;
-}
-
-DInt64  NetworkStream::write(DValue const& args)
-{
-  DBuffer buffer = args;
-
-  zmq_msg_t msg;
-
-  DBuffer* copy = new DBuffer(buffer);
-  zmq_msg_init_data(&msg, buffer.data(), buffer.size(), deleteDBuffer, (void*)copy);
-  if (zmq_msg_send(&msg, this->__socket, ZMQ_SNDMORE) == -1)
-    throw DException("NetworkStream::write zmq_msg_send " + std::string(zmq_strerror(errno)));
-  return (buffer.size()); //XXX check
-}
-
-void    NetworkStream::request(void)
-{
-  this->flushWrite();
-
-  zmq_msg_t resultmsg;
-  if (zmq_msg_init(&resultmsg) != 0)
-    throw DException("NetworkStream::request can't init message");
-  if (zmq_msg_recv(&resultmsg, this->__socket, 0) == -1)
-     throw DException("NetworkStream::request zmq_msg_recv " + std::string(zmq_strerror(errno)));
-  int8_t result = *((int8_t*)zmq_msg_data(&resultmsg));
-  zmq_msg_close(&resultmsg);
+  zframe_t* resultf = zmsg_pop(msg);
+  DInt8 result = *((DInt8*)zframe_data(resultf));
+  zframe_destroy(&resultf);
   if (result == -1)
   {
-    zmq_msg_t msg;
-    zmq_msg_init(&msg);
-    if (zmq_msg_recv(&msg, this->__socket, 0) == -1)
-     throw DException("NetworkStream::request zmq_msg_recv " + std::string(zmq_strerror(errno)));
-    DUnicodeString error(std::string((char*)zmq_msg_data(&msg), zmq_msg_size(&msg)));
-    zmq_msg_close(&msg);
+    zframe_t* errorf = zmsg_pop(msg);
+    DUnicodeString error(std::string((char*)zframe_data(errorf), zframe_size(errorf)));
+    zframe_destroy(&errorf);
+    zmsg_destroy(&msg);
     throw DException(error);
   }
+
+  return (msg);
 }
 
-void NetworkStream::reply(void)
+void    NetworkStream::send(DValue const& args) //DValue const& args ? 
 {
-  this->flushRead();
+  zmsg_t* msg = (zmsg_t*) args.get<DOpaque>();
 
-  uint8_t result = 1;
-  zmq_msg_t resultmsg;
-  zmq_msg_init_size(&resultmsg, sizeof(uint8_t));
-  memcpy(zmq_msg_data(&resultmsg), &result, sizeof(int8_t));
-  if (zmq_msg_send(&resultmsg, this->__socket, ZMQ_SNDMORE) == -1)
-     throw DException("NetworkStream::reply zmq_msg_send " + std::string(zmq_strerror(errno)));
-  return; 
+  DInt8 value = 1;
+  zframe_t* frame = zframe_new((DInt8*)&value, sizeof(value));
+  zmsg_prepend(msg, &frame);
+
+  zmsg_send(&msg, this->__socket);
+  zmsg_destroy(&msg);
 }
 
-void    NetworkStream::replyError(DValue const& args)
+void    NetworkStream::sendError(DValue const& args)
 {
-  this->flushRead();
+  zmsg_t* msg = zmsg_new();
 
-  int8_t result = -1;
-  zmq_msg_t resultmsg;
-  zmq_msg_init_size(&resultmsg, sizeof(int8_t));
-  memcpy(zmq_msg_data(&resultmsg), &result, sizeof(int8_t));
-  if (zmq_msg_send(&resultmsg, this->__socket, ZMQ_SNDMORE) == -1)
-     throw DException("NetworkStream::replyError zmq_msg_send " + std::string(zmq_strerror(errno)));
+  DInt8 value = -1;
+  zframe_t* frame = zframe_new((DInt8*)&value, sizeof(value));
+  zmsg_append(msg, &frame);
 
   DUnicodeString error = args;
-  zmq_msg_t msg;
-  zmq_msg_init_size(&msg, error.size());
-  memcpy(zmq_msg_data(&msg), error.c_str(), error.size());
-  if (zmq_msg_send(&msg, this->__socket, 0) == -1)
-     throw DException("NetworkStream::replyError zmq_msg_send " + std::string(zmq_strerror(errno)));
-  
-  return;
-}
+  zframe_t* errorf = zframe_new(error.c_str(), error.size());
+  zmsg_append(msg, &errorf); 
 
-void    NetworkStream::flushWrite(void)
-{
-  zmq_msg_t end;
-  zmq_msg_init_size(&end, 0);
-  if (zmq_msg_send(&end, this->__socket, 0) == -1)
-     throw DException("NetworkStream::flushWrite zmq_msg_send " + std::string(zmq_strerror(errno)));
-}
-
-void    NetworkStream::flushRead(void)
-{
-  zmq_msg_t end;
-  zmq_msg_init(&end);
-  if (zmq_msg_recv(&end, this->__socket, 0) == -1)
-     throw DException("NetworkStream::flushReadzmq_msg_recv " + std::string(zmq_strerror(errno)));
-  zmq_msg_close(&end);
-}
-
+  zmsg_send(&msg, this->__socket);
+  zmsg_destroy(&msg);
 }

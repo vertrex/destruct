@@ -17,6 +17,8 @@ typedef uint16_t DUInt16;
 typedef uint32_t DUInt32;
 typedef uint64_t DUInt64;
 
+typedef void*    DOpaque;
+
 namespace Destruct
 {
 
@@ -52,6 +54,8 @@ public:
 
     DStructType,
     DBufferType,
+
+    DOpaqueType,
 
     DUnknownType,
   };

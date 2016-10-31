@@ -1,18 +1,16 @@
 #include "serializerpc.hpp"
 #include "networkstream.hpp"
-#include "clientobject.hpp"
+#include "stubobject.hpp"
 #include "serverobject.hpp"
-#include "clientfunctionobject.hpp"
-#include "clientobject.hpp"
-#include "clientstruct.hpp"
+#include "stubfunctionobject.hpp"
+#include "stubobject.hpp"
+#include "stubstruct.hpp"
 
+#include "czmq.h"
 //#include "dsimpleobject.hpp"
 /*
  *   DSerializeRPC 
  */
-namespace Destruct
-{
-
 SerializeRPC::SerializeRPC(DStruct* dstruct, DValue const& args) : DCppObject<SerializeRPC>(dstruct, args), __stream(args), __networkStream(static_cast<NetworkStream*>((DObject*)args))
 {
   this->init(); 
@@ -29,98 +27,161 @@ SerializeRPC::~SerializeRPC()
   this->__objectManager->destroy();
 }
 
-void    SerializeRPC::sDObject(DValue const& args)
+DOpaque   SerializeRPC::sDObject(DValue const& args)
 {
   DObject* dobject = args;
 
   RealValue<DUInt64> id = this->__objectManager->call("registerObject", args);  
  
-  this->sDUInt64(id);
-  this->sDUnicodeString(RealValue<DUnicodeString>(dobject->instanceOf()->name()));
+  zmsg_t* msg = (zmsg_t*)this->sDUInt64(id);
+  zmsg_t* msg2 = (zmsg_t*)this->sDUnicodeString(RealValue<DUnicodeString>(dobject->instanceOf()->name()));
+  zmsg_addmsg(msg, &msg2);
+  return (msg);
 }
 
 
-void    SerializeRPC::sDStruct(DValue const& args)
+DOpaque    SerializeRPC::sDStruct(DValue const& args)
 {
   DStruct* dstruct = args; //server check for NULL in find & generate but not for direct call XXX
-  this->sDUnicodeString(RealValue<DUnicodeString>(dstruct->name())); 
+  zmsg_t* msg = (zmsg_t*)this->sDUnicodeString(RealValue<DUnicodeString>(dstruct->name())); 
 
   size_t attributeCount = dstruct->attributeCount();
-  this->sDUInt32(RealValue<DUInt32>((DInt32)attributeCount)); //XXX size t
+  zmsg_t* msg2 = (zmsg_t*)this->sDUInt32(RealValue<DUInt32>((DInt32)attributeCount)); //XXX size t
 
+  zmsg_addmsg(msg, &msg2);
   for (DStruct::DAttributeIterator i = dstruct->attributeBegin(); i != dstruct->attributeEnd(); ++i)
   {
-    this->sDUnicodeString(RealValue<DUnicodeString>((*i).name()));
+    zmsg_t* msg3 = (zmsg_t*)this->sDUnicodeString(RealValue<DUnicodeString>((*i).name()));
+    zmsg_addmsg(msg, &msg3);
     DType::Type_t type = (*i).type().getType();
-    this->sDUInt8(RealValue<DUInt8>(type)); //DUInt8?
+    zmsg_t* msg4 = (zmsg_t*)this->sDUInt8(RealValue<DUInt8>(type)); //DUInt8?
+    zmsg_addmsg(msg, &msg4);
     if (type == DType::DMethodType)
     {
        DType::Type_t argumentType = (*i).type().getArgumentType();
-       this->sDUInt8(RealValue<DUInt8>(argumentType));
+       zmsg_t* msg5 = (zmsg_t*)this->sDUInt8(RealValue<DUInt8>(argumentType));
+       zmsg_addmsg(msg, &msg5);
        DType::Type_t returnType = (*i).type().getReturnType();
-       this->sDUInt8(RealValue<DUInt8>(returnType));
+       zmsg_t* msg6 = (zmsg_t*)this->sDUInt8(RealValue<DUInt8>(returnType));
+       zmsg_addmsg(msg, &msg6);
     }
   } 
+  return (msg);
 }
 
-void    SerializeRPC::sDNone(void)
+DOpaque    SerializeRPC::sDNone(DValue const& args)
 {
   //Do nothing //it's ok for none method return type but for object return none could be necesseray to inform the client
+  //return (NULL);
+  zmsg_t* msg = zmsg_new();
+  return (msg);
 }
 
-void    SerializeRPC::sDMethod(DValue const& args)
+DOpaque    SerializeRPC::sDMethod(DValue const& args)
 {
   //to implement
+  zmsg_t* msg = zmsg_new();
+  return (msg);
 }
 
-void    SerializeRPC::sDUnicodeString(DValue const& args)
+DOpaque    SerializeRPC::sDUnicodeString(DValue const& args)
 {
-    this->__networkStream->write(RealValue<DBuffer>(args.asDBuffer()));
+  DUnicodeString str = args;
+  zmsg_t* msg = zmsg_new();
+  zframe_t* frame = zframe_new(str.c_str(), str.size());
+  zmsg_append(msg, &frame);
+
+  return (msg);
 }
 
-void    SerializeRPC::sDBuffer(DValue const& args)
+DOpaque    SerializeRPC::sDBuffer(DValue const& args)
 {
-  this->__networkStream->write(args);
+  DBuffer dbuffer = args;
+  zmsg_t* msg = zmsg_new();
+  zframe_t* frame = zframe_new(dbuffer.data(), dbuffer.size());
+  zmsg_append(msg, &frame);
+
+  return (msg);
 }
 
-void    SerializeRPC::sDInt8(DValue const& args)
+DOpaque    SerializeRPC::sDInt8(DValue const& args)
 {
-  this->__networkStream->write(RealValue<DBuffer>(args.asDBuffer()));
+  DInt8 value = args;
+  zmsg_t* msg = zmsg_new();
+  zframe_t* frame = zframe_new((uint8_t*)&value, sizeof(value));
+  zmsg_append(msg, &frame);
+
+  return (msg);
 }
 
-void    SerializeRPC::sDInt16(DValue const& args)
+DOpaque    SerializeRPC::sDInt16(DValue const& args)
 {
-  this->__networkStream->write(RealValue<DBuffer>(args.asDBuffer()));
+  DInt16 value = args;
+  zmsg_t* msg = zmsg_new();
+  zframe_t* frame = zframe_new((uint8_t*)&value, sizeof(value));
+  zmsg_append(msg, &frame);
+
+  return (msg);
 }
 
-void    SerializeRPC::sDInt32(DValue const& args)
+DOpaque    SerializeRPC::sDInt32(DValue const& args)
 {
-  this->__networkStream->write(RealValue<DBuffer>(args.asDBuffer()));
+  DInt32 value = args;
+  zmsg_t* msg = zmsg_new();
+  zframe_t* frame = zframe_new((uint8_t*)&value, sizeof(value));
+  zmsg_append(msg, &frame);
+
+  return (msg);
 }
 
-void    SerializeRPC::sDInt64(DValue const& args)
+DOpaque    SerializeRPC::sDInt64(DValue const& args)
 {
-  this->__networkStream->write(RealValue<DBuffer>(args.asDBuffer()));
+  DInt64 value = args;
+  zmsg_t* msg = zmsg_new();
+  zframe_t* frame = zframe_new((uint8_t*)&value, sizeof(value));
+  zmsg_append(msg, &frame);
+
+  return (msg);
 }
 
-void    SerializeRPC::sDUInt8(DValue const& args)
+DOpaque    SerializeRPC::sDUInt8(DValue const& args)
 {
-  this->__networkStream->write(RealValue<DBuffer>(args.asDBuffer()));
+  DUInt8 value = args;
+  zmsg_t* msg = zmsg_new();
+  zframe_t* frame = zframe_new((uint8_t*)&value, sizeof(value));
+  zmsg_append(msg, &frame);
+
+  return (msg);
 }
 
-void    SerializeRPC::sDUInt16(DValue const& args)
+DOpaque    SerializeRPC::sDUInt16(DValue const& args)
 {
-  this->__networkStream->write(RealValue<DBuffer>(args.asDBuffer()));
+  DUInt16 value = args;
+  zmsg_t* msg = zmsg_new();
+  zframe_t* frame = zframe_new((uint8_t*)&value, sizeof(value));
+  zmsg_append(msg, &frame);
+
+  return (msg);
 }
 
-void    SerializeRPC::sDUInt32(DValue const& args)
+DOpaque    SerializeRPC::sDUInt32(DValue const& args)
 {
-  this->__networkStream->write(RealValue<DBuffer>(args.asDBuffer()));
+  DUInt32 value = args;
+  zmsg_t* msg = zmsg_new();
+  zframe_t* frame = zframe_new((uint8_t*)&value, sizeof(value));
+  zmsg_append(msg, &frame);
+
+  return (msg);
 }
 
-void    SerializeRPC::sDUInt64(DValue const& args)
+DOpaque    SerializeRPC::sDUInt64(DValue const& args)
 {
-  this->__networkStream->write(RealValue<DBuffer>(args.asDBuffer()));
+  DUInt64 value = args;
+  zmsg_t* msg = zmsg_new();
+  zframe_t* frame = zframe_new((uint8_t*)&value, sizeof(value));
+  zmsg_append(msg, &frame);
+
+  return (msg);
 }
 
 /**
@@ -141,10 +202,10 @@ DeserializeRPC::~DeserializeRPC()
 {
 }
 
-DObject*        DeserializeRPC::dDObject(void)
+DObject*        DeserializeRPC::dDObject(DOpaque msg)
 {
-  DUInt64 id = this->dDUInt64();
-  DUnicodeString objectName = this->dDUnicodeString();
+  DUInt64 id = this->dDUInt64(msg);
+  DUnicodeString objectName = this->dDUnicodeString(zmsg_popmsg((zmsg_t*)msg));
   DStruct* dstruct = NULL; 
   SerializeRPC* serializer = static_cast<SerializeRPC*>(DStructs::instance().find("SerializeRPC")->newObject(RealValue<DObject*>(this->__stream))); //XXX new object each time  -> slow reuse parent one client or server 
   try
@@ -153,39 +214,41 @@ DObject*        DeserializeRPC::dDObject(void)
   }
   catch (DException const& exception)
   {
-    this->__networkStream->flushRead();
-    serializer->sDUInt8(RealValue<DUInt8>(CMD_FIND));
-    serializer->sDUnicodeString(RealValue<DUnicodeString>(objectName));
-    this->__networkStream->request();
+    //this->__networkStream->flushRead();  //XXX XXX XXX XXX XXX XXX 
+    zmsg_t* rep1 = (zmsg_t*)serializer->sDUInt8(RealValue<DUInt8>(CMD_FIND)); //XXX rep1 ?
+    zmsg_t* rep2 = (zmsg_t*)serializer->sDUnicodeString(RealValue<DUnicodeString>(objectName));
+    zmsg_addmsg(rep1, &rep2);
+    this->__networkStream->send(RealValue<DOpaque>(rep1));
 
-    dstruct = this->dDStruct(); //register done in dDStruct 
+    zmsg_t* req = (zmsg_t*)this->__networkStream->recv();
+    dstruct = this->dDStruct(req); //register done in dDStruct 
   }
   
-  DObject* clientObject = new ClientObject(RealValue<DObject*>(this->__stream), RealValue<DObject*>(serializer), RealValue<DObject*>(this), id, dstruct);
+  DObject* clientObject = new StubObject(RealValue<DObject*>(this->__stream), RealValue<DObject*>(serializer), RealValue<DObject*>(this), id, dstruct);
   serializer->destroy(); 
 
   return (clientObject);
 }
 
-DStruct*        DeserializeRPC::dDStruct(void)
+DStruct*        DeserializeRPC::dDStruct(DOpaque msg)
 {
   DStruct* dstruct = NULL; 
 
-  DUnicodeString structName = this->dDUnicodeString();
-  DUInt32 attributeCount = this->dDUInt32();
+  DUnicodeString structName = this->dDUnicodeString((zmsg_t*)msg);
+  DUInt32 attributeCount = this->dDUInt32(zmsg_popmsg((zmsg_t*)msg));
 
                                   
-  if ((dstruct = new ClientStruct(0, structName, ClientObject::newObject, this->__networkStream)) == NULL)//inheritance ? 
+  if ((dstruct = new StubStruct(0, structName, StubObject::newObject, this->__networkStream)) == NULL)//inheritance ? 
     return (NULL);
   for (size_t i = 0; i < attributeCount; i++) 
   {
-     DUnicodeString name = this->dDUnicodeString();
+     DUnicodeString name = this->dDUnicodeString(zmsg_popmsg((zmsg_t*)msg));
      
-     DType::Type_t type = (DType::Type_t)this->dDUInt8(); 
+     DType::Type_t type = (DType::Type_t)this->dDUInt8(zmsg_popmsg((zmsg_t*)msg)); 
      if (type == DType::DMethodType)
      {
-       DType::Type_t argumentType = (DType::Type_t)this->dDUInt8();
-       DType::Type_t returnType = (DType::Type_t)this->dDUInt8();
+       DType::Type_t argumentType = (DType::Type_t)this->dDUInt8(zmsg_popmsg((zmsg_t*)msg));
+       DType::Type_t returnType = (DType::Type_t)this->dDUInt8(zmsg_popmsg((zmsg_t*)msg));
        dstruct->addAttribute(DAttribute(returnType, name, argumentType, type));
      }
      else
@@ -195,75 +258,115 @@ DStruct*        DeserializeRPC::dDStruct(void)
   return (dstruct); 
 }
 
-DObject*        DeserializeRPC::dDNone(void)
+DObject*        DeserializeRPC::dDNone(DOpaque msg)
 {
   //do nothing
+  zmsg_pop((zmsg_t*)msg); //XXX?
   return (DNone);
 }
 
-DFunctionObject* DeserializeRPC::dDMethod(void)
+DFunctionObject* DeserializeRPC::dDMethod(DOpaque msg)
 {
-  //Implemented in ClientObject
+  //Implemented in StubObject
+  zmsg_pop((zmsg_t*)msg); ///XXX?
   return (NULL);
 }
 
-DUnicodeString  DeserializeRPC::dDUnicodeString(void)
+DUnicodeString  DeserializeRPC::dDUnicodeString(DOpaque msg)
 {
-  DBuffer buffer = this->__networkStream->read();
-  return (std::string((const char*)buffer.data(), buffer.size()));
+  //XXX MAYBE ZMSG_POPMSG CAR ON A PUSH UN MSG ET PAS UNE FRAME DIRECTEMENT ?
+
+  zframe_t* frame = zmsg_pop((zmsg_t*)msg);
+  const char* data = (const char*)zframe_data(frame);
+  size_t size = zframe_size(frame);
+
+  std::string res = std::string(data, size);
+  zframe_destroy(&frame);
+
+  return (res);
 }
 
-DBuffer         DeserializeRPC::dDBuffer(void)
+DBuffer         DeserializeRPC::dDBuffer(DOpaque msg)
 {
-  return (this->__networkStream->read());
+  zframe_t* frame = zmsg_pop((zmsg_t*)msg);
+  uint8_t* data = (uint8_t*)zframe_data(frame);
+  size_t size = zframe_size(frame);
+ 
+  DBuffer res = DBuffer(data, size); 
+  zframe_destroy(&frame);
+
+  return (res);
 }
 
-DInt8           DeserializeRPC::dDInt8(void)
+DInt8           DeserializeRPC::dDInt8(DOpaque msg)
 {
-  DBuffer buffer = this->__networkStream->read();
-  return (*((DInt8*)buffer.data()));
+  zframe_t* frame = zmsg_pop((zmsg_t*)msg);
+  DInt8 res = *((DInt8*)zframe_data(frame));
+
+  zframe_destroy(&frame);
+  return (res);
 }
 
-DInt16          DeserializeRPC::dDInt16(void)
+DInt16          DeserializeRPC::dDInt16(DOpaque msg)
 {
-  DBuffer buffer = this->__networkStream->read();
-  return (*((DInt16*)buffer.data()));
+  zframe_t* frame = zmsg_pop((zmsg_t*)msg);
+  DInt16 res = *((DInt16*)zframe_data(frame));
+ 
+  zframe_destroy(&frame);
+  return (res);
 }
 
-DInt32          DeserializeRPC::dDInt32(void)
+DInt32          DeserializeRPC::dDInt32(DOpaque msg)
 {
-  DBuffer buffer = this->__networkStream->read();
-  return (*((DInt32*)buffer.data()));
+  zframe_t* frame = zmsg_pop((zmsg_t*)msg);
+  DInt32 res = *((DInt32*)zframe_data(frame));
+ 
+  zframe_destroy(&frame);
+  return (res);
 }
 
-DInt64          DeserializeRPC::dDInt64(void)
+DInt64          DeserializeRPC::dDInt64(DOpaque msg)
 {
-  DBuffer buffer = this->__networkStream->read();
-  return (*((DInt64*)buffer.data()));
+  zframe_t* frame = zmsg_pop((zmsg_t*)msg);
+  DInt64 res = *((DInt64*)zframe_data(frame));
+ 
+  zframe_destroy(&frame);
+  return (res);
+
 }
 
-DUInt8          DeserializeRPC::dDUInt8(void)
+DUInt8          DeserializeRPC::dDUInt8(DOpaque msg)
 {
-  DBuffer buffer = this->__networkStream->read();
-  return (*((DUInt8*)buffer.data()));
+  zframe_t* frame = zmsg_pop((zmsg_t*)msg);
+  DUInt8 res = *((DUInt8*)zframe_data(frame));
+ 
+  zframe_destroy(&frame);
+  return (res);
 }
 
-DUInt16         DeserializeRPC::dDUInt16(void)
+DUInt16         DeserializeRPC::dDUInt16(DOpaque msg)
 {
-  DBuffer buffer = this->__networkStream->read();
-  return (*((DUInt16*)buffer.data()));
+  zframe_t* frame = zmsg_pop((zmsg_t*)msg);
+  DUInt16 res = *((DUInt16*)zframe_data(frame));
+ 
+  zframe_destroy(&frame);
+  return (res);
 }
 
-DUInt32         DeserializeRPC::dDUInt32(void)
+DUInt32         DeserializeRPC::dDUInt32(DOpaque msg)
 {
-  DBuffer buffer = this->__networkStream->read();
-  return (*((DUInt32*)buffer.data()));
+  zframe_t* frame = zmsg_pop((zmsg_t*)msg);
+  DUInt32 res = *((DInt32*)zframe_data(frame));
+ 
+  zframe_destroy(&frame);
+  return (res);
 }
 
-DUInt64         DeserializeRPC::dDUInt64(void)
+DUInt64         DeserializeRPC::dDUInt64(DOpaque msg)
 {
-  DBuffer buffer = this->__networkStream->read();
-  return (*((DUInt64*)buffer.data()));
-}
-
+  zframe_t* frame = zmsg_pop((zmsg_t*)msg);
+  DUInt64 res = *((DUInt64*)zframe_data(frame));
+ 
+  zframe_destroy(&frame);
+  return (res);
 }

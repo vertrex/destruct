@@ -1,27 +1,30 @@
-#ifndef __CLIENT_OBJECT__
-#define __CLIENT_OBJECT__
+#ifndef __STUBOBJECT_HPP__
+#define __STUBOBJECT_HPP__
+
+#include "czmq.h"
 
 #include "destruct.hpp"
 #include "dvalue.hpp"
+
 #include "networkstream.hpp"
 #include "serverfunctionobject.hpp"
 #include "objectmanager.hpp"
 
-namespace Destruct {
+using namespace Destruct;
 
-class ClientStruct;
+class StubStruct;
 
 /**
  * Client Object proxy 
  */
-class ClientObject : public DObject
+class StubObject : public DObject
 {
 public:
-  EXPORT ClientObject(DValue const& stream, DValue const& serializer, DValue const& deserializer, uint64_t id, DStruct* dstruct);
-  EXPORT ClientObject(DStruct* dstruct, DValue const& args);
-  EXPORT ClientObject(ClientObject const & rhs);
+  EXPORT StubObject(DValue const& stream, DValue const& serializer, DValue const& deserializer, uint64_t id, DStruct* dstruct);
+  EXPORT StubObject(DStruct* dstruct, DValue const& args);
+  EXPORT StubObject(StubObject const & rhs);
 
-  EXPORT static DObject*       newObject(ClientStruct* dstruct, DValue const& args, NetworkStream* networkStream);
+  EXPORT static DObject*       newObject(StubStruct* dstruct, DValue const& args, NetworkStream* networkStream);
   EXPORT DObject*              clone() const;
 
   EXPORT DValue                getValue(DUnicodeString const& name) const;
@@ -41,7 +44,7 @@ public:
 
   EXPORT uint64_t               id(void) const;
 protected:
-  ~ClientObject();
+  ~StubObject();
 private:
   uint64_t                      __id;
   SerializeRPC*                 __serializer;
@@ -49,5 +52,4 @@ private:
   NetworkStream*                __networkStream;
 };
 
-}
 #endif

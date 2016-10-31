@@ -8,7 +8,9 @@ sys.path.append('../')
 from _destruct import *
 
 loader = DStructs().find("Import").newObject()
+print "hello"
 loader.file("../../../examples/modules/libdestruct_rpczmq.so")
+print "loaded"
 #print 'ok loaded'
 arg = DStructs().find("ClientArgument").newObject()
 auth  = DStructs().find("RPCAuth").newObject()
@@ -21,12 +23,14 @@ arg.address = "10.42.1.195"
 #arg.address = "10.42.1.1"
 #arg.address = "10.42.1.2"
 arg.port = 0xdff
-arg.auth = auth
+#arg.auth = auth
 print "connecting" 
 client = DStructs().find("Client").newObject(arg)
 print "generate devicelist" 
 serverLoader = client.generate("Import")
-if serverLoader.file("../modules/libdestruct_device.so") == 0:
+try:
+  serverLoader.file("../modules/libdestruct_device.so")
+except Exception as e:
   serverLoader.file("destruct_device.dll")
 deviceList = client.generate("DeviceList")
 devs = deviceList.list()
