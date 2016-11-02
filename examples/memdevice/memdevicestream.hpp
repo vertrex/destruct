@@ -60,6 +60,7 @@ protected:
 private:
   HANDLE                        __handle;
   uint64_t                      __size;
+  uint64_t						__offset;
   RealValue<DFunctionObject*>   _read, _size, _seek, _tell, _close;
 };
 
