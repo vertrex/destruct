@@ -434,8 +434,8 @@ PyObject*     PyDUnicodeString::asDValue(Destruct::DValue const& v)
 
 PyObject*     PyDUnicodeString::asPyObject(PyObject* self, int32_t attributeIndex)
 {
-#ifdef FAST_CONVERSION
   Destruct::DUnicodeString value = ((PyDObject::DPyObject*)self)->pimpl->getValue(attributeIndex);
+#ifdef FAST_CONVERSION
   return (PyUnicode_FromStringAndSize(value.c_str(), value.size()));
 #else
   return (PyObject_CallObject((PyObject*)PyDUnicodeString::pyType  , Py_BuildValue("(O)", PyUnicode_FromStringAndSize(value.c_str(), value.size()))));
@@ -494,11 +494,61 @@ PyObject*     PyDBuffer::asDValue(Destruct::DValue const& v)
 
 PyObject*     PyDBuffer::asPyObject(PyObject* self, int32_t attributeIndex)
 {
-#ifdef FAST_CONVERSION
   Destruct::DBuffer value = ((PyDObject::DPyObject*)self)->pimpl->getValue(attributeIndex);
+#ifdef FAST_CONVERSION
   return (PyByteArray_FromStringAndSize((char*)value.data(), value.size()));
 #else
   return (PyObject_CallObject((PyObject*)PyDBuffer::pyType, Py_BuildValue("(O)", PyByteArray_FromStringAndSize((char*)value.data(), value.size()))));
 #endif
- 
+}
+
+/**
+ *  PyDOpaque
+ */
+PyDOpaque::PyDOpaque()
+{
+  PyTypeObject* pyType = PyDOpaque::pyType();
+  memcpy(pyType , &basePyType , sizeof(basePyType));
+
+  PyMethodDef* pyMethods = (PyMethodDef*)malloc(sizeof(baseTypePyMethods));
+  memcpy(pyMethods , &baseTypePyMethods , sizeof(baseTypePyMethods));
+  pyMethods[0].ml_meth = (PyCFunction)this->getType;
+
+  pyType->tp_base = &PyBuffer_Type; //?
+  pyType->tp_name = "destruct.DOpaque";
+  pyType->tp_basicsize = sizeof(DPyObject);
+  pyType->tp_init = (initproc)(PyDOpaque::_init);
+  pyType->tp_methods = pyMethods;
+  if (PyType_Ready(pyType) < 0)
+    throw Destruct::DException("PyType ready error");
+}
+
+Destruct::DValue PyDOpaque::toDValue(PyObject* value) 
+{
+  if (PyCapsule_CheckExact(value))
+  {
+    void* pointer = PyCapsule_GetPointer(value, NULL); //handle only one pointer
+    return Destruct::RealValue<DOpaque>(pointer);
+  }
+  throw Destruct::DException(CAST_ERROR(DOpaque));
+}
+
+PyObject*     PyDOpaque::asDValue(Destruct::DValue const& v)
+{
+  DOpaque value = v.get<DOpaque>();
+#ifdef FAST_CONVERSION
+  return (PyCapsule_New(value, NULL, NULL));
+#else
+  return (PyObject_CallObject((PyObject*)PyDOpaque::pyType  , Py_BuildValue("(O)", PyCapsule_New(value, NULL, NULL))));
+#endif
+}
+
+PyObject*     PyDOpaque::asPyObject(PyObject* self, int32_t attributeIndex)
+{
+  DOpaque value = ((PyDObject::DPyObject*)self)->pimpl->getValue(attributeIndex).get<DOpaque>();
+#ifdef FAST_CONVERSION
+  return (PyCapsule_New(value, NULL, NULL));
+#else
+  return (PyObject_CallObject((PyObject*)PyDOpaque::pyType, Py_BuildValue("(O)", PyCapsule_New(value, NULL, NULL))));
+#endif
 }

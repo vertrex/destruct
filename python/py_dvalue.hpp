@@ -113,6 +113,15 @@ public:
   PyObject*        asPyObject(PyObject* self, int32_t attributeIndex);
 };
 
+class PyDOpaque : public PythonTypeModule< PyDOpaque, PyObject, Destruct::DType::DOpaqueType>
+{
+public:
+  EXPORT           PyDOpaque();
+  Destruct::DValue toDValue(PyObject* value);
+  PyObject*        asDValue(Destruct::DValue const& value);
+  PyObject*        asPyObject(PyObject* self, int32_t attributeIndex);
+};
+
 static PythonTypeBaseModule*  DValueDispatchTable[] =
 {
   &PyDInt8::moduleInit(),
@@ -133,6 +142,7 @@ static PythonTypeBaseModule*  DValueDispatchTable[] =
   &PyDStruct::moduleInit(),
   &PyDBuffer::moduleInit(),
 
+  &PyDOpaque::moduleInit(),
   //&PyDUnknownType::moduleInit(), throw error unknown type 
   NULL,
 };

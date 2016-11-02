@@ -54,6 +54,7 @@ PyMODINIT_FUNC init_destruct(void)
   DESTRUCT_ADD_MODULE(PyDUInt64::pyType(), "DUInt64")
   DESTRUCT_ADD_MODULE(PyDUnicodeString::pyType(), "DUnicodeString")
   DESTRUCT_ADD_MODULE(PyDBuffer::pyType(), "DBuffer")
+  DESTRUCT_ADD_MODULE(PyDOpaque::pyType(), "DOpaque")
 
 
   DESTRUCT_ADD_MODULE(PyDObject::pyType(), "DObject")

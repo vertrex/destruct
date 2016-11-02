@@ -361,6 +361,23 @@ inline DBuffer RealValue<DBuffer>::asDBuffer() const
   return (*this);
 }
 
+/*
+ *  DOpaque specialization
+ */
+template<>
+inline DUnicodeString RealValue<DOpaque>::asUnicodeString() const
+{
+  std::ostringstream os;
+  os << "(void*)" << std::hex << this->__val << std::dec; ///XXX reset hex ?
+  return (os.str());
+}
+
+template<>
+inline DBuffer RealValue<DOpaque>::asDBuffer() const
+{
+  throw DException("Can't convert DOpaque to DBuffer"); //use default converstion ?
+}
+
 }
 
 #endif
