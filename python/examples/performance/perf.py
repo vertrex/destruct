@@ -20,8 +20,21 @@ def funcCallStr(count, performance):
       res = callStr("test")
       i += 1
 
+def getBuffer(count, performance):
+  i = 0 
+  while i < count:
+    res = performance.getBuffer(8192)
+    i += 1
+
+def callGetBuffer(count, performance):
+  i = 0
+  callGetBuffer = performance.getBuffer
+  while i < count:
+    res = callGetBuffer(8192)
+    i += 1
+
 def stats(performance):
-  for f in [callStr, funcCallStr]:
+  for f in [callStr, funcCallStr, getBuffer, callGetBuffer]:
     start = time.time() 
     ncall = 10000
     f(ncall, performance)
@@ -53,7 +66,7 @@ if __name__ == "__main__":
      auth  = DStructs().find("RPCAuth").newObject()
      auth.cert = "clicert/rpczmq_client_cert.txt" 
      auth.certStore = "clicert/"
-     arg.auth = auth
+     #arg.auth = auth
      if len(sys.argv) == 4:
        arg.address = sys.argv[2]
        arg.port = int(sys.argv[3])
@@ -61,7 +74,9 @@ if __name__ == "__main__":
        arg.address = sys.argv[2]
      client = DStructs().find("Client").newObject(arg)
      serverLoader = client.generate("Import")
-     if serverLoader.file("../modules/libdestruct_performance.so") == 0:
+     try:
+       serverLoader.file("../modules/libdestruct_performance.so")
+     except:
        serverLoader.file("destruct_performance.dll")
      performance = client.generate("Performance")
    else:

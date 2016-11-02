@@ -20,7 +20,6 @@ public:
   void          sendError(DValue const& args);
 
   void*         __socket; //XXX should be private but need to copy by cast...
-  void*         __context; //XXX usefull ? no !
 protected: 
   ~NetworkStream();
 public:

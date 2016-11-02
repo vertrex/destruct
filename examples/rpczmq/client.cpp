@@ -64,8 +64,6 @@ Client::Client(DStruct* dstruct, DValue const& args) : DCppObject<Client>(dstruc
 
   this->__connect(args);
   this->__networkStream = static_cast<NetworkStream*>(DStructs::instance().find("NetworkStream")->newObject());
-
-  this->__networkStream->__context = this->__context;
   this->__networkStream->__socket = this->__socket;
 
   this->__serialize = static_cast<SerializeRPC*>(DStructs::instance().find("SerializeRPC")->newObject(RealValue<DObject*>(this->__networkStream)));

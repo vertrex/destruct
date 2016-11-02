@@ -34,8 +34,8 @@ DOpaque   SerializeRPC::sDObject(DValue const& args)
   RealValue<DUInt64> id = this->__objectManager->call("registerObject", args);  
  
   zmsg_t* msg = (zmsg_t*)this->sDUInt64(id);
-  zmsg_t* msg2 = (zmsg_t*)this->sDUnicodeString(RealValue<DUnicodeString>(dobject->instanceOf()->name()));
-  zmsg_addmsg(msg, &msg2);
+  zmsg_t* submsg = (zmsg_t*)this->sDUnicodeString(RealValue<DUnicodeString>(dobject->instanceOf()->name()));
+  zmsg_addmsg(msg, &submsg);
   return (msg);
 }
 
@@ -46,24 +46,24 @@ DOpaque    SerializeRPC::sDStruct(DValue const& args)
   zmsg_t* msg = (zmsg_t*)this->sDUnicodeString(RealValue<DUnicodeString>(dstruct->name())); 
 
   size_t attributeCount = dstruct->attributeCount();
-  zmsg_t* msg2 = (zmsg_t*)this->sDUInt32(RealValue<DUInt32>((DInt32)attributeCount)); //XXX size t
+  zmsg_t* submsg = (zmsg_t*)this->sDUInt32(RealValue<DUInt32>((DInt32)attributeCount)); //XXX size t
 
-  zmsg_addmsg(msg, &msg2);
+  zmsg_addmsg(msg, &submsg);
   for (DStruct::DAttributeIterator i = dstruct->attributeBegin(); i != dstruct->attributeEnd(); ++i)
   {
-    zmsg_t* msg3 = (zmsg_t*)this->sDUnicodeString(RealValue<DUnicodeString>((*i).name()));
-    zmsg_addmsg(msg, &msg3);
+    submsg = (zmsg_t*)this->sDUnicodeString(RealValue<DUnicodeString>((*i).name()));
+    zmsg_addmsg(msg, &submsg);
     DType::Type_t type = (*i).type().getType();
-    zmsg_t* msg4 = (zmsg_t*)this->sDUInt8(RealValue<DUInt8>(type)); //DUInt8?
-    zmsg_addmsg(msg, &msg4);
+    submsg = (zmsg_t*)this->sDUInt8(RealValue<DUInt8>(type));
+    zmsg_addmsg(msg, &submsg);
     if (type == DType::DMethodType)
     {
        DType::Type_t argumentType = (*i).type().getArgumentType();
-       zmsg_t* msg5 = (zmsg_t*)this->sDUInt8(RealValue<DUInt8>(argumentType));
-       zmsg_addmsg(msg, &msg5);
+       submsg = (zmsg_t*)this->sDUInt8(RealValue<DUInt8>(argumentType));
+       zmsg_addmsg(msg, &submsg);
        DType::Type_t returnType = (*i).type().getReturnType();
-       zmsg_t* msg6 = (zmsg_t*)this->sDUInt8(RealValue<DUInt8>(returnType));
-       zmsg_addmsg(msg, &msg6);
+       submsg = (zmsg_t*)this->sDUInt8(RealValue<DUInt8>(returnType));
+       zmsg_addmsg(msg, &submsg);
     }
   } 
   return (msg);
@@ -71,8 +71,6 @@ DOpaque    SerializeRPC::sDStruct(DValue const& args)
 
 DOpaque    SerializeRPC::sDNone(DValue const& args)
 {
-  //Do nothing //it's ok for none method return type but for object return none could be necesseray to inform the client
-  //return (NULL);
   zmsg_t* msg = zmsg_new();
   return (msg);
 }
@@ -214,8 +212,7 @@ DObject*        DeserializeRPC::dDObject(DOpaque msg)
   }
   catch (DException const& exception)
   {
-    //this->__networkStream->flushRead();  //XXX XXX XXX XXX XXX XXX 
-    zmsg_t* rep1 = (zmsg_t*)serializer->sDUInt8(RealValue<DUInt8>(CMD_FIND)); //XXX rep1 ?
+    zmsg_t* rep1 = (zmsg_t*)serializer->sDUInt8(RealValue<DUInt8>(CMD_FIND)); 
     zmsg_t* rep2 = (zmsg_t*)serializer->sDUnicodeString(RealValue<DUnicodeString>(objectName));
     zmsg_addmsg(rep1, &rep2);
     this->__networkStream->send(RealValue<DOpaque>(rep1));
@@ -260,22 +257,19 @@ DStruct*        DeserializeRPC::dDStruct(DOpaque msg)
 
 DObject*        DeserializeRPC::dDNone(DOpaque msg)
 {
-  //do nothing
-  zmsg_pop((zmsg_t*)msg); //XXX?
+  zmsg_pop((zmsg_t*)msg);
   return (DNone);
 }
 
 DFunctionObject* DeserializeRPC::dDMethod(DOpaque msg)
 {
   //Implemented in StubObject
-  zmsg_pop((zmsg_t*)msg); ///XXX?
+  zmsg_pop((zmsg_t*)msg); 
   return (NULL);
 }
 
 DUnicodeString  DeserializeRPC::dDUnicodeString(DOpaque msg)
 {
-  //XXX MAYBE ZMSG_POPMSG CAR ON A PUSH UN MSG ET PAS UNE FRAME DIRECTEMENT ?
-
   zframe_t* frame = zmsg_pop((zmsg_t*)msg);
   const char* data = (const char*)zframe_data(frame);
   size_t size = zframe_size(frame);

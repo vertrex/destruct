@@ -32,19 +32,20 @@ try:
   serverLoader.file("../modules/libdestruct_device.so")
 except Exception as e:
   serverLoader.file("destruct_device.dll")
+  serverLoader.file("destruct_device.dll")
 deviceList = client.generate("DeviceList")
 devs = deviceList.list()
 for dev in devs:
   print dev.blockDevice, "-", dev.serialNumber,  "-", dev.model, dev.size
 
-s = devs[0].open()
+s = devs[1].open()
 b = ""
 size = 0
 MO = 1024*1024
 GO = 1024 * MO
 #sizeToRead = GO * 5
-sizeToRead = 1000*MO
-buffSize = 8192 #100000 #4096*25 #0#1*MO
+sizeToRead = 100*MO
+buffSize = 4096#8192 #100000 #4096*25 #0#1*MO
 print "Reading ", sizeToRead, " with buff of size ", buffSize 
 timeStart = time.time()
 

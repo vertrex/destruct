@@ -36,19 +36,16 @@ DObject* StubObject::newObject(StubStruct* dstruct, DValue const& args, NetworkS
   DeserializeRPC* deserialize = static_cast<DeserializeRPC*>(DStructs::instance().find("DeserializeRPC")->newObject(RealValue<DObject*>(networkStream)));
 
  //XXX if none ...
-
   zmsg_t* msg = (zmsg_t*)serialize->sDUInt8(RealValue<DUInt8>(CMD_GENERATE_ARG));
-  zmsg_t* msg1 = (zmsg_t*)serialize->sDUnicodeString(RealValue<DUnicodeString>(dstruct->name()));
+  zmsg_t* submsg = (zmsg_t*)serialize->sDUnicodeString(RealValue<DUnicodeString>(dstruct->name()));
 
-  zmsg_addmsg(msg, &msg1);
+  zmsg_addmsg(msg, &submsg);
   //DUInt64 argId = static_cast<StubObject*>(args.get<DObject*>())->id();
   //serialize->sDUInt64(RealValue<DUInt64>(argId));
-
   //serialize->sDObject(args); ///XXX must find type 
   //this->dstruct.find("constructor")
   // serialize constructor type 
 
-  //XXX get msg 
   networkStream->send(RealValue<DOpaque>(msg));
   zmsg_t* reply = (zmsg_t*)networkStream->recv(); 
   DUInt64 objectId = deserialize->dDUInt64(reply);
@@ -56,30 +53,29 @@ DObject* StubObject::newObject(StubStruct* dstruct, DValue const& args, NetworkS
   StubObject* root = new StubObject(RealValue<DObject*>(networkStream), RealValue<DObject*>(serialize), RealValue<DObject*>(deserialize), objectId, dstruct); //ARGS ARGS XXX  
 
   return (RealValue<DObject*>(root));
-
   //return (new StubObject(dstruct, args)); 
 }
 
 void StubObject::setValue(DUnicodeString const& name, DValue const &v)
 {
   zmsg_t* msg = (zmsg_t*)this->__serializer->sDUInt8(RealValue<DUInt8>(CMD_SETVALUE)); 
-  zmsg_t* msg1 = (zmsg_t*)this->__serializer->sDUInt64(RealValue<DUInt64>(this->__id));
-  zmsg_addmsg(msg, &msg1);
-  msg1 = (zmsg_t*)this->__serializer->sDUnicodeString(RealValue<DUnicodeString>(name));
-  zmsg_addmsg(msg, &msg1);
-  msg1 = (zmsg_t*)this->__serializer->call(this->instanceOf()->attribute(name).type().name(), v).get<DOpaque>(); //erialize arg
-  zmsg_addmsg(msg, &msg1);
+  zmsg_t* submsg = (zmsg_t*)this->__serializer->sDUInt64(RealValue<DUInt64>(this->__id));
+  zmsg_addmsg(msg, &submsg);
+  submsg = (zmsg_t*)this->__serializer->sDUnicodeString(RealValue<DUnicodeString>(name));
+  zmsg_addmsg(msg, &submsg);
+  submsg = (zmsg_t*)this->__serializer->call(this->instanceOf()->attribute(name).type().name(), v).get<DOpaque>(); //erialize arg
+  zmsg_addmsg(msg, &submsg);
   this->__networkStream->send(RealValue<DOpaque>(msg));
-  this->__networkStream->recv();// XXX ? 
+  this->__networkStream->recv();
 }
 
 DValue StubObject::getValue(DUnicodeString const& name) const
 {
   zmsg_t* msg = (zmsg_t*)this->__serializer->sDUInt8(RealValue<DUInt8>(CMD_GETVALUE));
-  zmsg_t* msg1 = (zmsg_t*)this->__serializer->sDUInt64(RealValue<DUInt64>(this->__id)); 
-  zmsg_addmsg(msg, &msg1);
-  msg1 = (zmsg_t*)this->__serializer->sDUnicodeString(RealValue<DUnicodeString>(name));
-  zmsg_addmsg(msg, &msg1);
+  zmsg_t* submsg = (zmsg_t*)this->__serializer->sDUInt64(RealValue<DUInt64>(this->__id)); 
+  zmsg_addmsg(msg, &submsg);
+  submsg = (zmsg_t*)this->__serializer->sDUnicodeString(RealValue<DUnicodeString>(name));
+  zmsg_addmsg(msg, &submsg);
 
   DType  dtype = this->instanceOf()->attribute(name).type();
   if (dtype.getType() == DType::DMethodType)
@@ -106,14 +102,14 @@ DValue StubObject::call(DUnicodeString const& name, DValue const &args)
   DType  dtype = this->instanceOf()->attribute(name).type();
 
   zmsg_t* msg = (zmsg_t*)this->__serializer->sDUInt8(RealValue<DUInt8>(CMD_CALL)); 
-  zmsg_t* msg1 = (zmsg_t*)this->__serializer->sDUInt64(RealValue<DUInt64>(this->__id));
-  zmsg_addmsg(msg, &msg1);
-  msg1 = (zmsg_t*)this->__serializer->sDUnicodeString(RealValue<DUnicodeString>(name));
-  zmsg_addmsg(msg, &msg1);
+  zmsg_t* submsg = (zmsg_t*)this->__serializer->sDUInt64(RealValue<DUInt64>(this->__id));
+  zmsg_addmsg(msg, &submsg);
+  submsg = (zmsg_t*)this->__serializer->sDUnicodeString(RealValue<DUnicodeString>(name));
+  zmsg_addmsg(msg, &submsg);
 
   /* Send argument (object is not compatible)  XXX implement it */
-  msg1 = (zmsg_t*) ((DObject*)this->__serializer)->call(dtype.argumentName(), args).get<DOpaque>(); //serialize arg
-  zmsg_addmsg(msg, &msg1);
+  submsg = (zmsg_t*) ((DObject*)this->__serializer)->call(dtype.argumentName(), args).get<DOpaque>(); //serialize arg
+  zmsg_addmsg(msg, &submsg);
   this->__networkStream->send(RealValue<DOpaque>(msg));
   zmsg_t* reply = (zmsg_t*)this->__networkStream->recv(); 
   DValue value = (((DObject*)this->__deserializer)->call(dtype.returnName(), RealValue<DOpaque>(reply))); //deserialize return XXX dobject not in arg
@@ -126,10 +122,10 @@ DValue StubObject::call(DUnicodeString const& name)
   DType  dtype = this->instanceOf()->attribute(name).type();
 
   zmsg_t* msg = (zmsg_t*)this->__serializer->sDUInt8(RealValue<DUInt8>(CMD_CALL0)); 
-  zmsg_t* msg1 = (zmsg_t*)this->__serializer->sDUInt64(RealValue<DUInt64>(this->__id));
-  zmsg_addmsg(msg, &msg1);
-  msg1 = (zmsg_t*)this->__serializer->sDUnicodeString(RealValue<DUnicodeString>(name));
-  zmsg_addmsg(msg, &msg1);
+  zmsg_t* submsg = (zmsg_t*)this->__serializer->sDUInt64(RealValue<DUInt64>(this->__id));
+  zmsg_addmsg(msg, &submsg);
+  submsg = (zmsg_t*)this->__serializer->sDUnicodeString(RealValue<DUnicodeString>(name));
+  zmsg_addmsg(msg, &submsg);
 
   this->__networkStream->send(RealValue<DOpaque>(msg));
   zmsg_t* reply = (zmsg_t*)this->__networkStream->recv(); 

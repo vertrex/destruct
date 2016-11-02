@@ -13,7 +13,6 @@ ServerObject::ServerObject(void* socket, void * context): __networkStream(NULL),
 {
   this->__objectManager = static_cast<ObjectManager*>(DStructs::instance().find("ObjectManager")->newObject());
   this->__networkStream = static_cast<NetworkStream*>(DStructs::instance().generate("NetworkStream"));
-  this->__networkStream->__context = context;
   this->__networkStream->__socket = socket;
 
   this->__serializer = static_cast<SerializeRPC*>(DStructs::instance().generate("SerializeRPC", RealValue<DObject*>(this->__networkStream)));
@@ -155,7 +154,7 @@ void    ServerObject::functionCall0(zmsg_t* msg)
 
   DValue value = ((DFunctionObject*)object->functionObject)->call();
 
-  zmsg_t* reply = (zmsg_t*)this->__serializer->call(DType((DType::Type_t)(DUInt64)object->returnType).name(), value).get<DOpaque>();  //return ?or send ?
+  zmsg_t* reply = (zmsg_t*)this->__serializer->call(DType((DType::Type_t)(DUInt64)object->returnType).name(), value).get<DOpaque>();
   this->__networkStream->send(RealValue<DOpaque>(reply));
 }
  
@@ -193,7 +192,6 @@ void    ServerObject::dispatch(void)
   catch (DException const& exception)
   {
     zmsg_destroy(&zmsg);
-    std::cout << "got exception " << exception.error() << " send it " << std::endl;
     //XXX XXX mem leak if cmd try to push in a zmsg to send reply !
     this->__networkStream->sendError(RealValue<DUnicodeString>(exception.error()));
   }
