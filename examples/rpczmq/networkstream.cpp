@@ -9,6 +9,7 @@
 
 NetworkStream::NetworkStream(DStruct* dstruct, DValue const& args) : DCppObject<NetworkStream>(dstruct, args), __socket(NULL)
 {
+  //this->__socket = args;
   this->init();
 }
 

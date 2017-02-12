@@ -164,7 +164,7 @@ class MainWindow(QMainWindow):
     auth  = DStructs().find("RPCAuth").newObject()
     auth.cert = "clicert/rpczmq_client_cert.txt" 
     auth.certStore = "clicert/"
-    arg.auth = auth
+    #arg.auth = auth
     self.client = DStructs().find("Client").newObject(arg)
     serverLoader = self.client.generate("Import")
     if serverLoader.file("../modules/libdestruct_registry.so") == 0:

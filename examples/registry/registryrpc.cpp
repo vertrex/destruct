@@ -37,7 +37,12 @@ void RegistryRPC::connect(std::string const& filePath, std::string const& addr, 
 {
   //use destruct import 
   DObject* loader = DStructs::instance().generate("Import"); 
-  if (loader->call("file", RealValue<DUnicodeString>("../modules/libdestruct_rpczmq.so")).get<DUInt8>() == 0)
+ 
+  try 
+  { 
+    loader->call("file", RealValue<DUnicodeString>("../modules/libdestruct_rpczmq.so"));
+  } 
+  catch(...)
   {
     loader->call("file", RealValue<DUnicodeString>("destruct_rpczmq.dll"));
   }
@@ -53,9 +58,15 @@ void RegistryRPC::connect(std::string const& filePath, std::string const& addr, 
   //client = DStructs::instance().generate("RecursiveThreadSafeObject", RealValue<DObject*>(client));
 
   DObject* serverLoader = client->call("generate", RealValue<DUnicodeString>("Import"));
-  
-  if (serverLoader->call("file", RealValue<DUnicodeString>("../modules/libdestruct_registry.so")).get<DUInt8>() == 0)
+ 
+  try
+  { 
+    serverLoader->call("file", RealValue<DUnicodeString>("../modules/libdestruct_registry.so"));
+  }
+  catch (...)
+  {
     serverLoader->call("file", RealValue<DUnicodeString>("destruct_registry.dll"));
+  }
   DObject* registry = client->call("generate", RealValue<DUnicodeString>("Registry"));
 
  
@@ -97,7 +108,9 @@ int main(int argc, char** argv)
     else if (std::string(argv[1]) == std::string("-c"))
     {
       if (argc == 5)
+      {
         registryRPC.connect(argv[2], argv[3], atoi(argv[4]));
+      }
       else
         std::cout << RegistryRPC::usage();
     }

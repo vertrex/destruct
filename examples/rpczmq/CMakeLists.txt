@@ -25,6 +25,7 @@ client.cpp
 stubobject.cpp
 stubfunctionobject.cpp
 stubstruct.cpp
+#rpcdeclare.cpp
 )
 
 add_library(destruct_rpczmq SHARED ${rpczmq_libfiles})

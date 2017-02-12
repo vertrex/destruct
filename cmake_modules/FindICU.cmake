@@ -63,8 +63,8 @@ else()
 endif ()
 declare_icu_component(uc   icuuc)         # Common and Data libraries
 declare_icu_component(io   icuio)         # Stream and I/O Library
-declare_icu_component(le   icule)         # Layout library
-declare_icu_component(lx   iculx)         # Paragraph Layout library
+#declare_icu_component(le   icule)         # Layout library
+#declare_icu_component(lx   iculx)         # Paragraph Layout library
 
 ########## Public ##########
 set(ICU_FOUND TRUE)

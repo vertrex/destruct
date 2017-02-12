@@ -67,7 +67,7 @@ if __name__ == "__main__":
      auth  = DStructs().find("RPCAuth").newObject()
      auth.cert = "clicert/rpczmq_client_cert.txt" 
      auth.certStore = "clicert/"
-     arg.auth = auth
+     #arg.auth = auth
      if len(sys.argv) == 5:
        arg.address = sys.argv[3]
        arg.port = int(sys.argv[4])
